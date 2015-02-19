@@ -1,0 +1,38 @@
+\input{preamble.tex}
+\begin{document}
+  %\listoffixmes
+  \include{frontpage}
+  \include{colophon}
+
+  \pdfbookmark[0]{Title page}{label:Titlepage}
+  \include{titlepage}
+	\blankpage
+
+  \pdfbookmark[0]{\contentsname}{label:Contents}
+  \setcounter{tocdepth}{1}
+	\pagestyle{empty}
+  \tableofcontents
+  \listoffigures
+  \begingroup
+  \let\clearpage\relax
+  \listoftables
+  \endgroup
+	\clearpage
+	\pagestyle{BasicStyle}
+
+  \pagenumbering{arabic}
+  \include{preface}\thispagestyle{empty}
+  \blankpage
+
+  \include{introduction}
+  \include{analysis}
+  \include{design}
+  \include{implementation}
+  \include{reflection}
+
+  \pdfbookmark[0]{Bibliography}{label:Bibliography}
+  \printbibliography
+
+  \include{appendix}
+
+\end{document}

@@ -1,0 +1,171 @@
+\documentclass[a4paper,12pt,english,twoside]{report}
+
+%%%% PACKAGES %%%%
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} % encoding=utf8
+\usepackage{fourier} % font
+\usepackage{amssymb}
+\usepackage{pifont}
+\usepackage[english]{babel} % language support - hyphenations etc.
+\usepackage{graphicx} % insertion of images
+\graphicspath{{Images/}} % folder to use for images
+\usepackage{listings} % source code
+%itemize spacing
+\usepackage{enumitem}
+\setlist[1]{itemsep=-5pt}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+
+%%%%%%%flotte listings
+\lstset{language=[Sharp]C}
+%Use the typeface Source Code Pro for listings
+\usepackage[nottdefault]{sourcecodepro}
+\lstset{basicstyle=\fontfamily{SourceCodePro-TLF}\footnotesize,breaklines=true,commentstyle=}
+\usepackage{color}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[font=it,labelfont=bf]{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+\usepackage{subfig} % support for sidebyside figures
+
+\usepackage[mode=multiuser,draft]{fixme} % fixme config
+\FXRegisterAuthor{si}{asi}{Simon}
+\FXRegisterAuthor{ka}{aka}{Kasper}
+\FXRegisterAuthor{ta}{ata}{Terndrup}
+\FXRegisterAuthor{al}{aal}{Alexander}
+\FXRegisterAuthor{ch}{ach}{Christian}
+\FXRegisterAuthor{je}{aje}{Jens}
+
+\usepackage[ % citation support
+bibencoding=utf8,
+  hyperref=true,
+  backend=biber,
+  style=ieee,
+  sorting=none
+  ]{biblatex}
+  \addbibresource{sources.bib}
+
+\usepackage{csquotes} % recommended by biblatex
+\usepackage{lastpage}
+
+\sloppy
+
+% http://tex.stackexchange.com/questions/42063/illogical-twoside-margins
+% layout page auto-centering horizontally and allow for press binding
+\usepackage[hcentering,bindingoffset=8mm]{geometry}
+
+\usepackage{hyperref} % hyperlinks in pdf
+\usepackage{cleveref} % clever references. Use with \cref...
+\let\origref\cref
+\def\cref#1{\emph{\origref{#1}}}
+
+  % ¤¤ Kapiteludssende ¤¤ %
+\usepackage{titlesec}
+\titleformat{\chapter}
+  {\normalfont\LARGE\bfseries}{\thechapter}{1em}{}
+\titlespacing*{\chapter}{0pt}{-2ex}{0ex}
+
+\let\Oldpart\part
+\newcommand{\parttitle}{}
+\renewcommand{\part}[1]{\Oldpart{#1}\renewcommand{\parttitle}{#1}}
+
+\usepackage{fancyhdr}
+\usepackage{nopageno}
+\setlength{\headheight}{52pt}
+
+\fancypagestyle{fancyplain}{} % no ordinary headers and footers in pages with chapters
+\fancyhead{} % clear default header
+\fancyfoot{} % clear default footer
+
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\space#1}{}} % do not print "chapter"
+
+\fancypagestyle{BasicStyle}{
+	\fancyhead[OL, ER]{
+		\parbox{17mm}{{\includegraphics[scale=0.25]{aau_logo_cropped.png}}}\parbox{45mm}{\textsc{Aalborg University}\\\textit{ds318e14}}}
+	\fancyhead[OR, EL]{\parbox{56mm}{\nouppercase{{\textsc{\parttitle}} \\ \leftmark}}}
+
+	\fancyfoot[OR, EL]{Page {\thepage} of \pageref{LastPage}}
+	\fancyfoot[OL, ER]{December 19\textsuperscript{th}, 2014}
+}
+
+\pagenumbering{roman}
+\pagestyle{empty} % Use empty at first
+\setlength{\belowcaptionskip}{-12pt}
+\raggedbottom
+\hyphenation{fa-brik-ken}
+
+%%%%%%%%%% macros
+\newcommand{\actortable}[2] {
+%\vspace{1cm}
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+    \rule{\textwidth}{1pt}
+    \begin{center}
+      \vspace{-2ex}
+        \textbf{#1}
+      \vspace{-2ex}
+    \end{center}
+    \rule{\textwidth}{1pt}
+    #2
+
+    \rule{\textwidth}{1pt}
+\end{minipage}
+\end{center}
+%\vspace{1cm}
+}
+
+\newcommand*{\blankpage}{
+\vspace*{\fill}
+\begin{center}
+\textit{This page intentionally left (almost) blank.}\thispagestyle{empty}
+\end{center}
+\vspace{\fill}}
+
+\makeatletter
+% start with some helper code
+% This is the vertical rule that is inserted
+\newcommand*{\algrule}[1][\algorithmicindent]{\makebox[#1][l]{\hspace*{.5em}\vrule height .75\baselineskip depth .25\baselineskip}}%
+
+\newcount\ALG@printindent@tempcnta
+\def\ALG@printindent{%
+    \ifnum \theALG@nested>0% is there anything to print
+        \ifx\ALG@text\ALG@x@notext% is this an end group without any text?
+            % do nothing
+            \addvspace{-1pt}% FUDGE for cases where no text is shown, to make the rules line up
+        \else
+            \unskip
+            % draw a rule for each indent level
+            \ALG@printindent@tempcnta=1
+            \loop
+                \algrule[\csname ALG@ind@\the\ALG@printindent@tempcnta\endcsname]%
+                \advance \ALG@printindent@tempcnta 1
+            \ifnum \ALG@printindent@tempcnta<\numexpr\theALG@nested+1\relax% can't do <=, so add one to RHS and use < instead
+            \repeat
+        \fi
+    \fi
+    }%
+% the following line injects our new indent handling code in place of the default spacing
+\patchcmd{\ALG@doentity}{\noindent\hskip\ALG@tlm}{\ALG@printindent}{}{\errmessage{failed to patch}}
+\makeatother
+% end vertical rule patch for algorithmicx
+
+\renewcommand{\algorithmicforall}{\textbf{for each}}
+
+\def\mypart#1#2{%
+\refstepcounter{part}% Next part
+\addcontentsline{toc}{part}{\thepart~#1}
+\par\newpage\clearpage % Page break
+\vspace*{5cm} % Vertical shift
+{\centering \textbf{\Huge Part \thepart}\par}\thispagestyle{empty}%
+\vspace{1cm}% Vertical shift
+{\centering \textbf{\Huge #1}\par}%
+\vspace{2cm}% Vertical shift %
+\noindent #2
+\vfill\pagebreak % Fill the end of page and page break
+}
