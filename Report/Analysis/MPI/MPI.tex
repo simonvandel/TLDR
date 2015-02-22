@@ -33,7 +33,7 @@ Reduce is a many-to-one operation. Here one operation, called the reduction func
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 4)
 
 \subsection{System buffer}
-Consider the following; When sending messages, what happens if the receiver isn’t ready to process them? To solve this problem, MPI dictates that an implementation must be able to store messages, however the way this is done is up to the implementation.
+Consider the following; When sending messages, what happens if the receiver is not ready to process them? To solve this problem, MPI dictates that an implementation must be able to store messages, however the way this is done is up to the implementation.
 
 One way to do this is with a system buffer. In short terms a system buffer works as an inbox, and sometimes also an outbox, where messages are stored until they can be processed. A few things to note about this inbox, is that it is supposed to work behind the scenes, not manageable by the programmer. However, what the programmer do need to realize, is that this buffer is a finite resource, which will be exhausted if one is not cautious.[kilde MPI_tut1]
 
