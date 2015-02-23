@@ -17,7 +17,6 @@ Point-to-point communication is the the basic building block of message passing.
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 3)
 
 \subsection{Collective operations}
-
 \subsubsection{Broadcast}
 Broadcast is a one-to-many operation, where one one process has some specific data that it sends to many other processes. The data is therefore multiplied, as opposed to being divided.
 
@@ -29,24 +28,26 @@ Gather is a many-to-one operation and is the inverse of scatter. Here data from 
 
 \subsubsection{Reduce}
 Reduce is a many-to-one operation. Here one operation, called the reduction function, is done on data from multiple processes and the result is placed in one of them. As in gather a hierarchy is also custom and the process highest in the hierarchy receives the result of the reduction. All reduction functions must be both associative and commutative so results can be reduced asymmetrically as data is sent from processes.
-
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 4)
 
 \subsection{System buffer}
 Consider the following; When sending messages, what happens if the receiver is not ready to process them? To solve this problem, MPI dictates that an implementation must be able to store messages, however the way this is done is up to the implementation.
 
-One way to do this is with a system buffer. In short terms a system buffer works as an inbox, and sometimes also an outbox, where messages are stored until they can be processed. A few things to note about this inbox, is that it is supposed to work behind the scenes, not manageable by the programmer. However, what the programmer do need to realize, is that this buffer is a finite resource, which will be exhausted if one is not cautious.[kilde MPI_tut1]
+One way to do this is with a system buffer. In short terms a system buffer works as an inbox, and sometimes also an outbox, where messages are stored until they can be processed. A few things to note about this inbox, is that it is supposed to work behind the scenes, not manageable by the programmer. However, what the programmer do need to realize, is that this buffer is a finite resource, which will be exhausted if one is not cautious.
+(Source: MPI_tut1)
 
 \subsection{Blocking and Non-blocking sends}
 On messages there can be made two distinct groups, the blocking sends and the non-blocking sends. The straight forward approach is the non-blocking send, where the sender assumes or is certain that the receiver is ready to handle the message. These types of messages returns almost immediately, but there is no guarantee that the message was received, or how it was received.
 
 On the other hand there is the blocking send. This only returns after it is safe to modify the application buffer again. The sent data could still be sitting in a buffer, but it is considered safe.
 
-Generally blocking sends are used for operations, and non-blocking when you wish to overlap those with communication in order to improve performance.[kilde MPI_tut2]
+Generally blocking sends are used for operations, and non-blocking when you wish to overlap those with communication in order to improve performance.
+(Source: MPI_tut2)
 
 \subsection{Order and Fairness}
 When sending messages, the order in which they are sent and receive can matter a great deal. MPI gives a few guarantees as to how this can be expected to happen. One must note that these rules are not enforced if multiple threads are participating in the communication.
 
 When using MPI, messages shall not overtake each other. If one task sends out two messages in succession, the message sent out first will be the first one to be received. Also, if a receiver have multiple requests looking for a matching message, the request that was made first, will get the first match.
 
-MPI does not give any guarantees related to fairness. It is entirely possible to starve tasks. If this is not desired, the responsibility lies with the programmer.[kilde MPI_tut3]
+MPI does not give any guarantees related to fairness. It is entirely possible to starve tasks. If this is not desired, the responsibility lies with the programmer.
+(Source: MPI_tut3)
