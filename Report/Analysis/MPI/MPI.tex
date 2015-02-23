@@ -12,7 +12,10 @@ The standard is designed for message passing only and does not include specifica
 \section{Messagetypes}
 
 \subsection{Point-to-point operations}
-Point-to-point communication is the the basic building block of message passing. Here one process sends data in form of a message to a single other process. The process receiving the message then enqueue the message in a queue called its message box. Each message in the message box is processed sequentially by dequeuing and handling them one at the time.
+\subsubsection{Send}
+Point-to-point communication is the the basic building block of message passing. Here one process sends data in form of a message to a single other process.
+\subsubsection{Recieve}
+When a process receives the message enqueues the message in a queue called its message box. Each message in the message box is processed sequentially by dequeuing and handling them one at the time.
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 3)
 
