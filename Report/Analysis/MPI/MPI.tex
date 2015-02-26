@@ -20,7 +20,7 @@ When a process receives a message, it enqueues the message in a queue called its
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 3)
 
-\subsection{Collective operations}
+\subsection{Collective Operations}
 \subsubsection{Broadcast}
 Broadcast is a one-to-many operation, where one process has some specific data that it sends to many other processes. The data is therefore multiplied, as opposed to being divided.
 
@@ -34,7 +34,7 @@ Gather is a many-to-one operation and is the inverse of scatter. Here data from 
 Reduce is a many-to-one operation. Here one operation, called the reduction function, is done on data from multiple processes and the result is placed in one of them. As with gather, a hierarchy is also customary and the process highest in the hierarchy receives the result of the reduction. All reduction functions must be both associative and commutative, so results can be reduced without concern for the order of operations.
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 4)
 
-\subsection{System buffer}
+\subsection{System Buffer}
 Consider the following: When sending messages, what happens if the receiver is not ready to process them? To solve this problem, MPI dictates that an implementation must be able to store messages, however the way this is done is up to the implementer.
 
 One way to do this is with a system buffer. In short terms, a system buffer works as an inbox, and sometimes also an outbox, where messages are stored until they can be processed. A few things to note about this inbox, is that it is supposed to work "behind the scenes", not manageable by the programmer. However, what the programmer needs to realise, is that this buffer is a finite resource, which will be exhausted if one is not cautious.
