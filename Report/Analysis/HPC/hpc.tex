@@ -8,14 +8,14 @@ HPC is rarely used by your "average Joe", but more so by scientists and engineer
 Nearly all platforms for HPC are either supercomputers or distributed systems. Contemporary supercomputers are getting more and more powerful, with the current world leader, the Chinese Tianhe-2, having a theoretical peak performance of almost 55 petaFLOPS [http://www.top500.org/system/177999].
 Distributed systems generally consist of a large group, or "cluster", of computers, referred to as "nodes". In these systems, the individual nodes might not be more powerful than an ordinary desktop PC, but the collective processing power of the whole cluster can rival that of a supercomputer.
 A simple cluster could consist of the following nodes:
-\begin{itemize}
-	\item Head
+\begin{description}
+	\item [Head]
 	The controller of the cluster. This is where the cluster's interface is, and where the jobs that should be performed are first introduced to the system.
-	\item Compute
+	\item [Compute]
 	A generic worker. A compute node receives a job and returns the result of the computation. In a normal cluster, you would have many compute nodes.
-	\item Scheduler
+	\item [Scheduler]
 	A node with the sole purpose of sending jobs to compute nodes. A good scheduler will evenly distribute the load of jobs to the compute nodes, minimising the total computation time.
-\end{itemize}
+\end{description}
 
 These systems' performance is so high mainly due to their extensive use of parallel computing. This parallelism is achieved, in the case of Tianhe-2, by using MPICH2, one of the most popular implementations of the MPI specification for message passing interfaces.
 
