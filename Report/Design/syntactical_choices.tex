@@ -1,3 +1,5 @@
+\chapter{Syntactical choices}
+
 For this language we have decided upon certain syntactical constructs. Here follows the choiced made and the reasoning behind them.
 
 % brackets
@@ -6,19 +8,19 @@ For this language we have decided upon certain syntactical constructs. Here foll
 % value of assignments
 %
 
-Logical comparisons.
+\section{Logical comparisons}
 
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematic language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to eachother. Sometimes mathematicians use this a statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison.
 
-Assignment
+\section{Assignment}
 
 In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We have chosen to follow this construct as well, letting immutable assignment be denoted in this fashion, \enquote{let x = 2}, since they are comparable to definitions.
 
 For assigning mutable variables we chose \enquote{<-}. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{<-} was chosen, since it is a known symbol from other languages, and also since the arrow symbolises transition or transformation. The asymmetry of the \enquote{<-} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
 
 
-Initialisation/Type decleration
+\section{Initialisation/Type decleration}
 
-Since mathematics is theortical abstraction, it is no problem to denote large numbers, precise numbers or even infinities. Computers, sadly, have pshyical limits which makes it complicated or ineffecient to express all these things as the same. This is the main reason for type declerations of numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. However, both computer science's type declerations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We where inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
+Since mathematics is theortical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have pshyical limits which makes it complicated or ineffecient to express all these things as just \enquote{numbers}. This the main reason for type declerations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. However, both computer science's type declerations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
 
-When initialising a a variable, it being either muteable or immutable, the programmer must declare its type, ..
+When initialising a a variable, it being either muteable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
