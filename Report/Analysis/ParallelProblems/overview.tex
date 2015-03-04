@@ -1,2 +1,106 @@
 http://www.gromacs.org/Documentation/Acceleration_and_parallelization
+https://computing.llnl.gov/tutorials/parallel_comp/
 http://www.diva-portal.org/smash/get/diva2:22444/FULLTEXT01.pdf - Modelica language
+
+Who is Using Parallel Computing?
+  Science and Engineering:
+    Historically, parallel computing has been considered to be "the high end of computing", and has been used to model difficult problems in many areas of science and engineering:
+        Atmosphere, Earth, Environment
+        Physics - applied, nuclear, particle, condensed matter, high pressure, fusion, photonics
+        Bioscience, Biotechnology, Genetics
+        Chemistry, Molecular Sciences
+        Geology, Seismology
+
+        Mechanical Engineering - from prosthetics to spacecraft
+        Electrical Engineering, Circuit Design, Microelectronics
+        Computer Science, Mathematics
+        Defense, Weapons
+
+    Industrial and Commercial:
+
+       Today, commercial applications provide an equal or greater driving force in the development of faster computers. These applications require the processing of large amounts of data in sophisticated ways. For example:
+       Databases, data mining
+       Oil exploration
+       Web search engines, web based business services
+       Medical imaging and diagnosis
+       Pharmaceutical design
+
+       Financial and economic modeling
+       Management of national and multi-national corporations
+       Advanced graphics and virtual reality, particularly in the entertainment industry
+       Networked video and multi-media technologies
+       Collaborative work environments
+
+\emph{how parallel programs are created}
+
+    \ephm{understanding the problem}
+    Before spending time in an attempt to develop a parallel solution for a problem, one should first determine whether or not the problem is one that can actually be parallelized.
+
+    \ephm{What can be parallelized}
+      Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task.
+
+    \ephm{helping processes and tools}
+    Designing and developing parallel programs has characteristically been a very manual process. The programmer is typically responsible for both identifying and actually implementing parallelism.
+
+Very often, manually developing parallel codes is a time consuming, complex, error-prone and iterative process.
+
+For a number of years now, various tools have been available to assist the programmer with converting serial programs into parallel programs. The most common type of tool used to automatically parallelize a serial program is a parallelizing compiler or pre-processor.
+
+A parallelizing compiler generally works in two different ways:
+
+    Fully Automatic
+        The compiler analyzes the source code and identifies opportunities for parallelism.
+        The analysis includes identifying inhibitors to parallelism and possibly a cost weighting on whether or not the parallelism would actually improve performance.
+        Loops (do, for) are the most frequent target for automatic parallelization.
+
+    Programmer Directed
+        Using "compiler directives" or possibly compiler flags, the programmer explicitly tells the compiler how to parallelize the code.
+        May be able to be used in conjunction with some degree of automatic parallelization also.
+
+
+\emph{Serial Computing:}
+    Traditionally, software has been written for serial computation:
+        A problem is broken into a discrete series of instructions
+        Instructions are executed sequentially one after another
+        Executed on a single processor
+        Only one instruction may execute at any moment in time
+
+\emph{Parallel Computing:}
+    In the simplest sense, parallel computing is the simultaneous use of multiple compute resources to solve a computational problem:
+        A problem is broken into discrete parts that can be solved concurrently
+        Each part is further broken down to a series of instructions
+        Instructions from each part execute simultaneously on different processors
+        An overall control/coordination mechanism is employed
+
+
+\emph{Shared memory}
+        Advantages:
+
+            Global address space provides a user-friendly programming perspective to memory
+            Data sharing between tasks is both fast and uniform due to the proximity of memory to CPUs
+
+        Disadvantages:
+
+            Primary disadvantage is the lack of scalability between memory and CPUs. Adding more CPUs can geometrically increases traffic on the shared memory-CPU path, and for cache coherent systems, geometrically increase traffic associated with cache/memory management.
+            Programmer responsibility for synchronization constructs that ensure "correct" access of global memory.
+
+\emph{Distributed Memory - (MPI)}
+Synchronization between tasks is likewise the programmer's responsibility.
+
+Advantages:
+
+Memory is scalable with the number of processors. Increase the number of processors and the size of memory increases proportionately.
+Each processor can rapidly access its own memory without interference and without the overhead incurred with trying to maintain global cache coherency.
+Cost effectiveness: can use commodity, off-the-shelf processors and networking.
+
+Disadvantages:
+
+The programmer is responsible for many of the details associated with data communication between processors.
+It may be difficult to map existing data structures, based on global memory, to this memory organization.
+Non-uniform memory access times - data residing on a remote node takes longer to access than node local data.
+
+\emph{Hybrid}
+Advantages and Disadvantages:
+  Whatever is common to both shared and distributed memory architectures.
+  Increased scalability is an important advantage
+  Increased programmer complexity is an important disadvantage
