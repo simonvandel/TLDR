@@ -1,0 +1,13 @@
+\chapter{Parallel Computer Memory Architectures}
+
+\section{Shared Memory}
+
+All processors in the computer have access to the same memory, that is, the memory address space is global. The memory is in close proximity to the processors, providing lower latency of access. The processors can operate independently of each other, but share the same memory resources. Because of this sharing, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any syncronisation between processors.
+
+\section{Distributed Memory}
+
+Processors have their own local memory. It is not possible to directly access memory between processors. That is, each processor has their own \enquote{view} of the memory address space. Therefore, processors cannot affect each others memory. For two processors to share data, the data must be send via a data transfer link. Depending of the proximity between the two processors, the speed and latency may be subpar compared to the shared memory architecture described above.
+
+\section{Architecture Choice}
+
+The programming language defined in this report is targeted at scientists wishing to perform simulations. Because of the need to perform these simulations quickly even without super computers, it should be supported to connect several computers in a network to create a distributed system. The distributed memory architecture is therefore chosen as the prefered architecture choice for this programming language.
