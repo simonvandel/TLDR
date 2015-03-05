@@ -5,3 +5,44 @@ One paradigm of writing concurrent programs is message passing. The paradigm ass
 Source: http://cds.cern.ch/record/399393/files/p165.pdf
 
 \url{https://computing.llnl.gov/tutorials/parallel_comp/#ModelsShared}
+
+* skelne mellem shared memory arkitektur og share memory concurrecy model
+
+
+message passing:
+* flere processer arbejder på forskelligt data independently
+* synkronisering af data via beskeder.
+* synkronisering nemmere, da man kun skal tænke på beskeder. Det er garanteret at beskederne synkroniserer 2 processor
+
+shared memory:
+* flere processor arbejder på samme data
+* synkronisering af data via mutual exclusion (locks, semaphores)
+* synkronisering mere eksplicit, da man "selv" skal sørge
+
+Plan:
+Beskriv lidt om de facto standarder (f.eks. openMP, MPI, TBB)
+* summer fordele/ulemper
+* vælg hvad der er bedst til vores område
+
+------------------------------------------------------------------
+
+Plan:
+Beskriv distributed memory og shared memory kort
+Vælg distributed memory løsning
+* scaler bedre til flere computere
+* simulationer er meget data-dependent, så derfor ...
+MPI og andre distributed memory models
+* valg
+
+
+
+Fordele ved (openMPI) MPI
+* Kan køre på både 1 maskine og et netværk af maskiner
+
+Ulemper ved (openMPI) MPI
+* Mere overhead end shared memory model ved 1 maskine
+
+Fordele ved
+
+Ulemper ved (openMP)
+* Virker ikke på distribuerede systemer
