@@ -6,8 +6,8 @@ All processors in the computer have access to the same memory, that is, the memo
 
 \section{Distributed Memory}
 
-Processors have their own local memory. It is not possible to directly access memory between processors. That is, each processor has their own \enquote{view} of the memory address space. Therefore, processors cannot affect each others memory. For two processors to share data, the data must be send via a data transfer link. Depending of the proximity between the two processors, the speed and latency may be subpar compared to the shared memory architecture described above.
+Processors have their own local memory. It is not possible to directly access memory between processors. That is, each processor has their own \enquote{view} of the memory address space. Therefore, processors cannot affect each others memory. For two processors to share data, the data must be sent via a data transfer link. Depending of the proximity between the two processors, the speed and latency may be subpar compared to the shared memory architecture described above.
 
 \section{Architecture Choice}
 
-The programming language defined in this report is targeted at scientists wishing to perform simulations. Because of the need to perform these simulations quickly even without super computers, it should be supported to connect several computers in a network to create a distributed system. The distributed memory architecture is therefore chosen as the prefered architecture choice for this programming language.
+The programming language defined in this report is targeted at scientists wanting to perform simulations. Because of the need to perform these simulations quickly, even without super-computers, there should be support for connecting several computers in a network to create a distributed system. The distributed memory architecture is therefore chosen as the prefered architecture choice for this programming language.
