@@ -1,16 +1,18 @@
-\chapter{Syntactical choices}
+\chapter{Prominent syntactical decision}
 
 For this language we have decided upon certain syntactical constructs. Here follows the choiced made and the reasoning behind them.
 
-% brackets
-% semi-kolon
-% comments
-% value of assignments
-%
+
+
+\section{Whitespace & scopes}
+
+As with most of the choices made during the design of this language, we wanted to strive towards a a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, we decided upon other constructs. For denoting scopes we went with the bracket symbols \enquote{\{ \}}. The decision fell on this due its similarity with the parentheses know from math, where it has the highest precedence, and also since it is a construct known from many other languages. For end of statements, we went with a semi-colon \enquote{;}. This is also a known construct from other languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+
 
 \section{Logical comparisons}
 
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematic language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to eachother. Sometimes mathematicians use this a statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison.
+
 
 \section{Assignment}
 
@@ -24,3 +26,9 @@ For assigning mutable variables we chose \enquote{<-}. This concept is less know
 Since mathematics is theortical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have pshyical limits which makes it complicated or ineffecient to express all these things as just \enquote{numbers}. This the main reason for type declerations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. However, both computer science's type declerations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
 
 When initialising a a variable, it being either muteable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
+
+
+
+\section{Function declarations}
+
+For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
