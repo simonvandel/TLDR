@@ -39,6 +39,35 @@ Who is Using Parallel Computing?
     \ephm{What can be parallelized}
       Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task.
 
+    \ephm{Granularity}
+      Computation / Communication Ratio:
+
+          In parallel computing, granularity is a qualitative measure of the ratio of computation to communication.
+
+          Periods of computation are typically separated from periods of communication by synchronization events.
+
+      \emph{Fine-grain Parallelism:}
+
+          Relatively small amounts of computational work are done between communication events
+
+          Low computation to communication ratio
+
+          Facilitates load balancing
+
+          Implies high communication overhead and less opportunity for performance enhancement
+
+          If granularity is too fine it is possible that the overhead required for communications and synchronization between tasks takes longer than the computation.
+
+      \ephm{Coarse-grain Parallelism:}
+
+          Relatively large amounts of computational work are done between communication/synchronization events
+
+          High computation to communication ratio
+
+          Implies more opportunity for performance increase
+
+          Harder to load balance efficiently
+
     \ephm{helping processes and tools}
     Designing and developing parallel programs has characteristically been a very manual process. The programmer is typically responsible for both identifying and actually implementing parallelism.
 
