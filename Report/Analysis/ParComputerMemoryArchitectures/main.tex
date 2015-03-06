@@ -1,13 +1,47 @@
 \chapter{Parallel Computer Memory Architectures}
 
+This chapter describes two memory architectures commonly used in parallel computing. Based on the characteristics of the architectures, an architecture choice is made to be used by the programming language defined in this report.
+
 \section{Shared Memory}
 
-All processors in the computer have access to the same memory, that is, the memory address space is global. The memory is in close proximity to the processors, providing lower latency of access. The processors can operate independently of each other, but share the same memory resources. Because of this sharing, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any syncronisation between processors.
+In this memory architecture, all processors in the computer have access to the same memory, that is, the memory address space is global. This approach of having unified memory is very simplistic and eases the programmers view of the running program. Because of this sharing of memory, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any synchronisation between processors. \url{https://computing.llnl.gov/tutorials/parallel_comp/#SharedMemory}
 
+The memory is in close proximity to the processors, providing lower access latency. 
+
+To summarise on the above, the architecture has the following advantages and disadvantages.
+
+\noindent\textbf{Advantages}
+\begin{itemize}
+    \item Simple unified memory model leads to simple understanding of the memory layout
+    \item Fast access to memory
+\end{itemize}
+
+\noindent\textbf{Disadvantages}
+\begin{itemize}
+    \item Sharing of memory between processes lead to non-deterministic processes if synchronisation between processes is not employed
+\end{itemize}
+
+%-- hurtigere på hvad shared memory er.
+%-- uddyb fordele og ulemper
 \section{Distributed Memory}
 
-Processors have their own local memory. It is not possible to directly access memory between processors. That is, each processor has their own \enquote{view} of the memory address space. Therefore, processors cannot affect each others memory. For two processors to share data, the data must be sent via a data transfer link. Depending of the proximity between the two processors, the speed and latency may be subpar compared to the shared memory architecture described above.
+In this memory architecture, processors have their own local memory so it is not possible to directly access memory between processors. Therefore, processors cannot affect each others memory. For two processors to share memory, the data must be sent via a network. A typical connection method is Ethernet. A system of processors is called a distributed system once connected through a network. Depending on the proximity of processors and the bandwidth of the connection method, the speed and latency may be subpar compared to the shared memory architecture, as described above. \url{https://computing.llnl.gov/tutorials/parallel_comp/#DistributedMemory}
+%-- måske ændre data transfer link
+%-- hurtigere på memory
+
+To summarise on the above, the architecture has the following advantages and disadvantages.
+
+\noindent\textbf{Advantages}
+\begin{itemize}
+    \item It is easy to add new processors to the network because each processor only known about its own memory. That is, it is easily scalable
+\end{itemize}
+
+\noindent\textbf{Disadvantages}
+\begin{itemize}
+    \item It is more complex to access data on another processor, and data located on a remote processor is slower to retrieve
+\end{itemize}
 
 \section{Architecture Choice}
 
 The programming language defined in this report is targeted at scientists wanting to perform simulations. Because of the need to perform these simulations quickly, even without super-computers, there should be support for connecting several computers in a network to create a distributed system. The distributed memory architecture is therefore chosen as the prefered architecture choice for this programming language.
+%-- distributed systems er ikke defineret før
