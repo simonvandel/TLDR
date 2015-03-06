@@ -9,33 +9,41 @@ let main(argv) =
     send(iStep, heider);
 
     if(i % 20 = 0){
-      send(beer(tuborg,4.6), heider); //må man lave anynonym struct instansiering
+      send(beer(tuborg,4.6), heider);        //må man lave anynonym struct instansiering
     }
   }
 }
 
 alcoholic:entity; //skal entitydecls have keywords? og hvordan gør man det. (se beerstruct)
-let entity alcoholic(length,charm) = { //entity constructors?
- 
+let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) er entity constructoren, sugar {for var v1<-var1; var v2<-var2;}
+                                            //også må programmøren lave en receive-send functionalitet, hvis entitien skal kunne dele variablen //med andre entities.
+
   let receive(a):iterationStep -> void = { //skal receive være et keyword, og skal man skrive 'let' foran receive functioner?
     promille <- promille * 0,95;
  }
 
-  recive:iterationStep -> void;
+  receive:iterationStep -> void;
   let receive(a) -> void = { 
     promille <- promille * 0,95;
  }
 
+  receive iterationStep | msg.step > 5 {  // alternativ metode til receive & msg som keywords
+    msg.step + 1;                         // den her linje gør ikke noget, og det er med vilje
+    promille <- promille * 0,95;
+ }
+
+
+
   receive(beer) = {
     promille <- promille + beer.percentage;
 
-  var promille:real; //skal man instansiere med en værdi inden brug? nej tak hilsen krog
+  var promille:real;                     //skal man instansiere med en værdi inden brug? nej tak hilsen krog
 
   }
 }
 
-beer:struct; //hvordan deklarerer vi structs?
-let beer(brand,alcohol) = { //må man lave structs med constructor?
+beer:struct;                             //hvordan deklarerer vi structs?
+let beer(brand,alcohol) = {              //må man lave structs med constructor?
 
   let percentage:real = alchohol;
   let brandname:string = brand;
@@ -45,6 +53,6 @@ let beer(brand,alcohol) = { //må man lave structs med constructor?
 let struct iterationStep = {
   var step:int;
 
-  funStuf:void
+  funStuf:void                          // decl af funcs i structs?
   let funStuf = {//doStuf};
 }
