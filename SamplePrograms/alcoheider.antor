@@ -27,8 +27,8 @@ let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) e
     promille <- promille * 0,95;
  }
 
-  receive iterationStep | msg.step > 5 {  // alternativ metode til receive & msg som keywords
-    msg.step + 1;                         // den her linje gør ikke noget, og det er med vilje
+  receive iterationStep || msg.step > 5 {  // alternativ metode til receive & msg som keywords
+    msg.step + 1;                          // den her linje gør ikke noget, og det er med vilje
     promille <- promille * 0,95;
  }
 
