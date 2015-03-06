@@ -1,0 +1,3 @@
+let struct house = { blue:int; red:string };
+var trickshot(green):int -> [int] <- [green, 3];
+trickshot <- [ 2 , 2 ];

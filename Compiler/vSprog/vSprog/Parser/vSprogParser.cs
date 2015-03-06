@@ -25,91 +25,91 @@ namespace vSprog
 			/// <summary>
 			/// The unique identifier for variable Program
 			/// </summary>
-			public const int Program = 0x001F;
+			public const int Program = 0x0023;
 			/// <summary>
 			/// The unique identifier for variable StatementList
 			/// </summary>
-			public const int StatementList = 0x0020;
+			public const int StatementList = 0x0024;
 			/// <summary>
 			/// The unique identifier for variable Block
 			/// </summary>
-			public const int Block = 0x0021;
+			public const int Block = 0x0025;
 			/// <summary>
 			/// The unique identifier for variable Statement
 			/// </summary>
-			public const int Statement = 0x0022;
+			public const int Statement = 0x0026;
 			/// <summary>
 			/// The unique identifier for variable Declaration
 			/// </summary>
-			public const int Declaration = 0x0023;
+			public const int Declaration = 0x0027;
 			/// <summary>
 			/// The unique identifier for variable Struct
 			/// </summary>
-			public const int Struct = 0x0024;
+			public const int Struct = 0x0028;
 			/// <summary>
 			/// The unique identifier for variable Initialisation
 			/// </summary>
-			public const int Initialisation = 0x0025;
+			public const int Initialisation = 0x0029;
 			/// <summary>
 			/// The unique identifier for variable TypeID
 			/// </summary>
-			public const int TypeID = 0x0026;
+			public const int TypeID = 0x002A;
 			/// <summary>
 			/// The unique identifier for variable Ids
 			/// </summary>
-			public const int Ids = 0x0027;
+			public const int Ids = 0x002B;
 			/// <summary>
 			/// The unique identifier for variable TypeDecls
 			/// </summary>
-			public const int TypeDecls = 0x0028;
+			public const int TypeDecls = 0x002C;
 			/// <summary>
 			/// The unique identifier for variable TypeDecl
 			/// </summary>
-			public const int TypeDecl = 0x0029;
+			public const int TypeDecl = 0x002D;
 			/// <summary>
 			/// The unique identifier for variable SimpleTypes
 			/// </summary>
-			public const int SimpleTypes = 0x002A;
+			public const int SimpleTypes = 0x002E;
 			/// <summary>
 			/// The unique identifier for variable SimpleType
 			/// </summary>
-			public const int SimpleType = 0x002B;
+			public const int SimpleType = 0x002F;
 			/// <summary>
 			/// The unique identifier for variable ValueStatement
 			/// </summary>
-			public const int ValueStatement = 0x002C;
+			public const int ValueStatement = 0x0030;
 			/// <summary>
 			/// The unique identifier for variable List
 			/// </summary>
-			public const int List = 0x002D;
+			public const int List = 0x0031;
 			/// <summary>
 			/// The unique identifier for variable Tuple
 			/// </summary>
-			public const int Tuple = 0x002E;
+			public const int Tuple = 0x0032;
 			/// <summary>
 			/// The unique identifier for variable Expressions
 			/// </summary>
-			public const int Expressions = 0x002F;
+			public const int Expressions = 0x0033;
 			/// <summary>
 			/// The unique identifier for variable Expression
 			/// </summary>
-			public const int Expression = 0x0030;
+			public const int Expression = 0x0034;
 			/// <summary>
 			/// The unique identifier for variable Factor
 			/// </summary>
-			public const int Factor = 0x0031;
+			public const int Factor = 0x0035;
 			/// <summary>
 			/// The unique identifier for variable Term
 			/// </summary>
-			public const int Term = 0x0032;
+			public const int Term = 0x0036;
 			/// <summary>
 			/// The unique identifier for variable Reassignment
 			/// </summary>
-			public const int Reassignment = 0x0033;
+			public const int Reassignment = 0x0037;
 			/// <summary>
 			/// The unique identifier for variable _Axiom_
 			/// </summary>
-			public const int _Axiom_ = 0x0034;
+			public const int _Axiom_ = 0x003B;
 		}
 		/// <summary>
 		/// The collection of variables matched by this parser
@@ -119,28 +119,28 @@ namespace vSprog
 		/// so that variable indices in the automaton can be used to retrieve the variables in this table
 		/// </remarks>
 		private static readonly Symbol[] variables = {
-			new Symbol(0x001F, "Program"), 
-			new Symbol(0x0020, "StatementList"), 
-			new Symbol(0x0021, "Block"), 
-			new Symbol(0x0022, "Statement"), 
-			new Symbol(0x0023, "Declaration"), 
-			new Symbol(0x0024, "Struct"), 
-			new Symbol(0x0025, "Initialisation"), 
-			new Symbol(0x0026, "TypeID"), 
-			new Symbol(0x0027, "Ids"), 
-			new Symbol(0x0028, "TypeDecls"), 
-			new Symbol(0x0029, "TypeDecl"), 
-			new Symbol(0x002A, "SimpleTypes"), 
-			new Symbol(0x002B, "SimpleType"), 
-			new Symbol(0x002C, "ValueStatement"), 
-			new Symbol(0x002D, "List"), 
-			new Symbol(0x002E, "Tuple"), 
-			new Symbol(0x002F, "Expressions"), 
-			new Symbol(0x0030, "Expression"), 
-			new Symbol(0x0031, "Factor"), 
-			new Symbol(0x0032, "Term"), 
-			new Symbol(0x0033, "Reassignment"), 
-			new Symbol(0x0034, "_Axiom_") };
+			new Symbol(0x0023, "Program"), 
+			new Symbol(0x0024, "StatementList"), 
+			new Symbol(0x0025, "Block"), 
+			new Symbol(0x0026, "Statement"), 
+			new Symbol(0x0027, "Declaration"), 
+			new Symbol(0x0028, "Struct"), 
+			new Symbol(0x0029, "Initialisation"), 
+			new Symbol(0x002A, "TypeID"), 
+			new Symbol(0x002B, "Ids"), 
+			new Symbol(0x002C, "TypeDecls"), 
+			new Symbol(0x002D, "TypeDecl"), 
+			new Symbol(0x002E, "SimpleTypes"), 
+			new Symbol(0x002F, "SimpleType"), 
+			new Symbol(0x0030, "ValueStatement"), 
+			new Symbol(0x0031, "List"), 
+			new Symbol(0x0032, "Tuple"), 
+			new Symbol(0x0033, "Expressions"), 
+			new Symbol(0x0034, "Expression"), 
+			new Symbol(0x0035, "Factor"), 
+			new Symbol(0x0036, "Term"), 
+			new Symbol(0x0037, "Reassignment"), 
+			new Symbol(0x003B, "_Axiom_") };
 		/// <summary>
 		/// The collection of virtuals matched by this parser
 		/// </summary>
@@ -151,9 +151,70 @@ namespace vSprog
 		private static readonly Symbol[] virtuals = {
  };
 		/// <summary>
+		/// Represents a set of semantic actions in this parser
+		/// </summary>
+		public class Actions
+		{
+			/// <summary>
+			/// The onProgram semantic action
+			/// </summary>
+			public virtual void onProgram(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The OnInitialisation semantic action
+			/// </summary>
+			public virtual void OnInitialisation(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The PrettyPrint semantic action
+			/// </summary>
+			public virtual void PrettyPrint(Symbol head, SemanticBody body) { }
+
+		}
+		/// <summary>
+		/// Represents a set of empty semantic actions (do nothing)
+		/// </summary>
+		private static readonly Actions noActions = new Actions();
+		/// <summary>
+		/// Gets the set of semantic actions in the form a table consistent with the automaton
+		/// </summary>
+		/// <param name="input">A set of semantic actions</param>
+		/// <returns>A table of semantic actions</returns>
+		private static SemanticAction[] GetUserActions(Actions input)
+		{
+			SemanticAction[] result = new SemanticAction[3];
+			result[0] = new SemanticAction(input.onProgram);
+			result[1] = new SemanticAction(input.OnInitialisation);
+			result[2] = new SemanticAction(input.PrettyPrint);
+			return result;
+		}
+		/// <summary>
+		/// Gets the set of semantic actions in the form a table consistent with the automaton
+		/// </summary>
+		/// <param name="input">A set of semantic actions</param>
+		/// <returns>A table of semantic actions</returns>
+		private static SemanticAction[] GetUserActions(Dictionary<string, SemanticAction> input)
+		{
+			SemanticAction[] result = new SemanticAction[3];
+			result[0] = input["onProgram"];
+			result[1] = input["OnInitialisation"];
+			result[2] = input["PrettyPrint"];
+			return result;
+		}
+		/// <summary>
 		/// Initializes a new instance of the parser
 		/// </summary>
 		/// <param name="lexer">The input lexer</param>
-		public vSprogParser(vSprogLexer lexer) : base (automaton, variables, virtuals, null, lexer) { }
+		public vSprogParser(vSprogLexer lexer) : base (automaton, variables, virtuals, GetUserActions(noActions), lexer) { }
+		/// <summary>
+		/// Initializes a new instance of the parser
+		/// </summary>
+		/// <param name="lexer">The input lexer</param>
+		/// <param name="actions">The set of semantic actions</param>
+		public vSprogParser(vSprogLexer lexer, Actions actions) : base (automaton, variables, virtuals, GetUserActions(actions), lexer) { }
+		/// <summary>
+		/// Initializes a new instance of the parser
+		/// </summary>
+		/// <param name="lexer">The input lexer</param>
+		/// <param name="actions">The set of semantic actions</param>
+		public vSprogParser(vSprogLexer lexer, Dictionary<string, SemanticAction> actions) : base (automaton, variables, virtuals, GetUserActions(actions), lexer) { }
 	}
 }

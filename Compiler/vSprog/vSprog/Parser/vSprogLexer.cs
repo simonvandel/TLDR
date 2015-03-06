@@ -24,109 +24,109 @@ namespace vSprog
 		public class ID
 		{
 			/// <summary>
+			/// The unique identifier for terminal PZEROOPERATOR
+			/// </summary>
+			public const int PZEROOPERATOR = 0x001A;
+			/// <summary>
 			/// The unique identifier for terminal IDENTIFIER
 			/// </summary>
-			public const int IDENTIFIER = 0x0011;
+			public const int IDENTIFIER = 0x0015;
 			/// <summary>
 			/// The unique identifier for terminal EQUALS
 			/// </summary>
-			public const int EQUALS = 0x0005;
+			public const int EQUALS = 0x0009;
 			/// <summary>
 			/// The unique identifier for terminal STARTTUPLE
 			/// </summary>
-			public const int STARTTUPLE = 0x000A;
+			public const int STARTTUPLE = 0x000E;
 			/// <summary>
 			/// The unique identifier for terminal LPARENS
 			/// </summary>
-			public const int LPARENS = 0x0008;
+			public const int LPARENS = 0x000C;
 			/// <summary>
 			/// The unique identifier for terminal RPARENS
 			/// </summary>
-			public const int RPARENS = 0x0009;
+			public const int RPARENS = 0x000D;
 			/// <summary>
 			/// The unique identifier for terminal ENDTUPLE
 			/// </summary>
-			public const int ENDTUPLE = 0x000B;
+			public const int ENDTUPLE = 0x000F;
 			/// <summary>
 			/// The unique identifier for terminal PONEOPERATOR
 			/// </summary>
-			public const int PONEOPERATOR = 0x0017;
+			public const int PONEOPERATOR = 0x001B;
 			/// <summary>
 			/// The unique identifier for terminal COLON
 			/// </summary>
-			public const int COLON = 0x000D;
+			public const int COLON = 0x0011;
 			/// <summary>
 			/// The unique identifier for terminal BLOCKSTART
 			/// </summary>
-			public const int BLOCKSTART = 0x000E;
+			public const int BLOCKSTART = 0x0012;
 			/// <summary>
 			/// The unique identifier for terminal BLOCKEND
 			/// </summary>
-			public const int BLOCKEND = 0x000F;
+			public const int BLOCKEND = 0x0013;
 			/// <summary>
 			/// The unique identifier for terminal SEMICOLON
 			/// </summary>
-			public const int SEMICOLON = 0x0010;
+			public const int SEMICOLON = 0x0014;
 			/// <summary>
 			/// The unique identifier for terminal STARTLIST
 			/// </summary>
-			public const int STARTLIST = 0x0012;
+			public const int STARTLIST = 0x0016;
 			/// <summary>
 			/// The unique identifier for terminal ENDLIST
 			/// </summary>
-			public const int ENDLIST = 0x0013;
+			public const int ENDLIST = 0x0017;
 			/// <summary>
 			/// The unique identifier for terminal COMMA
 			/// </summary>
-			public const int COMMA = 0x0014;
+			public const int COMMA = 0x0018;
 			/// <summary>
-			/// The unique identifier for terminal PZEROOPERATOR
+			/// The unique identifier for terminal SEPARATOR
 			/// </summary>
-			public const int PZEROOPERATOR = 0x0016;
-			/// <summary>
-			/// The unique identifier for terminal WHITESPACE
-			/// </summary>
-			public const int WHITESPACE = 0x0003;
+			public const int SEPARATOR = 0x0007;
 			/// <summary>
 			/// The unique identifier for terminal NUMBER
 			/// </summary>
-			public const int NUMBER = 0x001A;
+			public const int NUMBER = 0x001E;
 			/// <summary>
 			/// The unique identifier for terminal ASSIGN
 			/// </summary>
-			public const int ASSIGN = 0x0007;
+			public const int ASSIGN = 0x000B;
 			/// <summary>
 			/// The unique identifier for terminal LEADSTO
 			/// </summary>
-			public const int LEADSTO = 0x000C;
+			public const int LEADSTO = 0x0010;
 			/// <summary>
 			/// The unique identifier for terminal STRING
 			/// </summary>
-			public const int STRING = 0x001B;
-			/// <summary>
-			/// The unique identifier for terminal CHAR
-			/// </summary>
-			public const int CHAR = 0x001C;
+			public const int STRING = 0x001F;
 			/// <summary>
 			/// The unique identifier for terminal TO
 			/// </summary>
-			public const int TO = 0x001E;
+			public const int TO = 0x0022;
 			/// <summary>
 			/// The unique identifier for terminal LET
 			/// </summary>
-			public const int LET = 0x0004;
+			public const int LET = 0x0008;
 			/// <summary>
 			/// The unique identifier for terminal VAR
 			/// </summary>
-			public const int VAR = 0x0006;
+			public const int VAR = 0x000A;
 			/// <summary>
 			/// The unique identifier for terminal PRIMITIVE
 			/// </summary>
-			public const int PRIMITIVE = 0x0015;
+			public const int PRIMITIVE = 0x0019;
+			/// <summary>
+			/// The unique identifier for terminal CHAR
+			/// </summary>
+			public const int CHAR = 0x0020;
 			/// <summary>
 			/// The unique identifier for terminal STRUCT
 			/// </summary>
-			public const int STRUCT = 0x001D;
+			public const int STRUCT = 0x0021;
 		}
 		/// <summary>
 		/// The collection of terminals matched by this lexer
@@ -138,41 +138,41 @@ namespace vSprog
 		private static readonly Symbol[] terminals = {
 			new Symbol(0x0001, "ε"),
 			new Symbol(0x0002, "$"),
-			new Symbol(0x0011, "IDENTIFIER"),
-			new Symbol(0x0005, "EQUALS"),
-			new Symbol(0x000A, "STARTTUPLE"),
-			new Symbol(0x0008, "LPARENS"),
-			new Symbol(0x0009, "RPARENS"),
-			new Symbol(0x000B, "ENDTUPLE"),
-			new Symbol(0x0017, "PONEOPERATOR"),
-			new Symbol(0x000D, "COLON"),
-			new Symbol(0x000E, "BLOCKSTART"),
-			new Symbol(0x000F, "BLOCKEND"),
-			new Symbol(0x0010, "SEMICOLON"),
-			new Symbol(0x0012, "STARTLIST"),
-			new Symbol(0x0013, "ENDLIST"),
-			new Symbol(0x0014, "COMMA"),
-			new Symbol(0x0016, "PZEROOPERATOR"),
-			new Symbol(0x0003, "WHITESPACE"),
-			new Symbol(0x001A, "NUMBER"),
-			new Symbol(0x0007, "ASSIGN"),
-			new Symbol(0x000C, "LEADSTO"),
-			new Symbol(0x001B, "STRING"),
-			new Symbol(0x001C, "CHAR"),
-			new Symbol(0x001E, "TO"),
-			new Symbol(0x0004, "LET"),
-			new Symbol(0x0006, "VAR"),
-			new Symbol(0x0015, "PRIMITIVE"),
-			new Symbol(0x001D, "STRUCT") };
+			new Symbol(0x001A, "PZEROOPERATOR"),
+			new Symbol(0x0015, "IDENTIFIER"),
+			new Symbol(0x0009, "EQUALS"),
+			new Symbol(0x000E, "STARTTUPLE"),
+			new Symbol(0x000C, "LPARENS"),
+			new Symbol(0x000D, "RPARENS"),
+			new Symbol(0x000F, "ENDTUPLE"),
+			new Symbol(0x001B, "PONEOPERATOR"),
+			new Symbol(0x0011, "COLON"),
+			new Symbol(0x0012, "BLOCKSTART"),
+			new Symbol(0x0013, "BLOCKEND"),
+			new Symbol(0x0014, "SEMICOLON"),
+			new Symbol(0x0016, "STARTLIST"),
+			new Symbol(0x0017, "ENDLIST"),
+			new Symbol(0x0018, "COMMA"),
+			new Symbol(0x0007, "SEPARATOR"),
+			new Symbol(0x001E, "NUMBER"),
+			new Symbol(0x000B, "ASSIGN"),
+			new Symbol(0x0010, "LEADSTO"),
+			new Symbol(0x001F, "STRING"),
+			new Symbol(0x0022, "TO"),
+			new Symbol(0x0008, "LET"),
+			new Symbol(0x000A, "VAR"),
+			new Symbol(0x0019, "PRIMITIVE"),
+			new Symbol(0x0020, "CHAR"),
+			new Symbol(0x0021, "STRUCT") };
 		/// <summary>
 		/// Initializes a new instance of the lexer
 		/// </summary>
 		/// <param name="input">The lexer's input</param>
-		public vSprogLexer(string input) : base(automaton, terminals, 0xFFFF, input) {}
+		public vSprogLexer(string input) : base(automaton, terminals, 0x0007, input) {}
 		/// <summary>
 		/// Initializes a new instance of the lexer
 		/// </summary>
 		/// <param name="input">The lexer's input</param>
-		public vSprogLexer(TextReader input) : base(automaton, terminals, 0xFFFF, input) {}
+		public vSprogLexer(TextReader input) : base(automaton, terminals, 0x0007, input) {}
 	}
 }
