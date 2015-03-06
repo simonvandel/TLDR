@@ -1,0 +1,22 @@
+\section{Simulation}
+
+In this project the scope of parralisation is within simulations, this section will describe some general properties and processes of computer simulations. At last the section will discuss generalisations and assumpstions that can be made on the basis of the understading in this problem domain, which can be used to provide the design phase with some ideas of abstractions the language should implement.
+
+The main benefit of parallelising anything is to gain \emph{speed up} in the computation time of problems, this will be described in \cref{sup}. This is done by running multiple tasks within a problem, at the same time(in parallel) or concurrently in different threads of multicore system.
+
+\ephm{Understanding the problem domain}
+Firstly before spending time in an attempt to develop a parallel solution for any problem, one should first determine whether or not the problem is one that can actually be parallelized. This will be described in \cref{top}.
+
+\ephm{Granuality}
+  In order to do a computable simulation of a problem, a level of granuality is to be determined, this is a significant for both computation time and accuracy of the simuilation. A description of this process is giving in \cref{dis}
+
+\ephm{Helping processes and tools in making solutions parallel}
+    Designing and developing parallel programs is characteristically a very manual process. The programmer is typically responsible for both identifying and actually implementing parallelism.
+
+    Manually developing parallel solutions is a time consuming, complex, error-prone and an iterative process.
+
+    Various tools can assist the programmer with converting serial programs into parallel programs. The most common type of tool used to automatically parallelize a serial program is a parallelizing compiler or pre-processor.
+
+    This is usually a process of the compiler analysing the source code of a serial solution and identifying opportunities for parallelism.
+    The analysis includes identifying inhibitors to parallelism and possibly a cost weighting on whether or not the parallelism would actually improve performance.
+    For example loops (do, for) are the most frequent subject to automatic parallelization.
