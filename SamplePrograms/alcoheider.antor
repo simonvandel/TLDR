@@ -1,3 +1,13 @@
+let entity alcoholic = {
+  length:int;
+  charm:int;
+  promille:real;
+  let Recieve(n):iterationstep->void ={
+    promille <- promille * 0.95;
+  }
+}
+
+
 main:[string] -> void;
 let main(argv) =
 {
@@ -14,7 +24,7 @@ let main(argv) =
   }
 }
 
-alcoholic:entity; //skal entitydecls have keywords? og hvordan gør man det. (se beerstruct)
+alcoholic:entity;                           //skal entitydecls have keywords? og hvordan gør man det. (se beerstruct)
 let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) er entity constructoren, sugar {for var v1<-var1; var v2<-var2;}
                                             //også må programmøren lave en receive-send functionalitet, hvis entitien skal kunne dele variablen //med andre entities.
 
@@ -23,7 +33,7 @@ let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) e
  }
 
   receive:iterationStep -> void;
-  let receive(a) -> void = { 
+  let receive(a) = { 
     promille <- promille * 0,95;
  }
 
@@ -43,12 +53,13 @@ let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) e
 }
 
 beer:struct;                             //hvordan deklarerer vi structs?
-let beer(brand,alcohol) = {              //må man lave structs med constructor?
+let beer(brand,alcohol) = {              //må man lave structs med constructor? (fuglsang er ikke fan)
 
   let percentage:real = alchohol;
   let brandname:string = brand;
   
 }
+
 
 let struct iterationStep = {
   var step:int;
