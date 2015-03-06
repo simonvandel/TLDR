@@ -1,0 +1,3637 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Hime.Redist</name>
+    </assembly>
+    <members>
+        <member name="T:Hime.Redist.AST">
+            <summary>
+            Represents an Abstract Syntax Tree produced by a parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.AST.GetSymbol(System.Int32)">
+            <summary>
+            Gets the symbol of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The node's symbol</returns>
+        </member>
+        <member name="M:Hime.Redist.AST.GetChildrenCount(System.Int32)">
+            <summary>
+            Gets the number of children of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The node's numer of children</returns>
+        </member>
+        <member name="M:Hime.Redist.AST.GetChild(System.Int32,System.Int32)">
+            <summary>
+            Gets the i-th child of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <param name="i">The child's number</param>
+            <returns>The i-th child</returns>
+        </member>
+        <member name="M:Hime.Redist.AST.GetChildren(System.Int32)">
+            <summary>
+            Gets an enumerator for the children of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <returns>An enumerator for the children</returns>
+        </member>
+        <member name="M:Hime.Redist.AST.GetPosition(System.Int32)">
+            <summary>
+            Gets the position in the input text of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The position in the text</returns>
+        </member>
+        <member name="P:Hime.Redist.AST.Root">
+            <summary>
+            Gets the root node of this tree
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRExpected">
+            <summary>
+            Container for the expected terminals for a LR state
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRExpected.shifts">
+            <summary>
+            The terminals expected for shift actions
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRExpected.reductions">
+            <summary>
+            The terminals expected for reduction actions
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRExpected.#ctor">
+            <summary>
+            Initializes this container
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRExpected.AddUniqueShift(Hime.Redist.Symbol)">
+            <summary>
+            Adds the specified terminal as expected on a shift action
+            </summary>
+            <param name="terminal">The terminal</param>
+            <remarks>
+            If the terminal is terminal is already added to the reduction collection it is removed from it.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRExpected.AddUniqueReduction(Hime.Redist.Symbol)">
+            <summary>
+            Adds the specified terminal as expected on a reduction action
+            </summary>
+            <param name="terminal">The terminal</param>
+            <remarks>
+            If the terminal is in the shift collection, nothing happens.
+            </remarks>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRExpected.Shifts">
+            <summary>
+            Gets the terminals expected for shift actions
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRExpected.Reductions">
+            <summary>
+            Gets the terminals expected for a reduction actions
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GSSEdge">
+            <summary>
+            Represents an edge in a Graph-Structured Stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSEdge.from">
+            <summary>
+            The index of the node from which this edge starts
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSEdge.to">
+            <summary>
+            The index of the node to which this edge arrives to
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSEdge.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes this edge
+            </summary>
+            <param name="from">Index of the node from which this edge starts</param>
+            <param name="to">Index of the node to which this edge arrives to</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSEdge.From">
+            <summary>
+            Gets the index of the node from which this edge starts
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSEdge.To">
+            <summary>
+            Gets the index of the node to which this edge arrives to
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GSSGeneration">
+            <summary>
+            Represents a generation in a Graph-Structured Stack
+            </summary>
+            <remarks>
+            Because GSS nodes and edges are always created sequentially,
+            a generation basically describes a span in a buffer of GSS nodes or edges
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSGeneration.start">
+            <summary>
+            The start index of this generation in the list of nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSGeneration.count">
+            <summary>
+            The number of nodes in this generation
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSGeneration.#ctor(System.Int32)">
+            <summary>
+            Initializes this generation
+            </summary>
+            <param name="start">The start index of this generation in the list of nodes</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSGeneration.Start">
+            <summary>
+            Gets the start index of this generation in the list of nodes
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSGeneration.Count">
+            <summary>
+            Gets or sets the number of nodes in this generation
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Token">
+            <summary>
+            Represents a token as an output element of a lexer
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Token.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes this token
+            </summary>
+            <param name="sid">The terminal's id</param>
+            <param name="index">The token's index</param>
+        </member>
+        <member name="P:Hime.Redist.Token.SymbolID">
+            <summary>
+            Gets the id of the terminal symbol associated to this token
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Token.Index">
+            <summary>
+            Gets the index of this token in a lexer's stream of token
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Symbol">
+            <summary>
+            Represents a symbol in an AST
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Symbol.SID_EPSILON">
+            <summary>
+            Symbol ID of the Epsilon terminal
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Symbol.SID_DOLLAR">
+            <summary>
+            Symbol ID of the Dollar terminal
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Symbol.id">
+            <summary>
+            The symbol's unique identifier
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Symbol.name">
+            <summary>
+            The symbol's name
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Symbol.value">
+            <summary>
+            The symbol's value
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Symbol.#ctor(System.Int32,System.String)">
+            <summary>
+            Initializes this symbol
+            </summary>
+            <param name="id">The id</param>
+            <param name="name">The symbol's name</param>
+        </member>
+        <member name="M:Hime.Redist.Symbol.#ctor(System.Int32,System.String,System.String)">
+            <summary>
+            Initializes this symbol
+            </summary>
+            <param name="id">The id</param>
+            <param name="name">The symbol's name</param>
+            <param name="value">The symbol's value</param>
+        </member>
+        <member name="M:Hime.Redist.Symbol.ToString">
+            <summary>
+            Gets a string representation of this symbol
+            </summary>
+            <returns>The value of this symbol</returns>
+        </member>
+        <member name="P:Hime.Redist.Symbol.ID">
+            <summary>
+            Gets the symbol's unique identifier
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Symbol.Name">
+            <summary>
+            Gets the symbol's name
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Symbol.Value">
+            <summary>
+            Gets the symbol's value
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Text">
+            <summary>
+            Represents the input of parser with some metadata for line endings
+            </summary>
+            <remarks>
+            All line numbers and column numbers are 1-based.
+            Indices in the content are 0-based.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Text.GetValue(System.Int32,System.Int32)">
+            <summary>
+            Gets the substring beginning at the given index with the given length
+            </summary>
+            <param name="index">Index of the substring from the start</param>
+            <param name="length">Length of the substring</param>
+            <returns>The substring</returns>
+        </member>
+        <member name="M:Hime.Redist.Text.GetLineIndex(System.Int32)">
+            <summary>
+            Gets the starting index of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The starting index of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Text.GetLineLength(System.Int32)">
+            <summary>
+            Gets the length of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The length of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Text.GetLineContent(System.Int32)">
+            <summary>
+            Gets the string content of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The string content of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Text.GetPositionAt(System.Int32)">
+            <summary>
+            Gets the position at the given index
+            </summary>
+            <param name="index">Index from the start</param>
+            <returns>The position (line and column) at the index</returns>
+        </member>
+        <member name="M:Hime.Redist.Text.GetContext(Hime.Redist.TextPosition)">
+            <summary>
+            Gets the context description for the current text at the specified position
+            </summary>
+            <param name="position">The position in this text</param>
+            <returns>The context description</returns>
+        </member>
+        <member name="P:Hime.Redist.Text.LineCount">
+            <summary>
+            Gets the number of lines
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Text.Size">
+            <summary>
+            Gets the size in number of characters
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.ParseResult">
+            <summary>
+            Represents the output of a parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.ParseResult.#ctor(System.Collections.Generic.List{Hime.Redist.ParseError},Hime.Redist.TokenizedText)">
+            <summary>
+            Initializes this result as a failure
+            </summary>
+            <param name="errors">The list of errors</param>
+            <param name="text">The parsed text</param>
+        </member>
+        <member name="M:Hime.Redist.ParseResult.#ctor(System.Collections.Generic.List{Hime.Redist.ParseError},Hime.Redist.TokenizedText,Hime.Redist.AST)">
+            <summary>
+            Initializes this result as a success with the given AST
+            </summary>
+            <param name="errors">The list of errors</param>
+            <param name="text">The parsed text</param>
+            <param name="ast">The produced AST</param>
+        </member>
+        <member name="P:Hime.Redist.ParseResult.IsSuccess">
+            <summary>
+            Gets whether the parser was successful
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ParseResult.Errors">
+            <summary>
+            Gets a list of the parsing errors
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ParseResult.Input">
+            <summary>
+            Gets the text that has been parsed
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ParseResult.Root">
+            <summary>
+            Gets the root of the produced parse tree
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RewindableTokenStream">
+            <summary>
+            Fast rewindable stream of token encapsulating a lexer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RewindableTokenStream.RING_SIZE">
+            <summary>
+            The size of the ring buffer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RewindableTokenStream.lexer">
+            <summary>
+            The input lexer to read token from
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RewindableTokenStream.ring">
+            <summary>
+            The ring buffer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RewindableTokenStream.ringStart">
+            <summary>
+            Start index of the ring in case the stream in rewinded
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RewindableTokenStream.ringNextEntry">
+            <summary>
+            TIndex for inserting new characters in the ring
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.#ctor(Hime.Redist.Lexer.ILexer)">
+            <summary>
+            Initializes the rewindable stream with the given lexer
+            </summary>
+            <param name="lexer">The encapsulated lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.IsRingEmpty">
+            <summary>
+            Determines whether the ring buffer is empty
+            </summary>
+            <returns><c>true</c> if the ring is empty; otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.ReadRing">
+            <summary>
+            Reads a token from the ring
+            </summary>
+            <returns>The next token in the ring buffer</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.PushInRing(Hime.Redist.Token)">
+            <summary>
+            Pushs the given token onto the ring
+            </summary>
+            <param name="value">The token to push</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.Rewind(System.Int32)">
+            <summary>
+            Goes back in the stream
+            </summary>
+            <param name="count">Number of tokens to rewind</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RewindableTokenStream.GetNextToken">
+            <summary>
+            Gets the next token in the stream
+            </summary>
+            <returns>The next token</returns>
+        </member>
+        <member name="T:Hime.Redist.SemanticBody">
+            <summary>
+            Represents the semantic body of a rule being reduced
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.SemanticBody.Item(System.Int32)">
+            <summary>
+            Gets the symbol at the i-th index
+            </summary>
+            <param name="index">Index of the symbol</param>
+            <returns>The symbol at the given index</returns>
+        </member>
+        <member name="P:Hime.Redist.SemanticBody.Length">
+            <summary>
+            Gets the length of this body
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.SemanticAction">
+            <summary>
+            Delegate for a user-defined semantic action on the given body and with the given parent
+            </summary>
+            <param name="head">The semantic object for the head</param>
+            <param name="body">The current body at the time of the action</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.ColumnMap">
+            <summary>
+            Represent a map from symbols' IDs to the index of their corresponding column in an LR table.
+            It is optimized for IDs from 0x0000 to 0x01FF (the first 512 symbols) with hope they are the most frequent.
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ColumnMap.cache1">
+            <summary>
+            Cache for ids from 0x00 to 0xFF
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ColumnMap.cache2">
+            <summary>
+            Cache for ids from 0x100 to 0x1FF
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ColumnMap.others">
+            <summary>
+            Hashmap for the other ids
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ColumnMap.#ctor">
+            <summary>
+            Initializes the structure
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ColumnMap.Add(System.Int32,System.Int32)">
+            <summary>
+            Adds a new data in the collection with the given key
+            </summary>
+            <param name="key">The key for the data</param>
+            <param name="value">The data</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.ColumnMap.Item(System.Int32)">
+            <summary>
+            Gets the data for the given key
+            </summary>
+            <param name="key">The key for the data</param>
+            <returns>The data corresponding to the key</returns>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GSS">
+            <summary>
+            Represents Graph-Structured Stacks for GLR parsers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.INIT_PATHS_COUNT">
+            <summary>
+            The initial size of the paths buffer in this GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.INIT_STACK_SIZE">
+            <summary>
+            The initial size of the stack used for the traversal of this GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.nodeLabels">
+            <summary>
+            The label (GLR state) on the GSS node for the given index
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.nodeIncomings">
+            <summary>
+            The number of live incoming edges to the GSS node for the given index
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.nodeGenerations">
+            <summary>
+            The generations of nodes in this GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.edges">
+            <summary>
+            The edges in this GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.edgeLabels">
+            <summary>
+            The labels on the edges in this GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.edgeGenerations">
+            <summary>
+            The generations for the edges
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.generation">
+            <summary>
+            Index of the current generation
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.path0">
+            <summary>
+            A single reusable GSS paths for returning 0-length GSS paths
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.paths0">
+            <summary>
+            The single reusable buffer for returning 0-length GSS paths
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.paths">
+            <summary>
+            A buffer of GSS paths
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSS.stack">
+            <summary>
+            Stack of GSS nodes used for the traversal of the GSS
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.#ctor">
+            <summary>
+            Initializes the GSS
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.GetGeneration(System.Int32)">
+            <summary>
+            Gets the data of the specified generation of node
+            </summary>
+            <param name="generation">A generation</param>
+            <returns>The generation's data</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.GetRepresentedState(System.Int32)">
+            <summary>
+            Gets the GLR state represented by the specified node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The GLR state represented by the node</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.FindNode(System.Int32,System.Int32)">
+            <summary>
+            Finds in the given generation a node representing the given GLR state
+            </summary>
+            <param name="generation">A generation</param>
+            <param name="state">A GLR state</param>
+            <returns>The node representing the GLR state, or -1 if it is not found</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.HasEdge(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Determines whether this instance has the required edge
+            </summary>
+            <param name="generation">The generation of the edge's start node</param>
+            <param name="from">The edge's start node</param>
+            <param name="to">The edge's target node</param>
+            <returns><c>true</c> if this instance has the required edge; otherwise, <c>false</c></returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.CreateGeneration">
+            <summary>
+            Opens a new generation in this GSS
+            </summary>
+            <returns>The index of the new generation</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.CreateNode(System.Int32)">
+            <summary>
+            Creates a new node in the GSS
+            </summary>
+            <param name="state">The GLR state represented by the node</param>
+            <returns>The node's identifier</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.CreateEdge(System.Int32,System.Int32,Hime.Redist.Parsers.GSSLabel)">
+            <summary>
+            Creates a new edge in the GSS
+            </summary>
+            <param name="from">The edge's starting node</param>
+            <param name="to">The edge's target node</param>
+            <param name="label">The edge's label</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.SetupPath(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Setups a reusable GSS path with the given length
+            </summary>
+            <param name="index">The index in the buffer of reusable paths</param>
+            <param name="last">The last GLR state in the path</param>
+            <param name="length">The path's length</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.GetGenerationOf(System.Int32)">
+            <summary>
+            Retrieve the generation of the given node in this GSS
+            </summary>
+            <param name="node">A node's index</param>
+            <returns>The index of the generation containing the node</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.GetPaths(System.Int32,System.Int32,System.Int32@)">
+            <summary>
+            Gets all paths in the GSS starting at the given node and with the given length
+            </summary>
+            <param name="from">The starting node</param>
+            <param name="length">The length of the requested paths</param>
+            <param name="count">The number of paths</param>
+            <returns>A collection of paths in this GSS</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.Cleanup">
+            <summary>
+            Cleanups this GSS by reclaiming the sub-trees on GSS labels that can no longer be reached
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.Print">
+            <summary>
+            Prints this stack onto the console output
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.PrintTo(System.String)">
+            <summary>
+            Prints this stack into the specified file
+            </summary>
+            <param name="file">The file to print to</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSS.PrintTo(System.IO.TextWriter)">
+            <summary>
+            Prints this stack with the specified writer
+            </summary>
+            <param name="writer">A text writer</param>
+        </member>
+        <member name="T:Hime.Redist.TextPosition">
+            <summary>
+            Represents a position in term of line and column in a text input
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.TextPosition.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes this position with the given line and column numbers
+            </summary>
+            <param name="line">The line number</param>
+            <param name="column">The column number</param>
+        </member>
+        <member name="M:Hime.Redist.TextPosition.ToString">
+            <summary>
+            Gets a string representation of this position
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Hime.Redist.TextPosition.Line">
+            <summary>
+            Gets the line number
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.TextPosition.Column">
+            <summary>
+            Gets the column number
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.ASTFamily">
+            <summary>
+            Represents a family of children for an ASTNode
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ASTFamily.tree">
+            <summary>
+            The original parse tree
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ASTFamily.parent">
+            <summary>
+            The index of the parent node in the parse tree
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.ASTFamily.GetEnumerator">
+            <summary>
+            Gets an enumeration of the children
+            </summary>
+            <returns>An enumeration of the children</returns>
+        </member>
+        <member name="M:Hime.Redist.ASTFamily.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Gets an enumeration of the children
+            </summary>
+            <returns>An enumeration of the children</returns>
+        </member>
+        <member name="M:Hime.Redist.ASTFamily.#ctor(Hime.Redist.AST,System.Int32)">
+            <summary>
+            Initializes this family
+            </summary>
+            <param name="tree">The parent parse tree</param>
+            <param name="parent">The index of the parent node in the parse tree</param>
+        </member>
+        <member name="P:Hime.Redist.ASTFamily.Count">
+            <summary>
+            Gets the number of children
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ASTFamily.Item(System.Int32)">
+            <summary>
+            Gets the i-th child
+            </summary>
+            <param name="index">The index of the child</param>
+            <returns>The child at the given index</returns>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRkASTBuilder">
+            <summary>
+            Represents the builder of Parse Trees for LR(k) parsers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.INIT_HANDLE_SIZE">
+            <summary>
+            The initial size of the reduction handle
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.ESTIMATION_BIAS">
+            <summary>
+            The bias for estimating the size of the reduced sub-tree
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.poolSingle">
+            <summary>
+            The pool of single node sub-trees
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.pool128">
+            <summary>
+            The pool of sub-tree with a capacity of 128 nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.pool1024">
+            <summary>
+            The pool of sub-tree with a capacity of 1024 nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.stack">
+            <summary>
+            The stack of semantic objects
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.stackNext">
+            <summary>
+            Index of the available cell on top of the stack's head
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.cache">
+            <summary>
+            The sub-tree build-up cache
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.cacheNext">
+            <summary>
+            The new available node in the current cache
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.popCount">
+            <summary>
+            The number of items popped from the stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.handle">
+            <summary>
+            The reduction handle represented as the indices of the sub-trees in the cache
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.handleNext">
+            <summary>
+            The index of the next available slot in the handle
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkASTBuilder.result">
+            <summary>
+            The AST being built
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.#ctor(Hime.Redist.TokenizedText,System.Collections.Generic.IList{Hime.Redist.Symbol},System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes the builder with the given stack size
+            </summary>
+            <param name="text">The tokenined text</param>
+            <param name="variables">The table of parser variables</param>
+            <param name="virtuals">The table of parser virtuals</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.StackPushToken(System.Int32)">
+            <summary>
+            Push a token onto the stack
+            </summary>
+            <param name="index">The token's index in the parsed text</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.ReductionPrepare(System.Int32,System.Int32,Hime.Redist.TreeAction)">
+            <summary>
+            Prepares for the forthcoming reduction operations
+            </summary>
+            <param name="varIndex">The reduced variable index</param>
+            <param name="length">The length of the reduction</param>
+            <param name="action">The tree action applied onto the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.GetSubTree(System.Int32)">
+            <summary>
+            Gets a pooled sub-tree with the given maximal size
+            </summary>
+            <param name="size">The size of the sub-tree</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.ReductionAddSub(Hime.Redist.Parsers.SubTree,Hime.Redist.TreeAction)">
+            <summary>
+            During a reduction, insert the given sub-tree
+            </summary>
+            <param name="sub">The sub-tree</param>
+            <param name="action">The tree action applied onto the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.ReductionPop(Hime.Redist.TreeAction)">
+            <summary>
+            During a redution, pops the top symbol from the stack and gives it a tree action
+            </summary>
+            <param name="action">The tree action to apply to the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.ReductionAddVirtual(System.Int32,Hime.Redist.TreeAction)">
+            <summary>
+            During a reduction, inserts a virtual symbol
+            </summary>
+            <param name="index">The virtual symbol's index</param>
+            <param name="action">The tree action applied onto the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.Reduce">
+            <summary>
+            Finalizes the reduction operation
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.ReduceTree">
+            <summary>
+            Applies the promotion tree actions to the cache and commits to the final AST
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkASTBuilder.GetTree">
+            <summary>
+            Finalizes the parse tree and returns it
+            </summary>
+            <returns>The final parse tree</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRkASTBuilder.Item(System.Int32)">
+            <summary>
+            Gets the symbol at the i-th index
+            </summary>
+            <param name="index">Index of the symbol</param>
+            <returns>The symbol at the given index</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRkASTBuilder.Length">
+            <summary>
+            Gets the length of this body
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.BaseLRParser">
+            <summary>
+            Represents a base LR parser
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.IParser">
+            <summary>
+            Represents a parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.IParser.Parse">
+            <summary>
+            Parses the input and returns the result
+            </summary>
+            <returns>A ParseResult object containing the data about the result</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.IParser.Variables">
+            <summary>
+            Gets the variable symbols used by this parser
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.IParser.Virtuals">
+            <summary>
+            Gets the virtual symbols used by this parser
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.IParser.RecoverErrors">
+            <summary>
+            Gets or sets whether the paser should try to recover from errors
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.IParser.DebugMode">
+            <summary>
+            Gets or sets a value indicating whether this parser is in debug mode
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.MAX_ERROR_COUNT">
+            <summary>
+            Maximum number of errors
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.recover">
+            <summary>
+            Determines whether the parser will try to recover from errors
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.debug">
+            <summary>
+            Value indicating whether this parser is in debug mode
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.parserVariables">
+            <summary>
+            Parser's variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.parserVirtuals">
+            <summary>
+            Parser's virtuals
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.parserActions">
+            <summary>
+            Parser's actions
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.allErrors">
+            <summary>
+            List of the encountered syntaxic errors
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.BaseLRParser.lexer">
+            <summary>
+            Lexer associated to this parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.BaseLRParser.#ctor(Hime.Redist.Symbol[],Hime.Redist.Symbol[],Hime.Redist.SemanticAction[],Hime.Redist.Lexer.ILexer)">
+            <summary>
+            Initializes a new instance of the LRkParser class with the given lexer
+            </summary>
+            <param name="variables">The parser's variables</param>
+            <param name="virtuals">The parser's virtuals</param>
+            <param name="actions">The parser's actions</param>
+            <param name="lexer">The input lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.BaseLRParser.OnLexicalError(Hime.Redist.ParseError)">
+            <summary>
+            Adds the given lexical error emanating from the lexer to the list of errors
+            </summary>
+            <param name="error">Lexical error</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.BaseLRParser.Parse">
+            <summary>
+            Parses the input and returns the result
+            </summary>
+            <returns>A ParseResult object containing the data about the result</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.BaseLRParser.Variables">
+            <summary>
+            Gets the variable symbols used by this parser
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.BaseLRParser.Virtuals">
+            <summary>
+            Gets the virtual symbols used by this parser
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.BaseLRParser.RecoverErrors">
+            <summary>
+            Gets or sets whether the paser should try to recover from errors
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.BaseLRParser.DebugMode">
+            <summary>
+            Gets or sets a value indicating whether this parser is in debug mode
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRAction">
+            <summary>
+            Represents a LR action in a LR parse table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRAction.code">
+            <summary>
+            The LR action code
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRAction.data">
+            <summary>
+            The data associated with the action
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRAction.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Loads this LR Action from the specified input
+            </summary>
+            <param name="input">An input</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRAction.Code">
+            <summary>
+            Gets the action code
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRAction.Data">
+            <summary>
+            Gets the data associated with the action
+            </summary>
+            <remarks>
+            If the code is Reduce, it is the index of the LRProduction
+            If the code is Shift, it is the index of the next state
+            </remarks>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRActionCode">
+            <summary>
+            Represents an action in a LR parser
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRActionCode.None">
+            <summary>
+            No possible action => Error
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRActionCode.Reduce">
+            <summary>
+            Apply a reduction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRActionCode.Shift">
+            <summary>
+            Shift to another state
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRActionCode.Accept">
+            <summary>
+            Accept the input
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRkAutomaton">
+            <summary>
+            Represents the LR(k) parsing table and productions
+            </summary>
+            <remarks>
+            Binary data of a LR(k) parser
+            --- header
+            uint16: number of columns
+            uint16: number of states
+            uint16: number of productions
+            --- parse table columns
+            uint16: sid of the column
+            --- parse table
+            See LRActions
+            --- productions table
+            See LRProduction
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkAutomaton.ncols">
+            <summary>
+            The number of columns in the LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkAutomaton.nstates">
+            <summary>
+            The number of states in the LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkAutomaton.columns">
+            <summary>
+            Map of symbol ID to column index in the LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkAutomaton.table">
+            <summary>
+            The LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkAutomaton.productions">
+            <summary>
+            The table of LR productions
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkAutomaton.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Initializes a new automaton from the given binary stream
+            </summary>
+            <param name="reader">The binary stream to load from</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkAutomaton.Find(System.Type,System.String)">
+            <summary>
+            Loads an automaton from a resource
+            </summary>
+            <param name="type">The lexer's type</param>
+            <param name="resource">The name of the resource containing the lexer</param>
+            <returns>The automaton</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkAutomaton.GetAction(System.Int32,System.Int32)">
+            <summary>
+            Gets the LR(k) action for the given state and sid
+            </summary>
+            <param name="state">State in the LR(k) automaton</param>
+            <param name="sid">Symbol's ID</param>
+            <returns>The LR(k) action for the state and sid</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkAutomaton.GetProduction(System.Int32)">
+            <summary>columns
+            Gets the production at the given index
+            </summary>
+            <param name="index">Production's index</param>
+            <returns>The production a the given index</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkAutomaton.GetExpected(System.Int32,System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Gets the expected terminals for the specified state
+            </summary>
+            <param name="state">The DFA state</param>
+            <param name="terminals">The possible terminals</param>
+            <returns>The expected terminals</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRkAutomaton.StatesCount">
+            <summary>
+            Gets the number of states in this automaton
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRkSimulator">
+            <summary>
+            Represents a base simulator for all LR(k) parsers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkSimulator.parserVariables">
+            <summary>
+            Parser's variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkSimulator.parserAutomaton">
+            <summary>
+            LR(k) parsing table and productions
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkSimulator.input">
+            <summary>
+            Parser's input encapsulating the lexer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkSimulator.stack">
+            <summary>
+            Parser's stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkSimulator.head">
+            <summary>
+            Current stack's head
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkSimulator.TestForLength(System.Int32,Hime.Redist.Token,System.Int32@)">
+            <summary>
+            Tests the given input against the parser
+            </summary>
+            <param name="length">Length to test</param>
+            <param name="inserted">Token to insert, or null if none should be inserted</param>
+            <param name="advance">Returns the number of token used from the input</param>
+            <returns>True of the parser matches the input, false otherwise</returns>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LROpCode">
+            <summary>
+            Represent an op-code for a LR production
+            An op-code can be either an instruction or raw data
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCode.MaskTreeAction">
+            <summary>
+            Bit mask for the tree action part of an instruction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCode.MaskBase">
+            <summary>
+            Bit mask for the base part of an instruction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCode.code">
+            <summary>
+            The op-code value
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LROpCode.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Loads this op-code from the specified input
+            </summary>
+            <param name="input">An input</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LROpCode.DataValue">
+            <summary>
+            Gets the value of the data interpretation of this op-code
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LROpCode.TreeAction">
+            <summary>
+            Gets the tree action included in this code
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LROpCode.Base">
+            <summary>
+            Gets the base instruction in this code
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LROpCodeValues">
+            <summary>
+            Enumeration of the LR op codes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.PopStackNoAction">
+            <summary>
+            Pop an AST from the stack without applying any tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.PopStackDrop">
+            <summary>
+            Pop an AST from the stack and apply the drop tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.PopStackPromote">
+            <summary>
+            Pop an AST from the stack and apply the promote tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddVirtualNoAction">
+            <summary>
+            Add a virtual symbol without tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddVirtualDrop">
+            <summary>
+            Add a virtual symbol and apply the drop tree action
+            </summary>
+            <remarks>
+            This doesn't make any sense, but it is possible!
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddVirtualPromote">
+            <summary>
+            Add a virtual symbol and apply the promote tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.SemanticAction">
+            <summary>
+            Execute a semantic action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddNullVariableNoAction">
+            <summary>
+            Add a null variable without any tree action
+            </summary>
+            <remarks>
+            This can be found only in RNGLR productions
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddNullVariableDrop">
+            <summary>
+            Add a null variable and apply the drop tree action
+            </summary>
+            <remarks>
+            This can be found only in RNGLR productions
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeValues.AddNullVariablePromote">
+            <summary>
+            Add a null variable and apply the promote action
+            </summary>
+            <remarks>
+            This can be found only in RNGLR productions
+            </remarks>
+        </member>
+        <member name="T:Hime.Redist.TokenizedText">
+            <summary>
+            Represents the output of a lexer as a tokenized text
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.TokenizedText.GetPositionOf(System.Int32)">
+            <summary>
+            Gets the position of the token at the given index
+            </summary>
+            <param name="tokenIndex">The index of a token</param>
+            <returns>The position (line and column) of the token</returns>
+        </member>
+        <member name="P:Hime.Redist.TokenizedText.TokenCount">
+            <summary>
+            Gets the number of tokens in this text
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.TokenizedText.Item(System.Int32)">
+            <summary>
+            Gets the token at the given index
+            </summary>
+            <param name="index">An index</param>
+            <returns>The token</returns>
+        </member>
+        <member name="T:Hime.Redist.TreeAction">
+            <summary>
+            Represents a tree action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.TreeAction.None">
+            <summary>
+            Keep the node as is
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.TreeAction.Replace">
+            <summary>
+            Replace the node with its children
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.TreeAction.Drop">
+            <summary>
+            Drop the node and all its descendants
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.TreeAction.Promote">
+            <summary>
+            Promote the node, i.e. replace its parent with it and insert its children where it was
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GSSPath">
+            <summary>
+            Represents a path in a GSS
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSPath.INIT_BUFFER_SIZE">
+            <summary>
+            The initial size of the label buffer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSPath.last">
+            <summary>
+            The last GSS node in this path
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSPath.generation">
+            <summary>
+            The generation containing the last GSS node in this path
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSPath.labels">
+            <summary>
+            The labels on this GSS path
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSPath.#ctor(System.Int32)">
+            <summary>
+            Initializes this path
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSPath.#ctor">
+            <summary>
+            Initializes this path
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSPath.Ensure(System.Int32)">
+            <summary>
+            Ensure the specified length of the label buffer
+            </summary>
+            <param name="length">The required length</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSPath.CopyLabelsFrom(Hime.Redist.Parsers.GSSPath,System.Int32)">
+            <summary>
+            Copy the content of another path to this one
+            </summary>
+            <param name="path">The path to copy</param>
+            <param name="length">The path's length</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSPath.Last">
+            <summary>
+            Gets or sets the final target of this path
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSPath.Generation">
+            <summary>
+            Gets or sets the generation containing the final target of this path
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSPath.Item(System.Int32)">
+            <summary>
+            Gets or sets the i-th label of the edges traversed by this path
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RNGLRAutomaton">
+            <summary>
+            Represents the RNGLR parsing table and productions
+            </summary>
+            <remarks>
+            Binary data of a RNGLR parser
+            --- header
+            uint16: index of the axiom's variable
+            uint16: number of columns
+            uint16: number of states
+            uint32: number of actions
+            uint16: number of productions
+            uint16: number of null productions
+            --- parse table columns
+            uint16: sid of the column
+            --- parse table
+            See RNGLRTable
+            --- action table
+            See LRActions
+            --- productions table
+            See LRProduction
+            --- null production table
+            indices of the null productions
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.axiom">
+            <summary>
+            Index of the axiom variable
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.ncols">
+            <summary>
+            The number of columns in the LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.nstates">
+            <summary>
+            The number of states in the automaton
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.columns">
+            <summary>
+            Map of symbol ID to column index in the LR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.table">
+            <summary>
+            The RNGLR table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.actions">
+            <summary>
+            The action table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.productions">
+            <summary>
+            The table of LR productions
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.nullables">
+            <summary>
+            The table of nullable variables
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Initializes a new automaton from the given binary stream
+            </summary>
+            <param name="reader">The binary stream to load from</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.Find(System.Type,System.String)">
+            <summary>
+            Loads an automaton from a resource
+            </summary>
+            <param name="type">The lexer's type</param>
+            <param name="resource">The name of the resource containing the lexer</param>
+            <returns>The automaton</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.GetActionsCount(System.Int32,System.Int32)">
+            <summary>
+            Gets the number of GLR actions for the given state and sid
+            </summary>
+            <param name="state">An automaton's state</param>
+            <param name="sid">A symbol ID</param>
+            <returns>The number of GLR actions</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.GetAction(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Gets the i-th GLR action for the given state and sid
+            </summary>
+            <param name="state">An automaton's state</param>
+            <param name="sid">A symbol ID</param>
+            <param name="index">The action index</param>
+            <returns>The GLR action</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.GetProduction(System.Int32)">
+            <summary>
+            Gets the production at the given index
+            </summary>
+            <param name="index">Production's index</param>
+            <returns>The production a the given index</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.GetNullableProduction(System.Int32)">
+            <summary>
+            Gets the production for the nullable variable with the given index
+            </summary>
+            <param name="index">Index of a nullable variable</param>
+            <returns>The production, or <c>null</c> if the variable is not nullable</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.IsAcceptingState(System.Int32)">
+            <summary>
+            Determine whether the given state is the accepting state
+            </summary>
+            <param name="state">An automaton's state</param>
+            <returns>True if the state is the accepting state, false otherwise</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRAutomaton.GetExpected(System.Int32,System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Gets the expected terminals for the specified state
+            </summary>
+            <param name="state">The DFA state</param>
+            <param name="terminals">The possible terminals</param>
+            <returns>The expected terminals</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.RNGLRAutomaton.Axiom">
+            <summary>
+            Gets the index of the axiom
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.RNGLRAutomaton.StatesCount">
+            <summary>
+            Gets the number of states in the RNGLR table
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RNGLRAutomaton.Cell">
+            <summary>
+            Represents a cell in a RNGLR parse table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.Cell.count">
+            <summary>
+            The number of actions in this cell
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRAutomaton.Cell.index">
+            <summary>
+            Index of the cell's data
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.RNGLRAutomaton.Cell.ActionsCount">
+            <summary>
+            Gets the number of actions in the cell
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.RNGLRAutomaton.Cell.ActionsIndex">
+            <summary>
+            Gets the index of the first action in the Actions table
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RNGLRParser">
+            <summary>
+            Represents a base for all RNGLR parsers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.parserAutomaton">
+            <summary>
+            The parser automaton
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.gss">
+            <summary>
+            The GSS for this parser
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.sppf">
+            <summary>
+            The SPPF being built
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.nullables">
+            <summary>
+            The sub-trees for the constant nullable variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.nextToken">
+            <summary>
+            The next token
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.reductions">
+            <summary>
+            The queue of reduction operations
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.shifts">
+            <summary>
+            The queue of shift operations
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.#ctor(Hime.Redist.Parsers.RNGLRAutomaton,Hime.Redist.Symbol[],Hime.Redist.Symbol[],Hime.Redist.SemanticAction[],Hime.Redist.Lexer.ILexer)">
+            <summary>
+            Initializes a new instance of the LRkParser class with the given lexer
+            </summary>
+            <param name="automaton">The parser's automaton</param>
+            <param name="variables">The parser's variables</param>
+            <param name="virtuals">The parser's virtuals</param>
+            <param name="actions">The parser's actions</param>
+            <param name="lexer">The input lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.BuildNullables(System.Int32)">
+            <summary>
+            Builds the constant sub-trees of nullable variables
+            </summary>
+            <param name="varCount">The total number of variables</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.BuildNullableDependencies(System.Int32)">
+            <summary>
+            Builds the dependency table between nullable variables
+            </summary>
+            <param name="varCount">The total number of variables</param>
+            <returns>The dependency table</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.GetNullableDependencies(Hime.Redist.Parsers.LRProduction)">
+            <summary>
+            Gets the dependencies on nullable variables
+            </summary>
+            <param name="production">The production of a nullable variable</param>
+            <returns>The list of the nullable variables' indices that this production depends on</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.OnUnexpectedToken(System.Int32,System.Int32,Hime.Redist.Token)">
+            <summary>
+            Raises an error on an unexepcted token
+            </summary>
+            <param name="gen">The current GSS generation</param>
+            <param name="stem">The size of the generation's stem</param>
+            <param name="token">The unexpected token</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.CheckIsExpected(System.Int32,Hime.Redist.Symbol)">
+            <summary>
+            Checks whether the specified terminal is indeed expected for a reduction
+            </summary>
+            <param name="gssNode">The GSS node from which to reduce</param>
+            <param name="terminal">The terminal to check</param>
+            <returns><code>true</code> if the terminal is really expected</returns>
+            <remarks>
+            This check is required because in the case of a base LALR graph,
+            some terminals expected for reduction in the automaton are coming from other paths.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.BuildSPPF(System.Int32,Hime.Redist.Parsers.LRProduction,Hime.Redist.Parsers.GSSLabel,Hime.Redist.Parsers.GSSPath)">
+            <summary>
+            Builds the SPPF
+            </summary>
+            <param name="generation">The current GSS generation</param>
+            <param name="production">The LR production</param>
+            <param name="first">The first label of the path</param>
+            <param name="path">The reduction path</param>
+            <returns>The corresponding SPPF part</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.Parse">
+            <summary>
+            Parses the input and returns the produced AST
+            </summary>
+            <returns>AST produced by the parser representing the input, or null if unrecoverable errors were encountered</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.Reducer(System.Int32)">
+            <summary>
+            Executes the reduction operations from the given GSS generation
+            </summary>
+            <param name="generation">The current GSS generation</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.ExecuteReduction(System.Int32,Hime.Redist.Parsers.RNGLRParser.Reduction)">
+            <summary>
+            Executes a reduction operation for all found path
+            </summary>
+            <param name="generation">The current GSS generation</param>
+            <param name="reduction">The reduction operation</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.ExecuteReduction(System.Int32,Hime.Redist.Parsers.RNGLRParser.Reduction,Hime.Redist.Parsers.GSSPath)">
+            <summary>
+            Executes a reduction operation for a given path
+            </summary>
+            <param name="generation">The current GSS generation</param>
+            <param name="reduction">The reduction operation</param>
+            <param name="path">The GSS path to use for the reduction</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.Shifter(Hime.Redist.Token)">
+            <summary>
+            Executes the shift operations for the given token
+            </summary>
+            <param name="oldtoken">A token</param>
+            <returns>The next generation</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.ExecuteShift(System.Int32,Hime.Redist.Parsers.GSSLabel,Hime.Redist.Parsers.RNGLRParser.Shift)">
+            <summary>
+            Executes a shift operation
+            </summary>
+            <param name="gen">The GSS generation to start from</param>
+            <param name="label">The GSS label to use for the new GSS edges</param>
+            <param name="shift">The shift operation</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.GetNextByVar(System.Int32,System.Int32)">
+            <summary>
+            Gets the next RNGLR state by a shift with the given variable ID
+            </summary>
+            <param name="state">A RNGLR state</param>
+            <param name="var">A variable ID</param>
+            <returns>The next RNGLR state, or 0xFFFF if no transition is found</returns>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RNGLRParser.Reduction">
+            <summary>
+            Represents a reduction operation to be performed
+            </summary>
+            <remarks>
+            For reduction of length 0, the node is the GSS node on which it is applied, the first label then is epsilon
+            For others, the node is the SECOND GSS node on the path, not the head. The first label is then the label on the transition from the head
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.Reduction.node">
+            <summary>
+            The GSS node to reduce from
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.Reduction.prod">
+            <summary>
+            The LR production for the reduction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.Reduction.first">
+            <summary>
+            The first label in the GSS
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.Reduction.#ctor(System.Int32,Hime.Redist.Parsers.LRProduction,Hime.Redist.Parsers.GSSLabel)">
+            <summary>
+            Initializes this operation
+            </summary>
+            <param name="node">The GSS node to reduce from</param>
+            <param name="prod">The LR production for the reduction</param>
+            <param name="first">The first label in the GSS</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.RNGLRParser.Shift">
+            <summary>
+            Represents a shift operation to be performed
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.Shift.from">
+            <summary>
+            GSS node to shift from
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.RNGLRParser.Shift.to">
+            <summary>
+            The target RNGLR state
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.RNGLRParser.Shift.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes this operation
+            </summary>
+            <param name="from">The GSS node to shift from</param>
+            <param name="to">The target RNGLR state</param>
+        </member>
+        <member name="T:Hime.Redist.ParseErrorType">
+            <summary>
+            Specifies the type of error
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ParseErrorType.UnexpectedChar">
+            <summary>
+            Lexical error occuring when an unexpected character is encountered in the input preventing to match tokens
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ParseErrorType.UnexpectedToken">
+            <summary>
+            Syntactic error occuring when an unexpected token is encountered by the parser
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRkParser">
+            <summary>
+            Represents a base for all LR(k) parsers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.INIT_STACK_SIZE">
+            <summary>
+            Initial size of the stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.parserAutomaton">
+            <summary>
+            The parser's automaton
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.input">
+            <summary>
+            The parser's input as a stream of tokens
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.builder">
+            <summary>
+            The AST builder
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.stack">
+            <summary>
+            The parser's stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRkParser.head">
+            <summary>
+            Index of the stack's head
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.#ctor(Hime.Redist.Parsers.LRkAutomaton,Hime.Redist.Symbol[],Hime.Redist.Symbol[],Hime.Redist.SemanticAction[],Hime.Redist.Lexer.ILexer)">
+            <summary>
+            Initializes a new instance of the LRkParser class with the given lexer
+            </summary>
+            <param name="automaton">The parser's automaton</param>
+            <param name="variables">The parser's variables</param>
+            <param name="virtuals">The parser's virtuals</param>
+            <param name="actions">The parser's actions</param>
+            <param name="lexer">The input lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.OnUnexpectedToken(Hime.Redist.Token)">
+            <summary>
+            Raises an error on an unexepcted token
+            </summary>
+            <param name="token">The unexpected token</param>
+            <returns>The next token in the case the error is recovered</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.CheckIsExpected(Hime.Redist.Symbol)">
+            <summary>
+            Checks whether the specified terminal is indeed expected for a reduction
+            </summary>
+            <param name="terminal">The terminal to check</param>
+            <returns><code>true</code> if the terminal is really expected</returns>
+            <remarks>
+            This check is required because in the case of a base LALR graph,
+            some terminals expected for reduction in the automaton are coming from other paths.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.Parse">
+            <summary>
+            Parses the input and returns the result
+            </summary>
+            <returns>A ParseResult object containing the data about the result</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.ParseOnToken(Hime.Redist.Token)">
+            <summary>
+            Parses the given token
+            </summary>
+            <param name="token">The token to parse</param>
+            <returns>The LR action on the token</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.Reduce(Hime.Redist.Parsers.LRProduction)">
+            <summary>
+            Executes the given LR reduction
+            </summary>
+            <param name="production">A LR reduction</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRkParser.Simulator">
+            <summary>
+            The simulator for LR(k) parsers used for error recovery
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRkParser.Simulator.#ctor(Hime.Redist.Parsers.LRkParser)">
+            <summary>
+            Initializes a new simulator based on the given LR(k) parser
+            </summary>
+            <param name="parser">The base LR(k) parser</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LRProduction">
+            <summary>
+            Represents a rule's production in a LR parser
+            </summary>
+            <remarks>
+            The binary representation of a LR Production is as follow:
+            --- header
+            uint16: head's index
+            uint8: 1=replace, 0=nothing
+            uint8: reduction length
+            uint8: bytecode length in number of op-code
+            --- production's bytecode
+            See LRBytecode
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRProduction.head">
+            <summary>
+            Index of the rule's head in the parser's array of variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRProduction.headAction">
+            <summary>
+            Action of the rule's head (replace or not)
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRProduction.reducLength">
+            <summary>
+            Size of the rule's body by only counting terminals and variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LRProduction.bytecode">
+            <summary>
+            Bytecode for the rule's production
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.LRProduction.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Loads a new instance of the LRProduction class from a binary representation
+            </summary>
+            <param name="reader">The binary reader to read from</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRProduction.Head">
+            <summary>
+            Gets the index of the rule's head in the parser's array of variables
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRProduction.HeadAction">
+            <summary>
+            Gets the action of the rule's head (replace or not)
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRProduction.ReductionLength">
+            <summary>
+            Gets the size of the rule's body by only counting terminals and variables
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRProduction.BytecodeLength">
+            <summary>
+            Gets the length of the bytecode
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.LRProduction.Item(System.Int32)">
+            <summary>
+            Gets the op-code at the specified index in the bytecode
+            </summary>
+            <param name="index">Index in the bytecode</param>
+        </member>
+        <member name="T:Hime.Redist.Lexer.Automaton">
+             <summary>
+             Data structure for a text lexer automaton
+             </summary>
+             <remarks>
+             Binary data structure of lexers:
+             uint32: number of entries in the states index table
+             -- states offset table
+             each entry is of the form:
+             uint32: offset of the state from the beginning of the states table in number of uint16
+            
+             -- states table
+             each entry is of the form:
+             uint16: recognized terminal's index
+             uint16: total number of transitions
+             uint16: number of non-cached transitions
+             -- cache: 256 entries
+             uint16: next state's index for index of the entry
+             -- transitions
+             each transition is of the form:
+             uint16: start of the range
+             uint16: end of the range
+             uint16: next state's index
+             </remarks>
+        </member>
+        <member name="F:Hime.Redist.Lexer.Automaton.table">
+            <summary>
+            Table of indices in the states table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.Automaton.states">
+            <summary>
+            Lexer's DFA table of states
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.Automaton.statesCount">
+            <summary>
+            The number of states in this automaton
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Initializes a new automaton from the given binary stream
+            </summary>
+            <param name="reader">The binary stream to load from</param>
+            <remarks>
+            This methods reads the necessary data from the reader assuming the reader only contains this automaton.
+            It will read from reader until the end of the underlying stream.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.Find(System.Type,System.String)">
+            <summary>
+            Loads an automaton from a resource
+            </summary>
+            <param name="type">The lexer's type</param>
+            <param name="resource">The name of the resource containing the lexer</param>
+            <returns>The automaton</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetOffsetOf(System.Int32)">
+            <summary>
+            Get the offset of the given state in the table
+            </summary>
+            <param name="state">The DFA which offset shall be retrieved</param>
+            <returns>The offset of the given DFA state</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetStateRecognizedTerminal(System.Int32)">
+            <summary>
+            Gets the recognized terminal index for the DFA at the given offset
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <returns>The index of the terminal recognized at this state, or 0xFFFF if none</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.IsStateDeadEnd(System.Int32)">
+            <summary>
+            Checks whether the DFA state at the given offset does not have any transition
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <returns><c>true</c> if the state at the given offset has no transition</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetStateBulkTransitionsCount(System.Int32)">
+            <summary>
+            Gets the number of non-cached transitions from the DFA state at the given offset
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <returns>The number of non-cached transitions</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetStateCachedTransition(System.Int32,System.Int32)">
+            <summary>
+            Gets the transition from the DFA state at the given offset with the input value (max 255)
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <param name="value">The input value</param>
+            <returns>The state obtained by the transition, or 0xFFFF if none is found</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetStateBulkTransition(System.Int32,System.Int32)">
+            <summary>
+            Gets the transition from the DFA state at the given offset with the input value (min 256)
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <param name="value">The input value</param>
+            <returns>The state obtained by the transition, or 0xFFFF if none is found</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.Automaton.GetStateBulkTransition(System.Int32,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+            Gets the transition i-th from the DFA state at the given offset
+            </summary>
+            <param name="offset">The DFA state's offset</param>
+            <param name="index">The non-cached transition index</param>
+            <param name="start">The starting value of the transition</param>
+            <param name="end">The ending value of the transition</param>
+            <returns>The state obtained by the transition</returns>
+        </member>
+        <member name="P:Hime.Redist.Lexer.Automaton.StatesCount">
+            <summary>
+            Gets the number of states in this automaton
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.UnexpectedCharError">
+            <summary>
+            Represents an unexpected character error in the input stream of a lexer
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.ParseError">
+            <summary>
+            Represents an error in a parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.ParseError.ToString">
+            <summary>
+            Returns the string representation of this error
+            </summary>
+            <returns>The string representation of this error</returns>
+        </member>
+        <member name="M:Hime.Redist.ParseError.#ctor(Hime.Redist.ParseErrorType,Hime.Redist.TextPosition)">
+            <summary>
+            Initializes a new instance of the ParserError
+            </summary>
+            <param name="type">Error's type</param>
+            <param name="position">Error's position in the input</param>
+        </member>
+        <member name="P:Hime.Redist.ParseError.Type">
+            <summary>
+            Gets the error's type
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ParseError.Position">
+            <summary>
+            Gets the error's position in the input
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ParseError.Message">
+            <summary>
+            Gets the error's message
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.UnexpectedCharError.#ctor(System.String,Hime.Redist.TextPosition)">
+            <summary>
+            Initializes a new instance of the UnexpectedCharError class for the given character
+            </summary>
+            <param name="unexpected">The errorneous character (as a string)</param>
+            <param name="position">Error's position in the input</param>
+        </member>
+        <member name="P:Hime.Redist.UnexpectedCharError.UnexpectedChar">
+            <summary>
+            Gets the unexpected char
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.UnexpectedTokenError">
+            <summary>
+            Represents an unexpected token error in a parser
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.UnexpectedTokenError.#ctor(Hime.Redist.Symbol,Hime.Redist.TextPosition,System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes a new instance of the UnexpectedTokenError class with a token and an array of expected names
+            </summary>
+            <param name="token">The unexpected token</param>
+            <param name="position">Error's position in the input</param>
+            <param name="expected">The expected terminals</param>
+        </member>
+        <member name="P:Hime.Redist.UnexpectedTokenError.UnexpectedToken">
+            <summary>
+            Gets the unexpected token
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.UnexpectedTokenError.ExpectedTerminals">
+            <summary>
+            Gets a list of the expected terminals
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.ASTNode">
+            <summary>
+            Represents a node in an Abstract Syntax Tree
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ASTNode.tree">
+            <summary>
+            The parent parse tree
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.ASTNode.index">
+            <summary>
+            The index of this node in the parse tree
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.ASTNode.#ctor(Hime.Redist.AST,System.Int32)">
+            <summary>
+            Initializes this node
+            </summary>
+            <param name="tree">The parent parse tree</param>
+            <param name="index">The index of this node in the parse tree</param>
+        </member>
+        <member name="M:Hime.Redist.ASTNode.ToString">
+            <summary>
+            Gets a string representation of this node
+            </summary>
+            <returns>The string representation of the associated symbol</returns>
+        </member>
+        <member name="P:Hime.Redist.ASTNode.Symbol">
+            <summary>
+            Gets the symbol in this node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ASTNode.Position">
+            <summary>
+            Gets the position in the input text of this node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.ASTNode.Children">
+            <summary>
+            Gets the children of this node
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Utils.BigList`1">
+            <summary>
+            Represents a list of items that is efficient in storage and addition.
+            Items cannot be removed or inserted.
+            </summary>
+            <typeparam name="T">The type of the stored items</typeparam>
+            <remarks>
+            The internal representation is an array of pointers to arrays of T.
+            The basic arrays of T (chunks) have a fixed size.
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.UPPER_SHIFT">
+            <summary>
+            The number of bits allocated to the lowest part of the index (within a chunk)
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.CHUNKS_SIZE">
+            <summary>
+            The size of the chunks
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.LOWER_MASK">
+            <summary>
+            Bit mask for the lowest part of the index (within a chunk)
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.INIT_CHUNK_COUNT">
+            <summary>
+            Initial size of the higer array (pointers to the chunks)
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.chunks">
+            <summary>
+            The data
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.chunkIndex">
+            <summary>
+            The index of the current chunk
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.BigList`1.cellIndex">
+            <summary>
+            The index of the next available cell within the current chunk
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.#ctor">
+            <summary>
+            Initializes this list
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.Add(`0)">
+            <summary>
+            Adds the given value at the end of this list
+            </summary>
+            <param name="value">The value to add</param>
+            <returns>The index of the value in this list</returns>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.Add(`0[],System.Int32,System.Int32)">
+            <summary>
+            Copies the given values at the end of this list
+            </summary>
+            <param name="values">The values to add</param>
+            <param name="index">The starting index of the values to store</param>
+            <param name="length">The number of values to store</param>
+            <returns>The index within this list at which the values have been added</returns>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.Duplicate(System.Int32,System.Int32)">
+            <summary>
+            Copies the values from the given index at the end of the list
+            </summary>
+            <param name="from">The index to start copy from</param>
+            <param name="count">The number of items to copy</param>
+            <returns>The index within this list at which the values have been copied to</returns>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.DoCopy(`0[],System.Int32,System.Int32)">
+            <summary>
+            Copies the given values at the end of this list
+            </summary>
+            <param name="values">The values to add</param>
+            <param name="index">The starting index of the values to store</param>
+            <param name="length">The number of values to store</param>
+        </member>
+        <member name="M:Hime.Redist.Utils.BigList`1.AddChunk">
+            <summary>
+            Adds a new (empty) chunk of cells
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Utils.BigList`1.Size">
+            <summary>
+            Gets the size of this list
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Utils.BigList`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the value of the item at the given index
+            </summary>
+            <param name="index">Index of an item</param>
+            <returns>The value of the item at the given index</returns>
+        </member>
+        <member name="T:Hime.Redist.Utils.Pool`1">
+            <summary>
+            Represents a pool of reusable objects
+            </summary>
+            <typeparam name="T">Type of the pooled objects</typeparam>
+        </member>
+        <member name="F:Hime.Redist.Utils.Pool`1.factory">
+            <summary>
+            The factory for this pool
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.Pool`1.free">
+            <summary>
+            Cache of the free objects in this pool
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.Pool`1.nextFree">
+            <summary>
+            Index of the next free object in this pool
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Utils.Pool`1.allocated">
+            <summary>
+            Total number of objects in this pool
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Utils.Pool`1.#ctor(Hime.Redist.Utils.Factory{`0},System.Int32)">
+            <summary>
+            Initializes the pool
+            </summary>
+            <param name="factory">The factory for the pooled objects</param>
+            <param name="initSize">The initial size of the pool</param>
+        </member>
+        <member name="M:Hime.Redist.Utils.Pool`1.Acquire">
+            <summary>
+            Acquires an object from this pool
+            </summary>
+            <returns>An object from this pool</returns>
+        </member>
+        <member name="M:Hime.Redist.Utils.Pool`1.Return(`0)">
+            <summary>
+            Returns the given object to this pool
+            </summary>
+            <param name="obj">The returned object</param>
+        </member>
+        <member name="T:Hime.Redist.Utils.Factory`1">
+            <summary>
+            Represents a factory of objects for a pool
+            </summary>
+            <typeparam name="T">The type of the pooled objects</typeparam>
+        </member>
+        <member name="M:Hime.Redist.Utils.Factory`1.CreateNew(Hime.Redist.Utils.Pool{`0})">
+            <summary>
+            Creates a new object
+            </summary>
+            <param name="pool">The enclosing pool</param>
+            <returns>The created object</returns>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SimpleAST">
+            <summary>
+            Represents a simple AST with a tree structure
+            </summary>
+            <remarks>
+            The nodes are stored in sequentials arrays where the children of a node are an inner sequence.
+            The linkage is represented by each node storing its number of children and the index of its first child.
+            </remarks>
+        </member>
+        <member name="T:Hime.Redist.Parsers.ASTImpl">
+            <summary>
+            Represents a base class for AST implementations
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.tableTokens">
+            <summary>
+            The table of tokens
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.tableVariables">
+            <summary>
+            The table of variables
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.tableVirtuals">
+            <summary>
+            The table of virtuals
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.nodes">
+            <summary>
+            The nodes' labels
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.root">
+            <summary>
+            The index of the tree's root node
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.#ctor(Hime.Redist.TokenizedText,System.Collections.Generic.IList{Hime.Redist.Symbol},System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes this AST
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetSymbol(System.Int32)">
+            <summary>
+            Gets the symbol of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The node's symbol</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetChildrenCount(System.Int32)">
+            <summary>
+            Gets the number of children of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The node's numer of children</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetChild(System.Int32,System.Int32)">
+            <summary>
+            Gets the i-th child of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <param name="i">The child's number</param>
+            <returns>The i-th child</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetChildren(System.Int32)">
+            <summary>
+            Gets an enumerator for the children of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <returns>An enumerator for the children</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetPosition(System.Int32)">
+            <summary>
+            Gets the position in the input text of the given node
+            </summary>
+            <param name="node">A node</param>
+            <returns>The position in the text</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.GetSymbolFor(Hime.Redist.SymbolRef)">
+            <summary>
+            Gets the symbol corresponding to the given symbol reference
+            </summary>
+            <param name="symRef">A symbol reference</param>
+            <returns>The corresponding symbol</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.Store(Hime.Redist.Parsers.ASTImpl.Node[],System.Int32,System.Int32)">
+            <summary>
+            Stores some children nodes in this AST
+            </summary>
+            <param name="nodes">The nodes to store</param>
+            <param name="index">The starting index of the nodes in the data to store</param>
+            <param name="count">The number of nodes to store</param>
+            <returns>The index of the first inserted node in this tree</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.ASTImpl.Root">
+            <summary>
+            Gets the root node of this tree
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.ASTImpl.Node">
+            <summary>
+            Represents a node in this AST
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.Node.symbol">
+            <summary>
+            The node's symbol reference
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.Node.count">
+            <summary>
+            The number of children
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.ASTImpl.Node.first">
+            <summary>
+            The index of the first child
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.ASTImpl.Node.#ctor(Hime.Redist.SymbolRef)">
+            <summary>
+            Initializes this node
+            </summary>
+            <param name="symbol">The node's symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.#ctor(Hime.Redist.TokenizedText,System.Collections.Generic.IList{Hime.Redist.Symbol},System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes this AST
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.GetChild(System.Int32,System.Int32)">
+            <summary>
+            Gets the i-th child of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <param name="i">The child's number</param>
+            <returns>The i-th child</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.GetChildren(System.Int32)">
+            <summary>
+            Gets an enumerator for the children of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <returns>An enumerator for the children</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.StoreRoot(Hime.Redist.Parsers.ASTImpl.Node)">
+            <summary>
+            Stores the root of this tree
+            </summary>
+            <param name="node">The root</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SimpleAST.ChildEnumerator">
+            <summary>
+            Represents and iterator for adjacents in this graph
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.ChildEnumerator.Dispose">
+            <summary>
+            Disposes this enumerator
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.ChildEnumerator.MoveNext">
+            <summary>
+            Moves to the next node
+            </summary>
+            <returns>true if there are more nodes</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SimpleAST.ChildEnumerator.Reset">
+            <summary>
+            Resets this enumerator to the beginning
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.SimpleAST.ChildEnumerator.Current">
+            <summary>
+            Gets the current node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.SimpleAST.ChildEnumerator.System#Collections#IEnumerator#Current">
+            <summary>
+            Gets the current node
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SubTree">
+            <summary>
+            Represents a sub-tree in an AST
+            </summary>
+            <remarks>
+            A sub-tree is composed of a root with its children.
+            The children may also have children.
+            The maximum depth of a sub-tree is 2 (root, children and children's children), in which case the root is always a replaceable node.
+            The internal representation of a sub-tree is based on arrays.
+            The organization is that a node's children are immediately following it in the array.
+            For example, the tree A(B(CD)E(FG)) is represented as [ABCDEFG].
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SubTree.pool">
+            <summary>
+            The pool containing this object
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SubTree.nodes">
+            <summary>
+            The nodes in this buffer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SubTree.actions">
+            <summary>
+            The tree actions for the nodes
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.GetLabelAt(System.Int32)">
+            <summary>
+            Gets the label of the node at the given index
+            </summary>
+            <param name="index">The index within the buffer</param>
+            <returns>The label in the buffer</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.GetActionAt(System.Int32)">
+            <summary>
+            Gets the tree action applied onto the node at the given index
+            </summary>
+            <param name="index">The index within the buffer</param>
+            <returns>The tree action in the buffer</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.SetActionAt(System.Int32,Hime.Redist.TreeAction)">
+            <summary>
+            Sets the tree action applied onto the node at the given index
+            </summary>
+            <param name="index">The index within the buffer</param>
+            <param name="action">The tree action to apply</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.GetChildrenCountAt(System.Int32)">
+            <summary>
+            Gets the number of children of the node at the given index
+            </summary>
+            <param name="index">The index within the buffer</param>
+            <returns>The number of children</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.SetChildrenCountAt(System.Int32,System.Int32)">
+            <summary>
+            Sets the number of children of the node at the given index
+            </summary>
+            <param name="index">The index within the buffer</param>
+            <param name="count">The number of children</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.GetSize">
+            <summary>
+            Gets the total number of nodes in this sub-tree
+            </summary>
+            <returns>The total number of nodes in this sub-tree</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.#ctor(Hime.Redist.Utils.Pool{Hime.Redist.Parsers.SubTree},System.Int32)">
+            <summary>
+            Instantiates a new sub-tree attached to the given pool, with the given capacity
+            </summary>
+            <param name="pool">The pool to which this sub-tree is attached</param>
+            <param name="capacity">The capacity of the internal buffer of this sub-tree</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.Clone">
+            <summary>
+            Clones this sub-tree
+            </summary>
+            <returns>The clone</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.SetupRoot(Hime.Redist.SymbolRef,Hime.Redist.TreeAction)">
+            <summary>
+            Initializes the root of this sub-tree
+            </summary>
+            <param name="symbol">The root's symbol</param>
+            <param name="action">The tree action applied on the root</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.CopyTo(Hime.Redist.Parsers.SubTree,System.Int32)">
+            <summary>
+            Copy the content of this sub-tree to the given sub-tree's buffer beginning at the given index
+            </summary>
+            <param name="destination">The sub-tree to copy to</param>
+            <param name="index">The starting index in the destination's buffer</param>
+            <remarks>
+            This methods only applies in the case of a depth 1 sub-tree (only a root and its children).
+            The results of this method in the case of a depth 2 sub-tree is undetermined.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.CopyChildrenTo(Hime.Redist.Parsers.SubTree,System.Int32)">
+            <summary>
+            Copy the root's children of this sub-tree to the given sub-tree's buffer beginning at the given index
+            </summary>
+            <param name="destination">The sub-tree to copy to</param>
+            <param name="index">The starting index in the destination's buffer</param>
+            <remarks>
+            This methods only applies in the case of a depth 1 sub-tree (only a root and its children).
+            The results of this method in the case of a depth 2 sub-tree is undetermined.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.CommitChildrenOf(System.Int32,Hime.Redist.Parsers.SimpleAST)">
+            <summary>
+            Commits the children of a sub-tree in this buffer to the final ast
+            </summary>
+            <param name="index">The starting index of the sub-tree</param>
+            <param name="ast">The ast to commit to</param>
+            <remarks>
+            If the index is 0, the root's children are commited, assuming this is a depth-1 sub-tree.
+            If not, the children of the child at the given index are commited.
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.Commit(Hime.Redist.Parsers.SimpleAST)">
+            <summary>
+            Commits this buffer to the final ast
+            </summary>
+            <param name="ast">The ast to commit to</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.SetAt(System.Int32,Hime.Redist.SymbolRef,Hime.Redist.TreeAction)">
+            <summary>
+            Sets the content of the i-th item
+            </summary>
+            <param name="index">The index of the item to set</param>
+            <param name="symbol">The symbol</param>
+            <param name="action">The tree action</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.Move(System.Int32,System.Int32)">
+            <summary>
+            Moves an item within the buffer
+            </summary>
+            <param name="from">The index of the item to move</param>
+            <param name="to">The destination index for the item</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.MoveRange(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Moves a range of items within the buffer
+            </summary>
+            <param name="from">The starting index of the items to move</param>
+            <param name="to">The destination index for the items</param>
+            <param name="length">The number of items to move</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTree.Free">
+            <summary>
+            Releases this sub-tree to the pool
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.SymbolType">
+            <summary>
+            Represents the type of symbol
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.SymbolType.None">
+            <summary>
+            Marks as other (used for SPPF nodes)
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.SymbolType.Token">
+            <summary>
+            Marks a token symbol
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.SymbolType.Variable">
+            <summary>
+            Marks a variable symbol
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.SymbolType.Virtual">
+            <summary>
+            Marks a virtual symbol
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.SymbolRef">
+            <summary>
+            Represents a compact reference to a symbol in a table
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.SymbolRef.data">
+            <summary>
+            The backend data
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.SymbolRef.#ctor(Hime.Redist.SymbolType,System.Int32)">
+            <summary>
+            Initializes this reference
+            </summary>
+            <param name="type">The symbol's type</param>
+            <param name="index">The symbol's index in its table</param>
+        </member>
+        <member name="M:Hime.Redist.SymbolRef.GetHashCode">
+            <summary>
+            Serves as a hash function for a <see cref="T:Hime.Redist.SymbolRef"/> object.
+            </summary>
+            <returns>
+            A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.
+            </returns>
+        </member>
+        <member name="M:Hime.Redist.SymbolRef.Equals(System.Object)">
+            <summary>
+            Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:Hime.Redist.SymbolRef"/>.
+            </summary>
+            <param name="obj">
+            The <see cref="T:System.Object"/> to compare with the current <see cref="T:Hime.Redist.SymbolRef"/>.
+            </param>
+            <returns>
+            <c>true</c> if the specified <see cref="T:System.Object"/> is equal to the current
+            <see cref="T:Hime.Redist.SymbolRef"/>; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="P:Hime.Redist.SymbolRef.Type">
+            <summary>
+            Gets the symbol's type
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.SymbolRef.Index">
+            <summary>
+            Gets the symbol's index in its respective table
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.LROpCodeBase">
+            <summary>
+            Base values of LR op-code instructions
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeBase.PopStack">
+            <summary>
+            Pop an AST from the stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeBase.AddVirtual">
+            <summary>
+            Add a virtual symbol
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeBase.SemanticAction">
+            <summary>
+            Execute a semantic action
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.LROpCodeBase.AddNullVariable">
+            <summary>
+            Add a null variable
+            </summary>
+            <remarks>
+            This can be found only in RNGLR productions
+            </remarks>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GSSLabel">
+            <summary>
+            Represents a label on a GSS edge
+            </summary>
+            <remarks>
+            The data in this structure can have two interpretations:
+            1) It can represent a sub-tree with a replaceable root.
+            2) It can represent a reference to a single node in a SPPF.
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSLabel.tree">
+            <summary>
+            A sub-tree with a replaceable root
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSLabel.original">
+            <summary>
+            The original symbol of the SPPF node
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GSSLabel.nodeIndex">
+            <summary>
+            The index of the SPPF node
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSLabel.#ctor(Hime.Redist.Parsers.SubTree)">
+            <summary>
+            Initializes this label as representing a sub-tree with a replaceable root
+            </summary>
+            <param name="tree">The sub-tree with a replaceable root</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GSSLabel.#ctor(Hime.Redist.SymbolRef,System.Int32)">
+            <summary>
+            Initializes this label as representing a single SPPF node
+            </summary>
+            <param name="original">The original symbol of the SPPF node</param>
+            <param name="index">The index of the SPPF node</param>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSLabel.ReplaceableTree">
+            <summary>
+            Gets the sub-tree with a repleaceable root
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSLabel.Original">
+            <summary>
+            Gets the original symbol of the SPPF node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSLabel.NodeIndex">
+            <summary>
+            Gets the index of the SPPF node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSLabel.IsEpsilon">
+            <summary>
+            Wether this label is an epsilon label
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GSSLabel.IsReplaceable">
+            <summary>
+            Whether this label represents a sub-tree with a replaceable root
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SubTreeFactory">
+            <summary>
+            Represents factories of SubTrees
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SubTreeFactory.capacity">
+            <summary>
+            The capacity of the SubTrees produced by this factory
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTreeFactory.#ctor(System.Int32)">
+            <summary>
+            Initializes this SubTree factory
+            </summary>
+            <param name="capacity">The capacity of the produced SubTrees</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SubTreeFactory.CreateNew(Hime.Redist.Utils.Pool{Hime.Redist.Parsers.SubTree})">
+            <summary>
+             Creates a new object
+            </summary>
+            <param name="pool">The enclosing pool</param>
+            <returns>The created object</returns>
+        </member>
+        <member name="T:Hime.Redist.Lexer.AddLexicalError">
+            <summary>
+            Handler for lexical errors
+            </summary>
+            <param name="error">The new error</param>
+        </member>
+        <member name="T:Hime.Redist.Lexer.ILexer">
+            <summary>
+            Represents a lexer for a text stream
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.ILexer.GetNextToken">
+            <summary>
+            Gets the next token in the input
+            </summary>
+            <returns>The next token in the input</returns>
+        </member>
+        <member name="P:Hime.Redist.Lexer.ILexer.Terminals">
+            <summary>
+            Gets the terminals matched by this lexer
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Lexer.ILexer.Output">
+            <summary>
+            Gets the lexer's output as a tokenized text
+            </summary>
+        </member>
+        <member name="E:Hime.Redist.Lexer.ILexer.OnError">
+            <summary>
+            Events for lexical errors
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Lexer.PrefetchedText">
+            <summary>
+            Stores the full content of an input lexer
+            </summary>
+            <remarks>
+            All line numbers and column numbers are 1-based.
+            Indices in the content are 0-based.
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.INIT_LINE_COUNT_CACHE_SIZE">
+            <summary>
+            The initiaal size of the cache of line start indices
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.content">
+            <summary>
+            The full content of the input
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.lines">
+            <summary>
+            Cache of the starting indices of each line within the text
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.line">
+            <summary>
+            Index of the next line
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.terminals">
+            <summary>
+            The terminal symbols matched in this content
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.cells">
+            <summary>
+            The token data in this content
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.#ctor(System.Collections.Generic.IList{Hime.Redist.Symbol},System.String)">
+            <summary>
+            Initializes this text
+            </summary>
+            <param name="terminals">The terminal symbols</param>
+            <param name="content">The full lexer's input as a string</param>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.FindLines">
+            <summary>
+            Finds all the lines in this content
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.IsLineEnding(System.Char,System.Char)">
+            <summary>
+            Determines whether [c1, c2] form a line ending sequence
+            </summary>
+            <param name="c1">First character</param>
+            <param name="c2">Second character</param>
+            <returns><c>true</c> if this is a line ending sequence</returns>
+            <remarks>
+            Recognized sequences are:
+            [U+000D, U+000A] (this is Windows-style \r \n)
+            [U+????, U+000A] (this is unix style \n)
+            [U+000D, U+????] (this is MacOS style \r, without \n after)
+            Others:
+            [?, U+000B], [?, U+000C], [?, U+0085], [?, U+2028], [?, U+2029]
+            </remarks>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.AddLine(System.Int32)">
+            <summary>
+            Adds a line starting at the specified index
+            </summary>
+            <param name="index">An index in the content</param>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.AddToken(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Adds a detected token in this text
+            </summary>
+            <param name="terminal">Index of the matched terminal</param>
+            <param name="start">Start index in the text</param>
+            <param name="length">Length of the token</param>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetTokenAt(System.Int32)">
+            <summary>
+            Gets the token at the specified index
+            </summary>
+            <param name="index">A token's index</param>
+            <returns>The token at the specified index</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetValue(System.Int32,System.Int32)">
+            <summary>
+            Gets the substring beginning at the given index with the given length
+            </summary>
+            <param name="index">Index of the substring from the start</param>
+            <param name="length">Length of the substring</param>
+            <returns>The substring</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetLineIndex(System.Int32)">
+            <summary>
+            Gets the starting index of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The starting index of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetLineLength(System.Int32)">
+            <summary>
+            Gets the length of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The length of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetLineContent(System.Int32)">
+            <summary>
+            Gets the string content of the i-th line
+            </summary>
+            <param name="line">The line number</param>
+            <returns>The string content of the line</returns>
+            <remarks>The line numbering is 1-based</remarks>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetPositionAt(System.Int32)">
+            <summary>
+            Gets the position at the given index
+            </summary>
+            <param name="index">Index from the start</param>
+            <returns>The position (line and column) at the index</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetContext(Hime.Redist.TextPosition)">
+            <summary>
+            Gets the context description for the current text at the specified position
+            </summary>
+            <param name="position">The position in this text</param>
+            <returns>The context description</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.FindLineAt(System.Int32)">
+            <summary>
+            Finds the index in the cache of the line at the given input index in the content
+            </summary>
+            <param name="index">The index within this content</param>
+            <returns>The index of the corresponding line in the cache</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetEnumerator">
+            <summary>
+            Gets an enumerator of the contained tokens
+            </summary>
+            <returns>An enumerator of tokens</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Gets an enumerator of the contained tokens
+            </summary>
+            <returns>An enumerator of tokens</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.GetPositionOf(System.Int32)">
+            <summary>
+            Gets the position of the token at the given index
+            </summary>
+            <param name="tokenIndex">The index of a token</param>
+            <returns>The position (line and column) of the token</returns>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedText.LineCount">
+            <summary>
+            Gets the number of lines
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedText.Size">
+            <summary>
+            Gets the size in number of characters
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedText.TokenCount">
+            <summary>
+            Gets the number of tokens in this text
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedText.Item(System.Int32)">
+            <summary>
+            Gets the token at the given index
+            </summary>
+            <param name="index">An index</param>
+            <returns>The token</returns>
+        </member>
+        <member name="T:Hime.Redist.Lexer.PrefetchedText.Cell">
+            <summary>
+            Represents the metadata of a token
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.Cell.terminal">
+            <summary>
+            The terminal's index
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.Cell.start">
+            <summary>
+            Start index of the text
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedText.Cell.length">
+            <summary>
+            Length of the token
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedText.Cell.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes this cell
+            </summary>
+            <param name="terminal">The terminal's index</param>
+            <param name="start">Start index of the text</param>
+            <param name="length">Length of the token</param>
+        </member>
+        <member name="T:Hime.Redist.Lexer.PrefetchedText.SymbolEnumerator">
+            <summary>
+            Represents an enumerator of tokens
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Lexer.PrefetchedLexer">
+            <summary>
+            Represents a lexer for a prefetched piece of text, i.e. the text is already in memory
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.lexAutomaton">
+            <summary>
+            This lexer's automaton
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.terminals">
+            <summary>
+            The terminals matched by this lexer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.lexSeparator">
+            <summary>
+            Symbol ID of the SEPARATOR terminal
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.input">
+            <summary>
+            The lexer's full input
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.text">
+            <summary>
+            The tokenized text
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.inputIndex">
+            <summary>
+            The current index in the input
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.tokenIndex">
+            <summary>
+            The index of the next token
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.#ctor(Hime.Redist.Lexer.Automaton,Hime.Redist.Symbol[],System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the Lexer class with the given input
+            </summary>
+            <param name="automaton">DFA automaton for this lexer</param>
+            <param name="terminals">Terminals recognized by this lexer</param>
+            <param name="separator">SID of the separator token</param>
+            <param name="input">Input to this lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.#ctor(Hime.Redist.Lexer.Automaton,Hime.Redist.Symbol[],System.Int32,System.IO.TextReader)">
+            <summary>
+            Initializes a new instance of the Lexer class with the given input
+            </summary>
+            <param name="automaton">DFA automaton for this lexer</param>
+            <param name="terminals">Terminals recognized by this lexer</param>
+            <param name="separator">SID of the separator token</param>
+            <param name="input">Input to this lexer</param>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.GetNextToken">
+            <summary>
+            Gets the next token in the input
+            </summary>
+            <returns>The next token in the input</returns>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.FindTokens">
+            <summary>
+            Finds all the tokens in the lexer's input
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.RunDFA">
+            <summary>
+            Runs the lexer's DFA to match a terminal in the input ahead
+            </summary>
+            <returns>The matched terminal and length</returns>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedLexer.Terminals">
+            <summary>
+            Gets the terminals matched by this lexer
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Lexer.PrefetchedLexer.Output">
+            <summary>
+            Gets the lexer's output as a tokenized text
+            </summary>
+        </member>
+        <member name="E:Hime.Redist.Lexer.PrefetchedLexer.OnError">
+            <summary>
+            Events for lexical errors
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Lexer.PrefetchedLexer.Match">
+            <summary>
+            Represents a match in the input
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.Match.terminal">
+            <summary>
+            Index of the matched terminal
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Lexer.PrefetchedLexer.Match.length">
+            <summary>
+            Length of the matched input
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Lexer.PrefetchedLexer.Match.#ctor(System.Int32)">
+            <summary>
+            Initializes a match
+            </summary>
+            <param name='terminal'>Index of the matched terminal</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GraphAST">
+            <summary>
+            Represents an AST using a graph structure
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.GraphAST.adjacency">
+            <summary>
+            The adjacency table
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.#ctor(Hime.Redist.TokenizedText,System.Collections.Generic.IList{Hime.Redist.Symbol},System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes this SPPF
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.GetChild(System.Int32,System.Int32)">
+            <summary>
+            Gets the i-th child of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <param name="i">The child's number</param>
+            <returns>The i-th child</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.GetChildren(System.Int32)">
+            <summary>
+            Gets an enumerator for the children of the given node
+            </summary>
+            <param name="parent">A node</param>
+            <returns>An enumerator for the children</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.Store(Hime.Redist.SymbolRef)">
+            <summary>
+            Stores the specified symbol in this AST as a new node
+            </summary>
+            <param name="symbol">The symbol to store</param>
+            <returns>The index of the new node</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.Store(System.Int32[],System.Int32)">
+            <summary>
+            Stores some adjacency data in this graph AST
+            </summary>
+            <param name="adjacents">A buffer of adjacency data</param>
+            <param name="count">The number of adjacents to store</param>
+            <returns>The index of the data stored in this graph</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.CopyNode(System.Int32)">
+            <summary>
+            Copies the provided node (and its adjacency data)
+            </summary>
+            <param name="node">The node to copy</param>
+            <returns>The index of the copy</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.GetAdjacency(System.Int32,System.Int32[],System.Int32)">
+            <summary>
+            Gets the adjacency data for the specified node
+            </summary>
+            <param name="node">The node to retrieve the adjacency data of</param>
+            <param name="buffer">The buffer to store the retrieved data in</param>
+            <param name="index">The starting index in the provided buffer</param>
+            <returns>The number of adjacents</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.SetAdjacency(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Sets the adjacencydata for the specified node
+            </summary>
+            <param name="node">The node to set the adjacency data of</param>
+            <param name="first">The index of the first adjacency item</param>
+            <param name="count">The number of adjacency items</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.SetRoot(System.Int32)">
+            <summary>
+            Sets the root of this AST
+            </summary>
+            <param name="node">Index of the root node</param>
+        </member>
+        <member name="T:Hime.Redist.Parsers.GraphAST.ChildEnumerator">
+            <summary>
+            Represents and iterator for adjacents in this graph
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.ChildEnumerator.Dispose">
+            <summary>
+            Disposes this enumerator
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.ChildEnumerator.MoveNext">
+            <summary>
+            Moves to the next node
+            </summary>
+            <returns>true if there are more nodes</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.GraphAST.ChildEnumerator.Reset">
+            <summary>
+            Resets this enumerator to the beginning
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GraphAST.ChildEnumerator.Current">
+            <summary>
+            Gets the current node
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.GraphAST.ChildEnumerator.System#Collections#IEnumerator#Current">
+            <summary>
+            Gets the current node
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SPPFBuilder">
+            <summary>
+            Represents a structure that helps build a Shared Packed Parse Forest (SPPF)
+            </summary>
+            <remarks>
+            A SPPF is a compact representation of multiple variants of an AST at once.
+            GLR algorithms originally builds the complete SPPF.
+            However we only need to build one of the variant, i.e. an AST for the user.
+            </remarks>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.INIT_HANDLE_SIZE">
+            <summary>
+            The initial size of the reduction handle
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.INIT_HISTORY_SIZE">
+            <summary>
+            The initial size of the history buffer
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.INIT_HISTORY_PART_SIZE">
+            <summary>
+            The initial size of the history parts' buffers
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.pool8">
+            <summary>
+            The pool of sub-tree with a capacity of 8 nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.pool128">
+            <summary>
+            The pool of sub-tree with a capacity of 128 nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.pool1024">
+            <summary>
+            The pool of sub-tree with a capacity of 1024 nodes
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.poolHPs">
+            <summary>
+            The pool of history parts
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.history">
+            <summary>
+            The history
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.nextHP">
+            <summary>
+            The next available slot for a history part
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.cacheChildren">
+            <summary>
+            The adjacency cache for the reduction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.cacheActions">
+            <summary>
+            The actions cache for the reduction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.cacheNext">
+            <summary>
+            The new available slot in the current cache
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.handle">
+            <summary>
+            The reduction handle represented as the indices of the sub-trees in the cache
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.handleNext">
+            <summary>
+            The index of the next available slot in the handle
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.stack">
+            <summary>
+            The stack of semantic objects for the reduction
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.popCount">
+            <summary>
+            The number of items popped from the stack
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.result">
+            <summary>
+            The AST being built
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.#ctor(Hime.Redist.TokenizedText,System.Collections.Generic.IList{Hime.Redist.Symbol},System.Collections.Generic.IList{Hime.Redist.Symbol})">
+            <summary>
+            Initializes this SPPF
+            </summary>
+            <param name="text">The tokenined text</param>
+            <param name="variables">The table of parser variables</param>
+            <param name="virtuals">The table of parser virtuals</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.GetHistoryPart(System.Int32)">
+            <summary>
+            Gets the history part for the given GSS generation
+            </summary>
+            <param name="generation">The index of a GSS generation</param>
+            <returns>The corresponding history part, or <c>null</c></returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ClearHistory">
+            <summary>
+            Clears the current history
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.GetLabelFor(System.Int32,Hime.Redist.SymbolRef)">
+            <summary>
+            Gets the GSS label already in history for the given GSS generation and symbol
+            </summary>
+            <param name="generation">The index of a GSS generation</param>
+            <param name="symbol">A symbol to look for</param>
+            <returns>The existing GSS label, or the epsilon label</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.GetSingleNode(Hime.Redist.SymbolRef)">
+            <summary>
+            Creates a single node in the result SPPF an returns it
+            </summary>
+            <param name="symbol">The symbol as the node's label</param>
+            <returns>The created node's index in the SPPF</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.GetSubTree(System.Int32)">
+            <summary>
+            Gets a pooled sub-tree with the given maximal size
+            </summary>
+            <param name="size">The size of the sub-tree</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReductionPrepare(Hime.Redist.Parsers.GSSLabel,Hime.Redist.Parsers.GSSPath,System.Int32)">
+            <summary>
+            Prepares for the forthcoming reduction operations
+            </summary>
+            <param name="first">The first label</param>
+            <param name="path">The path being reduced</param>
+            <param name="length">The reduction length</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReductionPop(Hime.Redist.TreeAction)">
+            <summary>
+            During a reduction, pops the top symbol from the stack and gives it a tree action
+            </summary>
+            <param name="action">The tree action to apply to the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.AddToCache(Hime.Redist.Parsers.GSSLabel,Hime.Redist.TreeAction)">
+            <summary>
+            Adds the specified GSS label to the reduction cache with the given tree action
+            </summary>
+            <param name="label">The label to add to the cache</param>
+            <param name="action">The tree action to apply</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.AddToCache(System.Int32,Hime.Redist.TreeAction)">
+            <summary>
+            Adds the specified SPPF node to the cache
+            </summary>
+            <param name="node">The node to add to the cache</param>
+            <param name="action">The tree action to apply onto the node</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReductionAddVirtual(System.Int32,Hime.Redist.TreeAction)">
+            <summary>
+            During a reduction, inserts a virtual symbol
+            </summary>
+            <param name="index">The virtual symbol's index</param>
+            <param name="action">The tree action applied onto the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReductionAddNullable(Hime.Redist.Parsers.GSSLabel,Hime.Redist.TreeAction)">
+            <summary>
+            During a reduction, inserts the sub-tree of a nullable variable
+            </summary>
+            <param name="nullable">The sub-tree of a nullable variable</param>
+            <param name="action">The tree action applied onto the symbol</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.Reduce(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Finalizes the reduction operation
+            </summary>
+            <param name="generation">The generation to reduce from</param>
+            <param name="varIndex">The reduced variable index</param>
+            <param name="replaceable">Whether the sub-tree to build must have a replaceable root or not</param>
+            <returns>The produced sub-tree</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReduceNormal(System.Int32)">
+            <summary>
+            Executes the reduction as a normal reduction
+            </summary>
+            <param name="varIndex">The reduced variable index</param>
+            <returns>The produced sub-tree</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.ReduceReplaceable(System.Int32)">
+            <summary>
+            Executes the reduction as the reduction of a replaceable variable
+            </summary>
+            <param name="varIndex">The reduced variable index</param>
+            <returns>The produced sub-tree</returns>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.AddToHistory(System.Int32,Hime.Redist.Parsers.GSSLabel)">
+            <summary>
+            Adds the specified GSS label to the current history
+            </summary>
+            <param name="generation">The current generation</param>
+            <param name="label">The label to register</param>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.GetTree(Hime.Redist.Parsers.GSSLabel)">
+            <summary>
+            Finalizes the parse tree and returns it
+            </summary>
+            <param name="root">The root's sub-tree</param>
+            <returns>The final parse tree</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.SPPFBuilder.Item(System.Int32)">
+            <summary>
+            Gets the symbol at the i-th index
+            </summary>
+            <param name="index">Index of the symbol</param>
+            <returns>The symbol at the given index</returns>
+        </member>
+        <member name="P:Hime.Redist.Parsers.SPPFBuilder.Length">
+            <summary>
+            Gets the length of this body
+            </summary>
+        </member>
+        <member name="P:Hime.Redist.Parsers.SPPFBuilder.Epsilon">
+            <summary>
+            Gets the epsilon GSS label
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SPPFBuilder.HistoryPart">
+            <summary>
+            Represents a generation of GSS edges in the current history
+            The history is used to quickly find pre-existing matching GSS edges
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.HistoryPart.data">
+            <summary>
+            The GSS labels in this part
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.HistoryPart.generation">
+            <summary>
+            The index of the represented GSS generation
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Parsers.SPPFBuilder.HistoryPart.next">
+            <summary>
+            The next available slot in the data
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.HistoryPart.#ctor">
+            <summary>
+            Initializes a new instance
+            </summary>
+        </member>
+        <member name="T:Hime.Redist.Parsers.SPPFBuilder.HistoryPartFactory">
+            <summary>
+            Represents a factory of history parts
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Parsers.SPPFBuilder.HistoryPartFactory.CreateNew(Hime.Redist.Utils.Pool{Hime.Redist.Parsers.SPPFBuilder.HistoryPart})">
+            <summary>
+             Creates a new object
+            </summary>
+            <param name="pool">The enclosing pool</param>
+            <returns>The created object</returns>
+        </member>
+        <member name="T:Hime.Redist.Context">
+            <summary>
+            Represents the context description of a position in a piece of text.
+            A context two pieces of text, the line content and the pointer.
+            For example, given the piece of text:
+            "public Struct Context"
+            A context pointing to the second word will look like:
+            content = "public Struct Context"
+            pointer = "       ^"
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Context.content">
+            <summary>
+            The text content being represented
+            </summary>
+        </member>
+        <member name="F:Hime.Redist.Context.pointer">
+            <summary>
+            The pointer textual representation
+            </summary>
+        </member>
+        <member name="M:Hime.Redist.Context.#ctor(System.String,System.String)">
+            <summary>
+            Initializes this context
+            </summary>
+            <param name="content">The text being begin represented</param>
+            <param name="pointer">The pointer textual representation</param>
+        </member>
+        <member name="P:Hime.Redist.Context.Content">
+            <summary>
+            Gets the text content being represented
+            </summary>
+            <value>The text content being represented</value>
+        </member>
+        <member name="P:Hime.Redist.Context.Pointer">
+            <summary>
+            Gets the pointer textual representation
+            </summary>
+            <value>The pointer textual representation</value>
+        </member>
+    </members>
+</doc>

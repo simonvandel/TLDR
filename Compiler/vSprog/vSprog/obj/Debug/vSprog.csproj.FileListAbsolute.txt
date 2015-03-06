@@ -1,0 +1,10 @@
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\vSprog.exe.config
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\obj\Debug\vSprog.csprojResolveAssemblyReference.cache
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\vSprog.exe
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\vSprog.pdb
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\Hime.CentralDogma.dll
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\Hime.Redist.dll
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\Hime.CentralDogma.xml
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\bin\Debug\Hime.Redist.xml
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\obj\Debug\vSprog.exe
+C:\Users\Jens\Documents\GitHub\P4\Compiler\vSprog\vSprog\obj\Debug\vSprog.pdb
