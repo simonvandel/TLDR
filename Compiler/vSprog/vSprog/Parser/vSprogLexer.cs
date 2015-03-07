@@ -108,6 +108,10 @@ namespace vSprog
 			/// </summary>
 			public const int TO = 0x0022;
 			/// <summary>
+			/// The unique identifier for terminal CHAR
+			/// </summary>
+			public const int CHAR = 0x0020;
+			/// <summary>
 			/// The unique identifier for terminal LET
 			/// </summary>
 			public const int LET = 0x0008;
@@ -119,10 +123,6 @@ namespace vSprog
 			/// The unique identifier for terminal PRIMITIVE
 			/// </summary>
 			public const int PRIMITIVE = 0x0019;
-			/// <summary>
-			/// The unique identifier for terminal CHAR
-			/// </summary>
-			public const int CHAR = 0x0020;
 			/// <summary>
 			/// The unique identifier for terminal STRUCT
 			/// </summary>
@@ -159,10 +159,10 @@ namespace vSprog
 			new Symbol(0x0010, "LEADSTO"),
 			new Symbol(0x001F, "STRING"),
 			new Symbol(0x0022, "TO"),
+			new Symbol(0x0020, "CHAR"),
 			new Symbol(0x0008, "LET"),
 			new Symbol(0x000A, "VAR"),
 			new Symbol(0x0019, "PRIMITIVE"),
-			new Symbol(0x0020, "CHAR"),
 			new Symbol(0x0021, "STRUCT") };
 		/// <summary>
 		/// Initializes a new instance of the lexer

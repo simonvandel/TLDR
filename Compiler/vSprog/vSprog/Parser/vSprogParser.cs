@@ -109,7 +109,7 @@ namespace vSprog
 			/// <summary>
 			/// The unique identifier for variable _Axiom_
 			/// </summary>
-			public const int _Axiom_ = 0x003B;
+			public const int _Axiom_ = 0x003D;
 		}
 		/// <summary>
 		/// The collection of variables matched by this parser
@@ -140,7 +140,7 @@ namespace vSprog
 			new Symbol(0x0035, "Factor"), 
 			new Symbol(0x0036, "Term"), 
 			new Symbol(0x0037, "Reassignment"), 
-			new Symbol(0x003B, "_Axiom_") };
+			new Symbol(0x003D, "_Axiom_") };
 		/// <summary>
 		/// The collection of virtuals matched by this parser
 		/// </summary>
@@ -160,13 +160,21 @@ namespace vSprog
 			/// </summary>
 			public virtual void onProgram(Symbol head, SemanticBody body) { }
 			/// <summary>
-			/// The OnInitialisation semantic action
+			/// The StructProduction semantic action
 			/// </summary>
-			public virtual void OnInitialisation(Symbol head, SemanticBody body) { }
+			public virtual void StructProduction(Symbol head, SemanticBody body) { }
 			/// <summary>
-			/// The PrettyPrint semantic action
+			/// The TypeDecls semantic action
 			/// </summary>
-			public virtual void PrettyPrint(Symbol head, SemanticBody body) { }
+			public virtual void TypeDecls(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The TypeDecl semantic action
+			/// </summary>
+			public virtual void TypeDecl(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The SimpleType semantic action
+			/// </summary>
+			public virtual void SimpleType(Symbol head, SemanticBody body) { }
 
 		}
 		/// <summary>
@@ -180,10 +188,12 @@ namespace vSprog
 		/// <returns>A table of semantic actions</returns>
 		private static SemanticAction[] GetUserActions(Actions input)
 		{
-			SemanticAction[] result = new SemanticAction[3];
+			SemanticAction[] result = new SemanticAction[5];
 			result[0] = new SemanticAction(input.onProgram);
-			result[1] = new SemanticAction(input.OnInitialisation);
-			result[2] = new SemanticAction(input.PrettyPrint);
+			result[1] = new SemanticAction(input.StructProduction);
+			result[2] = new SemanticAction(input.TypeDecls);
+			result[3] = new SemanticAction(input.TypeDecl);
+			result[4] = new SemanticAction(input.SimpleType);
 			return result;
 		}
 		/// <summary>
@@ -193,10 +203,12 @@ namespace vSprog
 		/// <returns>A table of semantic actions</returns>
 		private static SemanticAction[] GetUserActions(Dictionary<string, SemanticAction> input)
 		{
-			SemanticAction[] result = new SemanticAction[3];
+			SemanticAction[] result = new SemanticAction[5];
 			result[0] = input["onProgram"];
-			result[1] = input["OnInitialisation"];
-			result[2] = input["PrettyPrint"];
+			result[1] = input["StructProduction"];
+			result[2] = input["TypeDecls"];
+			result[3] = input["TypeDecl"];
+			result[4] = input["SimpleType"];
 			return result;
 		}
 		/// <summary>
