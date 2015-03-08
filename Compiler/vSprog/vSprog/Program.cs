@@ -11,7 +11,7 @@ namespace vSprog
     {
         static void Main(string[] args)
         {
-            System.IO.StreamReader reader = new System.IO.StreamReader("C:/Users/Jens/Documents/GitHub/P4/Compiler/vSprog/vSprog/Parser/code.txt");
+            System.IO.StreamReader reader = new System.IO.StreamReader("../../Parser/code.txt");
 
             vSprogLexer lexer = new vSprogLexer(reader);
             Console.WriteLine("String lexed.. Parsing");
@@ -29,7 +29,7 @@ namespace vSprog
     class MyActions : vSprogParser.Actions
     {
         public Stack<string> StatementString = new Stack<string>();
-        private Stack<string> StructString = new Stack<string>();
+        public Stack<string> StructString = new Stack<string>();
         private Stack<string> TypeDeclsString = new Stack<string>();
         private Stack<string> TypeDeclString = new Stack<string>();
         private Stack<string> SimpleTypeString = new Stack<string>();
