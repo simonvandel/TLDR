@@ -36,3 +36,4 @@
 *.tdo
 *.run.xml
 master.pdf
+*.DS_Store
