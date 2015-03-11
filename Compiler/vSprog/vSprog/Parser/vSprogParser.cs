@@ -109,7 +109,7 @@ namespace vSprog
 			/// <summary>
 			/// The unique identifier for variable _Axiom_
 			/// </summary>
-			public const int _Axiom_ = 0x003D;
+			public const int _Axiom_ = 0x0043;
 		}
 		/// <summary>
 		/// The collection of variables matched by this parser
@@ -140,7 +140,7 @@ namespace vSprog
 			new Symbol(0x0035, "Factor"), 
 			new Symbol(0x0036, "Term"), 
 			new Symbol(0x0037, "Reassignment"), 
-			new Symbol(0x003D, "_Axiom_") };
+			new Symbol(0x0043, "_Axiom_") };
 		/// <summary>
 		/// The collection of virtuals matched by this parser
 		/// </summary>
@@ -159,6 +159,30 @@ namespace vSprog
 			/// The onProgram semantic action
 			/// </summary>
 			public virtual void onProgram(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The MultiStatementList semantic action
+			/// </summary>
+			public virtual void MultiStatementList(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The EndStatementList semantic action
+			/// </summary>
+			public virtual void EndStatementList(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The DeclarationStatement semantic action
+			/// </summary>
+			public virtual void DeclarationStatement(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The ReassignmentStatement semantic action
+			/// </summary>
+			public virtual void ReassignmentStatement(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The ValueStatement semantic action
+			/// </summary>
+			public virtual void ValueStatement(Symbol head, SemanticBody body) { }
+			/// <summary>
+			/// The StructDeclaration semantic action
+			/// </summary>
+			public virtual void StructDeclaration(Symbol head, SemanticBody body) { }
 			/// <summary>
 			/// The StructProduction semantic action
 			/// </summary>
@@ -188,12 +212,18 @@ namespace vSprog
 		/// <returns>A table of semantic actions</returns>
 		private static SemanticAction[] GetUserActions(Actions input)
 		{
-			SemanticAction[] result = new SemanticAction[5];
+			SemanticAction[] result = new SemanticAction[11];
 			result[0] = new SemanticAction(input.onProgram);
-			result[1] = new SemanticAction(input.StructProduction);
-			result[2] = new SemanticAction(input.TypeDecls);
-			result[3] = new SemanticAction(input.TypeDecl);
-			result[4] = new SemanticAction(input.SimpleType);
+			result[1] = new SemanticAction(input.MultiStatementList);
+			result[2] = new SemanticAction(input.EndStatementList);
+			result[3] = new SemanticAction(input.DeclarationStatement);
+			result[4] = new SemanticAction(input.ReassignmentStatement);
+			result[5] = new SemanticAction(input.ValueStatement);
+			result[6] = new SemanticAction(input.StructDeclaration);
+			result[7] = new SemanticAction(input.StructProduction);
+			result[8] = new SemanticAction(input.TypeDecls);
+			result[9] = new SemanticAction(input.TypeDecl);
+			result[10] = new SemanticAction(input.SimpleType);
 			return result;
 		}
 		/// <summary>
@@ -203,12 +233,18 @@ namespace vSprog
 		/// <returns>A table of semantic actions</returns>
 		private static SemanticAction[] GetUserActions(Dictionary<string, SemanticAction> input)
 		{
-			SemanticAction[] result = new SemanticAction[5];
+			SemanticAction[] result = new SemanticAction[11];
 			result[0] = input["onProgram"];
-			result[1] = input["StructProduction"];
-			result[2] = input["TypeDecls"];
-			result[3] = input["TypeDecl"];
-			result[4] = input["SimpleType"];
+			result[1] = input["MultiStatementList"];
+			result[2] = input["EndStatementList"];
+			result[3] = input["DeclarationStatement"];
+			result[4] = input["ReassignmentStatement"];
+			result[5] = input["ValueStatement"];
+			result[6] = input["StructDeclaration"];
+			result[7] = input["StructProduction"];
+			result[8] = input["TypeDecls"];
+			result[9] = input["TypeDecl"];
+			result[10] = input["SimpleType"];
 			return result;
 		}
 		/// <summary>

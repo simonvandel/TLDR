@@ -22,17 +22,30 @@ namespace vSprog
             {
                 Console.WriteLine(error.Message);
             }
-            Console.WriteLine("Parse Completed: {0}", myActions.StructString.Pop());
+            //Console.WriteLine("Parse Completed: {0}", myActions.StructString.Pop());
             Console.ReadLine();
         }
     }
     class MyActions : vSprogParser.Actions
     {
         public Stack<string> StatementString = new Stack<string>();
-        public Stack<string> StructString = new Stack<string>();
+        public Stack<string> DeclarationString = new Stack<string>();
+        private Stack<string> StructString = new Stack<string>();
         private Stack<string> TypeDeclsString = new Stack<string>();
         private Stack<string> TypeDeclString = new Stack<string>();
         private Stack<string> SimpleTypeString = new Stack<string>();
+        public override void EndStatementList(Symbol head, SemanticBody body)
+        {
+            StatementString.Push()
+        }
+        public override void DeclarationStatement(Symbol head, SemanticBody body)
+        {
+            StatementString.Push(DeclarationString.Pop());
+        }
+        public override void StructDeclaration(Symbol head, SemanticBody body)
+        {
+            DeclarationString.Push(StructString.Pop());
+        }
         public override void StructProduction(Symbol head, SemanticBody body)
         {
             string tmpString = string.Format("{0} {1} {2} {3} {4} {5} {6}",
