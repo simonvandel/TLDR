@@ -13,10 +13,10 @@ namespace vSprog
         static void Main(string[] args)
         {
 			CompilationTask task = new CompilationTask ();
-			task.AddInputFile ("../../Parser/vSprog.gram");
+			task.AddInputFile ("../../Parser/vSprogGrammar.gram");
 			task.Mode = Hime.CentralDogma.Output.Mode.Assembly;
 			task.Execute ();
-			Hime.CentralDogma.SDK.AssemblyReflection assembly = new Hime.CentralDogma.SDK.AssemblyReflection("vSprog.dll");
+			Hime.CentralDogma.SDK.AssemblyReflection assembly = new Hime.CentralDogma.SDK.AssemblyReflection("vSprogGrammar.dll");
 
             //System.IO.StreamReader reader = new System.IO.StreamReader("../../Parser/code.txt");
 
@@ -42,7 +42,10 @@ namespace vSprog
             {
                 Console.WriteLine(error.Message);
             }
-			PrintTree (result.Root, 0);
+            if (result.IsSuccess)
+                PrintTree(result.Root, 0);
+            else
+                Console.WriteLine("Error encountered");
             Console.ReadLine();
         }
 
