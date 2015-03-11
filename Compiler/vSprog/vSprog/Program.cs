@@ -28,50 +28,50 @@ namespace vSprog
     }
     class MyActions : vSprogParser.Actions
     {
-        public Stack<string> StatementString = new Stack<string>();
-        public Stack<string> DeclarationString = new Stack<string>();
-        private Stack<string> StructString = new Stack<string>();
-        private Stack<string> TypeDeclsString = new Stack<string>();
-        private Stack<string> TypeDeclString = new Stack<string>();
-        private Stack<string> SimpleTypeString = new Stack<string>();
+        public Queue<string> StatementString = new Queue<string>();
+        public Queue<string> DeclarationString = new Queue<string>();
+        private Queue<string> StructString = new Queue<string>();
+        private Queue<string> TypeDeclsString = new Queue<string>();
+        private Queue<string> TypeDeclString = new Queue<string>();
+        private Queue<string> SimpleTypeString = new Queue<string>();
         public override void EndStatementList(Symbol head, SemanticBody body)
         {
-            string tmpString = StatementString.Pop() + ";";
-            StatementString.Push(tmpString);
+            string tmpString = StatementString.Dequeue() + ";";
+            StatementString.Enqueue(tmpString);
             Console.WriteLine(tmpString);
         }
         public override void DeclarationStatement(Symbol head, SemanticBody body)
         {
-            StatementString.Push(DeclarationString.Pop());
+            StatementString.Enqueue(DeclarationString.Dequeue());
         }
         public override void StructDeclaration(Symbol head, SemanticBody body)
         {
-            DeclarationString.Push(StructString.Pop());
+            DeclarationString.Enqueue(StructString.Dequeue());
         }
         public override void StructProduction(Symbol head, SemanticBody body)
         {
             string tmpString = string.Format("{0} {1} {2} {3} {4} {5} {6}",
-                               body[0].Value, body[1].Value, body[2].Value, body[3].Value, body[4].Value, TypeDeclsString.Pop(), body[6].Value);
-            StructString.Push(tmpString);
+                               body[0].Value, body[1].Value, body[2].Value, body[3].Value, body[4].Value, TypeDeclsString.Dequeue(), body[6].Value);
+            StructString.Enqueue(tmpString);
             Console.WriteLine(tmpString);
         }
 
         public override void TypeDecls(Symbol head, SemanticBody body)
         {
-            string tmpString = TypeDeclString.Pop() + " " + body[1].Value + " " + TypeDeclString.Pop();
-            TypeDeclsString.Push(tmpString);
+            string tmpString = TypeDeclString.Dequeue() + " " + body[1].Value + " " + TypeDeclString.Dequeue();
+            TypeDeclsString.Enqueue(tmpString);
             Console.WriteLine(tmpString);
         }
         public override void TypeDecl(Symbol head, SemanticBody body)
         {
-            string tmpString = body[0].Value + body[1].Value + SimpleTypeString.Pop();
-            TypeDeclString.Push(tmpString);
+            string tmpString = body[0].Value + body[1].Value + SimpleTypeString.Dequeue();
+            TypeDeclString.Enqueue(tmpString);
             Console.WriteLine(tmpString);
         }
         public override void SimpleType(Symbol head, SemanticBody body)
         {
             string tmpString = body[0].Value;
-            SimpleTypeString.Push(tmpString);
+            SimpleTypeString.Enqueue(tmpString);
             Console.WriteLine(tmpString);
         }
         public void PrettyPrint(Symbol head, SemanticBody body)
