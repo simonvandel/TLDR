@@ -36,7 +36,9 @@ namespace vSprog
         private Stack<string> SimpleTypeString = new Stack<string>();
         public override void EndStatementList(Symbol head, SemanticBody body)
         {
-            StatementString.Push()
+            string tmpString = StatementString.Pop() + ";";
+            StatementString.Push(tmpString);
+            Console.WriteLine(tmpString);
         }
         public override void DeclarationStatement(Symbol head, SemanticBody body)
         {
