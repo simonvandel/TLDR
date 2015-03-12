@@ -1,14 +1,15 @@
 \section{Compiler Compiler Choice}
 \label{sec:compiler_compiler_choice}
 
-It has been decided to prioritize the programmers above simpler grammar, this means that it's is preferred to have complex grammar rather than changing the chosen syntax to get a simpler grammar. This has affected the grammar to be more complex, because of this it has been chosen to use a compiler compiler. The choice of compiler compiler was decided based on a series of criteria. The criteria set are listed below with the corresponding reason for the criteria.
+It was decided to prioritize the programmers above a simple grammar. This means that keeping the chosen syntax is preferred, and therefore accepting a more complex grammar where it should needed. Due to this possibility of complexity it was chosen to use a compiler-compiler. The choice of compiler-compiler was decided based on a series of criteria, which are listed below with the corresponding reason for the criteria.
 
 \begin{enumerate}
-\item \textbf{Compile to C\# or F\#} It has been chosen to construct the compiler in F\#. Because F\# is compatible with common language infrastructure (CLI) as well as C\# it is possible to use any C\# code within F\#. This makes C\# a preferred target language for the compiler compiler as well as F\#. \\
+\item \textbf{Language of the compiler} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the developers had previous experience with this. This makes C\# a preferred target language for the compiler compiler as well as F\#.
 
-\item \textbf{LR parser} The compiler compiler should support LR parsing because left recursions has been used in the grammar specifying the language. \\
+\item \textbf{LR parser} The compiler-compiler should support LR parsing because left recursions has been used in the grammar specifying the language.\\
 
 \item \textbf{Action Code} The parser should support action code and grammar and action code should be in separated files.\\
 
 \end{enumerate}
-Two compiler compilers where found matching the criteria liste, HIME and sableCC. sabelCC does support LALR parsing which parses the same set of grammars as LR parser, which makes sabelCC a suitable parser. HIME has been choses as the compiler compiler because it was latest updated and target C\# as the main output language where SabelCC targets java and later on started supporting C\#. 
+
+Two compiler-compilers matching the criteria list were found. These were HIME and sableCC. sabelCC supports LALR parsing, which parses the same set of grammars as LR parser, which makes sabelCC a suitable parser. HIME has been choses as the compiler-compiler because it was latest updated and targets C\# as the main output language where SabelCC targets java and later on started supporting C\#.
