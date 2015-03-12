@@ -7,19 +7,23 @@ let entity alcoholic = {
   }
 }
 
+a:alcoholic = spawn(alcoholic,)
+
 
 main:[string] -> void;
 let main(argv) =
 {
+  
+
   var heider:entity <- alcoholic(3,90);
-  var iStep:iterationStep <- iterationStep(int); //hvordan instansierer vi nye structs?
+  var iStep:iterationStep <- iterationStep(int); //hvordan instansierer vi nye structs? (ikke sådan her)
 
   for i in 0..3600{
     iStep.step <- i;
     send(iStep, heider);
 
     if(i % 20 = 0){
-      send(beer(tuborg,4.6), heider);        //må man lave anynonym struct instansiering
+      send(classic:beer = {brand = tuborg, promille = 4.6}, heider);        //må man lave anynonym struct instansiering
     }
   }
 }
@@ -37,17 +41,18 @@ let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) e
     promille <- promille * 0,95;
  }
 
-  receive iterationStep || msg.step > 5 {  // alternativ metode til receive & msg som keywords
-    msg.step + 1;                          // den her linje gør ikke noget, og det er med vilje
+  receive iterationStep || MSG.step > 5 {  // alternativ metode til receive & msg som keywords
+    MSG.step + 1;                          // den her linje gør ikke noget, og det er med vilje
     promille <- promille * 0,95;
  }
-
-
+  recieve beerMsg(x):beer {
+    promille <- promille + x.percentage;
+  }
 
   receive(beer) = {
     promille <- promille + beer.percentage;
 
-  var promille:real;                     //skal man instansiere med en værdi inden brug? nej tak hilsen krog
+  var promille:real;                     //skal man instansiere med en værdi inden brug, og er der defaultværdier? nej tak hilsen krog
 
   }
 }

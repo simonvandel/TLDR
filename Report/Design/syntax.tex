@@ -1,0 +1,133 @@
+\section{Syntax}
+\label{sec:syntax}
+
+\subsection{Primitives}
+\label{subsec:primitives}
+
+A primitive is a predefined value type that cannot be constructed using other value types.
+
+The following primitives exist in the language. All primitives are lower-cased.
+
+\begin{itemize}
+  \item int
+  \item real
+  \item bool
+  \item char
+  \item unit/void/empty \sinote{bliv enige om navn. Skal rettes længere nede også}
+\end{itemize}
+
+\subsubsection{Integer}
+\label{subsubsec:int}
+
+The int primitive can have values of 0 to \sinote{hvor mange bits?}. The int primitive is written literally as whole numbers e.g. \enquote{2}.
+
+\subsubsection{Real}
+\label{subsubsec:real}
+
+The real primitive can have values of \sinote{hvordan definerer vi det her?}. The real primitive is written literally as floating point numbers e.g. \enquote{2.5}.
+
+\subsubsection{Bool}
+\label{subsubsec:bool}
+
+The bool primitive can have values of \enquote{true} or \enquote{false}.
+
+\subsubsection{Char}
+\label{sec:char}
+
+The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single ticks. For example: \enquote{'0'} and \enquote{'A'}.
+
+\subsubsection{Unit/void/empty}
+\label{sec:unit/empty/void}
+
+The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness/no value.
+
+\subsection{Functions}
+\label{sec:functions}
+
+Functions can be declared in two ways. By separating the type signature and the function body or by combining the signature and the function body.
+
+\paragraph{Separated function declaration}
+
+The syntax for the separated function declaration is as follows. The type signature and the body must be declared in the same lexical scope.
+
+\begin{verbatim}
+  <funcName> : <typeSignature>
+  let <funcName>(<parameterList>) := {<body>}
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  plus : int -> int -> Int
+  let plus(x, y) := {x + y}
+\end{verbatim}
+
+
+\paragraph{Combined function declaration}
+
+The syntax for the combined function declaration is as follows.
+
+\begin{verbatim}
+  let <funcName>(<parameterList>) : <typeSignature> := {<body>}
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  let plus(x, y) : Int -> Int -> Int := {x + y}
+\end{verbatim}
+
+\subsection{Comments}
+\label{sec:comments}
+
+Text only relevant to the reader of a piece of code is called a comment. Comments therefor has no meaning to the parser and is ignored. Comments are declared in C style by \enquote{//} being a single line comment and \enquote{/**/} being a multi line comment.
+
+A concrete example:
+
+\begin{verbatim}
+  // this is a single line comment
+  /* this is
+     a
+     multi line comment */
+\end{verbatim}
+
+\subsection{Value Assignment}
+\label{sec:value_assignment}
+
+A value can be assigned to a symbol in either a constant binding or a variable binding. 
+
+\paragraph{Constant Binding}
+
+A constant binding can never have its value changed. For example, if \enquote{a} is bound to \enquote{5}, \enquote{a} can never refer to another value than \enquote{5} in the same lexical scope.
+
+The syntax for constant value assignment is as follows.
+\begin{verbatim}
+  let <symbolName> : <type> := <value>
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  let x : int := 2
+\end{verbatim}
+
+\paragraph{Variable Binding}
+
+A variable binding can always change the value it refers to. For example, if \enquote{b} is bound to \enquote{2}, it is perfectly possible to later in the source code refer to {10}.
+
+The syntax for variable value assignment is as follows.
+\begin{verbatim}
+  var <symbolName> : <type> := <value>
+
+  // a later reassignment
+  <symbolName> := <value>
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  var a : int := 2
+  
+  // a later reassignment
+  a := 2
+\end{verbatim}
