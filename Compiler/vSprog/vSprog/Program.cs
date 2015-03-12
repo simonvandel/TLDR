@@ -20,11 +20,13 @@ namespace vSprog
 
             //System.IO.StreamReader reader = new System.IO.StreamReader("../../Parser/code.txt");
 
-			const string input = "let a(a):real->int:={1+2;};";
+            const string input = "a:=1";
 				
 			var dict = new Dictionary<string, SemanticAction> ();
 			dict ["SimpleType"] = (x,y) => {};
 			dict ["OnProgram"] = (x,y) => {};
+            dict["OnNumberLiteral"] = VisitNumberLiteral;
+            
 
 			Hime.Redist.Parsers.IParser parser = null;
 			try {
@@ -44,6 +46,20 @@ namespace vSprog
             else
                 Console.WriteLine("Error encountered");
             Console.ReadLine();
+        }
+
+        private static void VisitNumberLiteral(Symbol head, SemanticBody body)
+        {
+            Console.WriteLine(body[2].Value);
+            int haaaax;
+            if (IsLiteral(body[2].Value, out haaaax)) { Console.WriteLine("den er satme fin"); }
+            else { Console.WriteLine("det r fnme ente en literal"); }
+
+        }
+
+        private static bool IsLiteral(string inputString, out int IntEtEllerAndet)
+        {
+            return int.TryParse(inputString, out IntEtEllerAndet);
         }
 
 		public static void PrintTree(ASTNode node, int level) {
