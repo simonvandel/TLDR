@@ -20,7 +20,7 @@ namespace vSprog
 
             //System.IO.StreamReader reader = new System.IO.StreamReader("../../Parser/code.txt");
 
-            const string input = "a:=1";
+            const string input = "let a:int := 4;";
 				
 			var dict = new Dictionary<string, SemanticAction> ();
 			dict ["SimpleType"] = (x,y) => {};
