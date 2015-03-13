@@ -35,7 +35,7 @@ namespace vSprog
 				throw new Exception ("Not all semantic actions declared in grammar was assigned in code. Check dictionary containing semantic actions.");
 			}
 
-            ParseResult result = parser.Parse();
+            ParseResult result = parser.Parse();	
 
             foreach (var error in result.Errors)
             {
