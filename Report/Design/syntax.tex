@@ -19,43 +19,43 @@ The following primitives exist in the language. All primitives are lower-cased.
 \subsubsection{Integer}
 \label{subsubsec:int}
 
-The int primitive can have values of 0 to \sinote{hvor mange bits?}. The int primitive is written literally as whole numbers e.g. \enquote{2}.
+The int primitive can have values of 0 to \sinote{hvor mange bits?}. The int primitive's literal representation is as whole numbers e.g. \enquote{2}.
 
 \subsubsection{Real}
 \label{subsubsec:real}
 
-The real primitive can have values of \sinote{hvordan definerer vi det her?}. The real primitive is written literally as floating point numbers e.g. \enquote{2.5}.
+The real primitive can have values of \sinote{hvordan definerer vi det her?}. The real primitive's literal representation is as decimal numbers with fractions e.g. \enquote{2.5} or \enquote{2.0}.
 
 \subsubsection{Bool}
 \label{subsubsec:bool}
 
-The bool primitive can have values of \enquote{true} or \enquote{false}.
+The bool primitive's value can be either \enquote{true} or \enquote{false}.
 
 \subsubsection{Char}
 \label{sec:char}
 
-The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single ticks. For example: \enquote{'0'} and \enquote{'A'}.
+The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single quotation marks. For example: \enquote{ '0' } and \enquote{ 'A' }.
 
 \subsubsection{Unit/void/empty}
 \label{sec:unit/empty/void}
 
-The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness/no value.
+The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness.
 
-\subsection{Primitive Operations}
+\subsection{Primitive Operators}
 \label{sec:primitiveOps}
 
-Primitive operations are the operations that come build into the language.
+Primitive operations are the operations that are build into the language.
 
-\subsubsection{Mathematical Operations}
+\subsubsection{Mathematical Operators}
 \label{sec:mathOps}
 
-The following mathematical operations are built-in to the language.
+The following mathematical operations are built into the language.
 
 \begin{itemize}
-  \item \textbf{+} A binary operator that pluses two number types of the same type
-  \item \textbf{-} A binary operator that minuses two number types of the same type
-  \item \textbf{/} A binary operator that divides two number types of the same type
-  \item \textbf{\%} A binary operator that integer divides two number types of the same type and returns the remainder
+  \item \textbf{+} A binary operator that adds two numbers of the same type
+  \item \textbf{-} A binary operator that subtracts two numbers of the same type
+  \item \textbf{/} A binary operator that divides two numbers of the same type
+  \item \textbf{\%} A binary operator that integer divides two number of the same type and returns the remainder
   \item \textbf{\^}  A binary operator that lifts the first number to the power of second number
   \item \textbf{root} A binary operator that roots the first value to second value
 \end{itemize}
@@ -126,7 +126,7 @@ A concrete example:
 \subsection{Comments}
 \label{sec:comments}
 
-Text only relevant to the reader of a piece of code is called a comment. Comments therefor has no meaning to the parser and is ignored. Comments are declared in C style by \enquote{//} being a single line comment and \enquote{/**/} being a multi line comment.
+Text only relevant to the reader of a piece of code is called a comment. Comments therefore has no meaning to the parser and is ignored. Comments are declared in C style by \enquote{//} being a single line comment and \enquote{/**/} being a multi line comment.
 
 A concrete example:
 
