@@ -1,0 +1,31 @@
+\section{Actors}
+
+Actors kan udelukkende påvirkes af beskeder. <- princip, hvorfor?
+
+Actors kan ikke få ændret deres reference, (lisaproblem)
+
+Actors inde i actors, nested, ejerskab, synlighed.
+
+
+% gennemretning: er actormodelling et paradigme?
+
+\subsection{Isolation and Independence}
+
+A central principle in this programming language is the use of actors, based on the actor modelling paradigm. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when another interacts with it. Actors should function independetly, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of seperation of processes, which will allow for greater concurrency. Therefore the language tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions.
+
+\subsection{Construction of an actor}
+
+The syntactical contruction of an actor is as follows:
+
+\begin{lstlisting}
+actor nameOfActor := {
+  <functionality>
+}
+\end{lstlisting}
+
+As shown, the actor keyword preceedes the definition, denoting the meaning of said definiton. After the keyword a name is needed as a reference to the contruct, which will also serve as the type. It is suggested that this name reflects the role of the actor in a context of use. Noticeably there is not a \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the typesafety.
+
+
+
+
+%If variable actors was an option, it would go against the principle of interaction solely through messages, and allowing for another degree of race conditions.
