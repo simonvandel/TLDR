@@ -2,9 +2,13 @@
 \label{cha:syntax}
 For the language described in this report we have decided upon certain syntactical constructs. Here follows the choices made and the reasoning behind them.
 
-\section{Whitespace \& Scopes}
 
-As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs. For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+\section{Scoping}
+
+As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
+%impossible - but why?
+For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+
 
 \section{Logical Comparisons}
 
@@ -20,7 +24,9 @@ For assigning mutable variables we chose \enquote{<-}. This concept is less know
 
 \section{Initialisation/Type Declaration}
 
-Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have pshyical limits which makes it complicated or ineffecient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
+Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have pshyical limits which makes it complicated or ineffecient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. 
+%what reason?
+However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
 
 When initialising a variable, it being either muteable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
 
