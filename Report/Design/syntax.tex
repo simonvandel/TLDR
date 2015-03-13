@@ -1,7 +1,7 @@
 \section{Syntax}
 \label{sec:syntax}
 
-\subsection{Primitives}
+\subsection{Primitive Data Types}
 \label{subsec:primitives}
 
 A primitive is a predefined value type that cannot be constructed using other value types.
@@ -40,6 +40,52 @@ The char primitive can have values of the ASCII standard. It is written literall
 \label{sec:unit/empty/void}
 
 The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness/no value.
+
+\subsection{Primitive Operations}
+\label{sec:primitiveOps}
+
+Primitive operations are the operations that come build into the language.
+
+\subsubsection{Mathematical Operations}
+\label{sec:mathOps}
+
+The following mathematical operations are built-in to the language.
+
+\begin{itemize}
+  \item \textbf{+} A binary operator that pluses two number types of the same type
+  \item \textbf{-} A binary operator that minuses two number types of the same type
+  \item \textbf{/} A binary operator that divides two number types of the same type
+  \item \textbf{\%} A binary operator that integer divides two number types of the same type and returns the remainder
+  \item \textbf{\^}  A binary operator that lifts the first number to the power of second number
+  \item \textbf{root} A binary operator that roots the first value to second value
+\end{itemize}
+
+\sinote{Vi skal nok forklare hvilke nummer typer der kan plusses sammen osv.}
+
+\subsubsection{Logical Operations}
+\label{sec:logicOps}
+
+\begin{itemize}
+  \item \textbf{=} A binary operator that compares the two values for equality. Returns true if equal. False otherwise.
+  \item \textbf{!=} A binary operator that compares the two values for equality. Returns true if not equal. False otherwise.
+  \item \textbf{<} A binary operator that compares the two values. Returns true if first value is strictly less than second value. False otherwise.
+  \item \textbf{<=} A binary operator that compares the two values. Returns true if first value is less than or equal to second value. False otherwise.
+  \item \textbf{>} A binary operator that compares the two values. Returns true if first value is strictly greater than the second value. False otherwise.
+  \item \textbf{>=} A binary operator that compares the two values. Returns true if first value is greater than or equal to the second value. False otherwise.
+\end{itemize}
+
+\subsubsection{Boolean Operations}
+\label{sec:boolOps}
+
+The following operations only operate on bool types.
+
+\begin{itemize}
+  \item \textbf{AND} A binary operator that returns true if both values on both sides are true. False otherwise
+  \item \textbf{OR} A binary operator that returns true if one value on either sides are true. False otherwise
+  \item \textbf{XOR} Same as \textbf{OR}, but in the case that both sides are true, returns also false.
+  \item \textbf{NOT} Negates the boolean value
+  \item \textbf{NAND} Same as NOT (<bool1> AND <bool2>)
+\end{itemize}
 
 \subsection{Functions}
 \label{sec:functions}
