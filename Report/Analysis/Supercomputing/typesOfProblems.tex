@@ -1,5 +1,5 @@
-http://gribblelab.org/CBootcamp/A2_Parallel_Programming_in_C.html#sec-2-1
-https://computing.llnl.gov/tutorials/parallel_comp/
+\url{http://gribblelab.org/CBootcamp/A2_Parallel_Programming_in_C.html#sec-2-1}
+\url{https://computing.llnl.gov/tutorials/parallel_comp/}
 
 \section{Types of tasks}
 \label{top}
@@ -11,5 +11,5 @@ Tasks within a problem can be depended on each other, in the sense that one task
   An example of this type of problem is incrementation of a large matrix, the individuals members of matrix are totally independent from each other under operations of these tasks.
 
 \subsection{Serial problems with dependencies}
-  Although multiple similar simulations can be observed as being independent of each other, as utilised by the Monte Carlo method [http://en.wikipedia.org/wiki/Monte_Carlo_method], most simulations themselfs does not satify the condition of being independent. Instead these are inherently sequential, they form a class of problems that cannot be split into independent sub-problems. In some cases it is not possible to gain speed up at all, by trying to parallelise a problem, which is not parallisesable, the only thing a simulation designer can achieve is adding overhead to the computations in communication between threads.
+  Although multiple similar simulations can be observed as being independent of each other, as utilised by the Monte Carlo method \url{http://en.wikipedia.org/wiki/Monte_Carlo_method}, most simulations themselfs does not satify the condition of being independent. Instead these are inherently sequential, they form a class of problems that cannot be split into independent sub-problems. In some cases it is not possible to gain speed up at all, by trying to parallelise a problem, which is not parallisesable, the only thing a simulation designer can achieve is adding overhead to the computations in communication between threads.
   An example is calculating the fibonacci series by f(n) = f(n-1)+f(n-2), where f(n) is dependent on first finding the previously calculated values of f.
