@@ -1,4 +1,15 @@
 When processes run parallel some problems arise when multiple processes try to access the same memory. Among these the most common are race conditions and deadlocks.
 
 \subsubsection{Race conditions}
-This problem arise when two processes want to modify the same data in memory, for instance raise the value of an integer by 1.
+This problem arise when multiple processes want to modify the same data in memory or similar recourse. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations: Operations the the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
+\begin{itemize}
+\item Copy the current value of the integer from main memory into working register
+\item Calculate the value puls one and place the result in the register
+\item Take the new value from the register and override the integer in memory
+\end{itemize}
+Since we don't know when each process will try to access the memory the value can either be raised by one, if both processes access it before the other overrides it, or raised by two, if one process finished before the other copy the value from memory. This is a well know problem and exists in many situations were multiple processes work with non-atomic operations on the same memory. Some software solutions, that ensures only one instance of the critical region have permission to access to the shared resource at the time, have been found and especially Gary L. Peterson's algorithm, published in 1981, is used today. Other solutions has also been found by creating atomic assembly instructions that can set a flag, thereby ensuring that only one critical region access the shared resource at the time.
+
+\subsubsection{Deadlocks}
+
+\subsubsection{Parallelism in this language}
+This language will focus heavily on parallelism and it is therefore important to keep both deadlocks and race conditions in mind. 
