@@ -11,6 +11,3 @@ This problem arise when multiple processes want to modify the same data in memor
 Since we don't know when each process will try to access the memory the value can either be raised by one, if both processes access it before the other overrides it, or raised by two, if one process finished before the other copy the value from memory. This is a well know problem and exists in many situations were multiple processes work with non-atomic operations on the same memory. Some software solutions, that ensures only one instance of the critical region have permission to access to the shared resource at the time, have been found and especially Gary L. Peterson's algorithm, published in 1981, is used today. Other solutions has also been found by creating atomic assembly instructions that can set a flag, thereby ensuring that only one critical region access the shared resource at the time.
 
 \subsection{Deadlocks}
-
-\subsection{Parallelism in this language}
-This language will focus heavily on parallelism and it is therefore important to keep both deadlocks and race conditions in mind. 

@@ -241,13 +241,13 @@ There are three for-loop statements defined in the language. A traditional C for
 The syntax for the first for-loop variation is defined below.
 
 \begin{verbatim}
-  for(<startValue>; <condition>; <updateStatement>) {<loopBody>};
+  for(<startStatement>; <condition>; <updateStatement>) {<loopBody>};
 \end{verbatim}
 
 A concrete example:
 
 \begin{verbatim}
-  for(int i := 0; i < 10; i++) {/* Do stuff */}
+  for(var i:int := 0; i < 10; i := i+1)) {/* Do stuff */};
 \end{verbatim}
 
 \subsubsection{For-in loop}
