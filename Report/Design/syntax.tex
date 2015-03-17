@@ -178,6 +178,25 @@ A concrete example:
   a := 2
 \end{verbatim}
 
+\subsection{Actors}
+\label{sub:actors}
+
+Actors are declared using the \emph{actor} keyword like the following. Behaviour can be given to an actor by declaring receive actions using the \emph{receive} keyword in the body of the actor.
+
+\begin{verbatim}
+  actor <actorName> := {<body>}
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  actor earth := {
+    var temperature:real := 0;
+    receive sunlight:light := {
+      temperature := temperature + 0.1;
+  }
+\end{verbatim}
+
 \subsection{Structures}
 \label{sec:structs}
 
