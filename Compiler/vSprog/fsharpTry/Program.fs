@@ -3,6 +3,7 @@
 open vSprog.Parser
 open vSprog.Analysis
 open vSprog.CommonTypes
+open System.IO;
 
 module Main =
 
@@ -56,8 +57,7 @@ module Main =
 
     [<EntryPoint>]
     let main argv = 
-        let input = "{let a:int := 2;
-                    let b:real := 2.5;}"
+        let input = File.OpenRead("GoldenCode.bar").ToString();
 
         match parse input with
         | Success astRoot -> 
@@ -70,4 +70,3 @@ module Main =
             errs |> List.iter (printfn "%s")
         
         0 // return an integer exit code
-

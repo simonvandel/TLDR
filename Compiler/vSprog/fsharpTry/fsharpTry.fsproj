@@ -18,7 +18,7 @@
     <Tailcalls>false</Tailcalls>
     <PlatformTarget>
     </PlatformTarget>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -54,5 +54,8 @@
   <ItemGroup>
     <Compile Include="Program.fs" />
     <None Include="packages.config" />
+    <None Include="GoldenCode.bar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
