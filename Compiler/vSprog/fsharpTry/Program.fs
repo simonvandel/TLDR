@@ -57,7 +57,7 @@ module Main =
     [<EntryPoint>]
     let main argv = 
         let input = "{let a:int := 2;
-                    let b:real := 2.5;}"
+                    var b:rea := 2.5;}"
 
         match parse input with
         | Success astRoot -> 
@@ -68,6 +68,6 @@ module Main =
         | Failure errs -> 
             printfn "%s" "Errors:"
             errs |> List.iter (printfn "%s")
-        
+        System.Console.ReadLine()
         0 // return an integer exit code
 
