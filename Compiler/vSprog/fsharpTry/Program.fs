@@ -15,15 +15,15 @@ module Main =
 
     let toInternalAST (ast:ASTNode) : AST =
         match ast.Symbol.Value with
-        | "Statement" -> 
+        | "Statement" ->
             match (ast.Children.Item 0).Symbol.Value with
-            | "Initialisation" -> 
+            | "Initialisation" ->
                 let curNode = ast.Children.Item 0
                 let lhs = toInternalEx (curNode.Children.Item 1)
                 let rhs = toInternalEx (curNode.Children.Item 2)
 
                 Assignment(lhs, rhs)
-            | _ -> 
+            | _ ->
                 printf "%s" "Var andet end declaration"
                 Assignment(Int 1, Int 1)
         | _ -> Assignment(Int 0, Int 0)
@@ -34,8 +34,8 @@ module Main =
         |> Seq.collect (fun l -> sprintf "%s" "--")
         |> String.Concat
 
-    let rec printTree (node:ASTNode) (level:int) = 
-        levelToString level |> printf "%s" 
+    let rec printTree (node:ASTNode) (level:int) =
+        levelToString level |> printf "%s"
 
         printfn "%s" node.Symbol.Value
 
@@ -45,12 +45,12 @@ module Main =
 
     let rec createDecoratedAST (ast:ASTNode) : DecoratedAST =
         match ast with
-        | ast when ast.Children.Count = 0 -> 
+        | ast when ast.Children.Count = 0 ->
             Leaf ({Symbol = ast.Symbol; Position = ast.Position; Children = ast.Children; NodeType = NotYetChecked })
         | ast -> Tree ( List.ofSeq (seq { for i in ast.Children -> createDecoratedAST i}) )
 
     let rec prettyPrintDecoratedAST dAST (level:int) =
-        levelToString level |> printfn "%s" 
+        levelToString level |> printfn "%s"
 
         printfn "%A" dAST
     *)
@@ -60,13 +60,13 @@ module Main =
         let input = File.ReadAllText "../../GoldenCode.bar"
 
         match parse input with
-        | Success astRoot -> 
+        | Success astRoot ->
             printfn "%s" "Parsing succeeded. No errors."
             match analyse astRoot with
             | Success _ -> printfn "%s" "Analysis succeeded. No errors."
             | Failure _ -> printfn "%s" "Failure in analysis!!!"
-        | Failure errs -> 
+        | Failure errs ->
             printfn "%s" "Errors:"
             errs |> List.iter (printfn "%s")
-        
+        System.Console.ReadLine()
         0 // return an integer exit code

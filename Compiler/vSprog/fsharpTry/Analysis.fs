@@ -14,17 +14,78 @@ module Analysis =
         | List of Val list
 
     type TypeSymbol = string * Val // (id, value)
+        
+    type Primitive =
+        | Int
+        | Char
+        | Real
+        | Bool
 
-        type Ex =
-        | Variable of string * string // * Scope // (name, type)
-        | Int of int
-        | Real of float
+    type PrimitiveType =
+        | SimplePrimitive of Primitive
+        | ListPrimitive of PrimitiveType
+        | Node of AST
+        | UserType of string
 
-    type AST = 
+    and AST = 
         | Program of AST list
         | Block of AST list
-        | Assignment of Ex * Ex
+        | Assignment of LValue * PrimitiveType
         | Error // Only for making it compile temporarily
+
+    and LValue = {
+        identity:string
+        isMutable:bool
+        primitiveType:PrimitiveType
+    }
+
+    type StatementType = 
+        | Decl
+        | Init
+        | Ass
+        | Reass 
+
+    type Scope = {
+        outer:Scope
+    }
+
+    type SymbolTableEntry = {
+        error:bool
+        symbol:LValue
+        statementType:StatementType
+        scope:Scope
+    }
+
+    type SymbolTable = SymbolTableEntry list
+
+    let mergeSymbolTables sym1 sym2 : SymbolTable =
+        List.append sym1 sym2
+
+    let getValidSymbolTables symbolTableOptions = 
+        symbolTableOptions
+            |> List.filter Option.isSome
+            |> List.map Option.get
+
+    let rec createSymbolTable (currentScope:Scope) (ast:AST) : SymbolTable option =
+        match ast with
+            | Program statements -> 
+                Some (statements 
+                    |> List.map (createSymbolTable currentScope)
+                    |> getValidSymbolTables
+                    |> List.reduce mergeSymbolTables)
+            | Block statements -> 
+                Some (statements 
+                    |> List.map (createSymbolTable {outer = currentScope})
+                    |> getValidSymbolTables
+                    |> List.reduce mergeSymbolTables)
+            | Assignment (lValue, primitiveType) -> 
+                    let entry = {error = false; symbol = lValue; statementType = Ass; scope = currentScope}
+                    match primitiveType with
+                        | Node ast -> match createSymbolTable {outer = currentScope} ast with
+                                            | None -> Some [entry]
+                                            | Some a -> Some (entry :: a)
+                        | _ -> Some [entry]
+            | _ -> None
 
     type Environment =  {
         symbolList: Map<string, TypeSymbol> list
@@ -71,20 +132,58 @@ module Analysis =
                 return state.symbolList.Head.ContainsKey name
               }
 
-    type Scope = 
-        {
-            SymbolList:TypeSymbol list
-            Parent:Scope
-        }
+    let rec toPrimitiveType (input:string) : PrimitiveType =
+        match input with
+            | "int" -> SimplePrimitive Int
+            | "char" -> SimplePrimitive Char
+            | "real" -> SimplePrimitive Real
+            | "bool" -> SimplePrimitive Bool
+            | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (str.Substring (1, input.Length-2)))
+            | str -> UserType str
 
-    let toEx (ast:ASTNode) : Ex =
+    let toLValue (mutability:ASTNode) (name:ASTNode) (typeName:ASTNode) : LValue = 
+        let isMutable = match mutability.Symbol.Value with
+                            | "let" -> false
+                            | "var" -> true
+        {identity = name.Symbol.Value; 
+        isMutable = isMutable;
+        primitiveType = toPrimitiveType typeName.Symbol.Value}
+
+    (*let toEx (ast:ASTNode) : Ex =
         match ast.Symbol.Value with
         | value when System.Int32.TryParse(value,ref 0) -> Int (System.Int32.Parse(value))
         | value when System.Double.TryParse(value,ref 0.0) -> Real (float value)
         | value -> // must be variable
             let id = value
             let typeId = (ast.Children.Item 0).Symbol.Value
-            Variable (id, typeId)
+            Variable (id, typeId)*)
+    let (|Integer|_|) (str: string) =
+        let mutable intvalue = 0
+        if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
+        else None
+    
+    let (|Character|_|) (str: string) =
+        if str.StartsWith "'" && str.EndsWith "'" && str.Length = 3 then Some(str.[1])
+        else None
+    
+    let (|Real|_|) (str: string) =
+        let mutable realvalue = 0.0
+        if System.Double.TryParse(str, &realvalue) then Some(realvalue)
+        else None
+
+    let (|Bool|_|) (str: string) =
+        let mutable realvalue = 0.0
+        match str with
+            | "true" -> Some(true)
+            | "false" -> Some(false)
+            | _ -> None
+
+    let (|UserType|_|) (str: string) =
+        let mutable realvalue = 0.0
+        match str with
+            | "true" -> Some(true)
+            | "false" -> Some(false)
+            | _ -> None
 
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
@@ -111,8 +210,8 @@ module Analysis =
         | "Initialisation" as state ->
             printfn "%s %s" "Entered" state
             //traverseChildren root
-            let lhs = toEx (root.Children.Item 1)
-            let rhs = toEx (root.Children.Item 2)
+            let lhs = toLValue (root.Children.Item 0) (root.Children.Item 1) ((root.Children.Item 1).Children.Item 0)
+            let rhs = Node (toAST (root.Children.Item 2))
             printfn "%s %s" "Left" state
             Assignment (lhs, rhs)
         | sym -> 
@@ -145,6 +244,7 @@ module Analysis =
                   }
         | Assignment (lhs, rhs) -> 
             state {
+                      (*
                       let (symbolName, symbolVal:Val) = 
                            match (lhs, rhs) with
                            | Variable (name, type') , Int i -> 
@@ -155,10 +255,13 @@ module Analysis =
                               printfn "%s %A" "NOT MATCHED" t 
                               ("not matched", Val.Bool true)
                       do! enterSymbol symbolName symbolVal
+                      *)
+                      return ()
                   }
 
     let analyse (root:ASTNode) : Result<int> = 
       toAST root 
-      |> (fun ast -> evalState (analyseSemantic ast) {symbolList=[Map.empty];ast=ast})
+      
+      //|> (fun ast -> evalState (analyseSemantic ast) {symbolList=[Map.empty];ast=ast})
       |> printfn "%A"
       Success 0
