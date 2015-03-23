@@ -57,7 +57,7 @@ module Main =
 
     [<EntryPoint>]
     let main argv = 
-        let input = File.OpenRead("GoldenCode.bar").ToString();
+        let input = File.ReadAllText "../../GoldenCode.bar"
 
         match parse input with
         | Success astRoot -> 
