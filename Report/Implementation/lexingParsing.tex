@@ -1,0 +1,77 @@
+\chapter{Lexing \& Parsing}
+
+The lexing and parsing part of the compiler is written using the Hime parser generator as chosen in \cref{sec:compiler_compiler_choice}. This chapter describes the features supported by Hime and its uses in the compiler.
+
+\section{Tree Transformations}
+\label{sec:tree_transformations}
+
+The output of running Hime on grammar is a syntax tree. By default the output syntax tree matches the grammar rules one-to-one. That is the syntax tree is a concrete syntax tree (CST). In the later stages of the compiler, many nodes of a CST are unneeded. The following example lists 2 types of nodes not needed in the final syntax tree; adding an extra layer of indirection and altogether superfluous nodes. See \cref{fig:indirection_example}.
+
+\begin{lstlisting}[caption={Starting example grammar}, label={fig:indirection_example}]
+  A -> ( B )
+  B -> C
+\end{lstlisting}
+
+This corresponds to the CST seen in \cref{fig:cst_example}.
+
+\begin{figure}[hbtp]
+\centering
+\caption{Concrete Syntax Tree from without tree transformations. \label{fig:cst_example}}
+\begin{tikzpicture}
+\tikzset{level distance=30pt,sibling distance=20pt}
+\Tree [.A [.( ] [ .B C ] [ .) ] ]
+\end{tikzpicture}
+\end{figure}
+
+In this example the node \emph{B} is not needed as it is simply an alias for \emph{C}. It would be preferable to just have \emph{A} as the root with \emph{C} as a child to \emph{A} in the final syntax tree to be used in later compiler phases. Also, the parentheses do not add any information to the final syntax tree to be used in later phases of the  compiler. The wanted AST can be seen in \cref{fig:wanted_ast}.
+
+\begin{figure}[hbtp]
+\centering
+\caption{The wanted Abstract Syntax Tree. \label{fig:wanted_ast}}
+\begin{tikzpicture}
+\tikzset{level distance=30pt,sibling distance=20pt}
+\Tree [.A [ .C ] ]
+\end{tikzpicture}
+\end{figure}
+
+To solve these two problems, the promote and drop actions can be utilised.
+
+\subsection{Promote Action}
+
+The promote action when applied to a node, replaces its parent node with itself, thereby becoming the new parent node.
+
+The promote action can be applied to \emph{C} as follows to achieve the desired tree.
+
+\begin{lstlisting}[caption={Applying a promote action to the grammar}, label=fig:indirection_example_promote]
+  A -> ( B )
+  B -> C^
+\end{lstlisting}
+
+\begin{figure}[hbtp]
+\centering
+\caption{The result of applying the promote action to \emph{C}. \label{fig:ast_promote}}
+\begin{tikzpicture}
+\tikzset{level distance=30pt,sibling distance=20pt}
+\Tree [.A [.( ] [ .C ] [ .) ] ]
+\end{tikzpicture}
+\end{figure}
+
+\subsection{Drop Action}
+
+The drop action removes the node it is applied to and all its children entirely from the syntax tree. This can be utilised in the example given above to remove the two parentheses that have no meaning to the compiler. Continuing from the result of applying the promote action, the drop action can be applied to the parentheses as follows.
+
+\begin{lstlisting}[caption={Applying a drop action to grammar},label=fig:indirection_example_drop]
+  A -> (! B )!
+  B -> C
+\end{lstlisting}
+
+\begin{figure}[hbtp]
+\centering
+\caption{The result of applying the drop action to \emph{(} and \emph{)}. \label{fig:ast_promote}}
+\begin{tikzpicture}
+\tikzset{level distance=30pt,sibling distance=20pt}
+\Tree [.A [ .C ] ]
+\end{tikzpicture}
+\end{figure}
+
+Using both the promote and drop actions the CST has been transformed into an AST with only the relevant information in it.
