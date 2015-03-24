@@ -11,7 +11,7 @@ actor main := {
       iStep.step := i;
       send heider iStep;
       if(i % 20 = 0){
-        let classic:beer := {brandname := “tuborg”;
+        let classic:beer := {brandname := "tuborg";
                              percentage := 4.6};
         send heider classic;
       }
