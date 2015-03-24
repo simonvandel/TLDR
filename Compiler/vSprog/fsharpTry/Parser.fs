@@ -22,7 +22,7 @@ module Parser =
 
     let parse (srcInput:string) : Result<ASTNode> =
         let task = CompilationTask ()
-        task.AddInputFile "../../grammar"
+        task.AddInputFile "../../grammar.gram"
         task.Mode <- Hime.CentralDogma.Output.Mode.Assembly
         let report = task.Execute()
         let assembly = SDK.AssemblyReflection "vSprogGrammar.dll"
