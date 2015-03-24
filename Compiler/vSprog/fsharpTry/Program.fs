@@ -1,4 +1,4 @@
-﻿namespace vSprog
+namespace vSprog
 
 open vSprog.Parser
 open vSprog.Analysis

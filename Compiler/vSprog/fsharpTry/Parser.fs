@@ -25,16 +25,23 @@ module Parser =
         task.AddInputFile "../../grammar.gram"
         task.Mode <- Hime.CentralDogma.Output.Mode.Assembly
         let report = task.Execute()
-        let assembly = SDK.AssemblyReflection "vSprogGrammar.dll"
+        if report.Errors.Count <> 0 && report.Warnings.Count <> 0 then
+            // error or warnings
+            Failure (report.Errors
+                     |> Seq.append report.Warnings
+                     |> Seq.map (sprintf "%O")
+                     |> List.ofSeq)
+        else 
+            let assembly = SDK.AssemblyReflection "vSprogGrammar.dll"
 
-        let parseResult = (assembly.GetParser<string> (srcInput)).Parse()
+            let parseResult = (assembly.GetParser<string> (srcInput)).Parse()
 
          
-        if parseResult.Errors.Count = 0 && parseResult.IsSuccess then
-            printTree parseResult.Root 0
-            Success parseResult.Root
-        else
-            Failure (parseResult.Errors 
-                     |> Seq.map (sprintf "%O")
-                     |> List.ofSeq
-                     )
+            if parseResult.Errors.Count = 0 && parseResult.IsSuccess then
+                printTree parseResult.Root 0
+                Success parseResult.Root
+            else
+                Failure (parseResult.Errors 
+                         |> Seq.map (sprintf "%O")
+                         |> List.ofSeq
+                         )

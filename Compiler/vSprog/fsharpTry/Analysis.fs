@@ -1,4 +1,4 @@
-﻿namespace vSprog
+namespace vSprog
 
 open Hime.CentralDogma;
 open Hime.Redist;
@@ -74,7 +74,7 @@ module Analysis =
                     |> getValidSymbolTables
                     |> List.reduce mergeSymbolTables)
             | Block statements -> 
-                Some (statements 
+                Some (statements
                     |> List.map (createSymbolTable {outer = currentScope})
                     |> getValidSymbolTables
                     |> List.reduce mergeSymbolTables)
@@ -88,48 +88,82 @@ module Analysis =
             | _ -> None
 
     type Environment =  {
-        symbolList: Map<string, TypeSymbol> list
-        ast:AST
+        symbolTable: Scope
+        //visibleScope: Scope
     }
 
     let openScope : State<unit, Environment> = 
         state {
                 let! state = getState
-                let newState = {state with symbolList = Map.empty :: state.symbolList}
-                do! putState newState
+                return ()
+                // TODO add to symbolTable and update visibleScope
+
+                //let newScope = {parent = Some state.symbolTable; symbols = Map.empty;}
+
+
+                //let newState = {state with
+                    //              symbolTable = newScope
+                  //             }
+                //do! putState newState
               }
 
     let closeScope : State<unit, Environment> = 
         state {
                 let! state = getState
-                do! putState ( match state.symbolList with
-                              | [] -> state
-                              | _::xs -> {state with symbolList = xs}
-                )
+                (*
+
+                let newState = {state with
+                                 symbolTable = match state.symbolTable.outer with
+                                               | None -> failwith "Could not close a scope, because you are already in outermost scope"
+                                               | Some a -> a
+                               }
+
+                do! putState newState
+                *)
+                return ()
+
               }
 
     let enterSymbol (name:string) (type':Val) : State<unit, Environment> =
         state {
                 let! state = getState
-                let newState = {state with symbolList =  state.symbolList.Head.Add (name, (name, type')) ::  state.symbolList.Tail}
-                do! putState newState
+                return ()
+                //let addSymbol = fun (scope:Scope) -> {scope with
+                  //                                     symbols = scope.symbols.Add (name, (name, type'))
+                    //                                 }
+                //let newState = {state with
+                  //               symbolTable = addSymbol state.symbolTable
+                    //           }
+
+                //do! putState newState
               }
 
     let retrieveSymbol (name:string) : State<TypeSymbol option, Environment> =
         state {
                 let! state = getState
-                do! putState state
+                return None
 
-                let res = state.symbolList
-                          |> List.tryPick (fun map -> map.TryFind name)
+                //let currentSymbols = state.symbolTable.symbols
 
+                (*
+
+                // get all symbols visible, and try to find the given symbol
+                let res = Seq.unfold (fun (scope:Scope option) -> 
+                                                        match scope with
+                                                        | None -> None
+                                                        | Some a -> Some (a.symbols, a.parent)) state.symbolTable.parent
+                                |> List.ofSeq
+                                |> fun list -> currentSymbols :: list
+                                |> List.tryPick (fun map -> map.TryFind name)
                 return res
+                *)
               }
 
     let declaredLocally (name:string) : State<bool, Environment> =
         state {
                 let! state = getState
-                return state.symbolList.Head.ContainsKey name
+                return false
+                //return state.symbolTable.symbols.ContainsKey name
               }
 
     let rec toPrimitiveType (input:string) : PrimitiveType =
@@ -222,25 +256,71 @@ module Analysis =
         List.ofSeq (seq { for i in root.Children -> i})
             |> List.map toAST
 
+    let addResults (results:Result<'a> list) : Result<'a> =
+        results
+        |> List.reduce (fun accum elem -> match accum, elem with
+                                                | Failure msg1, Failure msg2 -> Failure (msg1 @ msg2)
+                                                | Failure msg, Success _ -> Failure msg
+                                                | Success a, Success b -> Success b
+                                                | Success a, Failure msg -> Failure msg
+                                                )
+    
     // applies a state workflow to all elements in list
-    let rec forAll (p:('a ->State<unit,'b>)) (list:'a list) : State<unit, 'b> =
+    let rec many (p:('a ->State<Result<unit>,'b>)) (list:'a list) : State<Result<unit> list, 'b> =
         state {
             match list with
-            | [] -> return ()
+            | [] -> return [Success ()]
             | x::xs ->
-                do! p x
-                do! forAll p xs
+                let! z = p x
+                let! zs = many p xs
+                return z::zs
               }
 
-    let rec analyseSemantic (ast:AST) : State<unit,Environment> =
+    let isAlreadyDeclared (name:string) : State<Result<unit>, Environment> =
+        state {
+                let! state = getState
+                (*
+                let currentSymbols = state.symbolTable.symbols.Remove name // do not look for the symbol we are checking for
+
+                // get all symbols visible, and try to find the given symbol
+                let res = Seq.unfold (fun (scope:Scope option) -> 
+                                                        match scope with
+                                                        | None -> None
+                                                        | Some a -> Some (a.symbols, a.parent)) state.symbolTable.parent
+                                |> List.ofSeq
+                                |> fun list -> currentSymbols :: list
+                                |> List.tryPick (fun map -> map.TryFind name)
+
+                match res with
+                | None -> return Success ()
+                | Some a -> return Failure [(sprintf "%A already declared" a)]
+                *)
+                return Failure ["haha"]
+              } 
+        
+    let alreadyDeclaredCheck : State<Result<unit>, Environment> =
+        state {
+                let! state = getState
+                //let allSymbols = state.symbolTable.symbols |> Map.toList |> List.map fst // get all keys
+                //let! res = many isAlreadyDeclared allSymbols
+                //return res |> addResults
+                return Failure ["hah"]
+              }
+
+    let rec analyseSemantic (ast:AST) : State<Result<unit>,Environment> =
         match ast with
         | Program stms -> 
             state {
-                      do! forAll analyseSemantic stms
+                      let! results = many analyseSemantic stms
+                      return results |> addResults
                   }
         | Block stms -> 
             state {
-                      do! forAll analyseSemantic stms
+                      do! openScope
+                      let! results = many analyseSemantic stms
+                      let! declaredCheck = alreadyDeclaredCheck
+                      do! closeScope
+                      return (declaredCheck :: results ) |> addResults
                   }
         | Assignment (lhs, rhs) -> 
             state {
@@ -256,7 +336,7 @@ module Analysis =
                               ("not matched", Val.Bool true)
                       do! enterSymbol symbolName symbolVal
                       *)
-                      return ()
+                      return Failure ["sh"]
                   }
 
     let analyse (root:ASTNode) : Result<int> = 
