@@ -1,4 +1,7 @@
-﻿struct args {argv:[[char]]; argc:int}
+﻿// Det her er fandme en kommentar der vil noget. Parser please ignore this.
+// Main’s receive args er startpoint for alt. args er indbygget 
+// struct args {argv:[[char]]; argc:int}
+
 actor main := {
   receive arguments:args := {
     let initMsg:initialMsg := {length := 3.5; charm := 30};
@@ -18,7 +21,7 @@ actor main := {
 
 actor alcoholic := {
   var promille:int;
-  let drinkBeer(B) : beer -> void := {
+  let drinkBeer(beerMsg) : beer -> void := {
     promille := promille + beerMsg.percentage;
   };
   receive a:iterationStep := {
@@ -33,12 +36,6 @@ struct beer := {
   percentage:real;
   brandname:[char];
 }
-
-let beer:beer := {/*shit*/}
-
-let s:beer
-
-
 struct iterationStep := {
   step:int;
 }
