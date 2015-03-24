@@ -6,7 +6,7 @@
 
 \subsection{Isolation and Independence}
 
-A central principle in this programming language is the use of actors, based on actor-modelling. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when another interacts with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of seperation of processes, which will allow for greater concurrency. Therefore the language tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions.
+A central principle in the programming language described in this report is the use of actors, based on actor-modelling. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when other actors interact with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of separation of processes, which will allow for greater concurrency by letting processes operate on local data instead of global, shared data. Therefore the language tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions as no data is ever accessed by more than one process.
 
 \subsection{Construction of an Actor}
 
@@ -18,11 +18,11 @@ actor <nameOfActor> := {
 }
 \end{lstlisting}
 
-As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword a name is needed as a inditifier of the contruct, which will also serve as the type. It is suggested that this name reflects the role of the actor in a context of use. Noticeably there is not a \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
+As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword, a name is needed as a identifier of the construct, which will also serve as the type of the actor. It is suggested that this name reflects the role of the actor in a context of use. Noticeably there is not a \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
 
 \subsection{Basic actor functionality}
 
-There are four basic funtionalities: \enquote{spawn}, \enquote{kill}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot parse a type as a parameter, but the spawn functionality does this. Due to these and more differences, which follows below, we decided to seperate them syntactically. Actors can also reference themselves with the \enquote{me} keyword.
+There are four basic functionalities: \enquote{spawn}, \enquote{kill}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to these and more differences, which follows below, we decided to separate them syntactically. Actors can also reference themselves with the \enquote{me} keyword.
 
 The \enquote{spawn} functionality is used to create new instances of actors. And example could be:
 
@@ -35,9 +35,7 @@ actor <nameOfActor> := {
 MyActor:<nameOfActor> := spawn <nameOfActor> <message>;
 \end{lstlisting}
 
-As can be seen above, there are four parts of a spawn functionality: an identifier, the keyword, type of actor, and possibly a message. Firstly the identifier is not preceeded by a keyword for muteability, such as \enquote{let} or \enquote{var}. This is left out as the only allowed one would be \enquote{let} and putting that there would imply interchangeability. The reason for the restriction, of not having variable actors, is to stay true to the principle of interaction solely through messages, and by this avoid another degree of race conditions. Changing an actor while there are messages in the queue, would either require a flush of possibly crucial messages, or an unintended evaluation of a message. When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however including this would conflict with a central principle, since it would be a manipulation of an actor without a message.
-
-
+As can be seen above, there are four parts of a spawn functionality: an identifier, the keyword, type of actor, and possibly a message. Firstly the identifier is not preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This is left out as the only allowed one would be \enquote{let} and putting that there would imply interchangeability. The reason for the restriction, of not having variable actors, is to stay true to the principle of interaction solely through messages, and by this avoid another degree of race conditions. Changing an actor while there are messages in the queue, would either require a flush of possibly crucial messages, or an unintended evaluation of a message. When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however including this would conflict with a central principle, since it would be a manipulation of an actor without a message.
 
 %beskeder sent til sig selv, behandles på lige fod med andre beskeder.
 %After an actor has been spawned, it will be possible to send messages to it. This is done with the \enquote{send} keyword. This could be done as follows:
@@ -59,6 +57,6 @@ actor <nameOfActor> := {
 }
 \end{lstlisting}
 
-In this example the receive defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message, and this message is immutable no matter whether or not it was mutable where it was sent from. This is done discourage further use of old messages.
+In this example the receive defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message, and this message is immutable no matter if it was mutable where it was sent from. This is done to discourage further use of old messages.
 
-When an actor is no longer needed, it is possible to discard of it with the \enquote{kill} keyword. As opposed to other languages where \enquote{kill} is called by a parent, kill can only be called by the actor itself. 
+When an actor is no longer needed, it is possible to discard it with the \enquote{kill} keyword. As opposed to other languages where \enquote{kill} is called by a parent, that is the actor that spawned the actor, kill can only be called by the actor itself. 
