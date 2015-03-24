@@ -1,74 +1,46 @@
-let entity alcoholic = {
-  length:int;
-  charm:int;
-  promille:real;
-  let Recieve(n):iterationstep->void ={
-    promille <- promille * 0.95;
-  }
-}
+// Det her er fandme en kommentar der vil noget. Parser please ignore this.
+// Main’s receive args er startpoint for alt. args er indbygget 
+// struct args {argv:[[char]]; argc:int}
 
-a:alcoholic = spawn(alcoholic,)
-
-
-main:[string] -> void;
-let main(argv) =
-{
-  
-
-  var heider:entity <- alcoholic(3,90);
-  var iStep:iterationStep <- iterationStep(int); //hvordan instansierer vi nye structs? (ikke sådan her)
-
-  for i in 0..3600{
-    iStep.step <- i;
-    send(iStep, heider);
-
-    if(i % 20 = 0){
-      send(classic:beer = {brand = tuborg, promille = 4.6}, heider);        //må man lave anynonym struct instansiering
+actor main := {
+  receive arguments:args := {
+    let initMsg:initialMsg := {length := 3.5; charm := 30};
+    var iStep:iterationStep := {};
+    heider:alcoholic := spawn alcoholic initMsg;
+    for i in [0..3600] {
+      iStep.step := i;
+      send heider iStep;
+      if(i % 20 = 0){
+        let classic:beer := {brandname := “tuborg”;
+                             percentage := 4.6};
+        send heider classic;
+      }
     }
-  }
+  };
 }
 
-alcoholic:entity;                           //skal entitydecls have keywords? og hvordan gør man det. (se beerstruct)
-let entity alcoholic(length,charm) = {      //entity constructors? (var1,var2) er entity constructoren, sugar {for var v1<-var1; var v2<-var2;}
-                                            //også må programmøren lave en receive-send functionalitet, hvis entitien skal kunne dele variablen //med andre entities.
-
-  let receive(a):iterationStep -> void = { //skal receive være et keyword, og skal man skrive 'let' foran receive functioner?
-    promille <- promille * 0,95;
- }
-
-  receive:iterationStep -> void;
-  let receive(a) = { 
-    promille <- promille * 0,95;
- }
-
-  receive iterationStep || MSG.step > 5 {  // alternativ metode til receive & msg som keywords
-    MSG.step + 1;                          // den her linje gør ikke noget, og det er med vilje
-    promille <- promille * 0,95;
- }
-  recieve beerMsg(x):beer {
-    promille <- promille + x.percentage;
-  }
-
-  receive(beer) = {
-    promille <- promille + beer.percentage;
-
-  var promille:real;                     //skal man instansiere med en værdi inden brug, og er der defaultværdier? nej tak hilsen krog
-
-  }
+actor alcoholic := {
+  var promille:int;
+  let drinkBeer(beerMsg) : beer -> void := {
+    promille := promille + beerMsg.percentage;
+  };
+  receive a:iterationStep := {
+    promille := promille * 0,95;
+  };
+  receive beerMsg:beer := {
+    drinkBeer(beerMsg);
+  };
 }
 
-beer:struct;                             //hvordan deklarerer vi structs?
-let beer(brand,alcohol) = {              //må man lave structs med constructor? (fuglsang er ikke fan)
-
-  let percentage:real = alchohol;
-  let brandname:string = brand;
-  
+struct beer := {
+  percentage:real;
+  brandname:[char];
+}
+struct iterationStep := {
+  step:int;
 }
 
-
-let struct iterationStep = {
-  var step:int;
-
-  funStuf:void                          // decl af funcs i structs?
-  let funStuf = {//doStuf};
+struct initialMsg := {
+  length:real;
+  charm:int;
 }
