@@ -6,7 +6,7 @@ actor main := {
   receive arguments:args := {
     let initMsg:initialMsg := {length := 3.5; charm := 30};
     var iStep:iterationStep := {};
-    heider:alcoholic := spawn alcoholic initMsg;
+    var heider:alcoholic := spawn alcoholic initMsg;
     for i in [0..3600] {
       iStep.step := i;
       send heider iStep;
@@ -25,7 +25,7 @@ actor alcoholic := {
     promille := promille + beerMsg.percentage;
   };
   receive a:iterationStep := {
-    promille := promille * 0,95;
+    promille := promille * 0.95;
   };
   receive beerMsg:beer := {
     drinkBeer(beerMsg);
