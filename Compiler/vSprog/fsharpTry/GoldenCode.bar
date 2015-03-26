@@ -7,7 +7,7 @@ actor main := {
     let initMsg:initialMsg := {length := 3.5; charm := 30};
     var iStep:iterationStep := {};
     var heider:alcoholic := spawn alcoholic initMsg;
-    for i in [0..3600] {
+    for i in [0 TO 3600] {
       iStep.step := i;
       send heider iStep;
       if(i % 20 = 0){
