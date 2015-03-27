@@ -21,11 +21,11 @@ module CommonTypes =
 
     let (>>=) m f =
         match m with
-        | Success r -> f r
+        | Success r -> r |> f
         | Failure errs -> Failure errs
 
     // State --------------------------------------------
-    type State<'a, 's> = State of ('s -> 'a * 's) 
+    type State<'a, 's> = State of ('s -> 'a * 's)
 
 
     let getState = State (fun s -> (s,s))

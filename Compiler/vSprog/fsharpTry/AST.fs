@@ -79,7 +79,7 @@ module AST =
             let value = int ((root.Children.Item 0).Symbol.Value)
             Constant (SimplePrimitive (Int value))
         | sym -> 
-            printfn "%s%A" "ERROR: No match case for: " sym
+            printfn "ERROR: No match case for: %A" sym
             Error
 
     and traverseChildren (root:ASTNode) : AST list =

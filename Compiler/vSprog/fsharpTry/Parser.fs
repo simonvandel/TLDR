@@ -22,7 +22,7 @@ module Parser =
 
             let parseResult = (assembly.GetParser<string> (srcInput)).Parse()
          
-            if parseResult.Errors.Count = 0 && parseResult.IsSuccess then
+            if parseResult.Errors.Count = 0 && parseResult.IsSuccess then // TODO: Create fail function
                 Success parseResult.Root
             else
                 Failure (parseResult.Errors 

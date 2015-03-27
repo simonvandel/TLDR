@@ -14,16 +14,16 @@ module Main =
 
         let lift m = Success m
 
-        let res = parse input
+        let res = parse input           //Generates hime AST
                   >>= (fun parseTree -> 
                                         //printTree parseTree 0
                                         lift (toAST parseTree))
                   >>= analyse
 
         match res with
-        | Success _ -> printfn "%s" "success"
+        | Success _ -> printfn "success"
         | Failure errs -> 
-            printfn "%s" "Errors:"
+            printfn "Errors:"
             errs |> List.iter (printfn "%s")
 
         System.Console.ReadLine()
