@@ -3,9 +3,12 @@
 open Hime.CentralDogma;
 open Hime.Redist;
 open vSprog.CommonTypes
+open vSprog.AST
 
 module Analysis =
 
+
+    (*
     type Val =
         | Int of int
         | Real of float
@@ -15,38 +18,17 @@ module Analysis =
 
     type TypeSymbol = string * Val // (id, value)
         
-    type Primitive =
-        | Int
-        | Char
-        | Real
-        | Bool
-
-    type PrimitiveType =
-        | SimplePrimitive of Primitive
-        | ListPrimitive of PrimitiveType
-        | Node of AST
-        | UserType of string
-
-    and AST = 
-        | Program of AST list
-        | Block of AST list
-        | Assignment of LValue * PrimitiveType
-        | Error // Only for making it compile temporarily
-
-    and LValue = {
-        identity:string
-        isMutable:bool
-        primitiveType:PrimitiveType
-    }
+    *)
 
     type StatementType = 
         | Decl
         | Init
         | Ass
-        | Reass 
+        | Reass
 
     type Scope = {
-        outer:Scope
+        outer:Scope option
+        level:int list
     }
 
     type SymbolTableEntry = {
@@ -57,6 +39,80 @@ module Analysis =
     }
 
     type SymbolTable = SymbolTableEntry list
+
+    type Environment =  {
+        symbolList: SymbolTable //Map<string, TypeSymbol> list
+        errors: string list
+        scope: Scope
+        scopeCounter: int
+        //ast:AST
+    }
+
+    // applies a state workflow to all elements in list
+    let rec forAll (p:('a ->State<unit,'b>)) (list:'a list) : State<unit, 'b> =
+        state {
+            match list with
+            | [] -> return ()
+            | x::xs ->
+                do! p x
+                do! forAll p xs
+              }
+
+    let openScope : State<unit, Environment> = 
+        state {
+                let! state = getState
+                let newScopeCtr = state.scopeCounter + 1
+                let newState = {state with scope = {outer = Some state.scope; level = newScopeCtr :: state.scope.level}
+                                           scopeCounter = newScopeCtr
+                                }
+                do! putState newState
+              }
+
+    let closeScope : State<unit, Environment> = 
+        state {
+                let! state = getState
+                let newState = {state with scope = {outer = Option.bind (fun sc -> sc.outer) state.scope.outer; level = state.scope.level.Tail}
+                                           //scopeCounter = 0
+                                }
+                do! putState newState
+              }
+
+    let addEntry (entry:SymbolTableEntry) : State<unit, Environment> =
+        state {
+                let! state = getState
+                let newState = {state with symbolList = state.symbolList @ [entry]}  
+                do! putState newState
+              }
+
+    let getScope : State<Scope, Environment> =
+        state {
+            let! stat = getState
+            return stat.scope
+        }
+
+    let rec buildSymbolTable (root:AST) : State<unit, Environment> =
+        match root with
+        | Program stms -> 
+            state {
+                do! forAll buildSymbolTable stms
+            }
+        | Block stms ->
+            state {
+                do! openScope
+                do! forAll buildSymbolTable stms
+                do! closeScope
+            }
+        | Assignment (lValue, primitiveType) ->
+            state {
+                let! scope = getScope
+                let entry = {
+                             error = false;
+                             symbol = lValue;
+                             statementType = Ass;
+                             scope = scope}
+                do! addEntry entry
+            }
+
 
     let mergeSymbolTables sym1 sym2 : SymbolTable =
         List.append sym1 sym2
@@ -69,51 +125,25 @@ module Analysis =
     let rec createSymbolTable (currentScope:Scope) (ast:AST) : SymbolTable option =
         match ast with
             | Program statements -> 
-                Some (statements 
+                Some (statements
                     |> List.map (createSymbolTable currentScope)
                     |> getValidSymbolTables
                     |> List.reduce mergeSymbolTables)
-            | Block statements -> 
-                Some (statements 
-                    |> List.map (createSymbolTable {outer = currentScope})
+            | Block statements ->
+                Some (statements
+                    |> List.map (createSymbolTable {outer = Some currentScope; level = currentScope.level})
                     |> getValidSymbolTables
                     |> List.reduce mergeSymbolTables)
             | Assignment (lValue, primitiveType) -> 
                     let entry = {error = false; symbol = lValue; statementType = Ass; scope = currentScope}
                     match primitiveType with
-                        | Node ast -> match createSymbolTable {outer = currentScope} ast with
+                        | Node ast -> match createSymbolTable {outer = Some currentScope; level = currentScope.level} ast with
                                             | None -> Some [entry]
                                             | Some a -> Some (entry :: a)
                         | _ -> Some [entry]
             | _ -> None
 
-    type Environment =  {
-        symbolList: Map<string, TypeSymbol> list
-        ast:AST
-    }
-
-    let openScope : State<unit, Environment> = 
-        state {
-                let! state = getState
-                let newState = {state with symbolList = Map.empty :: state.symbolList}
-                do! putState newState
-              }
-
-    let closeScope : State<unit, Environment> = 
-        state {
-                let! state = getState
-                do! putState ( match state.symbolList with
-                              | [] -> state
-                              | _::xs -> {state with symbolList = xs}
-                )
-              }
-
-    let enterSymbol (name:string) (type':Val) : State<unit, Environment> =
-        state {
-                let! state = getState
-                let newState = {state with symbolList =  state.symbolList.Head.Add (name, (name, type')) ::  state.symbolList.Tail}
-                do! putState newState
-              }
+    (*
 
     let retrieveSymbol (name:string) : State<TypeSymbol option, Environment> =
         state {
@@ -132,22 +162,11 @@ module Analysis =
                 return state.symbolList.Head.ContainsKey name
               }
 
-    let rec toPrimitiveType (input:string) : PrimitiveType =
-        match input with
-            | "int" -> SimplePrimitive Int
-            | "char" -> SimplePrimitive Char
-            | "real" -> SimplePrimitive Real
-            | "bool" -> SimplePrimitive Bool
-            | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (str.Substring (1, input.Length-2)))
-            | str -> UserType str
+    *)
 
-    let toLValue (mutability:ASTNode) (name:ASTNode) (typeName:ASTNode) : LValue = 
-        let isMutable = match mutability.Symbol.Value with
-                            | "let" -> false
-                            | "var" -> true
-        {identity = name.Symbol.Value; 
-        isMutable = isMutable;
-        primitiveType = toPrimitiveType typeName.Symbol.Value}
+
+
+
 
     (*let toEx (ast:ASTNode) : Ex =
         match ast.Symbol.Value with
@@ -185,52 +204,6 @@ module Analysis =
             | "false" -> Some(false)
             | _ -> None
 
-    let rec toAST (root:ASTNode) : AST =
-        match root.Symbol.Value with
-        | "StatementList" as state -> 
-            printfn "%s %s" "Entered" state
-            let t = traverseChildren root
-            printfn "%s %s" "Left" state
-            Program t
-        | "Statement" as state -> 
-            printfn "%s %s" "Entered" state
-            traverseChildren root
-            printfn "%s %s" "Left" state
-            Error
-        | "Term" as state -> 
-            printfn "%s %s" "Entered" state
-            traverseChildren root
-            printfn "%s %s" "Left" state
-            Error
-        | "Block" as state -> 
-            printfn "%s %s" "Entered" state
-            let t =traverseChildren root
-            printfn "%s %s" "Left" state
-            Block t
-        | "Initialisation" as state ->
-            printfn "%s %s" "Entered" state
-            //traverseChildren root
-            let lhs = toLValue (root.Children.Item 0) (root.Children.Item 1) ((root.Children.Item 1).Children.Item 0)
-            let rhs = Node (toAST (root.Children.Item 2))
-            printfn "%s %s" "Left" state
-            Assignment (lhs, rhs)
-        | sym -> 
-            printfn "%s%A" "ERROR: No match case for: " sym
-            Error
-
-    and traverseChildren (root:ASTNode) : AST list =
-        List.ofSeq (seq { for i in root.Children -> i})
-            |> List.map toAST
-
-    // applies a state workflow to all elements in list
-    let rec forAll (p:('a ->State<unit,'b>)) (list:'a list) : State<unit, 'b> =
-        state {
-            match list with
-            | [] -> return ()
-            | x::xs ->
-                do! p x
-                do! forAll p xs
-              }
 
     let rec analyseSemantic (ast:AST) : State<unit,Environment> =
         match ast with
@@ -259,9 +232,82 @@ module Analysis =
                       return ()
                   }
 
-    let analyse (root:ASTNode) : Result<int> = 
-      toAST root 
-      
-      //|> (fun ast -> evalState (analyseSemantic ast) {symbolList=[Map.empty];ast=ast})
+    let rec isInScope (scopeToCheckIfIn:Scope) (otherScope:Scope) : bool =
+        otherScope = scopeToCheckIfIn || match otherScope.outer with
+                                          | None -> false
+                                          | Some s -> isInScope scopeToCheckIfIn s
+
+    let rec isInSameScope (entries:SymbolTable) : bool =
+        match entries with
+        | [] -> false
+        | x::xs -> 
+            xs
+            |> List.exists (fun elem -> isInScope x.scope elem.scope)  //(fun elem -> elem.scope = x.scope)
+            //|> List.map (fun elem -> Failure [sprintf "Symbol %s already declared in scope" elem.symbol.identity])
+            |> fun x -> x ||  isInSameScope xs
+
+        //Success ()
+
+    let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
+
+        
+        // find alle dupliketter
+        // for hver dupliket a, se om dupliketter b, har b.scope.outer = a.scope eller b.scope = a.scope
+        // første entry af a: er nogen i samme scope af dem under mig i listen?
+        let res = symbolTable
+                    |> Seq.groupBy (fun entry -> entry.symbol.identity)
+                    |> Seq.filter (fun (key, entries) -> entries |> Seq.length > 1)
+                    |> Seq.map (fun (key, entries) -> (key, List.ofSeq entries))
+                    |> Seq.filter (fun (key, entries) -> isInSameScope entries)
+                    |> Seq.map (fun (key, _) -> 
+                              Failure [sprintf "Symbol \"%s\" declared multiple times in same scope." key])
+                    |> List.ofSeq
+
+        match res with
+        | [] -> Success symbolTable
+        | xs -> addResults xs
+
+
+    
+
+    let typecheck (lhs:PrimitiveType) (rhs:PrimitiveType) : Result<unit> =
+        match lhs, rhs with
+        //| lhs', Node ast -> 
+        | lhs', rhs' -> 
+            if lhs' = rhs' 
+            then Success ()
+            else Failure [sprintf "%A does not have same type as %A" lhs' rhs']
+
+
+    let rec typechecker (root:AST) : Result<AST> =
+        match root with
+        | Program stms -> 
+            stms 
+            |> List.map typechecker
+            |> addResults
+        | Block stms ->
+            stms 
+            |> List.map typechecker
+            |> addResults
+        | Assignment (lvalue, primitiveType) -> 
+            typecheck lvalue.primitiveType primitiveType
+            >>= fun _ -> Success root
+        | other -> Failure [sprintf "&s not typechecked"]
+
+    let analyse (root:AST) : Result<int> = 
+      let symbolTable = (evalState (buildSymbolTable root) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}).symbolList
+      //checkHiding symbolTable
+      //|> printfn "%A"
+      typechecker root
       |> printfn "%A"
       Success 0
+      (*
+      root
+      //|> (fun ast -> evalState (analyseSemantic ast) {symbolList=[Map.empty];ast=ast})
+      |> createSymbolTable {outer = None; id = 0}
+      |> fun symbolTableOption -> match symbolTableOption with
+                                  | None -> Failure ["Symbol table generation"]
+                                  | Some symbolTable -> Success (symbolTable)
+      >>= checkHiding
+      >>= (fun _ -> Success 0)
+      *)

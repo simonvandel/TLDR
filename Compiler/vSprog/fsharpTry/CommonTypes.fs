@@ -10,6 +10,20 @@ module CommonTypes =
     let  (|Success|Failure|) = 
         function Choice1Of2 x -> Success x | Choice2Of2 x -> Failure x
 
+    let addResults (results:Result<'a> list) : Result<'a> =
+        results
+        |> List.reduce (fun accum elem -> match accum, elem with
+                                                | Failure msg1, Failure msg2 -> Failure (msg1 @ msg2)
+                                                | Failure msg, Success _ -> Failure msg
+                                                | Success a, Success b -> Success b
+                                                | Success a, Failure msg -> Failure msg
+                                                )
+
+    let (>>=) m f =
+        match m with
+        | Success r -> f r
+        | Failure errs -> Failure errs
+
     // State --------------------------------------------
     type State<'a, 's> = State of ('s -> 'a * 's) 
 
