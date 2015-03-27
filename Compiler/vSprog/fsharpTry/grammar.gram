@@ -101,7 +101,7 @@ grammar vSprogGrammar{
     For              -> FOR Ids IN List Block;
 
     /*--------- If ---------*/
-    If               -> IF Tuple Block;
+    If               -> IF Operation Block;
 
     /*--------- Block ---------*/
     Block            -> BLOCKSTART Body BLOCKEND
@@ -113,8 +113,8 @@ grammar vSprogGrammar{
                       | Factor^;
     Factor           -> Factor PZEROOPERATOR^ Term
                       | Term^;
-    Term             -> Operand;
-                      //| LPARENS! Operation^ RPARENS!;
+    Term             -> Operand
+                      | LPARENS! Operation^ RPARENS!;
     Operand	     -> Block
             	      | NUMBER
         	      | IDENTIFIER
@@ -176,7 +176,9 @@ grammar vSprogGrammar{
                       | Operation;
 
     /*--------- Tuple ---------*/
-    Tuple            -> LPARENS Body RPARENS;
+    Tuple            -> LPARENS Operations COMMA Operation RPARENS;
+    Operations       -> Operations COMMA Operation
+    		      | Operation;
 
     /*--------- Accessor ---------*/
 
