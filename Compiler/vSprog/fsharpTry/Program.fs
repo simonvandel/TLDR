@@ -5,6 +5,7 @@ open vSprog.Analysis
 open vSprog.CommonTypes
 open vSprog.AST
 open vSprog.ParserUtils
+open System.IO
 
 module Main =
     [<EntryPoint>]
@@ -15,7 +16,7 @@ module Main =
 
         let res = parse input
                   >>= (fun parseTree -> 
-                                        printTree parseTree 0
+                                        //printTree parseTree 0
                                         lift (toAST parseTree))
                   >>= analyse
 

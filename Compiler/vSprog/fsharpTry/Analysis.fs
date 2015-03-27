@@ -7,19 +7,6 @@ open vSprog.AST
 
 module Analysis =
 
-
-    (*
-    type Val =
-        | Int of int
-        | Real of float
-        | Char of char
-        | Bool of bool
-        | List of Val list
-
-    type TypeSymbol = string * Val // (id, value)
-        
-    *)
-
     type StatementType = 
         | Decl
         | Init
@@ -41,11 +28,10 @@ module Analysis =
     type SymbolTable = SymbolTableEntry list
 
     type Environment =  {
-        symbolList: SymbolTable //Map<string, TypeSymbol> list
+        symbolList: SymbolTable
         errors: string list
         scope: Scope
         scopeCounter: int
-        //ast:AST
     }
 
     // applies a state workflow to all elements in list
@@ -112,81 +98,7 @@ module Analysis =
                              scope = scope}
                 do! addEntry entry
             }
-
-
-    let mergeSymbolTables sym1 sym2 : SymbolTable =
-        List.append sym1 sym2
-
-    let getValidSymbolTables symbolTableOptions = 
-        symbolTableOptions
-            |> List.filter Option.isSome
-            |> List.map Option.get
-
-    let rec createSymbolTable (currentScope:Scope) (ast:AST) : SymbolTable option =
-        match ast with
-            | Program statements -> 
-                Some (statements
-                    |> List.map (createSymbolTable currentScope)
-                    |> getValidSymbolTables
-                    |> List.reduce mergeSymbolTables)
-            | Block statements ->
-                Some (statements
-                    |> List.map (createSymbolTable {outer = Some currentScope; level = currentScope.level})
-                    |> getValidSymbolTables
-                    |> List.reduce mergeSymbolTables)
-            | Assignment (lValue, primitiveType) -> 
-                    let entry = {error = false; symbol = lValue; statementType = Ass; scope = currentScope}
-                    match primitiveType with
-                        | Node ast -> match createSymbolTable {outer = Some currentScope; level = currentScope.level} ast with
-                                            | None -> Some [entry]
-                                            | Some a -> Some (entry :: a)
-                        | _ -> Some [entry]
-            | _ -> None
-
-    (*
-
-    let retrieveSymbol (name:string) : State<TypeSymbol option, Environment> =
-        state {
-                let! state = getState
-                return None
-
-                //let currentSymbols = state.symbolTable.symbols
-
-                (*
-
-                // get all symbols visible, and try to find the given symbol
-                let res = Seq.unfold (fun (scope:Scope option) -> 
-                                                        match scope with
-                                                        | None -> None
-                                                        | Some a -> Some (a.symbols, a.parent)) state.symbolTable.parent
-                                |> List.ofSeq
-                                |> fun list -> currentSymbols :: list
-                                |> List.tryPick (fun map -> map.TryFind name)
-                return res
-                *)
-              }
-
-    let declaredLocally (name:string) : State<bool, Environment> =
-        state {
-                let! state = getState
-                return false
-                //return state.symbolTable.symbols.ContainsKey name
-              }
-
-    *)
-
-
-
-
-
-    (*let toEx (ast:ASTNode) : Ex =
-        match ast.Symbol.Value with
-        | value when System.Int32.TryParse(value,ref 0) -> Int (System.Int32.Parse(value))
-        | value when System.Double.TryParse(value,ref 0.0) -> Real (float value)
-        | value -> // must be variable
-            let id = value
-            let typeId = (ast.Children.Item 0).Symbol.Value
-            Variable (id, typeId)*)
+    
     let (|Integer|_|) (str: string) =
         let mutable intvalue = 0
         if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
@@ -216,32 +128,6 @@ module Analysis =
             | _ -> None
 
 
-    let rec analyseSemantic (ast:AST) : State<unit,Environment> =
-        match ast with
-        | Program stms -> 
-            state {
-                      do! forAll analyseSemantic stms
-                  }
-        | Block stms -> 
-            state {
-                      do! forAll analyseSemantic stms
-                  }
-        | Assignment (lhs, rhs) -> 
-            state {
-                      (*
-                      let (symbolName, symbolVal:Val) = 
-                           match (lhs, rhs) with
-                           | Variable (name, type') , Int i -> 
-                              (name, Val.Int i)
-                           | Variable (name, type') , Real r -> 
-                              (name, Val.Real r)
-                           | _ as t , value ->
-                              printfn "%s %A" "NOT MATCHED" t 
-                              ("not matched", Val.Bool true)
-                      do! enterSymbol symbolName symbolVal
-                      *)
-                      return ()
-                  }
 
     let rec isInScope (scopeToCheckIfIn:Scope) (otherScope:Scope) : bool =
         otherScope = scopeToCheckIfIn || match otherScope.outer with
@@ -260,8 +146,6 @@ module Analysis =
         //Success ()
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
-
-        
         // find alle dupliketter
         // for hver dupliket a, se om dupliketter b, har b.scope.outer = a.scope eller b.scope = a.scope
         // første entry af a: er nogen i samme scope af dem under mig i listen?
@@ -277,9 +161,6 @@ module Analysis =
         match res with
         | [] -> Success symbolTable
         | xs -> addResults xs
-
-
-    
 
     let typecheck (lhs:PrimitiveType) (rhs:PrimitiveType) : Result<unit> =
         match lhs, rhs with
