@@ -13,12 +13,13 @@ A central principle in the programming language described in this report is the 
 The syntactical contruction of an actor is as follows:
 
 \begin{lstlisting}
-actor <nameOfActor> := {
+actor <identifier> := {
   <functionality>
 }
 \end{lstlisting}
 
-As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword, a name is needed as a identifier of the construct, which will also serve as the type of the actor. It is suggested that this name reflects the role of the actor in a context of use. Noticeably there is not a \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
+As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the construct is needed, which will serve as the of type the actor. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
+
 
 \subsection{Basic actor functionality}
 
@@ -28,11 +29,11 @@ The \enquote{spawn} functionality is used to create new instances of actors. And
 
 \label{actorfuncSpawn}
 \begin{lstlisting}
-actor <nameOfActor> := {
+actor <identifier> := {
  <functionality>
 }
 
-MyActor:<nameOfActor> := spawn <nameOfActor> <message>;
+MyActor:<identifier> := spawn <identifier> <message>;
 \end{lstlisting}
 
 As can be seen above, there are four parts of a spawn functionality: an identifier, the keyword, type of actor, and possibly a message. Firstly the identifier is not preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This is left out as the only allowed one would be \enquote{let} and putting that there would imply interchangeability. The reason for the restriction, of not having variable actors, is to stay true to the principle of interaction solely through messages, and by this avoid another degree of race conditions. Changing an actor while there are messages in the queue, would either require a flush of possibly crucial messages, or an unintended evaluation of a message. When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however including this would conflict with a central principle, since it would be a manipulation of an actor without a message.

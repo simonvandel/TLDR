@@ -1,0 +1,12 @@
+Hvorvidt vi skal inskærpe vores fokus til diskret og/eller continuerlig simulering.
+Hvorvidt vi kan betragte perioderne imellem steps i en diskret simulering, som små continuerlige simuleringer.
+Hvorvidt vi vil ligge fokus på problemer hvor vi ved hvor mange beskeder vi får, eller ej, eller begge.
+Hvordan afhængigheder bør modeleres & distribueres? (tråde med join kontra actors med beskeder)
+Hvorvidt en message queue er unødvendigt overhead / en meningsfyldt abstraktion.
+
+
+ovenstående giver problemdomæne som leder os til en teoretisk løsning.
+
+Udfra denne teoretiske løsning, defineres og begrundes sprogets opbygning, både syntaktisk og semantisk.
+
+Herfra skabes en compiler med flere faser, som kan realisere den teoretiske løsning.
