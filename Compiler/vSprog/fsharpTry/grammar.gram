@@ -151,7 +151,7 @@ grammar vSprogGrammar{
                       | TypeDecl^;
 
     Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    TypeDecls        -> TypeDecls SEMICOLON! TypeDecl
+    TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
                       | TypeDecls SEMICOLON!
                       | TypeDecl^;
 

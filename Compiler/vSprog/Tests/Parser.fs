@@ -110,5 +110,5 @@ module AST =
     let ``When syntax for struct is given with 2 fields, expect struct AST``() =
         let field1InBlock = ("field1", SimplePrimitive Primitive.Int)
         let field2InBlock = ("field2", SimplePrimitive Primitive.Real)
-        testParseWith "struct structName := {field1:int; field2:real}"
+        debugTestParseWith "struct structName := {field1:int; field2:real;}"
         <| should equal (Struct ("structName", [ field1InBlock; field2InBlock ]))

@@ -18,6 +18,8 @@ module Main =
                   >>= (fun parseTree -> 
                                         printTree parseTree 0
                                         lift (toAST parseTree))
+                  >>= fun ast -> printfn "%A" ast
+                                 Success ast
                   //>>= analyse
 
         match res with
