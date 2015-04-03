@@ -13,6 +13,7 @@ module AST =
     type PrimitiveValue =
         | Int of int
         | Real of float
+        | Bool of bool
 
     type PrimitiveType =
         | SimplePrimitive of Primitive
@@ -26,6 +27,7 @@ module AST =
         | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
         | Constant of PrimitiveType * PrimitiveValue
         | Actor of string // name FIXME: Add more fields
+        | If of AST * AST // conditional * body
         | Error // Only for making it compile temporarily
 
     and LValue = {
@@ -46,7 +48,7 @@ module AST =
             | "int" -> SimplePrimitive (Primitive.Int)
             | "char" -> SimplePrimitive Char
             | "real" -> SimplePrimitive Primitive.Real
-            | "bool" -> SimplePrimitive Bool
+            | "bool" -> SimplePrimitive Primitive.Bool
             | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (str.Substring (1, input.Length-2)))
             | str -> UserType str
 
@@ -98,6 +100,16 @@ module AST =
         | "Actor" ->
             let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             Actor name
+        | "If" ->
+            let conditional = toAST (root.Children.Item 0)
+            let body = toAST (root.Children.Item 1)
+            If (conditional, body)
+        | "Boolean" ->
+            let value = match (root.Children.Item 0).Symbol.Value with
+                        | "true" -> true
+                        | "false" -> false
+                        | _ -> failwith "something terribly went wrong in toAST boolean"
+            Constant (SimplePrimitive Primitive.Bool, Bool value)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

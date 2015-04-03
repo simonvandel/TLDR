@@ -72,3 +72,22 @@ module AST =
         let rhs = Constant (SimplePrimitive Primitive.Int, Int 5)
         testParseWith "var x:int := 5"
         <| should equal (Assignment (lValue, rhs))
+
+    (* -------------------- If statements ---------------------- *)
+
+    [<Test>]
+    let ``When syntax for if statement is given with empty body, expect 'if' AST``() =
+        let conditional = Constant (SimplePrimitive Primitive.Bool, Bool true)
+        let body = Block []
+        debugTestParseWith "if ( true ) {}"
+        <| should equal (If (conditional, body))
+
+    [<Test>]
+    let ``When syntax for if statement is given with simple body, expect 'if' AST``() =
+        let conditional = Constant (SimplePrimitive Primitive.Bool, Bool false)
+        let assignInBody = Assignment 
+                            ({identity = "x"; isMutable = true; primitiveType = SimplePrimitive Primitive.Int} // lvalue
+                            , Constant (SimplePrimitive Primitive.Int, Int 23)) // value
+        let body = Block [ assignInBody ]
+        debugTestParseWith "if ( false ) {var x:int := 23}"
+        <| should equal (If (conditional, body))

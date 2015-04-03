@@ -55,6 +55,8 @@ grammar vSprogGrammar{
     INT           -> [1-9][0-9]* | '0'; 
     REAL          -> ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+); 
 
+    BOOL          -> 'true' | 'false';
+
     /*--------- Chars ---------*/
     STRING        -> '"'[a-zA-Z_0-9]*'"';
     CHAR          -> '\''[a-zA-Z_0-9]|' ''\'';
@@ -100,7 +102,7 @@ grammar vSprogGrammar{
     For              -> FOR Ids IN List Block;
 
     /*--------- If ---------*/
-    If               -> IF Operation Block;
+    If               -> IF! Operation Block;
 
     /*--------- Block ---------*/
     Block            -> BLOCKSTART! Body BLOCKEND!
@@ -113,15 +115,17 @@ grammar vSprogGrammar{
     Factor           -> Factor PZEROOPERATOR Term
                       | Term^;
     Term             -> Operand^
-                      | LPARENS! Operation RPARENS!;
+                      | LPARENS! Operation^ RPARENS!;
     Operand	         -> Block
                       | Integer^
             	        | Real^
+                      | Boolean^
         	            | IDENTIFIER
                       | IDENTIFIER Accessor
                       | Literals
                       | Invocation;
 
+    Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
 
