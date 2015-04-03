@@ -6,9 +6,9 @@ open vSprog.CommonTypes
 
 module Parser =
 
-    let parse (srcInput:string) : Result<ASTNode> =
+    let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> =
         let task = CompilationTask ()
-        task.AddInputFile "../../grammar.gram"
+        task.AddInputFile grammarPath
         task.Mode <- Hime.CentralDogma.Output.Mode.Assembly
         let report = task.Execute()
         if report.Errors.Count <> 0 && report.Warnings.Count <> 0 then

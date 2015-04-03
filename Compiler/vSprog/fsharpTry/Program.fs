@@ -14,11 +14,11 @@ module Main =
 
         let lift m = Success m
 
-        let res = parse input           //Generates hime AST
+        let res = parse input "../../grammar.gram"           //Generates hime AST
                   >>= (fun parseTree -> 
-                                        //printTree parseTree 0
+                                        printTree parseTree 0
                                         lift (toAST parseTree))
-                  >>= analyse
+                  //>>= analyse
 
         match res with
         | Success _ -> printfn "success"

@@ -54,7 +54,6 @@ grammar vSprogGrammar{
     /*--------- Numbers ---------*/
     INT           -> [1-9][0-9]* | '0'; 
     REAL          -> ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+); 
-    NUMBER        -> INT | REAL;
 
     /*--------- Chars ---------*/
     STRING        -> '"'[a-zA-Z_0-9]*'"';
@@ -67,16 +66,16 @@ grammar vSprogGrammar{
 
     Body             -> Body SEMICOLON! Line
                       | Body SEMICOLON!
-                      | Line;
+                      | Line^;
 
-    Line             -> Expression;
+    Line             -> Expression^;
 
     /*--------- Expression ---------*/
-    Expression       -> Assignment
-                      | Declaration
-                      | Operation
+    Expression       -> Assignment^
+                      | Declaration^
+                      | Operation^
 		                  | Spawn
-                      | Receive
+                      | Receive^
                       | Return
                       | Send
                       | If
@@ -94,8 +93,8 @@ grammar vSprogGrammar{
     /*--------- Wait ---------*/
     Wait             -> WAIT Types;
 
-    /*--------- Recieve ---------*/
-    Receive          -> RECEIVE DecoratedID ASSIGN Block;
+    /*--------- Receive ---------*/
+    Receive          -> RECEIVE! DecoratedID ASSIGN! Block;
 
     /*--------- For ---------*/
     For              -> FOR Ids IN List Block;
@@ -104,23 +103,27 @@ grammar vSprogGrammar{
     If               -> IF Operation Block;
 
     /*--------- Block ---------*/
-    Block            -> BLOCKSTART Body BLOCKEND
-                      | BLOCKSTART BLOCKEND;
+    Block            -> BLOCKSTART! Body BLOCKEND!
+                      | BLOCKSTART! BLOCKEND!;
 
     /*--------- Operation ---------*/
-    Operation        -> Operation PONEOPERATOR^ Factor
+    Operation        -> Operation PONEOPERATOR Factor
                       | Operation Logic Factor
                       | Factor^;
-    Factor           -> Factor PZEROOPERATOR^ Term
+    Factor           -> Factor PZEROOPERATOR Term
                       | Term^;
-    Term             -> Operand
-                      | LPARENS! Operation^ RPARENS!;
+    Term             -> Operand^
+                      | LPARENS! Operation RPARENS!;
     Operand	         -> Block
-            	        | NUMBER
+                      | Integer^
+            	        | Real^
         	            | IDENTIFIER
                       | IDENTIFIER Accessor
                       | Literals
                       | Invocation;
+
+    Integer          -> INT;
+    Real             -> REAL;
 
     Logic            -> EQUALS;
 
@@ -131,7 +134,7 @@ grammar vSprogGrammar{
     Invocation       -> IDENTIFIER LPARENS Ids? RPARENS;
 
     /*--------- Assignment ---------*/
-    Assignment       -> Assignable ASSIGN Operation;
+    Assignment       -> Assignable ASSIGN! Operation;
 
     /*--------- Assignable ---------*/
     Assignable       -> DecoratedID
@@ -139,7 +142,7 @@ grammar vSprogGrammar{
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct
-                      | Actor
+                      | Actor^
                       | Initialisation^
                       | TypeDecl;
 
@@ -148,7 +151,7 @@ grammar vSprogGrammar{
                       | TypeDecls SEMICOLON
                       | TypeDecl^;
 
-    Actor            -> ACTOR DecoratedID ASSIGN Block;
+    Actor            -> ACTOR! DecoratedID ASSIGN! Block;
 
     Initialisation   -> LET DecoratedID ASSIGN! Operation
                       | VAR DecoratedID ASSIGN^ Operation;
@@ -183,7 +186,7 @@ grammar vSprogGrammar{
     /*--------- Accessor ---------*/
 
     Accessor         -> DOT IDENTIFIER
-                      | DOT STARTLIST NUMBER ENDLIST
+                      | DOT STARTLIST INT ENDLIST
                       | DOT IDENTIFIER Accessor;
 
     /*--------- ForLoop ---------*/

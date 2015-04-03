@@ -5,7 +5,7 @@ open Hime.Redist
 
 module AST =
     type Primitive =
-        | Int of int
+        | Int
         | Char
         | Real
         | Bool
@@ -21,6 +21,7 @@ module AST =
         | Block of AST list
         | Assignment of LValue * PrimitiveType
         | Constant of PrimitiveType
+        | Actor of string // name FIXME: Add more fields
         | Error // Only for making it compile temporarily
 
     and LValue = {
@@ -31,7 +32,7 @@ module AST =
 
     let rec toPrimitiveType (input:string) : PrimitiveType =
         match input with
-            | "int" -> SimplePrimitive (Int 0)
+            | "int" -> SimplePrimitive (Int)
             | "char" -> SimplePrimitive Char
             | "real" -> SimplePrimitive Real
             | "bool" -> SimplePrimitive Bool
@@ -76,8 +77,14 @@ module AST =
             //printfn "%s %s" "Left" state
             Assignment (lhs, rhs)
         | "Integer" ->
-            let value = int ((root.Children.Item 0).Symbol.Value)
-            Constant (SimplePrimitive (Int value))
+            //let value = int ((root.Children.Item 0).Symbol.Value)
+            Constant (SimplePrimitive (Int)) // FIXME: lav en int type. Lige nu bliver værdien af int konstanten ikke gemt
+        | "Real" ->
+            //let value = float ((root.Children.Item 0).Symbol.Value)
+            Constant (SimplePrimitive (Real)) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
+        | "Actor" ->
+            let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            Actor name
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error
