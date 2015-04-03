@@ -64,8 +64,8 @@ grammar vSprogGrammar{
     /*--------- Program ---------*/
     Program          -> Body^;
 
-    Body             -> Body SEMICOLON! Line
-                      | Body SEMICOLON!
+    Body             -> Body^ SEMICOLON! Line^
+                      | Body^ SEMICOLON!
                       | Line^;
 
     Line             -> Expression^;
@@ -74,12 +74,12 @@ grammar vSprogGrammar{
     Expression       -> Assignment^
                       | Declaration^
                       | Operation^
-		                  | Spawn
+		                  | Spawn^
                       | Receive^
-                      | Return
-                      | Send
-                      | If
-                      | For;
+                      | Return^
+                      | Send^
+                      | If^
+                      | For^;
                       //| Match;
 
     Spawn            -> LET DecoratedID ASSIGN SPAWN IDENTIFIER Operation
@@ -141,10 +141,10 @@ grammar vSprogGrammar{
                       | IDENTIFIER Accessor;
 
     /*--------- Declaration ---------*/
-    Declaration      -> Struct
+    Declaration      -> Struct^
                       | Actor^
                       | Initialisation^
-                      | TypeDecl;
+                      | TypeDecl^;
 
     Struct           -> STRUCT IDENTIFIER ASSIGN BLOCKSTART TypeDecls? BLOCKEND;
     TypeDecls        -> TypeDecls SEMICOLON TypeDecl
@@ -154,7 +154,7 @@ grammar vSprogGrammar{
     Actor            -> ACTOR! DecoratedID ASSIGN! Block;
 
     Initialisation   -> LET DecoratedID ASSIGN! Operation
-                      | VAR DecoratedID ASSIGN^ Operation;
+                      | VAR DecoratedID ASSIGN! Operation;
 
     DecoratedID      -> IDENTIFIER LPARENS! Ids? RPARENS! COLON! Types
                       | TypeDecl^

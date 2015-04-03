@@ -10,17 +10,21 @@ module AST =
         | Real
         | Bool
 
+    type PrimitiveValue =
+        | Int of int
+        | Real of float
+
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
-        | Node of AST
+        | Node of AST // FIXME: do we need this?
         | UserType of string
 
     and AST = 
         | Program of AST list
         | Block of AST list
-        | Assignment of LValue * PrimitiveType
-        | Constant of PrimitiveType
+        | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
+        | Constant of PrimitiveType * PrimitiveValue
         | Actor of string // name FIXME: Add more fields
         | Error // Only for making it compile temporarily
 
@@ -30,11 +34,18 @@ module AST =
         primitiveType:PrimitiveType
     }
 
+    and AssignmentStruct = {
+        identity:string 
+        isMutable:bool 
+        declType:PrimitiveType 
+        rhs:AST
+        }
+
     let rec toPrimitiveType (input:string) : PrimitiveType =
         match input with
-            | "int" -> SimplePrimitive (Int)
+            | "int" -> SimplePrimitive (Primitive.Int)
             | "char" -> SimplePrimitive Char
-            | "real" -> SimplePrimitive Real
+            | "real" -> SimplePrimitive Primitive.Real
             | "bool" -> SimplePrimitive Bool
             | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (str.Substring (1, input.Length-2)))
             | str -> UserType str
@@ -72,16 +83,18 @@ module AST =
         | "Initialisation" as state ->
             //printfn "%s %s" "Entered" state
             //traverseChildren root
-            let lhs = toLValue (root.Children.Item 0) (root.Children.Item 1) ((root.Children.Item 1).Children.Item 0)
-            let rhs = Node (toAST (root.Children.Item 2))
+            let name = ((root.Children.Item 1).Children.Item 0)
+            let typeName = ((root.Children.Item 1).Children.Item 1).Children.Item 0
+            let lhs = toLValue (root.Children.Item 0) name typeName
+            let rhs = toAST (root.Children.Item 2) //Node (toAST (root.Children.Item 2))
             //printfn "%s %s" "Left" state
             Assignment (lhs, rhs)
         | "Integer" ->
-            //let value = int ((root.Children.Item 0).Symbol.Value)
-            Constant (SimplePrimitive (Int)) // FIXME: lav en int type. Lige nu bliver værdien af int konstanten ikke gemt
+            let value = Int (int ((root.Children.Item 0).Symbol.Value))
+            Constant (SimplePrimitive (Primitive.Int), value) // FIXME: lav en int type. Lige nu bliver værdien af int konstanten ikke gemt
         | "Real" ->
-            //let value = float ((root.Children.Item 0).Symbol.Value)
-            Constant (SimplePrimitive (Real)) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
+            let value = Real ( float ((root.Children.Item 0).Symbol.Value))
+            Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
             let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             Actor name

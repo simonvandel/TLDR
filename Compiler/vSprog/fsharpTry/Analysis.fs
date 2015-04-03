@@ -181,9 +181,10 @@ module Analysis =
             stms 
             |> List.map typechecker
             |> addResults
-        | Assignment (lvalue, primitiveType) -> 
-            typecheck lvalue.primitiveType primitiveType
-            >>= fun _ -> Success root
+        | Assignment (lvalue, rhs) -> 
+            //typecheck lvalue.primitiveType rhs
+            //>>= fun _ -> Success root
+            Failure ["assignment typecheck not implemented"]
         | other -> Failure [sprintf "&s not typechecked"]
 
     let analyse (root:AST) : Result<int> = 
