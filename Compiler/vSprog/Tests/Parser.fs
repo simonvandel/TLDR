@@ -55,7 +55,7 @@ module AST =
     [<Test>]
     let ``When actor syntax is given with empty body, expect actor AST``() =
         testParseWith "actor main := {}"
-        <| should equal (Actor "main")
+        <| should equal (Actor ("main", Block []))
 
     (* -------------------- Initialisation ---------------------- *)
 
@@ -79,7 +79,7 @@ module AST =
     let ``When syntax for if statement is given with empty body, expect 'if' AST``() =
         let conditional = Constant (SimplePrimitive Primitive.Bool, Bool true)
         let body = Block []
-        debugTestParseWith "if ( true ) {}"
+        testParseWith "if ( true ) {}"
         <| should equal (If (conditional, body))
 
     [<Test>]
@@ -89,5 +89,26 @@ module AST =
                             ({identity = "x"; isMutable = true; primitiveType = SimplePrimitive Primitive.Int} // lvalue
                             , Constant (SimplePrimitive Primitive.Int, Int 23)) // value
         let body = Block [ assignInBody ]
-        debugTestParseWith "if ( false ) {var x:int := 23}"
+        testParseWith "if ( false ) {var x:int := 23}"
         <| should equal (If (conditional, body))
+
+
+    (* -------------------- Struct ---------------------- *)
+
+    [<Test>]
+    let ``When syntax for struct is given with 0 fields, expect struct AST``() =
+        testParseWith "struct structName := {}"
+        <| should equal (Struct ("structName", []))
+
+    [<Test>]
+    let ``When syntax for struct is given with 1 field, expect struct AST``() =
+        let fieldInBlock = ("field1", SimplePrimitive Primitive.Int)
+        testParseWith "struct structName := {field1:int}"
+        <| should equal (Struct ("structName", [ fieldInBlock ]))
+
+    [<Test>]
+    let ``When syntax for struct is given with 2 fields, expect struct AST``() =
+        let field1InBlock = ("field1", SimplePrimitive Primitive.Int)
+        let field2InBlock = ("field2", SimplePrimitive Primitive.Real)
+        testParseWith "struct structName := {field1:int; field2:real}"
+        <| should equal (Struct ("structName", [ field1InBlock; field2InBlock ]))

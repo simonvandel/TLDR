@@ -15,18 +15,24 @@ module AST =
         | Real of float
         | Bool of bool
 
+    
+    
+
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
         | Node of AST // FIXME: do we need this?
         | UserType of string
 
+    and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
+
     and AST = 
         | Program of AST list
         | Block of AST list
         | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
         | Constant of PrimitiveType * PrimitiveValue
-        | Actor of string // name FIXME: Add more fields
+        | Actor of string * AST // name, body FIXME: Add more fields?
+        | Struct of string * TypeDeclaration list // name, body FIXME: Add more fields?
         | If of AST * AST // conditional * body
         | Error // Only for making it compile temporarily
 
@@ -99,7 +105,8 @@ module AST =
             Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
             let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
-            Actor name
+            let block = toAST (root.Children.Item 1)
+            Actor (name, block)
         | "If" ->
             let conditional = toAST (root.Children.Item 0)
             let body = toAST (root.Children.Item 1)
@@ -108,8 +115,28 @@ module AST =
             let value = match (root.Children.Item 0).Symbol.Value with
                         | "true" -> true
                         | "false" -> false
-                        | _ -> failwith "something terribly went wrong in toAST boolean"
+                        | _ -> failwith "Something terribly went wrong in toAST boolean. This should never be reached."
             Constant (SimplePrimitive Primitive.Bool, Bool value)
+
+        | "Struct" ->
+            let name = (root.Children.Item 0).Symbol.Value
+            if root.Children.Count = 1 then
+                Struct (name, []) // there might only be a name available for the struct; empty block
+            else
+                match (root.Children.Item 1).Symbol.Value with
+                | "TypeDecl" -> 
+                    let fieldName = ((root.Children.Item 1).Children.Item 0).Symbol.Value
+                    let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Symbol.Value
+                    Struct (name, [(fieldName, toPrimitiveType typeName)])
+                | "TypeDecls" ->
+                    let blocks = seq { for c in (root.Children.Item 1).Children do
+                                          let fieldName = (c.Children.Item 0).Symbol.Value
+                                          let typeName = ((c.Children.Item 1).Children.Item 0).Symbol.Value    
+                                          yield (fieldName, toPrimitiveType typeName)                        
+                                 }
+                                 |> List.ofSeq
+                    Struct (name, blocks)
+                | err -> failwith (sprintf "This should never be reached: %s" err)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

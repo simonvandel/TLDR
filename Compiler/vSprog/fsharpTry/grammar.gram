@@ -150,9 +150,9 @@ grammar vSprogGrammar{
                       | Initialisation^
                       | TypeDecl^;
 
-    Struct           -> STRUCT IDENTIFIER ASSIGN BLOCKSTART TypeDecls? BLOCKEND;
-    TypeDecls        -> TypeDecls SEMICOLON TypeDecl
-                      | TypeDecls SEMICOLON
+    Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
+    TypeDecls        -> TypeDecls SEMICOLON! TypeDecl
+                      | TypeDecls SEMICOLON!
                       | TypeDecl^;
 
     Actor            -> ACTOR! DecoratedID ASSIGN! Block;
