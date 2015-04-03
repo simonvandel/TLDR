@@ -75,9 +75,9 @@ grammar vSprogGrammar{
     Expression       -> Assignment
                       | Declaration
                       | Operation
-		      | Spawn
+		                  | Spawn
                       | Receive
-		      | Return
+                      | Return
                       | Send
                       | If
                       | For;
@@ -86,7 +86,7 @@ grammar vSprogGrammar{
     Spawn            -> LET DecoratedID ASSIGN SPAWN IDENTIFIER Operation
     		              | VAR DecoratedID ASSIGN SPAWN IDENTIFIER Operation;
 
-    Send	         -> SEND IDENTIFIER Operation;
+    Send	           -> SEND IDENTIFIER Operation;
 
     /*--------- Return ---------*/
     Return           -> RETURN Operation;
@@ -115,18 +115,18 @@ grammar vSprogGrammar{
                       | Term^;
     Term             -> Operand
                       | LPARENS! Operation^ RPARENS!;
-    Operand	     -> Block
-            	      | NUMBER
-        	      | IDENTIFIER
-		      | IDENTIFIER Accessor
-        	      | Literals
-        	      | Invocation;
+    Operand	         -> Block
+            	        | NUMBER
+        	            | IDENTIFIER
+                      | IDENTIFIER Accessor
+                      | Literals
+                      | Invocation;
 
     Logic            -> EQUALS;
 
     Literals         -> STRING
-    		      | List
-		      | Tuple;
+                      | List
+                      | Tuple;
 
     Invocation       -> IDENTIFIER LPARENS Ids? RPARENS;
 
@@ -139,13 +139,13 @@ grammar vSprogGrammar{
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct
-    		      | Actor
+                      | Actor
                       | Initialisation^
                       | TypeDecl;
 
     Struct           -> STRUCT IDENTIFIER ASSIGN BLOCKSTART TypeDecls? BLOCKEND;
     TypeDecls        -> TypeDecls SEMICOLON TypeDecl
-    		      | TypeDecls SEMICOLON
+                      | TypeDecls SEMICOLON
                       | TypeDecl^;
 
     Actor            -> ACTOR DecoratedID ASSIGN Block;
@@ -153,7 +153,7 @@ grammar vSprogGrammar{
     Initialisation   -> LET DecoratedID ASSIGN! Operation
                       | VAR DecoratedID ASSIGN^ Operation;
 
-    DecoratedID     -> IDENTIFIER LPARENS! Ids? RPARENS! COLON! Types
+    DecoratedID      -> IDENTIFIER LPARENS! Ids? RPARENS! COLON! Types
                       | TypeDecl^
                       | IDENTIFIER;
 
@@ -172,19 +172,19 @@ grammar vSprogGrammar{
     /*--------- List ---------*/
     List             -> STARTLIST ListParams ENDLIST;
     ListParams       ->	ListParams COMMA Operation
-    		      | Operation TO Operation
+                      | Operation TO Operation
                       | Operation;
 
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS Operations COMMA Operation RPARENS;
     Operations       -> Operations COMMA Operation
-    		      | Operation;
+                      | Operation;
 
     /*--------- Accessor ---------*/
 
     Accessor         -> DOT IDENTIFIER
                       | DOT STARTLIST NUMBER ENDLIST
-		      | DOT IDENTIFIER Accessor;
+                      | DOT IDENTIFIER Accessor;
 
     /*--------- ForLoop ---------*/
     //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block
