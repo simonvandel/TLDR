@@ -66,9 +66,18 @@ grammar vSprogGrammar{
     /*--------- Program ---------*/
     Program          -> Body^;
 
-    Body             -> Body^ SEMICOLON! Line^
+    Body             -> //(Expression SEMICOLON! Expression)+;
+                      //Line SEMICOLON! Body
+                      //| Line;
+                      //| Body^ SEMICOLON!
+                     // | Line;
+                     // | Expression;
+                      //| Line SEMICOLON!;
+                     //Line SEMICOLON! Line SEMICOLON! Line SEMICOLON!;
+                      Body^ SEMICOLON! Line
+                      //| Body SEMICOLON! Body SEMICOLON!
                       | Body^ SEMICOLON!
-                      | Line^;
+                      | Line;
 
     Line             -> Expression^;
 
@@ -84,10 +93,10 @@ grammar vSprogGrammar{
                       | For^;
                       //| Match;
 
-    Spawn            -> LET DecoratedID ASSIGN SPAWN IDENTIFIER Operation
+    Spawn            -> LET DecoratedID ASSIGN! SPAWN! IDENTIFIER Operation
     		              | VAR DecoratedID ASSIGN SPAWN IDENTIFIER Operation;
 
-    Send	           -> SEND IDENTIFIER Operation;
+    Send	           -> SEND! IDENTIFIER Operation;
 
     /*--------- Return ---------*/
     Return           -> RETURN Operation;
@@ -116,11 +125,11 @@ grammar vSprogGrammar{
                       | Term^;
     Term             -> Operand^
                       | LPARENS! Operation^ RPARENS!;
-    Operand	         -> Block
+    Operand	         -> Block^
                       | Integer^
             	        | Real^
                       | Boolean^
-        	            | IDENTIFIER
+        	            | IDENTIFIER^
                       | IDENTIFIER Accessor
                       | Literals
                       | Invocation;
@@ -150,6 +159,7 @@ grammar vSprogGrammar{
                       | Initialisation^
                       | TypeDecl^;
 
+    //Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
                       | TypeDecls SEMICOLON!

@@ -15,9 +15,6 @@ module AST =
         | Real of float
         | Bool of bool
 
-    
-    
-
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
@@ -34,6 +31,8 @@ module AST =
         | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, body FIXME: Add more fields?
         | If of AST * AST // conditional * body
+        | Send of string * string // actorName, msgName
+        | Spawn of LValue * string * string // lvalue, actorName, initMsg
         | Error // Only for making it compile temporarily
 
     and LValue = {
@@ -68,6 +67,9 @@ module AST =
 
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
+        | "Body" ->
+            let t = traverseChildren root
+            Program t
         | "StatementList" as state -> 
             //printfn "%s %s" "Entered" state
             let t = traverseChildren root
@@ -137,6 +139,17 @@ module AST =
                                  |> List.ofSeq
                     Struct (name, blocks)
                 | err -> failwith (sprintf "This should never be reached: %s" err)
+        | "Send" ->
+            let actorHandle = (root.Children.Item 0).Symbol.Value
+            let msg = (root.Children.Item 1).Symbol.Value
+            Send (actorHandle, msg)
+        | "Spawn" ->
+            let name = ((root.Children.Item 1).Children.Item 0)
+            let typeName = ((root.Children.Item 1).Children.Item 1).Children.Item 0
+            let lhs = toLValue (root.Children.Item 0) name typeName
+            let actorName = (root.Children.Item 2).Symbol.Value
+            let initMsg = (root.Children.Item 3).Symbol.Value
+            Spawn (lhs, actorName, initMsg)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

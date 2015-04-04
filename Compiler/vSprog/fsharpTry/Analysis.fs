@@ -162,36 +162,42 @@ module Analysis =
         | [] -> Success symbolTable
         | xs -> addResults xs
 
-    let typecheck (lhs:PrimitiveType) (rhs:PrimitiveType) : Result<unit> =
-        match lhs, rhs with
-        //| lhs', Node ast -> 
-        | lhs', rhs' -> 
-            if lhs' = rhs' 
-            then Success ()
-            else Failure [sprintf "%A does not have same type as %A" lhs' rhs']
+    
 
-
-    let rec typechecker (root:AST) : Result<AST> =
+    let rec typecheck (root:AST) : Result<PrimitiveType> =
         match root with
         | Program stms -> 
             stms 
-            |> List.map typechecker
+            |> List.map typecheck
             |> addResults
         | Block stms ->
             stms 
-            |> List.map typechecker
+            |> List.map typecheck
             |> addResults
         | Assignment (lvalue, rhs) -> 
+            typecheck rhs
+            >>= fun primType -> if lvalue.primitiveType = primType then
+                                    Success primType
+                                else Failure ["Assignment does not typecheck"]
             //typecheck lvalue.primitiveType rhs
             //>>= fun _ -> Success root
-            Failure ["assignment typecheck not implemented"]
-        | other -> Failure [sprintf "&s not typechecked"]
+            //Failure ["assignment typecheck not implemented"]
+        | Constant (primType, _) ->
+            Success primType
+        | If (condition, body) ->
+            match typecheck condition with
+            | Success (SimplePrimitive Primitive.Bool) -> 
+                typecheck body
+            | Success otherThanBool -> 
+                Failure [sprintf "Expected condition of type bool, found condition of type %A" otherThanBool]
+            | Failure msg -> Failure msg
+        | other -> Failure [sprintf "%A not typechecked" other]
 
     let analyse (root:AST) : Result<int> = 
       let symbolTable = (evalState (buildSymbolTable root) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}).symbolList
       //checkHiding symbolTable
       //|> printfn "%A"
-      typechecker root
+      typecheck root
       |> printfn "%A"
       Success 0
       (*
