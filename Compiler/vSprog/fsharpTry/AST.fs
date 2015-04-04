@@ -33,6 +33,7 @@ module AST =
         | If of AST * AST // conditional * body
         | Send of string * string // actorName, msgName
         | Spawn of LValue * string * string // lvalue, actorName, initMsg
+        | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | Error // Only for making it compile temporarily
 
     and LValue = {
@@ -150,6 +151,11 @@ module AST =
             let actorName = (root.Children.Item 2).Symbol.Value
             let initMsg = (root.Children.Item 3).Symbol.Value
             Spawn (lhs, actorName, initMsg)
+        | "Receive" ->
+            let msgName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let msgType = toPrimitiveType (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
+            let body = toAST (root.Children.Item 1)
+            Receive (msgName, msgType, body)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

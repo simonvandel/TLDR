@@ -133,3 +133,12 @@ module ParserTest =
         let lhs = {identity = "actorHandle"; isMutable = false; primitiveType = UserType "actorName"}
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [(Spawn (lhs, "actorName", "initMsg"))])
+
+    (* --------------------------- Receive --------------------------- *)
+
+    [<Test>]
+    let ``When syntax for receive is given with empty body, expect Receive AST`` () =
+        let msgType = SimplePrimitive Primitive.Int
+        let body = Block []
+        debugTestParseWith "receive msg:int := {}"
+        <| should equal (Program [(Receive ("msg", msgType, body))])
