@@ -52,7 +52,7 @@ grammar vSprogGrammar{
     PONEOPERATOR  -> '+' | '-';
 
     /*--------- Numbers ---------*/
-    INT           -> [1-9][0-9]* | '0'; 
+    INT           -> '-'?[1-9][0-9]* | '0'; 
     REAL          -> ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+); 
 
     BOOL          -> 'true' | 'false';
@@ -90,11 +90,11 @@ grammar vSprogGrammar{
                       | Return^
                       | Send^
                       | If^
-                      | For^;
+                      | ForIn^;
                       //| Match;
 
     Spawn            -> LET DecoratedID ASSIGN! SPAWN! IDENTIFIER Operation
-    		              | VAR DecoratedID ASSIGN SPAWN IDENTIFIER Operation;
+    		              | VAR DecoratedID ASSIGN! SPAWN! IDENTIFIER Operation;
 
     Send	           -> SEND! IDENTIFIER Operation;
 
@@ -108,7 +108,7 @@ grammar vSprogGrammar{
     Receive          -> RECEIVE! DecoratedID ASSIGN! Block;
 
     /*--------- For ---------*/
-    For              -> FOR Ids IN List Block;
+    ForIn              -> FOR! Ids IN! ListRange Block;
 
     /*--------- If ---------*/
     If               -> IF! Operation Block;
@@ -131,7 +131,7 @@ grammar vSprogGrammar{
                       | Boolean^
         	            | IDENTIFIER^
                       | IDENTIFIER Accessor
-                      | Literals
+                      | Literals^
                       | Invocation;
 
     Boolean          -> BOOL;
@@ -141,7 +141,7 @@ grammar vSprogGrammar{
     Logic            -> EQUALS;
 
     Literals         -> STRING
-                      | List
+                      | ListRange^
                       | Tuple;
 
     Invocation       -> IDENTIFIER LPARENS Ids? RPARENS;
@@ -187,9 +187,9 @@ grammar vSprogGrammar{
                       | LPARENS Types RPARENS;
 
     /*--------- List ---------*/
-    List             -> STARTLIST ListParams ENDLIST;
-    ListParams       ->	ListParams COMMA Operation
-                      | Operation TO Operation
+    ListRange        -> STARTLIST! ListParams ENDLIST!;
+    ListParams       ->	ListParams COMMA! Operation
+                      | Operation TO! Operation
                       | Operation;
 
     /*--------- Tuple ---------*/

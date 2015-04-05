@@ -129,9 +129,15 @@ module ParserTest =
     (* --------------------------- Spawn --------------------------- *)
 
     [<Test>]
-    let ``When syntax for spawn is given, expect Spawn AST`` () =
+    let ``When syntax for spawn is given with immutable actor, expect Spawn AST`` () =
         let lhs = {identity = "actorHandle"; isMutable = false; primitiveType = UserType "actorName"}
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
+        <| should equal (Program [(Spawn (lhs, "actorName", "initMsg"))])
+
+    [<Test>]
+    let ``When syntax for spawn is given with mutable actor, expect Spawn AST`` () =
+        let lhs = {identity = "actorHandle"; isMutable = true; primitiveType = UserType "actorName"}
+        debugTestParseWith "var actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [(Spawn (lhs, "actorName", "initMsg"))])
 
     (* --------------------------- Receive --------------------------- *)
@@ -142,3 +148,26 @@ module ParserTest =
         let body = Block []
         debugTestParseWith "receive msg:int := {}"
         <| should equal (Program [(Receive ("msg", msgType, body))])
+
+    (* --------------------------- ForIn --------------------------- *)
+
+    [<Test>]
+    let ``When syntax for for-in-loop is given with empty body, expect ForIn AST`` () =
+        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
+        let body = Block []
+        debugTestParseWith "for i in [0 .. 2] {}"
+        <| should equal (Program [(ForIn ("i", list, body))])
+
+    (* --------------------------- ListRange --------------------------- *)
+
+    [<Test>]
+    let ``When syntax for list from 0 to 3 is given, expect List AST`` () =
+        let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
+        debugTestParseWith "[0 .. 3]"
+        <| should equal (Program [(ListRange list)])
+
+    [<Test>]
+    let ``When syntax for list from -5 to 2 is given, expect List AST`` () =
+        let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
+        debugTestParseWith "[-5 .. 2]"
+        <| should equal (Program [(ListRange list)])

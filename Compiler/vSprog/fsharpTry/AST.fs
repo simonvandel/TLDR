@@ -34,6 +34,8 @@ module AST =
         | Send of string * string // actorName, msgName
         | Spawn of LValue * string * string // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
+        | ForIn of string * AST * AST // counterName, list, body
+        | ListRange of AST list
         | Error // Only for making it compile temporarily
 
     and LValue = {
@@ -156,6 +158,15 @@ module AST =
             let msgType = toPrimitiveType (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
+        | "ForIn" ->
+            let counterName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let list = toAST (root.Children.Item 1)
+            let body = toAST (root.Children.Item 2)
+            ForIn (counterName, list, body)
+        | "ListRange" ->
+            let start = int (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
+            let end' = int (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
+            ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error
