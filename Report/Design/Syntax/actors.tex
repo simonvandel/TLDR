@@ -1,7 +1,7 @@
 \subsection{Actors}
 \label{sub:actors}
 
-Actors are declared using the \emph{actor} keyword like the following. Behaviour can be given to an actor by declaring receive actions using the \emph{receive} keyword in the body of the actor.
+Actors are declared using the \emph{actor} keyword in the following way. Behaviour can be given to an actor by declaring receive actions using the \emph{receive} keyword in the body of the actor.
 
 \begin{verbatim}
   actor <actorName> := {<body>}
@@ -14,5 +14,6 @@ A concrete example:
     var temperature:real := 0;
     receive sunlight:light := {
       temperature := temperature + 0.1;
+    }
   }
 \end{verbatim}
