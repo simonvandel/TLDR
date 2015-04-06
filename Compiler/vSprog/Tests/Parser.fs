@@ -73,6 +73,15 @@ module ParserTest =
         testParseWith "var x:int := 5"
         <| should equal (Program [(Assignment (lValue, rhs))])
 
+
+    (* -------------------- Reassignment ---------------------- *)
+
+    [<Test>]
+    let ``When reassignment syntax is given with constant binding, expect reassignment AST with constant value``() =
+        let rhs = Constant (SimplePrimitive Primitive.Int, Int 10000)
+        debugTestParseWith "x := 10000"
+        <| should equal (Program [(Reassignment ("x", rhs))])
+
     (* -------------------- If statements ---------------------- *)
 
     [<Test>]
