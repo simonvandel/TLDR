@@ -1,4 +1,6 @@
-﻿open vSprog.AST
+﻿namespace vSprog
 
-module CodeGen
-    let CodeGen AST
+open vSprog.AST
+
+//module CodeGen =
+    //let CodeGen AST

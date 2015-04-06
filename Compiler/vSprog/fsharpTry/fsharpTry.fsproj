@@ -39,12 +39,12 @@
     <Compile Include="Analysis.fs" />
     <Compile Include="ParserUtils.fs" />
     <Compile Include="Parser.fs" />
+    <Compile Include="CodeGen.fs" />
     <Compile Include="Program.fs" />
     <None Include="packages.config" />
     <None Include="GoldenCode.bar">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Compile Include="CodeGen.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
