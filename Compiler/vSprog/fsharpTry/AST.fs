@@ -27,7 +27,7 @@ module AST =
         | Program of AST list
         | Block of AST list
         | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
-        | Reassignment of string * AST // varId, rhs
+        | Reassignment of string list * AST // varIds (x.y == [x;y]), rhs
         | Constant of PrimitiveType * PrimitiveValue
         | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, body FIXME: Add more fields?
@@ -104,9 +104,13 @@ module AST =
             //printfn "%s %s" "Left" state
             Assignment (lhs, rhs)
         | "Assignment" ->
+            let assignables = seq { for c in (root.Children.Item 0).Children do
+                                          yield c.Symbol.Value
+                                 }
+                              |> List.ofSeq
             let varId = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             let body = toAST (root.Children.Item 1)
-            Reassignment (varId, body)
+            Reassignment (assignables, body)
         | "Integer" ->
             let value = Int (int ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Int), value) // FIXME: lav en int type. Lige nu bliver værdien af int konstanten ikke gemt

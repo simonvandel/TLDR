@@ -199,9 +199,9 @@ grammar vSprogGrammar{
 
     /*--------- Accessor ---------*/
 
-    Accessor         -> DOT IDENTIFIER
-                      | DOT STARTLIST INT ENDLIST
-                      | DOT IDENTIFIER Accessor;
+    Accessor         -> DOT! IDENTIFIER^
+                      | DOT! STARTLIST INT ENDLIST
+                      | DOT! IDENTIFIER Accessor;
 
     /*--------- ForLoop ---------*/
     //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block
