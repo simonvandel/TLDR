@@ -63,7 +63,7 @@ module ParserTest =
     let ``When initialisation syntax is given with constant binding, expect initialisation AST with constant value``() =
         let lValue = {identity = "x"; isMutable = false; primitiveType = SimplePrimitive Primitive.Int;}
         let rhs = Constant (SimplePrimitive Primitive.Int, Int 5)
-        testParseWith "let x:int := 5"
+        debugTestParseWith "let x:int := 5"
         <| should equal (Program [(Assignment (lValue, rhs))])
 
     [<Test>]
@@ -121,7 +121,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for struct is given with 1 field, expect struct AST``() =
         let fieldInBlock = ("field1", SimplePrimitive Primitive.Int)
-        testParseWith "struct structName := {field1:int}"
+        debugTestParseWith "struct structName := {field1:int}"
         <| should equal (Program [(Struct ("structName", [ fieldInBlock ]))])
 
     [<Test>]
@@ -192,7 +192,6 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for operation is given, expect Operation AST`` () =
-        let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
         debugTestParseWith "2 + 3 + 4"
         <| should equal (Program [
                                     Operation (
@@ -204,5 +203,20 @@ module ParserTest =
                                                     Plus,
                                                     (Constant (SimplePrimitive Primitive.Int, Int 4))
 
+                                               )
+                                 ])
+
+    [<Test>]
+    let ``When syntax for operation is given with modulo and equals, expect Operation AST`` () =
+        debugTestParseWith "i % 20 = 0"
+        <| should equal (Program [
+                                    Operation (
+                                                    Operation (
+                                                                    Identifier "i",
+                                                                    Modulo,
+                                                                    (Constant (SimplePrimitive Primitive.Int, Int 20)) 
+                                                                    ),
+                                                    Equals,
+                                                    (Constant (SimplePrimitive Primitive.Int, Int 0))
                                                )
                                  ])

@@ -43,6 +43,7 @@ module AST =
         | ForIn of string * AST * AST // counterName, list, body
         | ListRange of AST list
         | Operation of OperationType
+        | Identifier of string
         | Error // Only for making it compile temporarily
 
     and OperationType = AST * Operator * AST
@@ -53,6 +54,7 @@ module AST =
         | Minus
         | Modulo
         | Equals
+        | Multiply
 
     and LValue = {
         identity:string
@@ -90,6 +92,7 @@ module AST =
         | "-" -> Minus
         | "%" -> Modulo
         | "=" -> Equals
+        | "*" -> Multiply
         | err -> failwith (sprintf "Not implemented yet %s" err)
 
     let rec toAST (root:ASTNode) : AST =
@@ -107,11 +110,6 @@ module AST =
             traverseChildren root
             //printfn "%s %s" "Left" state
             Error
-        | "Term" as state -> 
-            //printfn "%s %s" "Entered" state
-            traverseChildren root
-            //printfn "%s %s" "Left" state
-            Error
         | "Block" as state -> 
             //printfn "%s %s" "Entered" state
             let t =traverseChildren root
@@ -120,7 +118,7 @@ module AST =
         | "Initialisation" as state ->
             //printfn "%s %s" "Entered" state
             //traverseChildren root
-            let name = ((root.Children.Item 1).Children.Item 0)
+            let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
             let typeName = ((root.Children.Item 1).Children.Item 1).Children.Item 0
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2) //Node (toAST (root.Children.Item 2))
@@ -128,10 +126,9 @@ module AST =
             Assignment (lhs, rhs)
         | "Assignment" ->
             let assignables = seq { for c in (root.Children.Item 0).Children do
-                                          yield c.Symbol.Value
+                                          yield (c.Children.Item 0).Symbol.Value
                                  }
                               |> List.ofSeq
-            let varId = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             let body = toAST (root.Children.Item 1)
             Reassignment (assignables, body)
         | "Integer" ->
@@ -141,7 +138,7 @@ module AST =
             let value = Real ( float ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
-            let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let name = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
             let block = toAST (root.Children.Item 1)
             Actor (name, block)
         | "If" ->
@@ -156,18 +153,18 @@ module AST =
             Constant (SimplePrimitive Primitive.Bool, Bool value)
 
         | "Struct" ->
-            let name = (root.Children.Item 0).Symbol.Value
+            let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             if root.Children.Count = 1 then
                 Struct (name, []) // there might only be a name available for the struct; empty block
             else
                 match (root.Children.Item 1).Symbol.Value with
                 | "TypeDecl" -> 
-                    let fieldName = ((root.Children.Item 1).Children.Item 0).Symbol.Value
+                    let fieldName = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
                     let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Symbol.Value
                     Struct (name, [(fieldName, toPrimitiveType typeName)])
                 | "TypeDecls" ->
                     let blocks = seq { for c in (root.Children.Item 1).Children do
-                                          let fieldName = (c.Children.Item 0).Symbol.Value
+                                          let fieldName = ((c.Children.Item 0).Children.Item 0).Symbol.Value
                                           let typeName = ((c.Children.Item 1).Children.Item 0).Symbol.Value    
                                           yield (fieldName, toPrimitiveType typeName)                        
                                  }
@@ -175,39 +172,42 @@ module AST =
                     Struct (name, blocks)
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
-            let actorHandle = (root.Children.Item 0).Symbol.Value
-            let msg = (root.Children.Item 1).Symbol.Value
+            let actorHandle = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let msg = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
             Send (actorHandle, msg)
         | "Spawn" ->
-            let name = ((root.Children.Item 1).Children.Item 0)
-            let typeName = ((root.Children.Item 1).Children.Item 1).Children.Item 0
+            let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
+            let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0
             let lhs = toLValue (root.Children.Item 0) name typeName
-            let actorName = (root.Children.Item 2).Symbol.Value
-            let initMsg = (root.Children.Item 3).Symbol.Value
+            let actorName = ((root.Children.Item 2).Children.Item 0).Symbol.Value
+            let initMsg = (((root.Children.Item 3).Children.Item 0).Children.Item 0).Symbol.Value
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
-            let msgName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let msgName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
             let msgType = toPrimitiveType (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
-            let counterName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let counterName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
             let list = toAST (root.Children.Item 1)
             let body = toAST (root.Children.Item 2)
             ForIn (counterName, list, body)
         | "ListRange" ->
-            let start = int (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
-            let end' = int (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
+            let start = int ((((root.Children.Item 0).Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
+            let end' = int ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
             ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
-        | "Factor" ->
+        | ("Factor" | "Term" | "Operation") ->
             match (root.Children.Count) with
             | 3 -> 
                 let operation = toAST (root.Children.Item 0)
                 let operator = toOperator (root.Children.Item 1).Symbol.Value
                 let operand = toAST (root.Children.Item 2)
                 Operation (operation, operator, operand)
-            | 1 -> toAST (root.Children.Item 0)
+            | 1 -> 
+                toAST (root.Children.Item 0)
             | err -> failwith (sprintf "This should never be reached: %A" err)
+        | "Identifier" ->
+            Identifier (root.Children.Item 0).Symbol.Value
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

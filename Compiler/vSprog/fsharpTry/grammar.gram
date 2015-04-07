@@ -93,10 +93,10 @@ grammar vSprogGrammar{
                       | ForIn^;
                       //| Match;
 
-    Spawn            -> LET DecoratedID ASSIGN! SPAWN! IDENTIFIER Operation
-    		              | VAR DecoratedID ASSIGN! SPAWN! IDENTIFIER Operation;
+    Spawn            -> LET DecoratedID ASSIGN! SPAWN! Identifier Operation
+    		              | VAR DecoratedID ASSIGN! SPAWN! Identifier Operation;
 
-    Send	           -> SEND! IDENTIFIER Operation;
+    Send	           -> SEND! Identifier Operation;
 
     /*--------- Return ---------*/
     Return           -> RETURN Operation;
@@ -119,8 +119,8 @@ grammar vSprogGrammar{
 
     /*--------- Operation ---------*/
     Operation        -> 
-                       Operation Logic Factor
-                      | Factor^;
+                       Operation EQUALS Factor
+                      | Factor;
     Factor           -> 
                        Factor PONEOPERATOR Term
                       | Term^;
@@ -131,29 +131,30 @@ grammar vSprogGrammar{
                       | Integer^
             	        | Real^
                       | Boolean^
-        	            | IDENTIFIER^
-                      | IDENTIFIER Accessor
+        	            | Identifier^
+                      | Identifier Accessor
                       | Literals^
                       | Invocation;
 
     Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
+    Identifier       -> IDENTIFIER;
 
-    Logic            -> EQUALS;
+  //  Logic            -> EQUALS;
 
     Literals         -> STRING
                       | ListRange^
                       | Tuple;
 
-    Invocation       -> IDENTIFIER LPARENS Ids? RPARENS;
+    Invocation       -> Identifier LPARENS Ids? RPARENS;
 
     /*--------- Assignment ---------*/
     Assignment       -> Assignable ASSIGN! Operation;
 
     /*--------- Assignable ---------*/
     Assignable       -> DecoratedID^
-                      | IDENTIFIER Accessor;
+                      | Identifier Accessor;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -161,8 +162,8 @@ grammar vSprogGrammar{
                       | Initialisation^
                       | TypeDecl^;
 
-    //Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    Struct           -> STRUCT! IDENTIFIER ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
+    //Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
+    Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
                       | TypeDecls SEMICOLON!
                       | TypeDecl^;
@@ -172,19 +173,19 @@ grammar vSprogGrammar{
     Initialisation   -> LET DecoratedID ASSIGN! Operation
                       | VAR DecoratedID ASSIGN! Operation;
 
-    DecoratedID      -> IDENTIFIER LPARENS! Ids? RPARENS! COLON! Types
+    DecoratedID      -> Identifier LPARENS! Ids? RPARENS! COLON! Types
                       | TypeDecl^
-                      | IDENTIFIER;
+                      | Identifier;
 
-    Ids              -> IDENTIFIER COMMA Ids
-                      | IDENTIFIER;
-    TypeDecl         -> IDENTIFIER COLON! Types;
+    Ids              -> Identifier COMMA Ids
+                      | Identifier;
+    TypeDecl         -> Identifier COLON! Types;
 
     /*-------- Type ---------*/
     Types            -> Types LEADSTO Type
                       | Type^;
     Type             -> PRIMITIVE
-                      | IDENTIFIER
+                      | Identifier
                       | STARTLIST Types ENDLIST
                       | LPARENS Types RPARENS;
 
@@ -201,9 +202,9 @@ grammar vSprogGrammar{
 
     /*--------- Accessor ---------*/
 
-    Accessor         -> DOT! IDENTIFIER^
+    Accessor         -> DOT! Identifier^
                       | DOT! STARTLIST INT ENDLIST
-                      | DOT! IDENTIFIER Accessor;
+                      | DOT! Identifier Accessor;
 
     /*--------- ForLoop ---------*/
     //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block
