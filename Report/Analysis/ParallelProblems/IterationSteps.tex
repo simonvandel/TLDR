@@ -4,15 +4,35 @@ Model is a term often used in both natural and social sciences. Unfortunately th
 \item A general theory
 \item A special description of an object or system (model object)
 \end{itemize}
-
+This perception is a very general way of thinking of models and often works great with natural sciences where experiments and simulations are based on an overall theory and consists of objects and systems. Unfortunately this is not always the case within social sciences where there isn't always a general theory but often only objects and systems representing the real world and the observation creates the theory.
+To extend Bunges theory models will here be defined as \enquote{a set of assumptions about some system} meaning everything we know about a system that we can observe or a theoretical system.
 Genrally there are two different types of models, static and dynamic models.
-\subsubsection{Static models}
-A static model is a snapshot of a given system at a given time. These systems can be 
 
-Dynamic and static models
+\section{Dynamic Models}
+Dynamic models includes some form of evolution, meaning that the system changes due to some changing factor. This is often time, but can also be things like energy, as is often the case in chemistry, or alike, the only important thing is that the factor changes. Nearly all systems in natural and social sciences are dynamic models.
 
-
-In this project a combination between static and dynamic modelling will be used in a [maybe] 
+\section{Static Models}
+A static model is a snapshot of a given system with objects with non-changing states. These systems are often not very representative for reality since nearly all systems changes but they can still be very usefull to construct since it can be much easier to collect information and understanding through a static model. 
 
 \chapter{Simulations}
+This project focuses on simulations and it is therefore important to  Simulations are an many ways very close to a dynamic simulation. Formally it is defined as \enqoute{a system designed to imitate something real} \jenote{Find a better definition of a simulation}.
+
+\section{Continuous Simulations}
+Continious simulations are simulations that can 
+
+\section{Discrete Simulations}
+
+
 % We make for ourselves internal images or symbols of the external objects, and we make them in such a way that the consequences of the images that are necessary in thought are always images of the consequences of the depicted objects that are necessary in nature ... Once we have succeeded in deriving from accumulated previous experience images with the required property, we can quickly develop from them, as if from models, the consequences that in the external world will occur only over an extended period or as a result of our own intervention.
+\label{simulationchoise}
+As an abstraction for the language to create simulations
+
+\section{The Iteration Problem}
+By choosing the actor model it is, as explained in \cref{simulationchoise}, possible to create continuous simulations in the language with a good abstraction for simulations and models en general. Unfortunately the actor model does not support descrete simulations very well and one problem arise due to this that has to be adressed.
+The problem is that these is no way for the programmer in the language to tell wether a group of actors has stopped working or not. This is important since for the user to be able to implement iteration steps he or she has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. This happens due to the parallel nature of the actor model an unfortunate variant of race conditions.
+For an actor to have stopped the programmer needs to know the following:
+\begin{itemize}
+\item The actor is not currently executing any messages.
+\item The actors message queue is empty
+\end{itemize}
+Furthermore all actors that can send messages to this actor should also be stopped for else they can send messages to the actor and thereby \enquote{reviving} it. The programmer should be able to group actors togeather and making sure that only actors in these groups can communicate so he or she can know that this system has stopped. Furthermore the programmer should also be able to tell wther all actors inside the system has stopped
