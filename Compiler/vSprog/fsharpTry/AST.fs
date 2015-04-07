@@ -15,16 +15,11 @@ module AST =
         | Real of float
         | Bool of bool
 
-
-    
-
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
         | Node of AST // FIXME: do we need this?
         | UserType of string
-
-    
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
 
@@ -44,6 +39,7 @@ module AST =
         | ListRange of AST list
         | Operation of OperationType
         | Identifier of string
+        | Function of string * string list * PrimitiveType list * AST// funcName, arguments, types, body
         | Error // Only for making it compile temporarily
 
     and OperationType = AST * Operator * AST
@@ -116,13 +112,10 @@ module AST =
             //printfn "%s %s" "Left" state
             Block t
         | "Initialisation" as state ->
-            //printfn "%s %s" "Entered" state
-            //traverseChildren root
             let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
-            let typeName = ((root.Children.Item 1).Children.Item 1).Children.Item 0
+            let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0
             let lhs = toLValue (root.Children.Item 0) name typeName
-            let rhs = toAST (root.Children.Item 2) //Node (toAST (root.Children.Item 2))
-            //printfn "%s %s" "Left" state
+            let rhs = toAST (root.Children.Item 2)
             Assignment (lhs, rhs)
         | "Assignment" ->
             let assignables = seq { for c in (root.Children.Item 0).Children do
@@ -160,12 +153,12 @@ module AST =
                 match (root.Children.Item 1).Symbol.Value with
                 | "TypeDecl" -> 
                     let fieldName = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
-                    let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Symbol.Value
+                    let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
                     Struct (name, [(fieldName, toPrimitiveType typeName)])
                 | "TypeDecls" ->
                     let blocks = seq { for c in (root.Children.Item 1).Children do
                                           let fieldName = ((c.Children.Item 0).Children.Item 0).Symbol.Value
-                                          let typeName = ((c.Children.Item 1).Children.Item 0).Symbol.Value    
+                                          let typeName = (((c.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value    
                                           yield (fieldName, toPrimitiveType typeName)                        
                                  }
                                  |> List.ofSeq
@@ -177,14 +170,14 @@ module AST =
             Send (actorHandle, msg)
         | "Spawn" ->
             let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
-            let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0
+            let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0).Children.Item 0
             let lhs = toLValue (root.Children.Item 0) name typeName
             let actorName = ((root.Children.Item 2).Children.Item 0).Symbol.Value
             let initMsg = (((root.Children.Item 3).Children.Item 0).Children.Item 0).Symbol.Value
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
             let msgName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
-            let msgType = toPrimitiveType (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
+            let msgType = toPrimitiveType ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
@@ -208,6 +201,30 @@ module AST =
             | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Identifier" ->
             Identifier (root.Children.Item 0).Symbol.Value
+        | "Function" ->
+            let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
+                let args = []
+                let types = seq { for c in (root.Children.Item 1).Children do   
+                                    yield (c.Children.Item 0).Symbol.Value                    
+                                }
+                            |> List.ofSeq
+                            |> List.map toPrimitiveType
+                let body = toAST (root.Children.Item 2)
+                Function (funcName, args, types, body)
+            else
+                let args = seq { for c in (root.Children.Item 1).Children do   
+                                   yield (c.Children.Item 0).Symbol.Value                    
+                               }
+                           |> List.ofSeq
+                let types = seq { for c in (root.Children.Item 2).Children do   
+                                    yield (c.Children.Item 0).Symbol.Value                 
+                                }
+                            |> List.ofSeq
+                            |> List.map toPrimitiveType
+                let body = toAST (root.Children.Item 3)
+                Function (funcName, args, types, body)
+            
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

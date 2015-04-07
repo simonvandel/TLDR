@@ -220,3 +220,34 @@ module ParserTest =
                                                     (Constant (SimplePrimitive Primitive.Int, Int 0))
                                                )
                                  ])
+
+
+    (* --------------------------- Functions --------------------------- *)
+    [<Test>]
+    let ``When syntax for function with zero arguments, expect Function AST`` () =
+        let body = Block [ Program [ Constant (SimplePrimitive Primitive.Int, Int 5) ] ]
+        debugTestParseWith "let func1() : int := {5}"
+        <| should equal (Program [
+                                    Function ("func1", [], [SimplePrimitive Primitive.Int], body)
+                                 ])
+
+    [<Test>]
+    let ``When syntax for function with 1 argument, expect Function AST`` () =
+        let body = Block [ Program [ Identifier "x" ] ]
+        debugTestParseWith "let func1(x) : int -> int := {x}"
+        <| should equal (Program [
+                                    Function ("func1", ["x"], [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], body)
+                                 ])
+
+    [<Test>]
+    let ``When syntax for function with 2 arguments, expect Function AST`` () =
+        let body = Block [ Program [ Identifier "x" ] ]
+        debugTestParseWith "let func2(x, y) : int -> int -> int := {x}"
+        <| should equal (Program [
+                                    Function (
+                                        "func2", 
+                                        ["x"; "y"], 
+                                        [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], 
+                                        body
+                                        )
+                                 ])

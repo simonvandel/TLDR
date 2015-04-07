@@ -160,9 +160,9 @@ grammar vSprogGrammar{
     Declaration      -> Struct^
                       | Actor^
                       | Initialisation^
+                      | Function^
                       | TypeDecl^;
 
-    //Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
                       | TypeDecls SEMICOLON!
@@ -170,20 +170,19 @@ grammar vSprogGrammar{
 
     Actor            -> ACTOR! DecoratedID ASSIGN! Block;
 
-    Initialisation   -> LET DecoratedID ASSIGN! Operation
-                      | VAR DecoratedID ASSIGN! Operation;
+    Initialisation   -> (LET | VAR) DecoratedID ASSIGN! Operation;
 
-    DecoratedID      -> Identifier LPARENS! Ids? RPARENS! COLON! Types
-                      | TypeDecl^
+    Function         -> LET! Identifier LPARENS! Ids? RPARENS! COLON! Types ASSIGN! Operation;
+
+    DecoratedID      -> //Identifier LPARENS! Ids? RPARENS! COLON! Types
+                      TypeDecl^
                       | Identifier;
 
-    Ids              -> Identifier COMMA Ids
-                      | Identifier;
+    Ids              -> Identifier (COMMA! Identifier)*;
     TypeDecl         -> Identifier COLON! Types;
 
     /*-------- Type ---------*/
-    Types            -> Types LEADSTO Type
-                      | Type^;
+    Types            -> Type (LEADSTO! Type)*;
     Type             -> PRIMITIVE
                       | Identifier
                       | STARTLIST Types ENDLIST
