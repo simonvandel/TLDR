@@ -118,12 +118,14 @@ grammar vSprogGrammar{
                       | BLOCKSTART! BLOCKEND!;
 
     /*--------- Operation ---------*/
-    Operation        -> Operation PONEOPERATOR Factor
-                      | Operation Logic Factor
+    Operation        -> 
+                       Operation Logic Factor
                       | Factor^;
-    Factor           -> Factor PZEROOPERATOR Term
+    Factor           -> 
+                       Factor PONEOPERATOR Term
                       | Term^;
     Term             -> Operand^
+                      | Term PZEROOPERATOR Operand
                       | LPARENS! Operation^ RPARENS!;
     Operand	         -> Block^
                       | Integer^

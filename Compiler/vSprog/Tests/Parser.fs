@@ -186,3 +186,23 @@ module ParserTest =
         let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
         debugTestParseWith "[-5 .. 2]"
         <| should equal (Program [(ListRange list)])
+
+
+    (* --------------------------- Operation --------------------------- *)
+
+    [<Test>]
+    let ``When syntax for operation is given, expect Operation AST`` () =
+        let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
+        debugTestParseWith "2 + 3 + 4"
+        <| should equal (Program [
+                                    Operation (
+                                                    Operation (
+                                                                    Constant (SimplePrimitive Primitive.Int, Int 2),
+                                                                    Plus,
+                                                                    (Constant (SimplePrimitive Primitive.Int, Int 3)) 
+                                                                    ),
+                                                    Plus,
+                                                    (Constant (SimplePrimitive Primitive.Int, Int 4))
+
+                                               )
+                                 ])

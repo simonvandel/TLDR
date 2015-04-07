@@ -15,11 +15,16 @@ module AST =
         | Real of float
         | Bool of bool
 
+
+    
+
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
         | Node of AST // FIXME: do we need this?
         | UserType of string
+
+    
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
 
@@ -37,7 +42,17 @@ module AST =
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | ListRange of AST list
+        | Operation of OperationType
         | Error // Only for making it compile temporarily
+
+    and OperationType = AST * Operator * AST
+        //| SingleOperation of AST
+
+    and Operator =
+        | Plus
+        | Minus
+        | Modulo
+        | Equals
 
     and LValue = {
         identity:string
@@ -68,6 +83,14 @@ module AST =
         {identity = name.Symbol.Value; 
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName.Symbol.Value}
+
+    let toOperator (operator:string) : Operator =
+        match operator with
+        | "+" -> Plus
+        | "-" -> Minus
+        | "%" -> Modulo
+        | "=" -> Equals
+        | err -> failwith (sprintf "Not implemented yet %s" err)
 
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
@@ -176,6 +199,15 @@ module AST =
             let start = int (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
             let end' = int (((root.Children.Item 0).Children.Item 1).Children.Item 0).Symbol.Value
             ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
+        | "Factor" ->
+            match (root.Children.Count) with
+            | 3 -> 
+                let operation = toAST (root.Children.Item 0)
+                let operator = toOperator (root.Children.Item 1).Symbol.Value
+                let operand = toAST (root.Children.Item 2)
+                Operation (operation, operator, operand)
+            | 1 -> toAST (root.Children.Item 0)
+            | err -> failwith (sprintf "This should never be reached: %A" err)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error
