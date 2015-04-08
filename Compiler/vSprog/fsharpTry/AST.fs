@@ -14,6 +14,8 @@ module AST =
         | Int of int
         | Real of float
         | Bool of bool
+        | Char of char
+        | List of PrimitiveValue list
 
     type PrimitiveType =
         | SimplePrimitive of Primitive
@@ -27,20 +29,26 @@ module AST =
         | Program of AST list
         | Block of AST list
         | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
-        | Reassignment of string list * AST // varIds (x.y == [x;y]), rhs
+        | Reassignment of AST * AST // varIds (x.y == [x;y]), rhs // FIXME: string list skal være IdentityAccessor
         | Constant of PrimitiveType * PrimitiveValue
-        | Actor of string * AST // name, body FIXME: Add more fields?
+        | Actor of AST * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, body FIXME: Add more fields?
         | If of AST * AST // conditional * body
         | Send of string * string // actorName, msgName
-        | Spawn of LValue * string * string // lvalue, actorName, initMsg
+        | Spawn of LValue * AST * AST // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | ListRange of AST list
         | Operation of OperationType
-        | Identifier of string
+        | Identifier of Identifier
         | Function of string * string list * PrimitiveType list * AST// funcName, arguments, types, body
+        | StructLiteral of (AST * AST) list
+        | Invocation of string * string list // functionName, parameters
         | Error // Only for making it compile temporarily
+
+    and Identifier =
+        | SimpleIdentifier of string // x
+        | IdentifierAccessor of string list // x.y == ["x"; "y"]
 
     and OperationType = AST * Operator * AST
         //| SingleOperation of AST
@@ -53,7 +61,7 @@ module AST =
         | Multiply
 
     and LValue = {
-        identity:string
+        identity:AST//string
         isMutable:bool
         primitiveType:PrimitiveType
     }
@@ -65,22 +73,23 @@ module AST =
         rhs:AST
         }
 
-    let rec toPrimitiveType (input:string) : PrimitiveType =
-        match input with
-            | "int" -> SimplePrimitive (Primitive.Int)
-            | "char" -> SimplePrimitive Char
+    let rec toPrimitiveType (input:ASTNode) : PrimitiveType =
+        match input.Symbol.Value with
+            | "int" -> SimplePrimitive Primitive.Int
+            | "char" -> SimplePrimitive Primitive.Char
             | "real" -> SimplePrimitive Primitive.Real
             | "bool" -> SimplePrimitive Primitive.Bool
-            | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (str.Substring (1, input.Length-2)))
+            | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (input.Children.Item 0))
+            | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str
 
-    let toLValue (mutability:ASTNode) (name:ASTNode) (typeName:ASTNode) : LValue = 
+    let toLValue (mutability:ASTNode) (name:AST) (typeName:ASTNode) : LValue = 
         let isMutable = match mutability.Symbol.Value with
                             | "let" -> false
                             | "var" -> true
-        {identity = name.Symbol.Value; 
+        {identity = name; 
         isMutable = isMutable;
-        primitiveType = toPrimitiveType typeName.Symbol.Value}
+        primitiveType = toPrimitiveType typeName}
 
     let toOperator (operator:string) : Operator =
         match operator with
@@ -112,16 +121,18 @@ module AST =
             //printfn "%s %s" "Left" state
             Block t
         | "Initialisation" as state ->
-            let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
+            let name = toAST ((root.Children.Item 1).Children.Item 0) //(((root.Children.Item 1).Children.Item 0).Children.Item 0)
             let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
             Assignment (lhs, rhs)
         | "Assignment" ->
-            let assignables = seq { for c in (root.Children.Item 0).Children do
+            let assignables = toAST (root.Children.Item 0)
+                                (*seq { for c in (root.Children.Item 0).Children do
+
                                           yield (c.Children.Item 0).Symbol.Value
                                  }
-                              |> List.ofSeq
+                              |> List.ofSeq *)
             let body = toAST (root.Children.Item 1)
             Reassignment (assignables, body)
         | "Integer" ->
@@ -131,7 +142,7 @@ module AST =
             let value = Real ( float ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
-            let name = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
+            let name = toAST (root.Children.Item 0)
             let block = toAST (root.Children.Item 1)
             Actor (name, block)
         | "If" ->
@@ -153,12 +164,12 @@ module AST =
                 match (root.Children.Item 1).Symbol.Value with
                 | "TypeDecl" -> 
                     let fieldName = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
-                    let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
+                    let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0)
                     Struct (name, [(fieldName, toPrimitiveType typeName)])
                 | "TypeDecls" ->
                     let blocks = seq { for c in (root.Children.Item 1).Children do
                                           let fieldName = ((c.Children.Item 0).Children.Item 0).Symbol.Value
-                                          let typeName = (((c.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value    
+                                          let typeName = (((c.Children.Item 1).Children.Item 0).Children.Item 0) 
                                           yield (fieldName, toPrimitiveType typeName)                        
                                  }
                                  |> List.ofSeq
@@ -169,15 +180,16 @@ module AST =
             let msg = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
             Send (actorHandle, msg)
         | "Spawn" ->
-            let name = (((root.Children.Item 1).Children.Item 0).Children.Item 0)
-            let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0).Children.Item 0
-            let lhs = toLValue (root.Children.Item 0) name typeName
-            let actorName = ((root.Children.Item 2).Children.Item 0).Symbol.Value
-            let initMsg = (((root.Children.Item 3).Children.Item 0).Children.Item 0).Symbol.Value
+            let mutability = (root.Children.Item 0)
+            let name = toAST ((root.Children.Item 1).Children.Item 0)
+            let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0)
+            let lhs = toLValue mutability name typeName
+            let actorName = toAST (root.Children.Item 2)
+            let initMsg = toAST ((root.Children.Item 3).Children.Item 0)
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
             let msgName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
-            let msgType = toPrimitiveType ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
+            let msgType = toPrimitiveType ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0)
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
@@ -200,13 +212,23 @@ module AST =
                 toAST (root.Children.Item 0)
             | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Identifier" ->
-            Identifier (root.Children.Item 0).Symbol.Value
+            match root.Children.Count with
+            | 1 -> Identifier (SimpleIdentifier (root.Children.Item 0).Symbol.Value)
+            | 2 -> 
+                let ids = Seq.unfold (fun (node:ASTNode) -> 
+                                        match node.Children.Count with
+                                        | 0 -> None
+                                        | _ -> Some ((node.Children.Item 0).Symbol.Value, (node.Children.Item 1))) 
+                                        root
+                          |> List.ofSeq
+                Identifier (IdentifierAccessor ids)
+            | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Function" ->
             let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
                 let args = []
                 let types = seq { for c in (root.Children.Item 1).Children do   
-                                    yield (c.Children.Item 0).Symbol.Value                    
+                                    yield (c.Children.Item 0)                    
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
@@ -218,13 +240,45 @@ module AST =
                                }
                            |> List.ofSeq
                 let types = seq { for c in (root.Children.Item 2).Children do   
-                                    yield (c.Children.Item 0).Symbol.Value                 
+                                    yield (c.Children.Item 0)                
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
                 let body = toAST (root.Children.Item 3)
                 Function (funcName, args, types, body)
-            
+        | "IdentifierWithAccessor" ->
+            let ids = seq { for c in root.Children do   
+                                yield (c.Children.Item 0).Symbol.Value                 
+                            }
+                        |> List.ofSeq
+            //Identifier (IdentifierAccessor ids )
+            Error
+        | "Invocation" ->
+            let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            if root.Children.Count = 1 then // no parameters                
+                Invocation (funcName, [])
+            else
+                let parameters = seq { for c in (root.Children.Item 1).Children do   
+                                        yield (c.Children.Item 0).Symbol.Value                 
+                                     }
+                                 |> List.ofSeq
+                Invocation (funcName, parameters)
+        | "StructLiteral" ->
+            let fields = seq { for c in root.Children do
+                                let fieldName1 = toAST (c.Children.Item 0)
+                                let fieldValue1 = toAST (c.Children.Item 1)
+                                yield (fieldName1, fieldValue1)               
+                             }
+                         |> List.ofSeq
+            StructLiteral fields
+        | "String" ->
+
+            let (chars:PrimitiveValue list) = (root.Children.Item 0).Symbol.Value
+                                              |> fun str -> 
+                                                str.Substring (1, (str.Length - 2))
+                                              |> Seq.map PrimitiveValue.Char
+                                              |> List.ofSeq
+            Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List chars)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             Error

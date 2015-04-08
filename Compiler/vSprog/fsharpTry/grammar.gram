@@ -66,35 +66,24 @@ grammar vSprogGrammar{
     /*--------- Program ---------*/
     Program          -> Body^;
 
-    Body             -> //(Expression SEMICOLON! Expression)+;
-                      //Line SEMICOLON! Body
-                      //| Line;
-                      //| Body^ SEMICOLON!
-                     // | Line;
-                     // | Expression;
-                      //| Line SEMICOLON!;
-                     //Line SEMICOLON! Line SEMICOLON! Line SEMICOLON!;
-                      Body^ SEMICOLON! Line
-                      //| Body SEMICOLON! Body SEMICOLON!
+    Body             -> Body^ SEMICOLON! Statement
                       | Body^ SEMICOLON!
-                      | Line;
+                      | Statement;
 
-    Line             -> Expression^;
+    Statement        -> Expression^;
 
     /*--------- Expression ---------*/
-    Expression       -> Assignment^
-                      | Declaration^
+    Expression       -> Declaration^
                       | Operation^
-		                  | Spawn^
                       | Receive^
+                      | Spawn^
                       | Return^
                       | Send^
                       | If^
                       | ForIn^;
                       //| Match;
 
-    Spawn            -> LET DecoratedID ASSIGN! SPAWN! Identifier Operation
-    		              | VAR DecoratedID ASSIGN! SPAWN! Identifier Operation;
+    Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Operation;
 
     Send	           -> SEND! Identifier Operation;
 
@@ -105,7 +94,7 @@ grammar vSprogGrammar{
     Wait             -> WAIT Types;
 
     /*--------- Receive ---------*/
-    Receive          -> RECEIVE! DecoratedID ASSIGN! Block;
+    Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
 
     /*--------- For ---------*/
     ForIn              -> FOR! Ids IN! ListRange Block;
@@ -118,11 +107,9 @@ grammar vSprogGrammar{
                       | BLOCKSTART! BLOCKEND!;
 
     /*--------- Operation ---------*/
-    Operation        -> 
-                       Operation EQUALS Factor
+    Operation        -> Operation EQUALS Factor
                       | Factor;
-    Factor           -> 
-                       Factor PONEOPERATOR Term
+    Factor           -> Factor PONEOPERATOR Term
                       | Term^;
     Term             -> Operand^
                       | Term PZEROOPERATOR Operand
@@ -131,12 +118,10 @@ grammar vSprogGrammar{
                       | Integer^
             	        | Real^
                       | Boolean^
-        	            | Identifier^
-                      | IdentifierWithAccessor^
+                      | Identifier^
+                      | IdentifierAccessor^
                       | Literals^
                       | Invocation^;
-
-    IdentifierWithAccessor -> Identifier (Accessor)+;
 
     Boolean          -> BOOL;
     Integer          -> INT;
@@ -145,57 +130,55 @@ grammar vSprogGrammar{
 
   //  Logic            -> EQUALS;
 
-    Literals         -> STRING
+    Literals         -> String^
                       | ListRange^
-                      | StructLiteral
+                      | StructLiteral^
                       | Tuple;
 
-    StructLiteral    -> BLOCKSTART! Fields BLOCKEND!;
-    Fields           -> 
-                        Fields COMMA Identifier ASSIGN Body
-                      | Identifier ASSIGN Body;
-                      
+    String           -> STRING;
+
+    StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
+    Field           -> Identifier ASSIGN! Operation; 
 
     Invocation       -> Identifier LPARENS! Ids? RPARENS!;
 
-    /*--------- Assignment ---------*/
-    Assignment       -> Assignable ASSIGN! Operation;
+    
 
     /*--------- Assignable ---------*/
-    Assignable       -> DecoratedID^
-                      | Identifier Accessor*;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
                       | Actor^
                       | Initialisation^
                       | Function^
-                      | TypeDecl^;
+                      | TypeDecl^
+                      | Assignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
                       | TypeDecls SEMICOLON!
                       | TypeDecl^;
 
-    Actor            -> ACTOR! DecoratedID ASSIGN! Block;
+    Actor            -> ACTOR! Identifier ASSIGN! Block;
 
-    Initialisation   -> (LET | VAR) DecoratedID ASSIGN! Operation;
+    Initialisation   -> (LET | VAR) (Identifier | TypeDecl) ASSIGN! Operation;
 
     Function         -> LET! Identifier LPARENS! Ids? RPARENS! COLON! Types ASSIGN! Operation;
 
-    DecoratedID      -> //Identifier LPARENS! Ids? RPARENS! COLON! Types
-                      TypeDecl^
-                      | Identifier;
-
     Ids              -> Identifier (COMMA! Identifier)*;
     TypeDecl         -> Identifier COLON! Types;
+
+    /*--------- Assignment ---------*/
+    Assignment       -> (Identifier | IdentifierAccessor) ASSIGN! Operation;
+
+    IdentifierAccessor -> Identifier^ Accessor;
 
     /*-------- Type ---------*/
     Types            -> Type (LEADSTO! Type)*;
     Type             -> PRIMITIVE
                       | Identifier
-                      | STARTLIST Types ENDLIST
-                      | LPARENS Types RPARENS;
+                      | STARTLIST! Types^ ENDLIST!
+                      | LPARENS! Types^ RPARENS!;
 
     /*--------- List ---------*/
     ListRange        -> STARTLIST! ListParams ENDLIST!;
@@ -211,8 +194,9 @@ grammar vSprogGrammar{
     /*--------- Accessor ---------*/
 
     Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST INT ENDLIST;
-                      //| DOT! Identifier Accessor;
+                      | DOT! Identifier^ Accessor
+                      | DOT! STARTLIST! INT ENDLIST!
+                      | DOT! STARTLIST! INT ENDLIST! Accessor;
 
     /*--------- ForLoop ---------*/
     //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block

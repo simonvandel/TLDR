@@ -4,15 +4,15 @@
 
 actor main := {
   receive arguments:args := {
-    let initMsg:initialMsg := {length := 3.5; charm := 30};
+    let initMsg:initialMsg := (length := 3.5; charm := 30);
     var iStep:iterationStep := {};
     var heider:alcoholic := spawn alcoholic initMsg;
     for i in [0 .. 3600] {
       iStep.step := i;
       send heider iStep;
       if(i % 20 = 0){
-        let classic:beer := {brandname := "tuborg";
-                             percentage := 4.6};
+        let classic:beer := (brandname := "tuborg";
+                             percentage := 4.6);
         send heider classic;
       };
     };

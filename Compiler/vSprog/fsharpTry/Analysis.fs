@@ -155,7 +155,7 @@ module Analysis =
                     |> Seq.map (fun (key, entries) -> (key, List.ofSeq entries))
                     |> Seq.filter (fun (key, entries) -> isInSameScope entries)
                     |> Seq.map (fun (key, _) -> 
-                              Failure [sprintf "Symbol \"%s\" declared multiple times in same scope." key])
+                              Failure [sprintf "Symbol \"%A\" declared multiple times in same scope." key])
                     |> List.ofSeq
 
         match res with
