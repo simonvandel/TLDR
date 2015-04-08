@@ -132,9 +132,11 @@ grammar vSprogGrammar{
             	        | Real^
                       | Boolean^
         	            | Identifier^
-                      | Identifier Accessor
+                      | IdentifierWithAccessor^
                       | Literals^
-                      | Invocation;
+                      | Invocation^;
+
+    IdentifierWithAccessor -> Identifier (Accessor)+;
 
     Boolean          -> BOOL;
     Integer          -> INT;
@@ -145,16 +147,23 @@ grammar vSprogGrammar{
 
     Literals         -> STRING
                       | ListRange^
+                      | StructLiteral
                       | Tuple;
 
-    Invocation       -> Identifier LPARENS Ids? RPARENS;
+    StructLiteral    -> BLOCKSTART! Fields BLOCKEND!;
+    Fields           -> 
+                        Fields COMMA Identifier ASSIGN Body
+                      | Identifier ASSIGN Body;
+                      
+
+    Invocation       -> Identifier LPARENS! Ids? RPARENS!;
 
     /*--------- Assignment ---------*/
     Assignment       -> Assignable ASSIGN! Operation;
 
     /*--------- Assignable ---------*/
     Assignable       -> DecoratedID^
-                      | Identifier Accessor;
+                      | Identifier Accessor*;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -202,8 +211,8 @@ grammar vSprogGrammar{
     /*--------- Accessor ---------*/
 
     Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST INT ENDLIST
-                      | DOT! Identifier Accessor;
+                      | DOT! STARTLIST INT ENDLIST;
+                      //| DOT! Identifier Accessor;
 
     /*--------- ForLoop ---------*/
     //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block
