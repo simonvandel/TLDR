@@ -26,7 +26,7 @@ grammar vSprogGrammar{
     IF            -> 'if';
     STRUCT        -> 'struct';
     RETURN        -> 'return';
-    PRIMITIVE     -> 'int' | 'real' | 'char' | 'bool';
+    PRIMITIVE     -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
     IDENTIFIER    -> [a-zA-Z_][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF);
 
@@ -64,13 +64,11 @@ grammar vSprogGrammar{
 
   rules{
     /*--------- Program ---------*/
-    Program          -> Body^;
+    Program          -> Body;
 
-    Body             -> Body^ SEMICOLON! Statement
+    Body             -> Body^ SEMICOLON! Expression
                       | Body^ SEMICOLON!
-                      | Statement;
-
-    Statement        -> Expression^;
+                      | Expression;
 
     /*--------- Expression ---------*/
     Expression       -> Declaration^
@@ -133,18 +131,14 @@ grammar vSprogGrammar{
     Literals         -> String^
                       | ListRange^
                       | StructLiteral^
-                      | Tuple;
+                      | Tuple^;
 
     String           -> STRING;
 
     StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
-    Field           -> Identifier ASSIGN! Operation; 
+    Field            -> Identifier ASSIGN! Operation; 
 
     Invocation       -> Identifier LPARENS! Ids? RPARENS!;
-
-    
-
-    /*--------- Assignable ---------*/
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -175,10 +169,14 @@ grammar vSprogGrammar{
 
     /*-------- Type ---------*/
     Types            -> Type (LEADSTO! Type)*;
-    Type             -> PRIMITIVE
-                      | Identifier
-                      | STARTLIST! Types^ ENDLIST!
-                      | LPARENS! Types^ RPARENS!;
+    Type             -> PrimitiveType^
+                      | Identifier^
+                      | ListType^
+                      | TupleType^;
+
+    TupleType        -> LPARENS! Types RPARENS!;
+    ListType         -> STARTLIST! Types ENDLIST!;
+    PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
     ListRange        -> STARTLIST! ListParams ENDLIST!;
@@ -187,12 +185,11 @@ grammar vSprogGrammar{
                       | Operation;
 
     /*--------- Tuple ---------*/
-    Tuple            -> LPARENS Operations COMMA Operation RPARENS;
-    Operations       -> Operations COMMA Operation
+    Tuple            -> LPARENS! Operations COMMA! Operation RPARENS!;
+    Operations       -> Operations COMMA! Operation
                       | Operation;
 
     /*--------- Accessor ---------*/
-
     Accessor         -> DOT! Identifier^
                       | DOT! Identifier^ Accessor
                       | DOT! STARTLIST! INT ENDLIST!

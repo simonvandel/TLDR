@@ -170,6 +170,10 @@ module Analysis =
             stms 
             |> List.map typecheck
             |> addResults
+        | Body stms -> 
+            stms 
+            |> List.map typecheck
+            |> addResults
         | Block stms ->
             stms 
             |> List.map typecheck
@@ -179,9 +183,6 @@ module Analysis =
             >>= fun primType -> if lvalue.primitiveType = primType then
                                     Success primType
                                 else Failure ["Assignment does not typecheck"]
-            //typecheck lvalue.primitiveType rhs
-            //>>= fun _ -> Success root
-            //Failure ["assignment typecheck not implemented"]
         | Constant (primType, _) ->
             Success primType
         | If (condition, body) ->

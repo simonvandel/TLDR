@@ -46,5 +46,7 @@ module TypeCheckerTest =
     // FIXME: Hvad blev vi enige med hinanden omkring if statements og typer?
     [<Test>]
     let ``If statement with condition of type Bool and body of type int, expects to typecheck with type int`` () =
-        typecheckWith "if ( true ) { 2 }" typecheck
-        |> should equal (Success (SimplePrimitive Primitive.Int))
+        let res = typecheckWith "if ( true ) { 2 }" typecheck
+        //|> printfn "%A"
+        let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Int))
+        res |> should equal expect

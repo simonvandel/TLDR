@@ -9,6 +9,7 @@ module AST =
         | Char
         | Real
         | Bool
+        | Void
 
     type PrimitiveValue =
         | Int of int
@@ -20,7 +21,7 @@ module AST =
     type PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
-        | Node of AST // FIXME: do we need this?
+        | ArrowPrimitive of PrimitiveType list
         | UserType of string
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
@@ -28,6 +29,7 @@ module AST =
     and AST = 
         | Program of AST list
         | Block of AST list
+        | Body of AST list
         | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
         | Reassignment of AST * AST // varIds (x.y == [x;y]), rhs // FIXME: string list skal være IdentityAccessor
         | Constant of PrimitiveType * PrimitiveValue
@@ -79,7 +81,19 @@ module AST =
             | "char" -> SimplePrimitive Primitive.Char
             | "real" -> SimplePrimitive Primitive.Real
             | "bool" -> SimplePrimitive Primitive.Bool
-            | str when str.StartsWith("[") && str.EndsWith("]") -> ListPrimitive (toPrimitiveType (input.Children.Item 0))
+            | "void" -> SimplePrimitive Primitive.Void
+            | "Types" -> 
+                match input.Children.Count with
+                | 1 -> toPrimitiveType (input.Children.Item 0)
+                | n -> 
+                    seq { for c in input.Children do
+                          yield toPrimitiveType c
+                        }
+                    |> List.ofSeq
+                    |> ArrowPrimitive
+                
+            | "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0))
+            | "PrimitiveType" -> toPrimitiveType (input.Children.Item 0)
             | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str
 
@@ -87,6 +101,7 @@ module AST =
         let isMutable = match mutability.Symbol.Value with
                             | "let" -> false
                             | "var" -> true
+                            | err -> failwith (sprintf "Mutability can never be: %s" err)
         {identity = name; 
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
@@ -102,9 +117,12 @@ module AST =
 
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
-        | "Body" ->
+        | "Program" ->
             let t = traverseChildren root
             Program t
+        | "Body" ->
+            let t = traverseChildren root
+            Body t
         | "StatementList" as state -> 
             //printfn "%s %s" "Entered" state
             let t = traverseChildren root
@@ -121,8 +139,8 @@ module AST =
             //printfn "%s %s" "Left" state
             Block t
         | "Initialisation" as state ->
-            let name = toAST ((root.Children.Item 1).Children.Item 0) //(((root.Children.Item 1).Children.Item 0).Children.Item 0)
-            let typeName = (((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0
+            let name = toAST ((root.Children.Item 1).Children.Item 0)
+            let typeName = ((root.Children.Item 1).Children.Item 1)
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
             Assignment (lhs, rhs)
@@ -232,6 +250,8 @@ module AST =
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
+
+
                 let body = toAST (root.Children.Item 2)
                 Function (funcName, args, types, body)
             else
@@ -240,7 +260,7 @@ module AST =
                                }
                            |> List.ofSeq
                 let types = seq { for c in (root.Children.Item 2).Children do   
-                                    yield (c.Children.Item 0)                
+                                    yield (c.Children.Item 0)                    
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
