@@ -120,6 +120,10 @@ module AST =
         | "*" -> Multiply
         | err -> failwith (sprintf "Not implemented yet %s" err)
 
+    let astNodeAccess (childIds:int list) (startNode:ASTNode) : ASTNode =
+        childIds
+        |> List.fold (fun node n -> node.Children.Item n) startNode
+
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
         | "Program" ->
@@ -128,20 +132,18 @@ module AST =
         | "Body" ->
             let t = traverseChildren root
             Body t
-        | "Block" as state -> 
-            //printfn "%s %s" "Entered" state
+        | "Block" -> 
             let t =traverseChildren root
-            //printfn "%s %s" "Left" state
             Block t
-        | "Initialisation" as state ->
-            let name = toAST ((root.Children.Item 1).Children.Item 0)
-            let typeName = ((root.Children.Item 1).Children.Item 1)
+        | "Initialisation" ->
+            let name = toAST (astNodeAccess [1;0] root)
+            let typeName = (astNodeAccess [1;1] root)
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
             Initialisation (lhs, rhs)
-        | "Assignment" as state ->
+        | "Assignment" ->
             let mutability = toMutability (root.Children.Item 0)
-            let name = match toAST ((root.Children.Item 1).Children.Item 0) with
+            let name = match toAST (astNodeAccess [1;0] root) with
                        | Identifier (SimpleIdentifier str) -> str
                        | err -> failwith (sprintf "This should never be reached: %A" err)
             let rhs = toAST (root.Children.Item 2)
@@ -185,43 +187,43 @@ module AST =
             else
                 match (root.Children.Item 1).Symbol.Value with
                 | "TypeDecl" -> 
-                    let fieldName = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
-                    let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0)
+                    let fieldName = (astNodeAccess [1;0;0] root).Symbol.Value
+                    let typeName = astNodeAccess [1;1;0;0] root
                     Struct (name, [(fieldName, toPrimitiveType typeName)])
                 | "TypeDecls" ->
                     let blocks = seq { for c in (root.Children.Item 1).Children do
-                                          let fieldName = ((c.Children.Item 0).Children.Item 0).Symbol.Value
-                                          let typeName = (((c.Children.Item 1).Children.Item 0).Children.Item 0) 
+                                          let fieldName = (astNodeAccess [0;0] c).Symbol.Value
+                                          let typeName = astNodeAccess [1;0;0] c
                                           yield (fieldName, toPrimitiveType typeName)                        
                                  }
                                  |> List.ofSeq
                     Struct (name, blocks)
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
-            let actorHandle = ((root.Children.Item 0).Children.Item 0).Symbol.Value
-            let msg = (((root.Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
+            let actorHandle = (astNodeAccess [0;0] root).Symbol.Value
+            let msg = (astNodeAccess [1;0;0] root).Symbol.Value
             Send (actorHandle, msg)
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
-            let name = toAST ((root.Children.Item 1).Children.Item 0)
-            let typeName = ((((root.Children.Item 1).Children.Item 1).Children.Item 0).Children.Item 0)
+            let name = toAST (astNodeAccess [1;0] root)
+            let typeName = (astNodeAccess [1;1;0;0] root)
             let lhs = toLValue mutability name typeName
             let actorName = toAST (root.Children.Item 2)
-            let initMsg = toAST ((root.Children.Item 3).Children.Item 0)
+            let initMsg = toAST (astNodeAccess [3;0] root)
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
-            let msgName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
-            let msgType = toPrimitiveType ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0)
+            let msgName = (astNodeAccess [0;0;0] root).Symbol.Value
+            let msgType = toPrimitiveType (astNodeAccess [0;1;0;0] root)
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
-            let counterName = (((root.Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
+            let counterName = (astNodeAccess [0;0;0] root).Symbol.Value
             let list = toAST (root.Children.Item 1)
             let body = toAST (root.Children.Item 2)
             ForIn (counterName, list, body)
         | "ListRange" ->
-            let start = int ((((root.Children.Item 0).Children.Item 0).Children.Item 0).Children.Item 0).Symbol.Value
-            let end' = int ((((root.Children.Item 0).Children.Item 1).Children.Item 0).Children.Item 0).Symbol.Value
+            let start = int (astNodeAccess [0;0;0;0] root).Symbol.Value
+            let end' = int (astNodeAccess [0;1;0;0] root).Symbol.Value
             ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
         | ("Factor" | "Term" | "Operation") ->
             match (root.Children.Count) with
@@ -245,7 +247,7 @@ module AST =
                           |> List.ofSeq
                 Identifier (IdentifierAccessor ids)
         | "Function" ->
-            let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let funcName = (astNodeAccess [0;0] root).Symbol.Value
             if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
                 let args = []
                 let types = seq { for c in (root.Children.Item 1).Children do   
@@ -272,7 +274,7 @@ module AST =
                 let body = toAST (root.Children.Item 3)
                 Function (funcName, args, types, body)
         | "Invocation" ->
-            let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
+            let funcName = (astNodeAccess [0;0] root).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
                 Invocation (funcName, [])
             else
