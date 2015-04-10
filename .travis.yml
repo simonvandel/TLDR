@@ -11,6 +11,6 @@ install:
   - nuget restore Compiler/vSprog/vSprog.sln
   - nuget install Nunit.Runners -Version 2.6.4 -OutputDirectory testrunner
 
-script:
+Script:
   - xbuild /p:Configuration=Release Compiler/vSprog/vSprog.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./MyPoject.Tests/bin/Release/MyProject.Tests.dll
+  - Mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Compiler/vSprog/Tests/bin/Release/Tests.dll
