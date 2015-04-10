@@ -20,25 +20,25 @@ module TypeCheckerTest =
                       | Failure msg  -> failwith (String.concat "" msg)
 
 
-    (* ------------------ Assignment ------------------ *)
+    (* ------------------ Initialisation ------------------ *)
                     
     [<Test>]
-    let ``Assignment where lhs is int and rhs is int, expects to typecheck``() = 
+    let ``Initialisation where lhs is int and rhs is int, expects to typecheck``() = 
         typecheckWith "let x:int := 2" typecheck
         |> should equal (Success (SimplePrimitive Primitive.Int))
 
     [<Test>]
-    let ``Assignment where lhs is real and rhs is real, expects to typecheck``() = 
+    let ``Initialisation where lhs is real and rhs is real, expects to typecheck``() = 
         typecheckWith "let x:real := 2.5" typecheck
         |> should equal (Success (SimplePrimitive Primitive.Real))
 
 
     // virker ikke lige nu. Det er noget med at den ikke ser det som samme type
     [<Test>]
-    let ``Assignment where lhs is real and rhs is int, expects to NOT typecheck``() = 
+    let ``Initialisation where lhs is real and rhs is int, expects to NOT typecheck``() = 
         let res = typecheckWith "let x:real := 2" typecheck
         // explicit types are needed to make the test pass correctly
-        let expect : Result<PrimitiveType> = (Failure ["Assignment does not typecheck"])
+        let expect : Result<PrimitiveType> = (Failure ["Initialisation does not typecheck. Expected type SimplePrimitive Real, found type SimplePrimitive Int"])
         res |> should equal expect 
 
 

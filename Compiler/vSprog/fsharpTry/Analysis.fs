@@ -8,10 +8,10 @@ open vSprog.AST
 module Analysis =
 
     type StatementType = 
-        | Decl
-        | Init
-        | Ass
-        | Reass
+        | Init // var x:int := 5
+        | Decl // x: int
+        | Ass // var x := 5
+        | Reass // x := 5
 
     type Scope = {
         outer:Scope option
@@ -76,6 +76,125 @@ module Analysis =
             return stat.scope
         }
 
+    let rec typecheck (root:AST) : Result<PrimitiveType> =
+        match root with
+        | Program stms -> 
+            stms 
+            |> List.map typecheck
+            |> addResults
+        | Body stms -> 
+            stms 
+            |> List.map typecheck
+            |> addResults
+        | Block stms ->
+            stms 
+            |> List.map typecheck
+            |> addResults
+        | Initialisation (lvalue, value) ->
+            typecheck value
+            >>= fun primType -> if lvalue.primitiveType = primType then
+                                    Success primType
+                                else Failure [sprintf "Initialisation does not typecheck. Expected type %A, found type %A" lvalue.primitiveType primType]
+        | Assignment (mutability, varId, rhs) -> 
+            printfn "Assignment bliver ikke typechecked ordentligt pt!!!"
+            typecheck rhs
+
+            (*
+            >>= fun primType -> if lvalue.primitiveType = primType then
+                                    Success primType
+                                else Failure [sprintf "Assignment does not typecheck. Expected type %A, found type %A" lvalue.primitiveType primType]
+                                *)
+        | Constant (primType, _) ->
+            Success primType
+        | If (condition, body) ->
+            match typecheck condition with
+            | Success (SimplePrimitive Primitive.Bool) -> 
+                typecheck body
+            | Success otherThanBool -> 
+                Failure [sprintf "Expected condition of type bool, found condition of type %A" otherThanBool]
+            | Failure msg -> Failure msg
+        | Actor (_, body) ->
+            typecheck body
+        | Receive (_, msgType, body) ->
+            typecheck body
+        | StructLiteral fieldNamesAndValues ->
+            printfn "StructLiteral bliver ikke typechecked ordentligt pt!!!"
+            Success (HasNoType) // FIXME: IKKE IMPLEMENTERET 
+        | ForIn (counterName, list, body) ->
+            [list; body]
+            |> List.map typecheck
+            |> addResults
+        | ListRange values ->
+            // all elements in list has to have same type
+            let firstElemType = match typecheck values.Head with
+                                | Success primType -> primType
+                                | Failure errs -> failwith "First element of list does not typecheck, which should never happen?"
+                                
+            values
+            |> List.forall (fun elem -> match typecheck elem with
+                                        | Success primType -> firstElemType = primType
+                                        | Failure _ -> false)
+            |> fun res -> match res with
+                          | true -> Success firstElemType
+                          | false -> Failure [sprintf "Not all elements in list have type %A" firstElemType]
+
+        | Spawn (lvalue, actorName, initMsg) ->
+            match lvalue.primitiveType, actorName with
+            | UserType lvalType, Identifier (SimpleIdentifier rvalType) -> 
+                if lvalType = rvalType then
+                    Success HasNoType
+                else 
+                    Failure [sprintf "Spawn does not typecheck. Expected actorType %A, but found %A" lvalType rvalType]
+            | _, _ ->
+                Failure [sprintf "Spawn does not typecheck. Types specified are not identifiers."]
+        | Reassignment (varId, rhs) ->
+            printfn "Reassignment bliver ikke typechecked ordentligt pt!!!"
+            Success HasNoType // FIXME: IKKE IMPLEMENTERET
+        | Struct (name, fields) ->
+            Success HasNoType
+        | Send (actorName, msgName) ->
+            Success HasNoType
+        | Operation (lhs, op, rhs) ->
+            match typecheck lhs, op, typecheck rhs with
+            (* Int|Real and Int|Real Equals *)
+            | Success (SimplePrimitive Primitive.Int | SimplePrimitive Primitive.Real) , Equals, Success (SimplePrimitive Primitive.Real | SimplePrimitive Primitive.Int) -> 
+                Success (SimplePrimitive Primitive.Bool)
+            
+            (* Int|Real and Int|Real Plus|Minus|Modulo|Multiply *)
+            | Success (SimplePrimitive Primitive.Int | SimplePrimitive Primitive.Real) , (Plus|Minus|Modulo|Multiply), Success (SimplePrimitive Primitive.Real | SimplePrimitive Primitive.Int) -> 
+                Success (SimplePrimitive Primitive.Real)
+
+            (* Default for cases allowed Plus|Minus|Modulo|Multiply *)
+            | Success (lhs), (Plus|Minus|Modulo|Multiply), Success (rhs) when lhs = rhs -> 
+                Success lhs
+
+            (* Default for cases allowed Equals *)
+            | Success (lhs), Equals, Success (rhs) when lhs = rhs -> 
+                Success (SimplePrimitive Primitive.Bool)
+
+            (* Default for cases not allowed *)
+            | Success (lhs), (Plus|Minus|Modulo|Equals|Multiply as op), Success (rhs) -> 
+                Failure [sprintf "%A of %A with %A not allowed." op lhs rhs]
+
+            | Failure errs, (Plus|Minus|Modulo|Equals|Multiply as op), Failure errs2 ->
+                Failure (errs @ errs2)
+
+            | Success _, (Plus|Minus|Modulo|Equals|Multiply as op), Failure errs ->
+                Failure (errs)
+
+            | Failure errs, (Plus|Minus|Modulo|Equals|Multiply as op), Success _ ->
+                Failure (errs)
+
+        | Function (funcName, arguments, types, body) ->
+            typecheck body
+        | Invocation (functionName, parameters) ->
+            printfn "Invocation bliver ikke typechecked ordentligt pt!!!"
+            Success HasNoType // FIXME: IKKE IMPLEMENTERET
+        | Identifier (id) ->
+            printfn "Identifier bliver ikke typechecked ordentligt pt!!!"
+            Success HasNoType // FIXME: IKKE IMPLEMENTERET
+        | other -> Failure [sprintf "%A not typechecked" other]
+
     let rec buildSymbolTable (root:AST) : State<unit, Environment> =
         match root with
         | Program stms -> 
@@ -88,45 +207,151 @@ module Analysis =
                 do! forAll buildSymbolTable stms
                 do! closeScope
             }
-        | Assignment (lValue, primitiveType) ->
+        | Assignment (mutability, varId, body) ->
             state {
                 let! scope = getScope
+                let lValue = {identity = SimpleIdentifier varId; isMutable = mutability; primitiveType = match typecheck body with
+                                                                                  | Success prim -> prim
+                                                                                  | Failure errs -> failwith "nej"}
                 let entry = {
                              error = false;
                              symbol = lValue;
                              statementType = Ass;
                              scope = scope}
                 do! addEntry entry
+                 }
+        | Actor (name, body) ->
+            state {
+                    do! openScope
+                    do! buildSymbolTable body
+                    do! closeScope
+                  }
+        | Body stms ->
+            state {
+                do! openScope
+                do! forAll buildSymbolTable stms
+                do! closeScope
             }
-    
-    let (|Integer|_|) (str: string) =
-        let mutable intvalue = 0
-        if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
-        else None
-    
-    let (|Character|_|) (str: string) =
-        if str.StartsWith "'" && str.EndsWith "'" && str.Length = 3 then Some(str.[1])
-        else None
-    
-    let (|Real|_|) (str: string) =
-        let mutable realvalue = 0.0
-        if System.Double.TryParse(str, &realvalue) then Some(realvalue)
-        else None
+        | Constant (type', value) ->
+            state {
+                let! s = getState
+                do! putState s
+            }
+        | ForIn (counterName, list, body) ->
+            state {
+                do! openScope
+                let! scope = getScope
+                let elemListType = match list with
+                                   | ListRange (Constant (type',_) :: _) -> type'
+                                   | err -> failwith (sprintf "Expected it to only be a list, but found: %A" err)
+                let entry = {
+                             error = false;
+                             symbol = {identity = SimpleIdentifier counterName; isMutable = false; primitiveType = elemListType;}
+                             statementType = Ass; //FIXME: is this the correct statementType?
+                             scope = scope}
+                do! addEntry entry
+                do! closeScope
+            }
+        | Function (funcName, arguments, types, body) ->
+            state {
+                    let! outsideScope = getScope
+                    let entry = {
+                             error = false;
+                             symbol = {identity = SimpleIdentifier funcName; isMutable = false; primitiveType = types;}
+                             statementType = Decl;
+                             scope = outsideScope}
+                    do! addEntry entry
+                    do! openScope
+                    let! insideScope = getScope
+                    let rec typesToList (inputType:PrimitiveType) : PrimitiveType list = 
+                        match inputType with
+                        | SimplePrimitive _ as prim -> [prim]
+                        | ListPrimitive listType -> typesToList listType
+                        | ArrowPrimitive xs -> xs
+                        | UserType _ as prim -> [prim]
+                        | HasNoType as prim -> [prim]
 
-    let (|Bool|_|) (str: string) =
-        let mutable realvalue = 0.0
-        match str with
-            | "true" -> Some(true)
-            | "false" -> Some(false)
-            | _ -> None
-
-    let (|UserType|_|) (str: string) =
-        let mutable realvalue = 0.0
-        match str with
-            | "true" -> Some(true)
-            | "false" -> Some(false)
-            | _ -> None
-
+                    let typesAsList = typesToList types
+                    let argumentEntries = Seq.zip arguments typesAsList
+                                          |> List.ofSeq
+                                          |> List.map (fun (argument, type') -> 
+                                              {
+                                                error = false;
+                                                symbol = {identity = SimpleIdentifier argument; isMutable = false; primitiveType = type';}
+                                                statementType = Decl;
+                                                scope = insideScope
+                                              })
+                    do! forAll addEntry argumentEntries
+                    do! closeScope
+                }
+        | Identifier id ->
+            state {
+                let! s = getState
+                do! putState s
+            }
+        | If (conditional, body) ->
+            state {
+                    let! s = getState
+                    do! putState s
+                  }
+        | Invocation (functionName, parameters) ->
+            state {
+                    let! s = getState
+                    do! putState s
+                  }
+        | ListRange content ->
+            state {
+                    let! s = getState
+                    do! putState s
+                  }
+        | Operation (lhs, op, rhs) ->
+            state {
+                    let! s = getState
+                    do! putState s
+                  }
+        | Reassignment (varId, rhs) ->
+            state {
+                let! scope = getScope
+                let lValue = {identity = varId; isMutable = true; primitiveType = match typecheck rhs with
+                                                                                  | Success prim -> prim
+                                                                                  | Failure errs -> failwith "nej"}
+                let entry = {
+                             error = false;
+                             symbol = lValue;
+                             statementType = Ass;
+                             scope = scope}
+                do! addEntry entry
+                 }
+        | Receive (msgName, msgType, body) ->
+            state {
+                    do! openScope
+                    let! bodyScope = getScope
+                    let lValue = {identity = SimpleIdentifier msgName; isMutable = false; primitiveType = msgType}
+                    let entry = {
+                             error = false;
+                             symbol = lValue;
+                             statementType = Decl;
+                             scope = bodyScope}
+                    do! addEntry entry
+                    do! closeScope
+                  }
+        | Send (actorName, msgName) ->
+            state {
+                    let! s = getState
+                    do! putState s
+                  }
+        | Spawn (lvalue, actorName, initMsg) ->
+            state {
+                    let! curScope = getScope
+                    let entry = {
+                             error = false;
+                             symbol = lvalue;
+                             statementType = Init;
+                             scope = curScope
+                                }
+                    do! addEntry entry
+                  }
+        //| Struct (name, fields) ->
 
 
     let rec isInScope (scopeToCheckIfIn:Scope) (otherScope:Scope) : bool =
@@ -164,35 +389,7 @@ module Analysis =
 
     
 
-    let rec typecheck (root:AST) : Result<PrimitiveType> =
-        match root with
-        | Program stms -> 
-            stms 
-            |> List.map typecheck
-            |> addResults
-        | Body stms -> 
-            stms 
-            |> List.map typecheck
-            |> addResults
-        | Block stms ->
-            stms 
-            |> List.map typecheck
-            |> addResults
-        | Assignment (lvalue, rhs) -> 
-            typecheck rhs
-            >>= fun primType -> if lvalue.primitiveType = primType then
-                                    Success primType
-                                else Failure ["Assignment does not typecheck"]
-        | Constant (primType, _) ->
-            Success primType
-        | If (condition, body) ->
-            match typecheck condition with
-            | Success (SimplePrimitive Primitive.Bool) -> 
-                typecheck body
-            | Success otherThanBool -> 
-                Failure [sprintf "Expected condition of type bool, found condition of type %A" otherThanBool]
-            | Failure msg -> Failure msg
-        | other -> Failure [sprintf "%A not typechecked" other]
+    
 
     let analyse (root:AST) : Result<int> = 
       let symbolTable = (evalState (buildSymbolTable root) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}).symbolList

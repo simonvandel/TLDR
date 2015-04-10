@@ -27,7 +27,7 @@ module ParserTest =
                       | Success ast' -> test ast'
                       | Failure msg  -> failwith (String.concat "" msg)
 
-    (* -------------------- Ints and Reals --------------------------- *)
+    (* -------------------- Constants --------------------------- *)
     
     [<Test>]
     let ``When int constant is given expect Int constant AST``() = 
@@ -61,19 +61,19 @@ module ParserTest =
 
     [<Test>]
     let ``When initialisation syntax is given with constant binding, expect initialisation AST with constant value``() =
-        let ident = Identifier (SimpleIdentifier "x")
+        let ident = SimpleIdentifier "x"
         let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char);}
         let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char),PrimitiveValue.List [Char 'T'])
         debugTestParseWith "let x:[char] := \"T\""
-        <| should equal (Program [Body [(Assignment (lValue, rhs))]])
+        <| should equal (Program [Body [(Initialisation (lValue, rhs))]])
 
     [<Test>]
     let ``When initialisation syntax is given with variable binding, expect initialisation AST with constant value``() =
-        let ident = Identifier (SimpleIdentifier "x")
+        let ident = SimpleIdentifier "x"
         let lValue = {identity = ident; isMutable = true; primitiveType = SimplePrimitive Primitive.Int;}
         let rhs = Constant (SimplePrimitive Primitive.Int, Int 5)
         debugTestParseWith "var x:int := 5;"
-        <| should equal (Program [Body [(Assignment (lValue, rhs))]])
+        <| should equal (Program [Body [(Initialisation (lValue, rhs))]])
 
 
     (* -------------------- Reassignment ---------------------- *)
@@ -82,25 +82,25 @@ module ParserTest =
     let ``When reassignment syntax is given with constant binding, expect reassignment AST with constant value``() =
         let rhs = Constant (SimplePrimitive Primitive.Int, Int 10000)
         debugTestParseWith "x := 10000;"
-        <| should equal (Program [Body [(Reassignment (Identifier(SimpleIdentifier "x"), rhs))]])
+        <| should equal (Program [Body [(Reassignment (SimpleIdentifier "x", rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with constant binding, expect reassignment AST with constant value``() =
         let rhs = Constant (SimplePrimitive Primitive.Int, Int 10000)
         debugTestParseWith "x.y := 10000;"
-        <| should equal (Program [Body [(Reassignment (Identifier (IdentifierAccessor ["x"; "y"]), rhs))]])
+        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor, expect reassignment AST with constant value``() =
         let rhs = Identifier ( IdentifierAccessor ["a"; "b"] )
         debugTestParseWith "x.y := a.b;"
-        <| should equal (Program [Body [(Reassignment (Identifier (IdentifierAccessor ["x"; "y"]), rhs))]])
+        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor.accessor, expect reassignment AST with constant value``() =
         let rhs = Identifier ( IdentifierAccessor ["a"; "b"; "c"] )
         debugTestParseWith "x.y := a.b.c;"
-        <| should equal (Program [Body [(Reassignment (Identifier (IdentifierAccessor ["x"; "y"]), rhs))]])
+        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
     (* -------------------- If statements ---------------------- *)
 
@@ -113,10 +113,10 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for if statement is given with simple body, expect 'if' AST``() =
-        let ident = Identifier (SimpleIdentifier "x")
+        let ident = SimpleIdentifier "x"
         let conditional = Constant (SimplePrimitive Primitive.Bool, Bool false)
-        let assignInBody = Body [Assignment 
-                                        ({identity = ident; isMutable = true; primitiveType = SimplePrimitive Primitive.Int} // lvalue
+        let assignInBody = Body [Initialisation 
+                                        ({identity = ident; isMutable = true; primitiveType = SimplePrimitive Primitive.Int}  // lvalue
                                         , Constant (SimplePrimitive Primitive.Int, Int 23))
                                    ]
                                   // value
@@ -160,7 +160,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for spawn is given with immutable actor, expect Spawn AST`` () =
-        let ident = Identifier (SimpleIdentifier "actorHandle")
+        let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = false; primitiveType = UserType "actorName"}
         let actorType = Identifier (SimpleIdentifier "actorName")
         let initMsg = Identifier (SimpleIdentifier "initMsg")
@@ -169,7 +169,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for spawn is given with mutable actor, expect Spawn AST`` () =
-        let ident = Identifier (SimpleIdentifier "actorHandle")
+        let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = true; primitiveType = UserType "actorName"}
         let actorType = Identifier (SimpleIdentifier "actorName")
         let initMsg = Identifier (SimpleIdentifier "initMsg")
@@ -256,7 +256,7 @@ module ParserTest =
         let body = Block [ Body [ Constant (SimplePrimitive Primitive.Int, Int 5) ] ]
         debugTestParseWith "let func1() : int := {5}"
         <| should equal (Program [Body [
-                                    Function ("func1", [], [SimplePrimitive Primitive.Int], body)
+                                    Function ("func1", [], SimplePrimitive Primitive.Int, body)
                                  ]])
 
     [<Test>]
@@ -264,7 +264,7 @@ module ParserTest =
         let body = Block [ Body [ Identifier (SimpleIdentifier "x") ] ]
         debugTestParseWith "let func1(x) : int -> int := {x}"
             <| should equal (Program [Body [
-                                        Function ("func1", ["x"], [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], body)
+                                        Function ("func1", ["x"], ArrowPrimitive [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], body)
                                  ]])
 
     [<Test>]
@@ -275,7 +275,7 @@ module ParserTest =
                                     Function (
                                         "func2", 
                                         ["x"; "y"], 
-                                        [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], 
+                                        ArrowPrimitive [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], 
                                         body
                                         )
                                  ]])

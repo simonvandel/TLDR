@@ -23,6 +23,7 @@ module AST =
         | ListPrimitive of PrimitiveType
         | ArrowPrimitive of PrimitiveType list
         | UserType of string
+        | HasNoType
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
 
@@ -30,30 +31,29 @@ module AST =
         | Program of AST list
         | Block of AST list
         | Body of AST list
-        | Assignment of LValue * AST //AssignmentStruct // LValue * PrimitiveType
-        | Reassignment of AST * AST // varIds (x.y == [x;y]), rhs // FIXME: string list skal være IdentityAccessor
-        | Constant of PrimitiveType * PrimitiveValue
+        | Assignment of bool * string * AST // mutability, varId * value
+        | Reassignment of Identifier * AST // varId, rhs
+        | Initialisation of LValue * AST // lvalue, rhs
+        | Constant of PrimitiveType * PrimitiveValue // type, value
         | Actor of AST * AST // name, body FIXME: Add more fields?
-        | Struct of string * TypeDeclaration list // name, body FIXME: Add more fields?
-        | If of AST * AST // conditional * body
+        | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
+        | If of AST * AST // conditional, body
         | Send of string * string // actorName, msgName
         | Spawn of LValue * AST * AST // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
-        | ListRange of AST list
-        | Operation of OperationType
+        | ListRange of AST list // content
+        | Operation of AST * Operator * AST // lhs, op, rhs
         | Identifier of Identifier
-        | Function of string * string list * PrimitiveType list * AST// funcName, arguments, types, body
-        | StructLiteral of (AST * AST) list
+        | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
+        | StructLiteral of (AST * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list // functionName, parameters
-        | Error // Only for making it compile temporarily
+        //| Error // Only for making it compile temporarily
 
     and Identifier =
         | SimpleIdentifier of string // x
         | IdentifierAccessor of string list // x.y == ["x"; "y"]
 
-    and OperationType = AST * Operator * AST
-        //| SingleOperation of AST
 
     and Operator =
         | Plus
@@ -63,7 +63,7 @@ module AST =
         | Multiply
 
     and LValue = {
-        identity:AST//string
+        identity:Identifier
         isMutable:bool
         primitiveType:PrimitiveType
     }
@@ -97,12 +97,17 @@ module AST =
             | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str
 
-    let toLValue (mutability:ASTNode) (name:AST) (typeName:ASTNode) : LValue = 
-        let isMutable = match mutability.Symbol.Value with
+    let toMutability (input:ASTNode) : bool =
+        match input.Symbol.Value with
                             | "let" -> false
                             | "var" -> true
                             | err -> failwith (sprintf "Mutability can never be: %s" err)
-        {identity = name; 
+
+    let toLValue (mutability:ASTNode) (name:AST) (typeName:ASTNode) : LValue = 
+        let isMutable = toMutability mutability
+        {identity = (match name with
+                    | Identifier id -> id)
+                    ; 
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
 
@@ -123,16 +128,6 @@ module AST =
         | "Body" ->
             let t = traverseChildren root
             Body t
-        | "StatementList" as state -> 
-            //printfn "%s %s" "Entered" state
-            let t = traverseChildren root
-            //printfn "%s %s" "Left" state
-            Program t
-        | "Statement" as state -> 
-            //printfn "%s %s" "Entered" state
-            traverseChildren root
-            //printfn "%s %s" "Left" state
-            Error
         | "Block" as state -> 
             //printfn "%s %s" "Entered" state
             let t =traverseChildren root
@@ -143,9 +138,18 @@ module AST =
             let typeName = ((root.Children.Item 1).Children.Item 1)
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
-            Assignment (lhs, rhs)
-        | "Assignment" ->
-            let assignables = toAST (root.Children.Item 0)
+            Initialisation (lhs, rhs)
+        | "Assignment" as state ->
+            let mutability = toMutability (root.Children.Item 0)
+            let name = match toAST ((root.Children.Item 1).Children.Item 0) with
+                       | Identifier (SimpleIdentifier str) -> str
+                       | err -> failwith (sprintf "This should never be reached: %A" err)
+            let rhs = toAST (root.Children.Item 2)
+            Assignment (mutability, name, rhs)
+        | "Reassignment" ->
+            let assignables = match toAST (root.Children.Item 0) with
+                              | Identifier id -> id
+                              | err -> failwith (sprintf "This should never be reached: %A" err)
                                 (*seq { for c in (root.Children.Item 0).Children do
 
                                           yield (c.Children.Item 0).Symbol.Value
@@ -240,7 +244,6 @@ module AST =
                                         root
                           |> List.ofSeq
                 Identifier (IdentifierAccessor ids)
-            | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Function" ->
             let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
@@ -250,6 +253,7 @@ module AST =
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
+                            |> fun xs -> if xs.Length = 1 then xs.Head else ArrowPrimitive xs
 
 
                 let body = toAST (root.Children.Item 2)
@@ -264,15 +268,9 @@ module AST =
                                 }
                             |> List.ofSeq
                             |> List.map toPrimitiveType
+                            |> fun xs -> if xs.Length = 1 then xs.Head else ArrowPrimitive xs
                 let body = toAST (root.Children.Item 3)
                 Function (funcName, args, types, body)
-        | "IdentifierWithAccessor" ->
-            let ids = seq { for c in root.Children do   
-                                yield (c.Children.Item 0).Symbol.Value                 
-                            }
-                        |> List.ofSeq
-            //Identifier (IdentifierAccessor ids )
-            Error
         | "Invocation" ->
             let funcName = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
@@ -301,7 +299,7 @@ module AST =
             Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List chars)
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
-            Error
+            failwith "not all cases matched in toAST"
 
     and traverseChildren (root:ASTNode) : AST list =
         List.ofSeq (seq { for i in root.Children -> i})
