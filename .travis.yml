@@ -11,4 +11,4 @@ install:
 
 script:
   - xbuild /p:Configuration=Release Compiler/vSprog/vSprog.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Compiler/vSprog/Tests/bin/Release/Tests.dll
+  #- mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Compiler/vSprog/Tests/bin/Release/Tests.dll
