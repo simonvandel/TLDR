@@ -1,8 +1,8 @@
-\chapter{Lexing \& Parsing}
+\section{Lexing \& Parsing}
 
 The lexing and parsing part of the compiler is written using the Hime parser generator, as described in \cref{sec:compiler_compiler_choice}. This chapter describes the features supported by Hime and its uses in the compiler.
 
-\section{Tree Transformations}
+\subsection{Tree Transformations}
 \label{sec:tree_transformations}
 
 The output of running Hime on a grammar is a syntax tree. By default the output syntax tree matches the grammar rules one-to-one. That is, the syntax tree is a concrete syntax tree (CST). In the later stages of the compiler, many nodes of the CST are unneeded. \Cref{fig:indirection_example} lists two types of nodes, not needed in the final abstract syntax tree (AST), adding an extra layer of indirection and altogether superfluous nodes.
@@ -36,7 +36,7 @@ In \cref{fig:cst_example}, the node \emph{B} is not needed as it is simply an al
 
 To solve these two problems, the promote and drop actions can be utilised.
 
-\subsection{Promote Action}
+\subsubsection{Promote Action}
 
 The promote action, when applied to a node, replaces its parent node with itself, thereby becoming the new parent node.
 
@@ -56,7 +56,7 @@ The promote action can be applied to \emph{C} in \cref{fig:cst_example} as seen 
 \end{tikzpicture}
 \end{figure}
 
-\subsection{Drop Action}
+\subsubsection{Drop Action}
 
 The drop action removes the node it is applied to, and all of its children, entirely from the syntax tree. This can be utilised in \cref{fig:ast_promote} to remove the two parentheses that have no meaning to the compiler. Continuing from the result of applying the promote action, the drop action can be applied to the parentheses as seen in \cref{fig:indirection_example_drop}.
 

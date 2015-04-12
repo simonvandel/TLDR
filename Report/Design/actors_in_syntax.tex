@@ -1,14 +1,14 @@
-\section{Actors}
+\subsection{Actors}
 
 % Actors inde i actors, nested, ejerskab, synlighed.
 % Hvad gør kill? er det instantly? efter køen er kørt færdig?
 % blocking vs. non-blocking messages? hvordan skelnes de? skal vi have begge?
 
-\subsection{Isolation and Independence}
+\subsubsection{Isolation and Independence}
 
 A central principle in the programming language described in this report is the use of actors, based on actor-modelling. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when other actors interact with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of separation of processes, which will allow for greater concurrency by letting processes operate on local data instead of global, shared data. Therefore the language tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions as no data is ever accessed by more than one process.
 
-\subsection{Construction of an Actor}
+\subsubsection{Construction of an Actor}
 
 The syntactical contruction of an actor is as follows:
 
@@ -21,7 +21,7 @@ actor <identifier> := {
 As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the construct is needed, which will serve as the of type the actor. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
 
 
-\subsection{Basic actor functionality}
+\subsubsection{Basic actor functionality}
 
 There are four basic functionalities: \enquote{spawn}, \enquote{kill}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to these and more differences, which follows below, we decided to separate them syntactically. Actors can also reference themselves with the \enquote{me} keyword.
 

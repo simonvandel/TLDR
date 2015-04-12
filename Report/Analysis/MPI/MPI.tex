@@ -1,4 +1,4 @@
-\chapter{Message Passing Interface}
+\section{Message Passing Interface}
 Message Passing Interface (MPI) is the de facto standard for message passing, when doing high performance computation. It was first released in 1994 as version 1.0. It was created in collaboration between 40 different organisations involving about 60 people in total. It was based in a preliminary proposal, known as MPI1, that was created by Jack Dongarra, Rolf Hempel, Tony Hey, and David Walker and finished in November 1992 and inspired from the, then, state of the art practice, such as PVM, NX, Express, p4, etc. It has since been iterated upon, with the latest version, MPI-3.0 being released in 2012.
 
 The reason for creating this standard is to ensure portability and ease-of-use. In a communicating distributed memory environment, high-level routines and abstractions are often build upon lower level message passing routines, of which this standardisation ensures that these abstractions and routines are available on all systems. This also presents vendors with a few clearly defined base-routines they need to implement efficiently and, if possible, provide hardware support for, to enhance scalability.
@@ -9,38 +9,38 @@ The standard is designed for message passing only and does not include specifica
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 1)
 
-\section{Message Types}
+\subsection{Message Types}
 
-\subsection{Point-to-point Operations}
+\subsubsection{Point-to-point Operations}
 Point-to-point communication is the the basic building block of message passing.
-\subsubsection{Send}
+\paragraph{Send}
 Here one process sends data in form of a message to a single other process.
-\subsubsection{Receive}
+\paragraph{Receive}
 When a process receives a message, it enqueues the message in a queue called its message box. Each message in the message box is processed sequentially by dequeuing and handling them one at the time.
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 3)
 
-\subsection{Collective Operations}
-\subsubsection{Broadcast}
+\subsubsection{Collective Operations}
+\paragraph{Broadcast}
 Broadcast is a one-to-many operation, where one process has some specific data that it sends to many other processes. The data is therefore multiplied, as opposed to being divided.
 
-\subsubsection{Scatter}
+\paragraph{Scatter}
 Scatter is a close relative to broadcast. It is also a one-to-many operation, but here the data is divided into equally large chunks and is distributed among multiple processes (including the process originally containing all the data). This could for instance be sending all entries in a collection to different processes that individually process their part.
 
-\subsubsection{Gather}
+\paragraph{Gather}
 Gather is a many-to-one operation and is the inverse of scatter. Here data from many processes are sent to one of them. This operation often implies a hierarchy of the processes containing the data, where the process highest in the hierarchy receives all the data (also from itself).
 
-\subsubsection{Reduce}
+\paragraph{Reduce}
 Reduce is a many-to-one operation. Here one operation, called the reduction function, is done on data from multiple processes and the result is placed in one of them. As with gather, a hierarchy is also customary and the process highest in the hierarchy receives the result of the reduction. All reduction functions must be both associative and commutative, so results can be reduced without concern for the order of operations.
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 4)
 
-\subsection{System Buffer}
+\subsubsection{System Buffer}
 Consider the following: When sending messages, what happens if the receiver is not ready to process them? To solve this problem, MPI dictates that an implementation must be able to store messages, however the way this is done is up to the implementer.
 
 One way to do this is with a system buffer. In short terms, a system buffer works as an inbox, and sometimes also an outbox, where messages are stored until they can be processed. A few things to note about this inbox, is that it is supposed to work "behind the scenes", not manageable by the programmer. However, what the programmer needs to realise, is that this buffer is a finite resource, which will be exhausted if one is not cautious.
 (Source: MPI\_tut1)
 
-\subsection{Blocking and Non-blocking Sends}
+\subsubsection{Blocking and Non-blocking Sends}
 Messages can be divided into two distinct groups, the blocking sends and the non-blocking sends. The straight forward approach is the non-blocking send, where the sender assumes, or is certain, that the receiver is ready to handle the message. These types of messages return almost immediately, but there is no guarantee that the message was received, or how it was received.
 
 On the other hand there is the blocking send. This only returns after it is safe to modify the application buffer again. The sent data could still be sitting in a buffer, but it is considered safe.
@@ -48,7 +48,7 @@ On the other hand there is the blocking send. This only returns after it is safe
 Generally, blocking sends are used for cases where it is crucial that the communication has been completed, and non-blocking sends are used to increase performance in cases where the communication is not crucial.
 (Source: MPI\_tut2)
 
-\subsection{Order and Fairness}
+\subsubsection{Order and Fairness}
 When sending messages, the order in which they are sent and received can matter a great deal. MPI gives a few guarantees as to how this can be expected to happen. One must note that these rules are not enforced if multiple threads are participating in the communication.
 
 When using MPI, messages will not overtake each other. If one task sends out two messages in succession, the message sent out first, will be the first one to be received. Also, if a receiver has multiple requests looking for a matching message, the request that was made first, will get the first match.

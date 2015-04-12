@@ -1,7 +1,7 @@
-\subsection{Structures}
+\subsubsection{Structures}
 \label{subsec:structs}
 
-\subsubsection{Defining Structures}
+\paragraph{Defining Structures}
 \label{sec:defStructures}
 
 Structures are defined by using the \enquote{struct} keyword. 
@@ -16,7 +16,7 @@ A concrete example:
   struct Person := {Name:[char]; Age:int}
 \end{verbatim}
 
-\subsubsection{Initialising Structures}
+\paragraph{Initialising Structures}
 \label{sec:initStructures}
 
 Structs can be initialised and assigned to symbols using either a constant assignment or a variable assignment. Structs initialised as a constant assignment cannot change any of the fields of the structs; the struct is immutable. Structs initialised as a variable assignment can change all of its fields at any time; the struct is mutable.
@@ -33,7 +33,7 @@ The syntax for initialising a mutable struct is as follow.
   var Alice:Person := {Name := "Alice"; Age := 20};
 \end{verbatim}
 
-\subsubsection{Access to Structure Fields}
+\paragraph{Access to Structure Fields}
 \label{sec:accessStructFields}
 
 Fields can be access using the following syntax.
