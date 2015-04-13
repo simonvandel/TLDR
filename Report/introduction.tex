@@ -1,7 +1,9 @@
-\chapter{Introduction}{
-The main focus of this project is to create a programming language for parallel computing. Besides that, it has been chosen to delimit the scope of the project furthermore by choosing a target group for the language. Making a general purpose language optimised for parallel programming, is a large problem that has been attempted solve many times\cite{parallel programming languages}.
-\\The aim of the project is not to solve this problem, but rather focusing on creating a language that is useful in solving a specific group of problems. The programming language will be targeted towards scientists with a focus on simulations of physical systems on highly parallel systems such as supercomputers and cluster computers. This field has long been spearheaded by C and Fortran, which admittedly are very powerful and efficient programming languages, but are beginning to show their age and both lack a lot of prominent functionalities, such as pattern matching, foreach loops and infinite precision integers.
-The language, described in this report, therefore aims to modernise this niche field and attempt to take over the reigns from the giants of yesteryear.
-}\label{part:introduction}
+\chapter{Introduction}\label{part:introduction}
 
-\input{Analysis/Parallelism.tex}
+This report covers the creaton of a programming language for computer simulations. The language is constructed with scientists, who wishes to compute large simulations in different fields of science, as the primary usergroup. Large simulations refers to problems which are deemed infeasible to be run on regular computers such as laptops and desktops. Focusing on such large simulations effectively gives the language a subfocus on parallel computing.
+
+The aim of the language is not to compete with tools in the field of parallel computing, such as C and Fortran, which admittedly are very powerful and efficient programming languages, but are beginning to show their age and both lack a lot of prominent functionalities, such as pattern matching, foreach loops and infinite precision integers. 
+
+Instead this language tries to provide the computing power of a supercomputer to scientists, who do not have extended experience with computer science. Currently this is a niche in the use of supercomputers and cluster computers, but considering the continued stride towards faster computers and the physical limits that are being reaching with regular computers, we expect the accessibility to large parallel computers to increase. 
+
+The language, described in this report, aims to modernise this niche field and attempt to take over the reigns from the giants of yesteryear.
