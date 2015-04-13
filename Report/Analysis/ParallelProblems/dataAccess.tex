@@ -2,7 +2,8 @@
 When processes run parallel some problems arise when multiple processes try to access the same memory. Among these the most common are race conditions and deadlocks.
 
 \subsubsection{Race conditions}
-This problem arise when multiple processes want to modify the same data in memory or similar recourse. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations: Operations the the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
+This problem arise when multiple processes want to modify the same data in memory or similar recourse. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations: Operations which the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
+
 \begin{itemize}
 \item Copy the current value of the integer from main memory into working register
 \item Calculate the value puls one and place the result in the register
