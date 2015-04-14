@@ -1,12 +1,14 @@
 \section{High Performance Computing}
-High Performance Computing (from here on, HPC) is a field of computing, where the main objective is performance, often measured in floating point operations per second (FLOPS). The term HPC is typically associated with supercomputers and large distributed system.
 
-\subsection{Use}
-HPC is rarely used by your "average Joe", but more so by scientists and engineers who need to perform computation on very large datasets or "big data"', model reality with a lot of detail or calculate very large equations.
+High Performance Computing (from here on, HPC) is a field of computing, where the main objective is performance, often measured in floating point operations per second (FLOPS). The term HPC is typically associated with supercomputers and large distributed system. 
+
+HPC is rarely used by your \enquote{average Joe}, but more so by scientists and engineers who need to perform computation on very large datasets or \enquote{big data}, model reality with a lot of detail or calculate very large equations. It is this type of computing that the language of the report, will focus on.
+
 
 \subsection{Supercomputers and Distributed Systems}
+
 Nearly all platforms for HPC are either supercomputers or distributed systems. Contemporary supercomputers are getting more and more powerful, with the current world leader, the Chinese Tianhe-2, having a theoretical peak performance of almost 55 petaFLOPS [http://www.top500.org/system/177999].
-Distributed systems generally consist of a large group, or "cluster", of computers, referred to as "nodes". In these systems, the individual nodes might not be more powerful than an ordinary desktop PC, but the collective processing power of the whole cluster can rival that of a supercomputer.
+Distributed systems is generally a large group, called a \enquote{cluster}, which consists of computers, which referred to as \enquote{nodes}. In these systems, the individual nodes might not be more powerful than an ordinary desktop computer, but the collective processing power of the whole cluster can rival that of a supercomputer.
 A simple cluster could consist of the following nodes:
 \begin{description}
 	\item [Head]
@@ -17,11 +19,14 @@ A simple cluster could consist of the following nodes:
 	A node with the sole purpose of sending jobs to compute nodes. A good scheduler will evenly distribute the load of jobs to the compute nodes, minimising the total computation time.
 \end{description}
 
-These systems' performance is so high mainly due to their extensive use of parallel computing. This parallelism is achieved, in the case of Tianhe-2, by using MPICH2, one of the most popular implementations of the MPI specification for message passing interfaces.
+These systems' performance is high, mainly due to their extensive use of parallel computing. This parallelism is achieved, in the case of Tianhe-2, by using MPICH2, one of the most popular implementations of the MPI specification for message passing interfaces. This requires the programmer to think parallel when writing the programs. Parallel computing will be described later in the report \kanote{Indsæt reference til rapport}.
+
 
 \subsection{Current Technology}
-Even though the hardware used in HPC-systems evolves at a very high rate, unfortunately the same cannot be said for the programming languages used to program the systems. The programming languages almost solely used to program HPC-systems are C and Fortran. At the time of writing, C is 43 years old and Fortran is 58 years old. For any technology related to software to survive this long is quite a feat, but also rather worrying considering its heavy use in HPC, what should be the milestone for efficient programming.
+
+Even though the hardware used in HPC-systems evolves at a very high rate, unfortunately the same cannot be said for the programming languages used to program the systems. The programming languages almost solely used to program HPC-systems are C and Fortran. At the time of writing, C is 43 years old and Fortran is 58 years old. For any technology related to software to survive this long is quite a feat, but also rather worrying considering its heavy use in HPC, which should be the milestone for efficient programming.
 So why is such a critical performance-oriented field still dominated by technologies which are about half a century old? There are three very big factors in why these languages are dominant:
+
 \begin{description}
 	\item [Tried and true]
 	Both C and Fortran have existed for such a long time, that both have had the time needed to mature. Every feature in the languages is almost guaranteed to be correct, as the languages have been extensively used and developed for such a long time.
@@ -30,3 +35,5 @@ So why is such a critical performance-oriented field still dominated by technolo
 	\item [Near to the metal]
 	As C and Fortran are rather low level languages, there is a large amount of control in the hands of the developer. This means that there is a lot of potential for optimisation in the code.
 \end{description}
+
+These are all good features for a language, and especially being \enquote{close to the metal} becomes desirable trait, when one is already trying to increase the speed of the computation. However, this trait also provides a barrier of entry for scientists who are not well versed in programming, seeing that the languages requires you to consider problems which solely exists in the domain of computers, and not in the domain of the problem that was originally sought to be solved. It is expected that some scientists would be willing to sacrifice some of the control and speed of the C and Fortran languages, in order to better understand the code they are running, and thereby be able to write new programs faster.
