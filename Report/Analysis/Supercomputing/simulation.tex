@@ -17,13 +17,11 @@ A static model is a snapshot of a given system with objects with non-changing st
 \section{Simulation}
 We often need to create and analyse models. For a portion of these models an analytical approach can be used, where the one can analyse the model via mathematical methods and calculate how static models will look and dynamic models evolve. This approach only works on a limited portion of the models where the system and behaviour of objects are well known and can be described mathematically. As the models become more stochastic purely mathematical analysis begins to fall short and simulations are often used to be able to create the (often dynamic) models.
 
-Formally simulations is defined as \enquote{a system designed to imitate another real system} \jenote{Find a better definition of a simulation}. This is a very broad definition, and real systems can be very different in their structure. In this project the focus is mainly on natural and social sciences where simulations are most often used. Although real systems within these sciences can vary a lot, they nearly always share the property that they change state over, what is often but not necessarily, time. This is very close to the definition of a dynamic model. In this respect simulations are very close to a dynamic model.
-How this change is modelled can also vary and generally we often speak of two different paradigms; Discrete and continous simulations.
+Formally simulations is defined as \enquote{a system designed to imitate another real system} \jenote{Find a better definition of a simulation}. This is a very broad definition, since real systems can be very different in their structure and further more the type of simulations also differs greatly. Generally one can distinguish between two different types of simulations, experimental and theoretical. An experimental simulation is where a real system is imitated by another real system, often smaller and/or simpler. For instance when biologists simulate the creation of life on the back of crystals in their lab it is an experimental simulation. Theoretical simulations are simulations where a real system is imitated theoretically often on a computer or on paper. This project will focus on theoretical simulations. To further narrow the definition of a simulation used in this project, the focus will mainly be put on natural and social sciences where simulations are most often used. Within these sciences real systems can still vary a lot, but they nearly always share the property that they change state over, what is often but not necessarily, time. This is close to the definition of a dynamic model. In this respect simulations are close to a dynamic model.
+How this change is modelled can also vary and generally we often speak of two different paradigms; Discrete and continuous simulations.
 
-In this project the scope of parralisation is within simulations. This section will describe some general properties and processes of computer simulations. At last this section will discuss generalisations and assumptions, that can be made on the basis of the understading of the problem domain. This can be used to provide the design phase with some ideas of abstractions the language should implement.
-
-\subsection{Discrete Simulations}
-
+\section{Discrete Simulations}
+Discrete simulations are often dictated by flows and states where the state of the whole system and subsystems are updated in discrete iterations. Observations and  The systems and objects
 
 \subsection{Continuous Simulations}
 Continious simulations are simulations that can 
@@ -43,7 +41,7 @@ For an actor to have stopped the programmer needs to know the three following:
 \end{itemize}
 The two first conditions are inherently easy to check. But for the last condition to hold one must make sure that all other actors that know about this actor also have stopped for else they can send messages to the actor and thereby \enquote{reviving} it. First of all the programmer must be able to group actors together thereby making sure that only actors in these groups can communicate with each other. This is done so he or she can know what actors must have stopped.
 
------------------------------------------
+In this project the scope of parallelisation is within simulations. The rest of this section will describe some general properties and processes of computer simulations. At last this section will discuss generalisations and assumptions, that can be made on the basis of the understading of the problem domain. This can be used to provide the design phase with some ideas of abstractions the language should implement.
 
 \emph{Understanding the problem domain}
 
