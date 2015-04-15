@@ -32,22 +32,22 @@ module ParserTest =
     [<Test>]
     let ``When int constant is given expect Int constant AST``() = 
         testParseWith "2;"
-        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, Int 2))]])
+        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2))]])
 
     [<Test>]
     let ``When zero constant is given expect Int constant AST``() = 
         testParseWith "0;"
-        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, Int 0)) ]] )
+        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 0)) ]] )
 
     [<Test>]
     let ``When real constant is given, expect Real constant AST``() =
         testParseWith "2.5;"
-        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, Real 2.5)) ]])
+        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, PrimitiveValue.Real 2.5)) ]])
 
     [<Test>]
     let ``When real constant is given starting with dot, expect Real constant AST``() =
         testParseWith ".5;"
-        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, Real 0.5)) ]])
+        <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, PrimitiveValue.Real 0.5)) ]])
 
 
     (* -------------------- Actor ---------------------- *)
@@ -55,7 +55,7 @@ module ParserTest =
     [<Test>]
     let ``When actor syntax is given with empty body, expect actor AST``() =
         debugTestParseWith "actor main := {};"
-        <| should equal (Program [Body [Actor (Identifier (SimpleIdentifier "main"), Block [])]])
+        <| should equal (Program [Body [Actor ("main", Block [])]])
 
     (* -------------------- Initialisation ---------------------- *)
 
@@ -63,7 +63,7 @@ module ParserTest =
     let ``When initialisation syntax is given with constant binding, expect initialisation AST with constant value``() =
         let ident = SimpleIdentifier "x"
         let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char);}
-        let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char),PrimitiveValue.List [Char 'T'])
+        let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char),PrimitiveValue.List [PrimitiveValue.Char 'T'])
         debugTestParseWith "let x:[char] := \"T\""
         <| should equal (Program [Body [(Initialisation (lValue, rhs))]])
 
@@ -71,7 +71,7 @@ module ParserTest =
     let ``When initialisation syntax is given with variable binding, expect initialisation AST with constant value``() =
         let ident = SimpleIdentifier "x"
         let lValue = {identity = ident; isMutable = true; primitiveType = SimplePrimitive Primitive.Int;}
-        let rhs = Constant (SimplePrimitive Primitive.Int, Int 5)
+        let rhs = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5)
         debugTestParseWith "var x:int := 5;"
         <| should equal (Program [Body [(Initialisation (lValue, rhs))]])
 
@@ -80,13 +80,13 @@ module ParserTest =
 
     [<Test>]
     let ``When reassignment syntax is given with constant binding, expect reassignment AST with constant value``() =
-        let rhs = Constant (SimplePrimitive Primitive.Int, Int 10000)
+        let rhs = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10000)
         debugTestParseWith "x := 10000;"
         <| should equal (Program [Body [(Reassignment (SimpleIdentifier "x", rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with constant binding, expect reassignment AST with constant value``() =
-        let rhs = Constant (SimplePrimitive Primitive.Int, Int 10000)
+        let rhs = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10000)
         debugTestParseWith "x.y := 10000;"
         <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
@@ -106,7 +106,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for if statement is given with empty body, expect 'if' AST``() =
-        let conditional = Constant (SimplePrimitive Primitive.Bool, Bool true)
+        let conditional = Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)
         let body = Block []
         testParseWith "if ( true ) {}"
         <| should equal (Program [Body [(If (conditional, body))]])
@@ -114,10 +114,10 @@ module ParserTest =
     [<Test>]
     let ``When syntax for if statement is given with simple body, expect 'if' AST``() =
         let ident = SimpleIdentifier "x"
-        let conditional = Constant (SimplePrimitive Primitive.Bool, Bool false)
+        let conditional = Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool false)
         let assignInBody = Body [Initialisation 
                                         ({identity = ident; isMutable = true; primitiveType = SimplePrimitive Primitive.Int}  // lvalue
-                                        , Constant (SimplePrimitive Primitive.Int, Int 23))
+                                        , Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 23))
                                    ]
                                   // value
         let body = Block [ assignInBody ]
@@ -162,7 +162,7 @@ module ParserTest =
     let ``When syntax for spawn is given with immutable actor, expect Spawn AST`` () =
         let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = false; primitiveType = UserType "actorName"}
-        let actorType = Identifier (SimpleIdentifier "actorName")
+        let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg")
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [Body [(Spawn (lhs, actorType, initMsg))]])
@@ -171,7 +171,7 @@ module ParserTest =
     let ``When syntax for spawn is given with mutable actor, expect Spawn AST`` () =
         let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = true; primitiveType = UserType "actorName"}
-        let actorType = Identifier (SimpleIdentifier "actorName")
+        let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg")
         debugTestParseWith "var actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [Body [(Spawn (lhs, actorType, initMsg))]])
@@ -196,7 +196,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for for-in-loop is given with empty body, expect ForIn AST`` () =
-        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
+        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
         let body = Block []
         debugTestParseWith "for i in [0 .. 2] {}"
         <| should equal (Program [Body [(ForIn ("i", list, body))]])
@@ -205,13 +205,13 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for list from 0 to 3 is given, expect List AST`` () =
-        let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
+        let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[0 .. 3]"
         <| should equal (Program [Body [(ListRange list)]])
 
     [<Test>]
     let ``When syntax for list from -5 to 2 is given, expect List AST`` () =
-        let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n))
+        let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[-5 .. 2]"
         <| should equal (Program [Body [(ListRange list)]])
 
@@ -224,12 +224,12 @@ module ParserTest =
         <| should equal (Program [Body [
                                     Operation (
                                                     Operation (
-                                                                    Constant (SimplePrimitive Primitive.Int, Int 2),
+                                                                    Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2),
                                                                     Plus,
-                                                                    (Constant (SimplePrimitive Primitive.Int, Int 3)) 
+                                                                    (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 3)) 
                                                                     ),
                                                     Plus,
-                                                    (Constant (SimplePrimitive Primitive.Int, Int 4))
+                                                    (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 4))
 
                                                )
                                  ]])
@@ -242,10 +242,10 @@ module ParserTest =
                                                     Operation (
                                                                     Identifier (SimpleIdentifier "i"),
                                                                     Modulo,
-                                                                    (Constant (SimplePrimitive Primitive.Int, Int 20)) 
+                                                                    (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 20)) 
                                                                     ),
                                                     Equals,
-                                                    (Constant (SimplePrimitive Primitive.Int, Int 0))
+                                                    (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 0))
                                                )
                                  ]])
 
@@ -253,7 +253,7 @@ module ParserTest =
     (* --------------------------- Functions --------------------------- *)
     [<Test>]
     let ``When syntax for function with zero arguments, expect Function AST`` () =
-        let body = Block [ Body [ Constant (SimplePrimitive Primitive.Int, Int 5) ] ]
+        let body = Block [ Body [ Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5) ] ]
         debugTestParseWith "let func1() : int := {5}"
         <| should equal (Program [Body [
                                     Function ("func1", [], SimplePrimitive Primitive.Int, body)
@@ -296,7 +296,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for struct literal with 1 field, expect Struct literal AST`` () =
         let fieldName1 = Identifier (SimpleIdentifier "field1")
-        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, Int 5))]
+        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "(field1 := 5)"
         <| should equal (Program [Body [ struct1  ]])
 
@@ -305,8 +305,8 @@ module ParserTest =
         let fieldName1 = Identifier (SimpleIdentifier "field1")
         let fieldName2 = Identifier (SimpleIdentifier "field2")
         let struct1 = StructLiteral [
-                                        (fieldName1, Constant (SimplePrimitive Primitive.Int, Int 5));
-                                        (fieldName2, Constant (SimplePrimitive Primitive.Int, Int 10));
+                                        (fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5));
+                                        (fieldName2, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10));
                                     ]
         debugTestParseWith "(field1 := 5; field2 := 10)"
         <| should equal (Program [Body [ struct1  ]])
@@ -315,6 +315,6 @@ module ParserTest =
     [<Test>]
     let ``When syntax for string literal, expect string literal AST`` () =
         let fieldName1 = Identifier (SimpleIdentifier "field1")
-        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, Int 5))]
+        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "\"Tub\""
-        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [Char 'T'; Char 'u'; Char 'b'])  ]])
+        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
