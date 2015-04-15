@@ -1,13 +1,4 @@
-%Parallelitet:
-%- Hvorfor lave noget parallelt?
-%- Hvorfor er parallelitet fremtiden?
-%  - Fysisk grænse for hvor hurtigt en processor kan køre
-%Hvorfor sprog til det (merge måske med intro):
-%- Flere og flere får adgang til clusters længere "nede" og man kan bygge små distribueret systemer lokalt (processor kort til din stationære)
-%  - Snak om at det derfor skal være simpelt
-
-
-\subsection{Parallelism}\cite{parallel programming languages}.
+\section{Parallelism}\cite{parallel programming languages}.
 
 In the continued effort of trying to squeeze as much power out of computers as possible, the computer scientific community is at a point where increasing the clock speed of processors is no longer as viable a solution as it used to be. This has spawned an increased interest in increasing computational power in other ways, one being parallelism.
 
@@ -16,3 +7,25 @@ Parallelism is the act of dividing calculations into independently solvable part
 With parallelism you gain \emph{speed up} through combining multiple processing units. This is seen in newer CPU's as multiple cores, but on a larger scale this principle can be used to create supercomputers, capable of performing immense calculations.
 
 But even without a supercomputer a distributed network of multiple computers can provide with large amounts of parallel computing power. With this being a foreseeable future, we predict an increase in the access to, and need for, parallel systems.
+
+\subsection{Speed up}\label{sup}
+
+For parallel computing, Gene Amdalh, defined a law for decribing the theoretical maximum speedup using multiple processors. The maximum speedup a system can achieve by parallelisation is limited to at most 20×.
+The law can be used to describe the speed up achievable by a giving system, by the percentage of parallelisable code, in this equation.
+
+By this law maximising the percentage of parallelisable, the highest possible speed up achievable is increased, thereby improving the scaling of the solution on multiple processor.
+
+
+\kanote{er de her kilder? de hang sammen med nedenstående}
+\url{http://gribblelab.org/CBootcamp/A2_Parallel_Programming_in_C.html#sec-2-1}
+\url{https://computing.llnl.gov/tutorials/parallel_comp/}
+
+\subsection{Types of tasks}\label{top}
+
+Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task. This section will describe two types of problems relevant when doing parallel computations.
+
+\subsubsection{Embarrasingly parallel problems}
+A problem can be describe as being \emph{embarrasingly parallel} when the tasks within the problem is independent of each other, and can therefore be parallelised without any concern of the order in which the task can to be executed. They are trivially parallel in nature because of the independency. An example of this type of problem is incrementation of a large matrix, the individuals members of matrix are totally independent from each other under operations of these tasks.
+
+\subsubsection{Serial problems with dependencies}
+Although multiple similar simulations can be observed as being independent of each other, as utilised by the Monte Carlo method \url{http://en.wikipedia.org/wiki/Monte_Carlo_method}, most simulations themselfs does not satify the condition of being independent. Instead these are inherently sequential, they form a class of problems that cannot be split into independent sub-problems. In some cases it is not possible to gain speed up at all, by trying to parallelise a problem, which is not parallisesable, the only thing a simulation designer can achieve is adding overhead to the computations in communication between threads. An example is calculating the fibonacci series by f(n) = f(n-1)+f(n-2), where f(n) is dependent on first finding the previously calculated values of f.
