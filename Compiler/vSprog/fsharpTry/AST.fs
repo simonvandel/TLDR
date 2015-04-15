@@ -4,12 +4,7 @@ open Hime.CentralDogma
 open Hime.Redist
 
 module AST =
-    type Primitive =
-        | Int
-        | Char
-        | Real
-        | Bool
-        | Void
+
 
     type PrimitiveValue =
         | Int of int
@@ -18,12 +13,22 @@ module AST =
         | Char of char
         | List of PrimitiveValue list
 
-    type PrimitiveType =
+    type Primitive =
+        | Int
+        | Char
+        | Real
+        | Bool
+        | Void
+        | Actor of string
+        | Struct of string * (TypeDeclaration list)
+
+    and PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType
         | ArrowPrimitive of PrimitiveType list
         | UserType of string
         | HasNoType
+        | StillUnknown of AST
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
 
@@ -31,15 +36,15 @@ module AST =
         | Program of AST list
         | Block of AST list
         | Body of AST list
-        | Assignment of bool * string * AST // mutability, varId * value
+        | Assignment of bool * string * AST // mutability, varId, value
         | Reassignment of Identifier * AST // varId, rhs
         | Initialisation of LValue * AST // lvalue, rhs
         | Constant of PrimitiveType * PrimitiveValue // type, value
-        | Actor of AST * AST // name, body FIXME: Add more fields?
+        | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
         | If of AST * AST // conditional, body
         | Send of string * string // actorName, msgName
-        | Spawn of LValue * AST * AST // lvalue, actorName, initMsg
+        | Spawn of LValue * string * AST // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | ListRange of AST list // content
@@ -160,13 +165,13 @@ module AST =
             let body = toAST (root.Children.Item 1)
             Reassignment (assignables, body)
         | "Integer" ->
-            let value = Int (int ((root.Children.Item 0).Symbol.Value))
+            let value = PrimitiveValue.Int (int ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Int), value) // FIXME: lav en int type. Lige nu bliver værdien af int konstanten ikke gemt
         | "Real" ->
-            let value = Real ( float ((root.Children.Item 0).Symbol.Value))
+            let value = PrimitiveValue.Real ( float ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
-            let name = toAST (root.Children.Item 0)
+            let name = (astNodeAccess [0;0] root).Symbol.Value
             let block = toAST (root.Children.Item 1)
             Actor (name, block)
         | "If" ->
@@ -178,7 +183,7 @@ module AST =
                         | "true" -> true
                         | "false" -> false
                         | _ -> failwith "Something terribly went wrong in toAST boolean. This should never be reached."
-            Constant (SimplePrimitive Primitive.Bool, Bool value)
+            Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool value)
 
         | "Struct" ->
             let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
@@ -208,7 +213,7 @@ module AST =
             let name = toAST (astNodeAccess [1;0] root)
             let typeName = (astNodeAccess [1;1;0;0] root)
             let lhs = toLValue mutability name typeName
-            let actorName = toAST (root.Children.Item 2)
+            let actorName = (astNodeAccess [2;0] root).Symbol.Value
             let initMsg = toAST (astNodeAccess [3;0] root)
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
@@ -224,7 +229,7 @@ module AST =
         | "ListRange" ->
             let start = int (astNodeAccess [0;0;0;0] root).Symbol.Value
             let end' = int (astNodeAccess [0;1;0;0] root).Symbol.Value
-            ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, Int n)))
+            ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
         | ("Factor" | "Term" | "Operation") ->
             match (root.Children.Count) with
             | 3 -> 
