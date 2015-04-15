@@ -1,15 +1,21 @@
 \subsection{Compiler-Compiler}
 \label{sec:compiler_compiler_choice}
 
-It was decided to prioritize the programmers above a simple grammar. This means that keeping the chosen syntax is preferred, and therefore accepting a more complex grammar, should it be needed. Due to this possibility of great complexity it was chosen to use a compiler-compiler. The choice of compiler-compiler was based on a series of criteria, which are listed below with the corresponding reason for the criteria.
+A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the believe that it is easier to maintain the grammar specification rather than the code for a hand written parser.
+
+%Generally, the users of the language described in this project, are valued higher than the programmers implementing the compiler for the language. This means that the syntax of the language should be based on user convenience rather than implementation convenience. 
+
+%It was decided to prioritize the programmers above a simple grammar. This means that keeping the chosen syntax is preferred, and therefore accepting a more complex grammar, should it be needed. Due to this possibility of great complexity it was chosen to use a compiler-compiler. 
+
+The choice of a compiler-compiler is based on a series of criteria, listed below with the corresponding reason for the criteria.
 
 \begin{enumerate}
-\item \textbf{Language of the compiler} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the developers had previous experience with languages running on this. This makes C\# and F\# preferred target languages for the compiler-compiler.
+\item \textbf{Output language - C\# or F\#} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the developers had previous experience with languages running on this. This makes C\# and F\# preferred target languages for the compiler-compiler.
 
-\item \textbf{LR parser} The compiler-compiler should support LR parsing since left recursions have been used in the grammar specifying the language.\\
-
-\item \textbf{Action Code} The parser should support action code and the grammar and action code should preferably be in separate files.\\
+\item \textbf{Type of parser - LR or derivatives} The compiler-compiler should support LR parsing since the authors of this project value left recursion in a grammar specification.\\
 
 \end{enumerate}
 
-Two compiler-compilers matching the criteria list were found. These were Hime and SableCC. SableCC supports LALR parsing, which parses the same set of grammars as LR parser, which makes SableCC a suitable parser. Hime was ultimately chosen as the compiler-compiler because it is frequently updated and targets C\# as the main target language where SableCC targets Java and later on started supporting C\#.
+Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out a being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind.
+
+%Two compiler-compilers matching the criteria list were found. These were Hime and SableCC. SableCC supports LALR parsing, which parses the same set of grammars as LR parser, which makes SableCC a suitable parser. Hime was ultimately chosen as the compiler-compiler because it is frequently updated and targets C\# as the main target language where SableCC targets Java and later on started supporting C\#.
