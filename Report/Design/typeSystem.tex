@@ -1,0 +1,20 @@
+\section{Type System}
+
+The goal of the type system is to minimise programming errors, but on the other hand not being too restrictive so the expressiveness of the language is reduced. 
+
+The language defined in this report is a statically typed language. Statically typed languages have the following nice properties, that do not apply to dynamically typed languages.
+
+\begin{itemize}
+  \item Type errors are presented at the soonest possible level: compile-time. This makes it impossible to have a program stop unexpectedly because of a type error at run-time
+  \item Because of the fact that types are checked at compile time, no overhead is imposed to the compiled program at run-time
+\end{itemize}
+
+Of course, dynamically typed languages have its uses. One can argue that prototyping a program is done faster in a dynamically typed language. The trade-off is usually expressiveness for safety and performance.
+
+In order to reduce the mental overhead and the number of explicit type declarations to write in a language, type inference can be implemented in the compiler. Having almost all types inferred by the compiler makes the language have more of the same feel as a dynamically typed language, in that there is less mental overhead for the user. Using a statically typed language with type inference brings all the beneficial properties of statically typed language, combined with a \enquote{lighter} feel.
+
+\subsection{Strictness}
+
+The type system defined in this report can be described as a \emph{strong} type system, as opposed to a \emph{weak} type system. No formal definitions of such categorisations of type systems exist, so this report will use the following understanding of \emph{weak} and \emph{strong} type systems. A type system gets \emph{stronger} as the number of undefined behavior, unpredictable behavior or implicit conversions between types approach zero.
+
+Using the above definition the type system can be categorised as \emph{strong}, as only one implicit conversion is made between values of type \emph{int} to values of type \emph{real}, whenever number precision can be preserved. Other than that, the type system should be predictable.
