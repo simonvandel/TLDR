@@ -1,15 +1,15 @@
 \subsection{Void}
 \label{sub:void}
 
-From the start the project group, aimed toward a language with type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the project. Although due to ambition and timespan of the project, it was decided that the language should initially have an explicit type system. But it was also decided that the project group should keep type inference in the equation when making choices regarding the syntax of the language, to allow for future changes. % This is the case, but pls bullshit a crappy argument <- pls Terndrup: Sorry :'(
-Types not being known an artifact in previously mentioned sciences mathematics, a technique known from the functional paradigm of seperating the type signature from the function definition, as shown here \cref{typesignature}, was chosen by personal preferations by member of the project group.
+From the start the project group, aimed toward a language with type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the project. Although due to ambition and time span of the project, it was decided that the language should initially have an explicit type system. But it was also decided that the project group should keep type inference in the equation when making choices regarding the syntax of the language, to allow for future changes. % This is the case, but pls bullshit a crappy argument <- pls Terndrup: Sorry :'(
+Types not being known an artifact in previously mentioned sciences mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen by personal preferations by member of the project group.
 
 \begin{verbatim}
   functionName :: arg1Type -> arg2Type -> ... -> argNType
 \end{verbatim}
 \label{typesignature}
 
-This approach proposed a problem with the concept of \enquote{void}, a default or unset value, for the type system, in that the project group prefered type inference, as argumented earlier. This was expressed as a concern regarding explicity of void, and the language entaglement with this artifact, later in the project if it was subject to change. Several of proposed solution will be described here after.
+This approach proposed a problem with the concept of \enquote{void}, a default or unset value, for the type system, in that the project group prefered type inference, as argumented earlier. This was expressed as a concern regarding explicity of void, and the language entanglement with this artifact, later in the project if it was subject to change. Several of proposed solution will be described here after.
 
 First the type signature of this language looks as follows:
 \begin{verbatim}
@@ -26,7 +26,7 @@ First proposal of a solution is to denote void as \enquote{nothing}, like this:
 \begin{verbatim}
   printint(a): int ->
 \end{verbatim}
-but this is ambiguent, in that whitespace, \enquote{nothing}, if the type signature of a function is that it takes nothing as parameter but returns something, like this:
+but this is ambiguent, in that white space, \enquote{nothing}, if the type signature of a function is that it takes nothing as parameter but returns something, like this:
 \begin{verbatim}
   printint(): -> int
 \end{verbatim}
@@ -34,7 +34,7 @@ but this is ambiguent, in that whitespace, \enquote{nothing}, if the type signat
 
 \kanote{var 'ugly' vores argument?}
 
-So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unessesary by the project group though. So in the end the project group chose to explicitly express void to avoid confussion for users of the langauge. The explicit format ended up as follows:
+So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unnecessary by the project group though. So in the end the project group chose to explicitly express void to avoid confusion for users of the language. The explicit format ended up as follows:
 \begin{verbatim}
   printint(a): int -> void
 \end{verbatim}

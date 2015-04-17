@@ -1,5 +1,5 @@
 \section{The Actor Model}
-The actor model is a concurrency model, which first appeared in 1973 in the report "A Universal Modular ACTOR Formalism for Artificial Intelligence" by Carl Hewitt, Peter Bishop and Richard Steiger [worrydream.com/refs/Hewitt-ActorModel.pdf]. This chapter will explain the model generally. In addition to the general model, the model will be compared to alternative concurrency models and a few implementations of the model will be briefly described.
+The actor model is a concurrency model, which first appeared in 1973 in the report "A Universal Modular ACTOR Formalism for Artificial Intelligence" by Carl Hewitt, Peter Bishop and Richard Steiger \cite{Hewitt:1973}. This section will explain the model generally. In addition to the general model, the model will be compared to alternative concurrency models and a few implementations of the model will be briefly described.
 
 \subsection{Model}
 The actor model is focused on the fact that any computational behaviour, be it functions, processes or data structures, can be modelled as a single behaviour; sending messages to actors.
@@ -22,10 +22,10 @@ In figure \ref{fig:actor}, a model of an actor based program can be seen.
 
 \subsubsection{Theoretical Basis} 
 As mentioned, actors are very similar to, and have their theoretical roots in CSP.
-In CSP, a program is composed of processes that operate independently from eachother. These processes share information by messages passing. In Hoare's original version of CSP, each process was defined as a sequential series of instructions, however later versions of CSP typically allow a process' logic to consist of other processes.
+In CSP, a program is composed of processes that operate independently from each other. These processes share information by messages passing. In Hoare's original version of CSP, each process was defined as a sequential series of instructions, however later versions of CSP typically allow a process' logic to consist of other processes.
 
 While many aspects of CSP and the actor model are identical, there are some differences. In CSP, all processes are anonymous, while in the actor model, actors have identity. Sending a message to an actor can be regarded as largely equivalent to invoking a method on an object in the object-oriented world view. Since CSP does not have named processes, communication is done via named channels, as seen in programming languages such as Go and OCaml. 
-In CSP, communication is synchronous, ie. the receiver of a message must be ready to receive the message, before it can be sent by the sender. In the Actor model, all communication is asynchronous, meaning a message can be sent, without considering whether the receiving end is ready or not.
+In CSP, communication is synchronous, i.e. the receiver of a message must be ready to receive the message, before it can be sent by the sender. In the Actor model, all communication is asynchronous, meaning a message can be sent, without considering whether the receiving end is ready or not.
 
 \subsubsection{Adding Logic}
 One of the main features of the actor model is, as Hoare describes it, the ability to add knowledge to a system, without rewriting the existing knowledge. This means that if a developer is interested in adding a logical step in the business logic of his system, this can be achieved by merely adding an actor, which can perform the logical operations, that are to be added, and then adding that actor as a link in the flow of logic.
@@ -42,7 +42,7 @@ Step & Reader & Printer \\\hline
 3 & \textit{Wait for message} & \textbf{Receive data from Reader}\\\hline
 4 & \textit{Wait for message} & \textbf{Print data to stdout}\\\hline
 \end{tabular}\\
-At som point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, Formatter, which changes the flow of execution in this manner:
+At some point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, Formatter, which changes the flow of execution in this manner:
 
 \begin{tabular}{ | c | c | c | c | }
 \hline
@@ -64,7 +64,7 @@ The actor model is, as previously stated, inherently concurrent.
 \paragraph{Isolated State}
 As actors only communicate via message passing, each actor can have its own isolated state. This means that no two actors share any data, meaning problems such as race conditions, starvation and deadlocks are avoided entirely. These problems would lead to programmers having to deal with the administration of serialising access to the data, by means of locks, mutexes, semaphores or similar concurrency control mechanisms.
 
-\paragraph{Seperated Logic}
+\paragraph{Separated Logic}
 In the actor model, each actor has its own subprogram, which is only known by the actor itself and can be run in an infinite loop. A consequence of this is that an arbitrary actor never depends on another actor, meaning an actor's logic is isolated from the rest of the system and can be regarded as an atomic concurrent part of the system.
 
 \paragraph{Example}
