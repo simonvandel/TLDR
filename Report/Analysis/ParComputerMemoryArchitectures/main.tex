@@ -1,11 +1,13 @@
 \section{Memory Architectures}
 
-This chapter describes two memory architectures commonly used in parallel computing. Based on the characteristics of the architectures, an architecture is chosen for the programming language defined in this report.
+This section describes two memory architectures commonly used in parallel computing. Based on the characteristics of the architectures, an architecture is chosen for the programming language defined in this report.
 
 \subsection{Shared Memory}
 
 In this memory architecture, all processors in the computer have access to the same memory, that is, the memory address space is global. In addition the memory is in close proximity to the processors, providing lower access latency. This approach of having unified memory is very simplistic and eases the programmer's view of the memory layout.
-Because of this sharing of memory, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any synchronisation between processors. \url{https://computing.llnl.gov/tutorials/parallel_comp/#SharedMemory}
+Because of this sharing of memory, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any synchronisation between processors. 
+\kanote{er det her en kilde??}
+\url{https://computing.llnl.gov/tutorials/parallel_comp/#SharedMemory}
 
 To summarise on the above, the architecture has the following advantages and disadvantages. 
 
