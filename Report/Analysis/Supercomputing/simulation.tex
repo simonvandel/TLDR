@@ -16,17 +16,18 @@ Dynamic models includes some form of evolution, meaning that the system changes 
 
 
 \subsection{Static Models}
-A static model is a snapshot of a given system with objects with non-changing states. These systems are often not very representative for reality since nearly all systems changes but they can still be very usefull to construct since it can be much easier to collect information and understanding through a static model. 
+A static model is a snapshot of a given system with objects with non-changing states. These systems are often not very representative for reality since nearly all systems changes but they can still be very usefull to construct since it can be much easier to collect information and understanding through a static model.
 
 
 \section{Simulation}
-We often need to create and analyse models. For a portion of these models an analytical approach can be used, where the one can analyse the model via mathematical methods and calculate how static models will look and dynamic models evolve. This approach only works on a limited portion of the models where the system and behaviour of objects are well known and can be described mathematically. As the models become more stochastic, purely mathematical analysis begins to fall short and simulations are often used to be able to create the (often dynamic) models.
+We often need to create and analyse models. %Yes but for what benefit?
+ For a portion of these models an analytical approach can be used, where the one can analyse the model via mathematical methods and calculate how static models will look and dynamic models evolve. This approach only works on a limited portion of the models where the system and behaviour of objects are well known and can be described mathematically. As the models become more stochastic, purely mathematical analysis begins to fall short and simulations are often used to be able to create the (often dynamic) models.
 
 Formally simulations is defined as \enquote{a system designed to imitate another real system} \jenote{Find a better definition of a simulation}. This is a very broad definition, since real systems can be very different in their structure and further more the type of simulations also differs greatly. Generally one can distinguish between two different types of simulations, experimental and theoretical. An experimental simulation is where a real system is imitated by another real system, often smaller and/or simpler. For instance, when biologists simulate the creation of life on the back of crystals in their lab it is an experimental simulation. Theoretical simulations are simulations where a real system is imitated theoretically often on a computer or on paper. This project will focus on theoretical simulations. To further narrow the definition of a simulation used in this project, the focus will mainly be put on natural and social sciences where simulations are most often used. Within these sciences real systems can still vary a lot, but they nearly always share the property that they change state over, what is often but not necessarily, time. This is close to the definition of a dynamic model. In this respect simulations are close to a dynamic model. How this change is modelled can also vary and generally we often speak of two different paradigms; Discrete and continuous simulations.
 
 
 \subsection{Continuous Simulations}
-Continuous simulations are simulations that can be described with differential change. This means that 
+Continuous simulations are simulations that can be described with differential change. This means that
 \kanote{skal gøres færdigt her}
 % We make for ourselves internal images or symbols of the external objects, and we make them in such a way that the consequences of the images that are necessary in thought are always images of the consequences of the depicted objects that are necessary in nature ... Once we have succeeded in deriving from accumulated previous experience images with the required property, we can quickly develop from them, as if from models, the consequences that in the external world will occur only over an extended period or as a result of our own intervention.
 \label{simulationchoise}
@@ -54,7 +55,7 @@ Granularity is a qualitative measure of the ratio of computation to communicatio
 
 One can say that \emph{Fine-grain Parallelism is:}
 
-\begin{itemize} 
+\begin{itemize}
 \item Relatively small amounts of computational work are done between communication events
 \item Low computation to communication ratio
 \item Facilitates load balancing
@@ -85,8 +86,7 @@ This is useful when working with for-loops on sets of data, if the operations of
 
 \emph{Functional decomposition} focuses on the operations performed rather than on the data manipulated by the computation. Some task differs from other in that they manipulate different data of the problem domain. This is illustrated in \cref{fun}.
 
-\begin{figure}[htbp]\label{fun}  
+\begin{figure}[htbp]\label{fun}
 \includegraphics[width=\textwidth]{Analysis/Supercomputing/functional_decomp.png}
 \caption{https://computing.llnl.gov}
 \end{figure}
-
