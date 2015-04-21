@@ -1,10 +1,10 @@
 \section{The Actor Model}
-The actor model is a concurrency model, which first appeared in 1973 in the report "A Universal Modular ACTOR Formalism for Artificial Intelligence" by Carl Hewitt, Peter Bishop and Richard Steiger \cite{Hewitt:1973}. This section will explain the model generally. In addition to the general model, the model will be compared to alternative concurrency models and a few implementations of the model will be briefly described.
+The actor model is a concurrency model, which first appeared in 1973 in the report \enquote{A Universal Modular ACTOR Formalism for Artificial Intelligence} by Carl Hewitt, Peter Bishop and Richard Steiger \cite{Hewitt:1973}. This section will explain the model generally, be compared to alternative concurrency models and a few implementations of the model will be briefly described.
 
 \subsection{Model}
 The actor model is focused on the fact that any computational behaviour, be it functions, processes or data structures, can be modelled as a single behaviour; sending messages to actors.
 An actor in this context is a process, which has its own isolated state, used to store values and modify its own behaviour, and a message box, for receiving messages. An actor can only share information by sending messages, asynchronously, to other actors.
-Actors are very similar to the communicating sequential processes (CSP) described in C.A.R. Hoare's publication "Communicating Sequential Processes". Actors, though, have a few well-defined behaviours in response to receiving a message, where CSPs are free to exhibit other behaviour. An actor can, in response to a message: 
+Actors are very similar to the communicating sequential processes (CSP) described in C.A.R. Hoare's publication \enquote{Communicating Sequential Processes} \cite{hoare1985communicating}. Actors, though, have a few well-defined behaviours in response to receiving a message, where CSPs are free to exhibit other behaviour. An actor can, in response to a message: 
 
 \begin{enumerate}
   \item Send a finite number of messages to other actors.
@@ -31,8 +31,7 @@ In CSP, communication is synchronous, i.e. the receiver of a message must be rea
 One of the main features of the actor model is, as Hoare describes it, the ability to add knowledge to a system, without rewriting the existing knowledge. This means that if a developer is interested in adding a logical step in the business logic of his system, this can be achieved by merely adding an actor, which can perform the logical operations, that are to be added, and then adding that actor as a link in the flow of logic.
 
 \paragraph{Example}
-We have a system which can read a CSV-file and print it to stdout. This can be implemented using actors in the following way:\\
-let Reader and Printer be actors.
+We have a system which can read a CSV-file and print it to stdout. This can be implemented by letting \emph{Reader} and \emph{Printer} be actors.
 
 \begin{tabular}{ | c | c | c | }
 \hline
@@ -42,7 +41,7 @@ Step & Reader & Printer \\\hline
 3 & \textit{Wait for message} & \textbf{Receive data from Reader}\\\hline
 4 & \textit{Wait for message} & \textbf{Print data to stdout}\\\hline
 \end{tabular}\\
-At some point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, Formatter, which changes the flow of execution in this manner:
+At some point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, \emph{Formatter}, which changes the flow of execution in this manner:\\
 
 \begin{tabular}{ | c | c | c | c | }
 \hline
@@ -56,7 +55,7 @@ Step & Reader & Formatter & Printer \\\hline
 7 & \textit{Wait for message} & \textit{Wait for message} & \textbf{Print data to stdout} \\\hline
 \end{tabular}\\
 
-Notice that in adding the new logic, the only existing logic that was changed is the actor whom Reader sends data to.
+Notice that in adding the new logic, the only existing logic that was changed is the actor whom \emph{Reader} sends data to.
 
 \subsubsection{Concurrency}
 The actor model is, as previously stated, inherently concurrent.
@@ -68,7 +67,7 @@ As actors only communicate via message passing, each actor can have its own isol
 In the actor model, each actor has its own subprogram, which is only known by the actor itself and can be run in an infinite loop. A consequence of this is that an arbitrary actor never depends on another actor, meaning an actor's logic is isolated from the rest of the system and can be regarded as an atomic concurrent part of the system.
 
 \paragraph{Example}
-To demonstrate the actor model's ability to deal with classical concurrency problems, an example will be shown here. This example, shows the problem of phantom reads, which can be a big problem in data-rich, highly parallel systems. In the example, a collection is being accessed by two concurrent processes, or threads, one tries to read the collection, the other tries to delete it.
+To demonstrate the actor model's ability to deal with classical concurrency problems, an example will be shown here. This example, shows the problem of phantom reads \sinote{Forklar lige hvad phantom reads er}, which can be a big problem in data-rich, highly parallel systems. In the example, a collection is being accessed by two concurrent processes, or threads, one tries to read the collection, the other tries to delete it.
 
 We start off, with the problem shown in a typically imperative way, using threads.\\\\
 %
@@ -80,15 +79,15 @@ Step & Thread A & Thread B \\\hline
 3 & \textbf{\color{red} Read second element in collection} & \textit{No operation}\\\hline
 \end{tabular}\\
 
-As seen in this example, thread B is able to delete the collection, while tread A is still using it. This means that once thread A tries to access the second element of the collection, it runs into the phantom read problem and would likely terminate and throw an exception.
+As seen in this example, thread B is able to delete the collection, while thread A is still using it. This means that once thread A tries to access the second element of the collection, it runs into the phantom read problem and would likely terminate and throw an exception.
 
-To demonstrate the same functionality that these threads are performing, using actors, we need three actors, Holder, Reader and Deleter. Holder contains the collection, Reader reads and processes the elements in the collection and Deleter wants to delete the collection.\\\\
+To demonstrate the same functionality that these threads are performing, using actors, we need three actors, \emph{Holder}, \emph{Reader} and \emph{Deleter}. \emph{Holder} contains the collection, \emph{Reader} reads and processes the elements in the collection and \emph{Deleter} wants to delete the collection.\\\\
 %
 \begin{tabular}{ | c | c | c | c | }
 \hline
 Step & Holder & Reader & Deleter \\\hline
-1 & \textit{Wait for message} & \textbf{Send request to Holder} & \textit{Wait for message} \\\hline
-2 & \textbf{Send collection to Reader} & \textit{Wait for message} & \textbf{Send "delete" to Holder} \\\hline
+1 & \textit{Wait for message} & \textbf{Send request to \emph{Holder}} & \textit{Wait for message} \\\hline
+2 & \textbf{Send collection to \emph{Reader}} & \textit{Wait for message} & \textbf{Send \enquote{delete} to \emph{Holder}} \\\hline
 3 & \textbf{Delete collection} & \textbf{Read first element in collection} & \textit{Wait for message} \\\hline
 4 & \textit{Wait for message} & \textbf{Read second element in collection} & \textit{Wait for message} \\\hline
 \multicolumn{4}{ | c | }{...}\\\hline
@@ -99,13 +98,16 @@ As can be seen in the above example, using actors to model this system ensures t
 
 \subsubsection{Supervisors}
 Most implementations of the actor model implement a form of a supervisor-worker relationship. This means that every actor has a supervisor, typically their parent, to whom they report failures. The supervisor then has to deal with the failure, by for example restarting the failed actor.
-Supervisors in the actor model works very well with the "fail fast"-principle of programming, meaning, in the actor model, that an actor will not try to continue operation or correct an error when encountering a failure. An actor that has failed will, as soon as the failure is detected, report the failure to its supervisor and halt operation, moving the responsibility of handling the failure up the supervision tree.
+Supervisors in the actor model works very well with the \enquote{fail fast}-principle of programming, meaning, in the actor model, that an actor will not try to continue operation or correct an error when encountering a failure. An actor that has failed will, as soon as the failure is detected, report the failure to its supervisor and halt operation, moving the responsibility of handling the failure up the supervision tree.
 
 \subsection{Implementations}\label{sub:implementations}
-The language described in this report is not the first language to implement the actor model. Two popular implementations, an mature one and a more current one, will be described here, to provide insight in the typical syntax and semantics of actors.
+The Language Described in this Report is not the first language to implement the actor model. Two popular implementations, a mature one and a more current one, will be described here, to provide insight in the typical syntax and semantics of actors.
+
 \subsubsection{Erlang}
 When talking about the actor model, one cannot escape the subject of Erlang. Erlang was one of first languages to fully incorporate the actor model as the main model of concurrency. Erlang is a purely functional language, developed for the telecommunications industry, where a lot of concurrent processes have to be handled. 
+
 Actors in Erlang, or processes as they are called, are controlled by a few very simple constructs; actors can be spawned using the built-in spawn-function, the spawn-function takes three arguments, the module in which the actor is contained, the function that defines the behaviour for the actor and an initial message. You can send messages to actors using the bang-operator (!) and you can define an actor's behaviour in a receive-block.
+
 In Erlang, an actor's parent is it's supervisor, if one chooses to use the supervisor module available. Using the supervisor module in Erlang gives the programmer the ability to choose different strategies to be used when a child actor fails. These strategies are:
 \begin{enumerate}
   \item Respawn the failed child
@@ -114,7 +116,7 @@ In Erlang, an actor's parent is it's supervisor, if one chooses to use the super
 \end{enumerate}
 
 \paragraph{Example}
-To demonstrate the use of actors in Erlang, a simple example is shown in listing \ref{lst:ErlExample}. This program has only one actor, which counts the number of "incr"-messages it has been sent.
+To demonstrate the use of actors in Erlang, a simple example is shown in listing \ref{lst:ErlExample}. This program has only one actor, which counts the number of \enquote{incr}-messages it has sent.
 
 \begin{lstlisting}[style=erlang, caption={A simple message-counter in Erlang.}, label=lst:ErlExample]
 -module(countMsgs).
@@ -140,7 +142,9 @@ sendMsgs(S, N) -> %recursive function to send N messages to actor S
 \subsubsection{Akka}
 A more modern approach to the actor model is taken in Akka, a concurrency toolkit for Scala and Java.
 In Akka, an actor is just an object, which extends Akka's Actor-class and implements a receive method. One difference in the receive-method from Erlang's receive-block is that Akka's receive-method is exhaustive, meaning that the programmer has to define behaviour for all possible messages that an actor can receive. 
-Creating an actor in Akka is done by calling the actorOf-method, on an actor or an instance of ActorSystem, which acts as the parent of top-level actors. The actorOf-method takes a Probs as an argument, Probs is just an object containing properties for an actor, such as the definition of the actor. Just like Erlang, messages are sent using the bang-operator.
+
+Creating an actor in Akka is done by calling the \emph{actorOf}-method, on an actor or an instance of \emph{ActorSystem}, which acts as the parent of top-level actors. The \emph{actorOf}-method takes a \emph{Probs} as an argument, \emph{Probs} is just an object containing properties for an actor, such as the definition of the actor. Just like Erlang, messages are sent using the bang-operator.
+
 In Akka, supervisors have the ability to handle failures in child actors in the following manner:
 \begin{enumerate}
   \item Ignore failure and resume operation
