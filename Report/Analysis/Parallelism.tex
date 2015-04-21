@@ -10,7 +10,7 @@ But even without a supercomputer a distributed network of multiple computers can
 
 \subsection{Speed up}\label{sup}
 
-For parallel computing, Gene Amdalh, defined a law for decribing the theoretical maximum speedup using multiple processors. The maximum speedup a system can achieve by parallelisation is limited to at most 20×.
+For parallel computing, Gene Amdalh, defined a law for describing the theoretical maximum speedup using multiple processors. The maximum speedup a system can achieve by parallelisation is limited to at most 20×.
 The law can be used to describe the speed up achievable by a giving system, by the percentage of parallelisable code, in this equation.
 
 By this law maximising the percentage of parallelisable, the highest possible speed up achievable is increased, thereby improving the scaling of the solution on multiple processor.
@@ -24,8 +24,35 @@ By this law maximising the percentage of parallelisable, the highest possible sp
 
 Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task. This section will describe two types of problems relevant when doing parallel computations.
 
-\subsubsection{Embarrasingly parallel problems}
-A problem can be describe as being \emph{embarrasingly parallel} when the tasks within the problem is independent of each other, and can therefore be parallelised without any concern of the order in which the task can to be executed. They are trivially parallel in nature because of the independency. An example of this type of problem is incrementation of a large matrix, the individuals members of matrix are totally independent from each other under operations of these tasks.
+\subsubsection{Embarrassingly parallel problems}
+A problem can be describe as being \emph{embarrassingly parallel} when the tasks within the problem is independent of each other, and can therefore be parallelised without any concern of the order in which the task can to be executed. They are trivially parallel in nature because of the independency. An example of this type of problem is incrementation of a large matrix, the individuals members of matrix are totally independent from each other under operations of these tasks.
 
 \subsubsection{Serial problems with dependencies}
-Although multiple similar simulations can be observed as being independent of each other, as utilised by the Monte Carlo method \url{http://en.wikipedia.org/wiki/Monte_Carlo_method}, most simulations themselfs does not satify the condition of being independent. Instead these are inherently sequential, they form a class of problems that cannot be split into independent sub-problems. In some cases it is not possible to gain speed up at all, by trying to parallelise a problem, which is not parallisesable, the only thing a simulation designer can achieve is adding overhead to the computations in communication between threads. An example is calculating the fibonacci series by f(n) = f(n-1)+f(n-2), where f(n) is dependent on first finding the previously calculated values of f.
+Although multiple similar simulations can be observed as being independent of each other, as utilised by the Monte Carlo method \url{http://en.wikipedia.org/wiki/Monte_Carlo_method}, most simulations themselfs does not satify the condition of being independent. Instead these are inherently sequential. They form a class of problems that cannot be split into independent sub-problems. In some cases it is not possible to gain speed up at all, by trying to parallelise a problem, which is not parallisesable. The only thing that a simulation designer can achieve in this case, is to add overhead to the computations as communication between threads. An example is calculating the fibonacci series by f(n) = f(n-1)+f(n-2), where f(n) is dependent on first finding the previously calculated values of f.
+
+\subsection{Parallel data access}
+When trying to solve problems that are not embarrasingly parallel, with a parallel approach, some problems arise when multiple processes try to access the same memory. Among these the most common are race conditions and deadlocks.
+
+\subsubsection{Race conditions}
+This problem arise when multiple processes want to modify the same data in memory or similar recourse, and the outcome of the modification depends on the internal timing of processes. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations are operations which the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
+
+\begin{itemize}
+\item Copy the current value of the integer from main memory into working register
+\item Calculate the value puls one and place the result in the register
+\item Take the new value from the register and override the integer in memory
+\end{itemize}
+
+Since we don't know when each process will try to access the memory the value can either be raised by one, if both processes access it before the other overrides it, or raised by two, if one process finished before the other copy the value from memory. This is a well know problem and exists in many situations were multiple processes work with non-atomic operations on the same memory. Some software solutions, that ensures only one instance of the critical region have permission to access to the shared resource at the time, have been found and especially Gary L. Peterson's algorithm, published in 1981, is used today. Other solutions has also been found by creating atomic assembly instructions that can set a flag, thereby ensuring that only one critical region access the shared resource at the time.
+
+\subsubsection{Deadlocks}
+
+Deadlocks are a type of problem that occurs when two or more processes are waiting for at least one of the others to finish, before it itself finishes, thereby never finishing. This is a common problem within concurrent programming. Edward G. Coffman described four conditions that must be present if a deadlock is to occur. \kanote{insæt kilde til coffman artikel om deadlocks} These are the four conditions:
+
+\begin{itemize}
+\item Mutual Exclusion - Resources can not be shared simultaniously by to processes.
+\item Hold and Wait - A process is at some point holding one resource, while waiting for another.
+\item No Preemption - A resources can not be released externally from a process.
+\item Circular Wait - A process must be waiting for a resource which is held by another process, which is waiting for the first process to release a resource.
+\end{itemize}
+
+By knowing these four conditions, we can try prevent deadlocks by making sure at least one of the conditions are not present.

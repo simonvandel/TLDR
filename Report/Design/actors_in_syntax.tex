@@ -11,7 +11,7 @@ A central principle in the programming language described in this report is the 
 \subsubsection{Construction of an Actor}
 \label{sub:constructionOfAnActor}
 
-The syntactical contruction of an actor is as follows:
+The syntactical construction of an actor is as follows:
 
 \begin{lstlisting}
 actor <identifier> := {
@@ -19,7 +19,7 @@ actor <identifier> := {
 }
 \end{lstlisting}
 
-As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the construct is needed, which will serve as the of type the actor. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on runtime, which would make little sense, and completely undermine the type safety.
+As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the construct is needed, which will serve as the of type the actor. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on run-time, which would make little sense, and completely undermine the type safety.
 
 
 \subsubsection{Basic actor functionality}
