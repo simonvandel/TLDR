@@ -35,5 +35,6 @@
 *.xdy
 *.tdo
 *.run.xml
+*.lox
 master.pdf
 *.DS_Store
