@@ -2,7 +2,7 @@
 
 The goal of the type system is to minimise programming errors, but on the other hand not being too restrictive so the expressiveness of the language is reduced. 
 
-The language defined in this report is a statically typed language. Statically typed languages have the following nice properties, that do not apply to dynamically typed languages.
+The Language Described in this Report is a statically typed language. Statically typed languages have the following nice properties, that do not apply to dynamically typed languages.
 
 \begin{itemize}
   \item Type errors are presented at the soonest possible level: compile-time. This makes it impossible to have a program stop unexpectedly because of a type error at run-time
@@ -19,4 +19,3 @@ The type system defined in this report can be described as a \emph{strong} type 
 
 Using the above definition the type system can be categorised as \emph{strong}, as only one implicit conversion is made between values of type \emph{int} to values of type \emph{real}, whenever number precision can be preserved. Other than that, the type system should be predictable.
 
-\input{Design/metaType.tex}
