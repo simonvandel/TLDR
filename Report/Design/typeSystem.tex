@@ -18,3 +18,5 @@ In order to reduce the mental overhead and the number of explicit type declarati
 The type system defined in this report can be described as a \emph{strong} type system, as opposed to a \emph{weak} type system. No formal definitions of such categorisations of type systems exist, so this report will use the following understanding of \emph{weak} and \emph{strong} type systems. A type system goes from \emph{weak} to \emph{strong} as the number of undefined behaviour, unpredictable behaviour or implicit conversions between types approach zero.
 
 Using the above definition the type system can be categorised as \emph{strong}, as only one implicit conversion is made between values of type \emph{int} to values of type \emph{real}, whenever number precision can be preserved. Other than that, the type system should be predictable.
+
+\input{Design/metaType.tex}
