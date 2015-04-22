@@ -1,0 +1,89 @@
+\section{Semantics}
+\subsection{Arithmetic Expressions}
+
+\begin{align*}
+&\inference[$ADD_L$]{a_1 \Rightarrow_A a_1'}
+                    {a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&
+&\inference[$ADD_R$]{a_1 \Rightarrow_A a_1'}
+										{a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+&
+&\inference[$ADD_V$]{}
+                    {v_1 + v_2 \Rightarrow_A v}
+										{, v_1 + v_2 = v}
+\\\\
+&\inference[$SUB_L$]{a_1 \Rightarrow_A a_1'}
+                    {a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&
+&\inference[$SUB_R$]{a_1 \Rightarrow_A a_1'}
+                    {a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+&
+&\inference[$SUB_V$]{}
+                    {v_1 - v_2 \Rightarrow_A v}
+										{, v_1 - v_2 = v}
+\\\\
+&\inference[$MULT_L$]{a_1 \Rightarrow_A a_1'}
+                     {a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&
+&\inference[$MULT_R$]{a_1 \Rightarrow_A a_1'}
+                     {a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+&
+&\inference[$MULT_V$]{}
+                     {v_1 * v_2 \Rightarrow_A v}
+										 {, v_1 * v_2 = v}
+\\\\
+&\inference[$DIV_L$]{a_1 \Rightarrow_A a_1'}
+                    {a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&
+&\inference[$DIV_R$]{a_1 \Rightarrow_A a_1'}
+                    {a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+&
+&\inference[$DIV_V$]{}
+                    {v_1 / v_2 \Rightarrow_A v}
+										{, \frac{v_1}{v_2} = v}
+\\\\
+&\inference[$MOD_L$]{a_1 \Rightarrow_A a_1'}
+                    {a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&
+&\inference[$MOD_R$]{a_1 \Rightarrow_A a_1'}
+                    {a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+&
+&\inference[$MOD_V$]{}
+                    {v_1 \% v_2 \Rightarrow_A v}
+										{, v_1 mod v_2 = v}
+\\\\
+&\inference[$POW_L$]{a_1  \Rightarrow_A a_1'}
+                    {a_1 P a_2 \Rightarrow_A a_1' P a_2}
+&
+&\inference[$POW_R$]{a_1 \Rightarrow_A a_1'}
+                    {a_2 P a_1 \Rightarrow_A a_2 P a_1'}
+&
+&\inference[$POW_V$]{}
+                    {v_1 P v_2 \Rightarrow_A v}
+										{, v_1 ^ {v_2} = v}
+\\\\
+&\inference[$SQR_L$]{a_1  \Rightarrow_A a_1'}
+                    {a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&
+&\inference[$SQR_R$]{a_1 \Rightarrow_A a_1'}
+                    {a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+&
+&\inference[$SQR_V$]{}
+                    {v_1 \# v_2 \Rightarrow_A v}
+										{, \sqrt[v_1]{v_2} = v}
+\\\\
+&\inference[$PARENS_L$]{a_1 \Rightarrow_A a_1'}
+                       {(a_1) \Rightarrow_A (a_1')}
+&
+&\inference[$PARENS_V$]{}
+                       {(v) \Rightarrow_A v}
+&
+&\inference[$NUM$]{}
+                       {n \Rightarrow_A v}
+											 {, \mathbb{N}(n) = v}
+\end{align*}
+%\begin{align*}
+%x&=y           &  w &=z              &  a&=b+c\\
+%2x&=-y         &  3w&=\frac{1}{2}z   &  a&=b\\
+%-4 + 5x&=2+y   &  w+2&=-1+w          &  ab&=cb
+%\end{align*}
