@@ -51,7 +51,7 @@ module AST =
         | Operation of AST * Operator * AST // lhs, op, rhs
         | Identifier of Identifier
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
-        | StructLiteral of (AST * AST) list // (fieldName, fieldValue) list
+        | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list // functionName, parameters
         //| Error // Only for making it compile temporarily
 

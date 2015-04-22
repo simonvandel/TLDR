@@ -112,7 +112,12 @@ module Analysis =
         | Receive (_, msgType, body) ->
             typecheck body
         | StructLiteral fieldNamesAndValues ->
-            printfn "StructLiteral bliver ikke typechecked ordentligt pt!!!"
+            for i in fieldNamesAndValues do
+              match typecheck (snd i) with
+              | Success otherThanBool ->
+                ()
+              | Failure errs -> failwith "Struct-literal failed to typecheck with these errors: %A" errs
+            //printfn "StructLiteral bliver ikke typechecked ordentligt pt!!!"
             Success (HasNoType) // FIXME: IKKE IMPLEMENTERET
         | ForIn (counterName, list, body) ->
             [list; body]
