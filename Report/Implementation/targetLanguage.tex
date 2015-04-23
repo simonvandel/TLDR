@@ -1,0 +1,28 @@
+\section{Target Language}
+\lable{sec:targetLanguage}
+
+The target language is the language the the compiler translates the source language into. In this section the choise of target language will be described. The language and how it will be implemented are are documented in this chapter.
+
+\subsection{Choise of target language}
+
+Different languages types was considered stack based and register based languages or C.
+Higher level of languages were not an opportunity because of the simplicity of translating one high level language to another. 
+Creating a compiler from one high level language to another were not assumed complex enough for learning goal of this project. 
+
+This languages were the ones considered:
+
+C:
+C is the only high level language considered because of it's complexcity due to the the lack of memory management. C has a lot of libraries, and are a well known language and are more readable by humans. C was not chosen because it can run different on different platform and machines.
+
+Java bytecode: 
+java bytecode runs on almost any any java virtual machine (jvm), which makes the language vary cross platform. java bytecode is a instruction and stack based language. Java bytecode has large set of framework and libraries, because alle java and scala libraries can be compiled to java bytecode. All java virtual machines has a garba collector furthermore, in java bytecode it is possible to chose the garbage collections strategy.
+Java and Scala also has a lot of libraries and implementations of thread, which will be used for handling actors.
+
+CLI:
+Common language interface are a ir language which C#, F# and many more languages targets. The language has garbage collection and primary targets windows machines.  It’s also possible to run it on linux machines but using a virtual machine called mono which seems to be slower and not as cross compatible as jvm. 
+CLI is also very object oriented, everything is forced to be in classes and The Language Described in this Report does not focus on objects. 
+
+LLVM:
+LLVM is an register and instruction based language close to assembly. It has infinitely many named registers, which ensures that no register allocation are needed. Still memory management both on heap and stack has to be handled, without any form of garbage collection. LLVM has a large set of libraries which are compatible, because very many languages can be compiled to LLVM a couple of them are C, cpp, Java, scala and many more, it’s the most used i+r language.  LLVM can be compiled to machine code which makes it a lot faster than the other languages described, it’s also very cross platform. 
+
+LLVM was chosen because of it’s many libraries and very good documentation. It also has a lot in common with x86 assembly which the group are up to some point familiar with. 
