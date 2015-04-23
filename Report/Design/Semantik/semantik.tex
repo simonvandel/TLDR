@@ -49,16 +49,16 @@
 &
 &\inference[$MOD_V$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
-										{, v_1 mod v_2 = v}
+										{, v_1 \;\; \textrm{mod} \;\; v_2 = v}
 \\\\
 &\inference[$POW_L$]{a_1  \Rightarrow_A a_1'}
-                    {a_1 P a_2 \Rightarrow_A a_1' P a_2}
+                    {a_1 \;\; \hat{} \;\; a_2 \Rightarrow_A a_1' P a_2}
 &
 &\inference[$POW_R$]{a_1 \Rightarrow_A a_1'}
-                    {a_2 P a_1 \Rightarrow_A a_2 P a_1'}
+                    {a_2 \;\; \hat{} \;\; a_1 \Rightarrow_A a_2 P a_1'}
 &
 &\inference[$POW_V$]{}
-                    {v_1 P v_2 \Rightarrow_A v}
+                    {v_1 \;\; \hat{} \;\; v_2 \Rightarrow_A v}
 										{, v_1 ^ {v_2} = v}
 \\\\
 &\inference[$SQR_L$]{a_1  \Rightarrow_A a_1'}
