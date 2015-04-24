@@ -20,3 +20,91 @@ The type system defined in this report can be described as a \emph{strong} type 
 Using the above definition the type system can be categorised as \emph{strong}, as only one implicit conversion is made between values of type \emph{int} to values of type \emph{real}, whenever number precision can be preserved. Other than that, the type system should be predictable.
 
 \input{Design/metaType.tex}
+
+\subsection{Type Rules}
+
+\subsubsection{Common Notation}
+\begin{align*}
+&\textrm{let} \;\; AOP = [+, -, *, /, \%, \;^\wedge{} \;]
+&
+&\textrm{let} \;\; BAOP = [=, !=, <, <=, >, >=]
+&
+&\textrm{let} \;\; TUPLE = (BT, BT^+)
+&
+&\textrm{let} \;\; BL = [[BT], TUPLE, struct<TUPLE>]
+&
+&\textrm{let} \;\; BT = [int, real, bool, char]
+\\\\
+&\textrm{let} \;\; BBOP = [\textrm{AND, NAND, OR, NOR, XOR}]
+\\\\
+&\textrm{let} \;\; BT = [int, real, bool, char, [BT]]
+\end{align*}
+
+\subsubsection{Arithmetic Expressions}
+\begin{align*}
+&\inference[$EXPR_{int,int}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : int}
+                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : int}
+&
+&\inference[$EXPR_{int,real}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : real}
+                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
+\\\\
+&\inference[$EXPR_{real,int}$]{E \vdash e_1 : real \\
+                       E \vdash e_2 : int}
+                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
+&
+&\inference[$EXPR_{real,real}$]{E \vdash e_1 : real \\
+                       E \vdash e_2 : real}
+                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
+\\\\  
+&\inference[$ROOT_{int,int}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : int}
+                    {E \vdash e_1 \mathbin{\#} e_2 : real}
+&
+&\inference[$ROOT_{int,real}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : real}
+                    {E \vdash e_1 \mathbin{\#} e_2 : real}
+\\\\
+&\inference[$ROOT_{real,int}$]{E \vdash e_1 : real \\
+                       E \vdash e_2 : int}
+                    {E \vdash e_1 \mathbin{\#} e_2 : real}
+&
+&\inference[$ROOT_{real,real}$]{E \vdash e_1 : real \\
+                       E \vdash e_2 : real}
+                    {E \vdash e_1 \mathbin{\#} e_2 : real}
+\end{align*}
+
+\subsubsection{Boolean Expressions}
+\begin{align*}
+&\inference[$BOOL_{BAOP}$]{E \vdash e_1 : BT \\
+                       E \vdash e_2 : BT}
+                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
+&
+&\inference[$BOOL_{BBOP}$]{E \vdash e_1 : bool \\
+                       E \vdash e_2 : bool}
+                    {E \vdash e_1 \mathbin{\textrm{BBOP}} e_2 : bool}
+\end{align*}
+
+\subsubsection{Conditional Expressions}
+\begin{align*}
+&\inference[$IF$]{E \vdash b : bool \\
+                  E \vdash e : BT}
+                 {E \vdash \mathbin{\textrm{if}} \; (b) \; {e}: void}
+&
+&\inference[$IF-ELSE$]{E \vdash b : bool \\
+                  E \vdash e_1 : BT \\
+                  E \vdash e_2 : BT}
+                 {E \vdash \mathbin{\textrm{if}} \; (b) \; {e_1} \mathbin{\textrm{else}} {e_2}: void}
+\end{align*}
+
+\subsubsection{Loop Expressions}
+\begin{align*}
+&\inference[$WHILE$]{E \vdash b : bool \\
+                  E \vdash e : BT}
+                 {E \vdash \mathbin{\textrm{while}} \; (b) \; {e}: void}
+&
+&\inference[$FOR_1$]{E \vdash l : [BT] \\
+                  E \vdash e_2 : BT}
+                 {E \vdash \mathbin{\textrm{for}} \; e in \; {e_1} \mathbin{\textrm{else}} {e_2}: void}
+\end{align*}
