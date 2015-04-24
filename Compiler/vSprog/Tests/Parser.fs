@@ -7,6 +7,7 @@ open vSprog.AST
 open vSprog.CommonTypes
 open vSprog.ParserUtils
 
+
 module ParserTest =
 
     let debugTestParseWith (input:string) (test:AST -> unit) : unit =
@@ -295,15 +296,15 @@ module ParserTest =
     (* --------------------------- Struct Literal --------------------------- *)
     [<Test>]
     let ``When syntax for struct literal with 1 field, expect Struct literal AST`` () =
-        let fieldName1 = Identifier (SimpleIdentifier "field1")
+        let fieldName1 = "field1"
         let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "(field1 := 5)"
         <| should equal (Program [Body [ struct1  ]])
 
     [<Test>]
     let ``When syntax for struct literal with 2 fields, expect Struct literal AST`` () =
-        let fieldName1 = Identifier (SimpleIdentifier "field1")
-        let fieldName2 = Identifier (SimpleIdentifier "field2")
+        let fieldName1 = "field1"
+        let fieldName2 = "field2"
         let struct1 = StructLiteral [
                                         (fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5));
                                         (fieldName2, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10));
@@ -314,7 +315,7 @@ module ParserTest =
     (* --------------------------- String literal --------------------------- *)
     [<Test>]
     let ``When syntax for string literal, expect string literal AST`` () =
-        let fieldName1 = Identifier (SimpleIdentifier "field1")
+        let fieldName1 = "field1"
         let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "\"Tub\""
         <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])

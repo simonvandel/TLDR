@@ -12,18 +12,26 @@ module Analysis =
         | Decl // x: int
         | Ass // var x := 5
         | Reass // x := 5
+        | Def // Actor A := {} | Struct B := {}
 
     type Scope = {
-        outer:Scope option
+        outer:Scope option //TODO: fjern outer, da det bare kan ses ud fra level
         level:int list
     }
 
     type SymbolTableEntry = {
+        symbol: LValue
+        statementType:StatementType
+        scope:Scope
+        value:AST
+    }
+
+    (*type SymbolTableEntry = {
         error:bool
         symbol:LValue
         statementType:StatementType
         scope:Scope
-    }
+    }*)
 
     type SymbolTable = SymbolTableEntry list //Map<Scope, Map<string, PrimitiveType>>  //
 
@@ -76,6 +84,13 @@ module Analysis =
             return stat.scope
         }
 
+    let SameState = 
+      state 
+        {
+          let! curState = getState
+          do! putState curState
+        }
+(*
     let rec typecheck (root:AST) : Result<PrimitiveType> =
         match root with
         | Program stms ->
@@ -386,6 +401,152 @@ module Analysis =
                     let! s = getState
                     do! putState s
                   }
+                  *)
+
+
+    let rec buildSymbolTable (root:AST) :  State<unit, Environment> =
+        match root with
+        | Program stms | Block stms | Body stms-> 
+          state 
+            {
+              do! forAll buildSymbolTable stms
+            }
+        | Assignment (mutability, varId, rhs) as ass-> 
+          state 
+            {
+              let! curScope = getScope
+              let! curState = getState
+              let entry = 
+                {
+                  symbol = 
+                    {
+                      identity = SimpleIdentifier varId
+                      isMutable = mutability
+                      primitiveType = 
+                        curState.symbolList |>
+                          List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier varId && (e.statementType = Decl || e.statementType = Init)) |>
+                          (fun e -> match e with 
+                                      | Some (sEntry) -> sEntry.symbol.primitiveType
+                                      | None -> StillUnknown ass
+                          )
+                    }
+                  statementType = Ass
+                  scope = curScope
+                  value = rhs
+                }
+              do! addEntry entry
+            }
+        | Reassignment (varId, rhs) as reass ->
+          state 
+            {
+              let! curScope = getScope
+              let! curState = getState
+              let sDecl = 
+                curState.symbolList |>
+                  List.tryFind (fun e -> e.symbol.identity = varId && (e.statementType = Decl || e.statementType = Init))
+              let entry = 
+                  {
+                    symbol = 
+                      {
+                      identity = varId
+                      isMutable = 
+                        match sDecl with
+                        | Some (sEntry) -> sEntry.symbol.isMutable
+                        | None -> false
+                      primitiveType = 
+                        match sDecl with
+                        | Some (sEntry) -> sEntry.symbol.primitiveType
+                        | None -> StillUnknown reass
+                      }
+                    statementType = Reass
+                    scope = curScope
+                    value = rhs
+                  }
+              do! addEntry entry
+            }
+        | Initialisation (lvalue, rhs) as init ->
+          state
+            {
+              let! curScope = getScope
+              let entry =
+                  {
+                    symbol = lvalue
+                    statementType = Init
+                    scope = curScope
+                    value = rhs
+                  }
+              do! addEntry entry
+            }
+        | Declaration (name, ptype) as decl ->
+          state
+            {
+              let! curScope = getScope
+              let entry =
+                  {
+                    symbol =
+                      {
+                        identity = SimpleIdentifier name
+                        isMutable = false
+                        primitiveType = ptype
+                      }
+                    statementType = Decl
+                    scope = curScope
+                    value = decl
+                  }
+              do! addEntry entry
+            }
+        | Constant (ptype, value)-> SameState
+        | Actor (name, body) -> 
+          state
+            {
+              let! curScope = getScope
+              let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier name
+                        isMutable = false
+                        primitiveType = SimplePrimitive (Primitive.Actor name)
+                      }
+                    statementType = Def
+                    scope = curScope
+                    value = body
+                  }
+              do! addEntry entry
+            }
+        | Struct (name, fields) ->
+          state
+            {
+              let! curScope = getScope
+              let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier name
+                        isMutable = false
+                        primitiveType = SimplePrimitive (Primitive.Struct (name, fields))
+                      }
+                    statementType = Def
+                    scope = curScope
+                    value = Struct (name, fields)
+                  }
+              do! addEntry entry
+            }
+        | If (condition, body) -> SameState
+        | Send (actorName, msgName) -> SameState
+        | Spawn (lvalue, actorName, initMsg) -> SameState
+        | Receive (msgName, msgType, body) -> SameState
+        | ForIn (counterName, list, body) -> SameState
+        | ListRange content -> SameState
+        | Operation (lhs, op, rhs) -> SameState
+        | Identifier id -> SameState
+        | Function (funcName, arguments, types, body) -> SameState
+        | StructLiteral fieldNamesAndVals -> SameState
+        | Invocation (functionName, parameters) -> SameState
+      
+    
+    let checkTypes (root:AST): Result<PrimitiveType> =
+      Success (SimplePrimitive Primitive.Int)
 
 
     let rec isInScope (scopeToCheckIfIn:Scope) (otherScope:Scope) : bool =
@@ -691,7 +852,7 @@ module Analysis =
       //|> printfn "%A"
       let topLevelSymbols = findTopLevelSyms [Map.empty] root
       execState  (expandUserTypes root) topLevelSymbols
-      |> typecheck
+      |> checkTypes
       //|> printfn "%A"
 
       Success 0

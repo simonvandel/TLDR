@@ -4,8 +4,6 @@ open Hime.CentralDogma
 open Hime.Redist
 
 module AST =
-
-
     type PrimitiveValue =
         | Int of int
         | Real of float
@@ -39,6 +37,7 @@ module AST =
         | Assignment of bool * string * AST // mutability, varId, value
         | Reassignment of Identifier * AST // varId, rhs
         | Initialisation of LValue * AST // lvalue, rhs
+        | Declaration of string * PrimitiveType
         | Constant of PrimitiveType * PrimitiveValue // type, value
         | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
@@ -290,7 +289,7 @@ module AST =
                 Invocation (funcName, parameters)
         | "StructLiteral" ->
             let fields = seq { for c in root.Children do
-                                let fieldName1 = toAST (c.Children.Item 0)
+                                let fieldName1 = (c.Children.Item 0).Symbol.Value
                                 let fieldValue1 = toAST (c.Children.Item 1)
                                 yield (fieldName1, fieldValue1)               
                              }

@@ -24,19 +24,19 @@ module TypeCheckerTest =
                     
     [<Test>]
     let ``Initialisation where lhs is int and rhs is int, expects to typecheck``() = 
-        typecheckWith "let x:int := 2" typecheck
+        typecheckWith "let x:int := 2" checkTypes
         |> should equal (Success (SimplePrimitive Primitive.Int))
 
     [<Test>]
     let ``Initialisation where lhs is real and rhs is real, expects to typecheck``() = 
-        typecheckWith "let x:real := 2.5" typecheck
+        typecheckWith "let x:real := 2.5" checkTypes
         |> should equal (Success (SimplePrimitive Primitive.Real))
 
 
     // virker ikke lige nu. Det er noget med at den ikke ser det som samme type
     [<Test>]
     let ``Initialisation where lhs is real and rhs is int, expects to NOT typecheck``() = 
-        let res = typecheckWith "let x:real := 2" typecheck
+        let res = typecheckWith "let x:real := 2" checkTypes
         // explicit types are needed to make the test pass correctly
         let expect : Result<PrimitiveType> = (Failure ["Initialisation does not typecheck. Expected type SimplePrimitive Real, found type SimplePrimitive Int"])
         res |> should equal expect 
@@ -46,7 +46,7 @@ module TypeCheckerTest =
     // FIXME: Hvad blev vi enige med hinanden omkring if statements og typer?
     [<Test>]
     let ``If statement with condition of type Bool and body of type int, expects to typecheck with type int`` () =
-        let res = typecheckWith "if ( true ) { 2 }" typecheck
+        let res = typecheckWith "if ( true ) { 2 }" checkTypes
         //|> printfn "%A"
         let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Int))
         res |> should equal expect
