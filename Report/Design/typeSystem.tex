@@ -24,22 +24,22 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 \subsection{Type Rules}
 
 \subsubsection{Common Notation}
+\textbf{Operators}
 \begin{align*}
 &\textrm{let} \;\; AOP = [+, -, *, /, \%, \;^\wedge{} \;]
 &
 &\textrm{let} \;\; BAOP = [=, !=, <, <=, >, >=]
-&
-&\textrm{let} \;\; TUPLE = (BT, BT^+)
-&
-&\textrm{let} \;\; BL = [[BT], TUPLE, struct<TUPLE>]
-&
-&\textrm{let} \;\; BT = [int, real, bool, char]
 \\\\
 &\textrm{let} \;\; BBOP = [\textrm{AND, NAND, OR, NOR, XOR}]
-\\\\
-&\textrm{let} \;\; BT = [int, real, bool, char, [BT]]
 \end{align*}
-
+\textbf{Types}
+\begin{align*}
+&\textrm{let} \;\; BT = [int, real, bool, char]
+&
+&\textrm{let} \;\; BL = [[BL], BT, TUPLE, struct<TUPLE>]
+\\\\
+&\textrm{let} \;\; TUPLE = (BT, BT^+)
+\end{align*}
 \subsubsection{Arithmetic Expressions}
 \begin{align*}
 &\inference[$EXPR_{int,int}$]{E \vdash e_1 : int \\
@@ -77,24 +77,43 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 
 \subsubsection{Boolean Expressions}
 \begin{align*}
-&\inference[$BOOL_{BAOP}$]{E \vdash e_1 : BT \\
-                       E \vdash e_2 : BT}
+&\inference[$BOOL_{BAOP-int,int}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : int}
                     {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
 &
+&\inference[$BOOL_{BAOP-int,float}$]{E \vdash e_1 : int \\
+                       E \vdash e_2 : float}
+                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
+\\\\
+&\inference[$BOOL_{BAOP-float,int}$]{E \vdash e_1 : float \\
+                       E \vdash e_2 : int}
+                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
+&
+&\inference[$BOOL_{BAOP-float,float}$]{E \vdash e_1 : float \\
+                       E \vdash e_2 : float}
+                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
+\\\\
+&\inference[$BOOL_{EQUALS}$]{E \vdash e_1 : BL \\
+                       E \vdash e_2 : BL}
+                    {E \vdash e_1 = e_2 : bool}
+&
+&\inference[$BOOL_{NEQUALS}$]{E \vdash e_1 : BL \\
+                       E \vdash e_2 : BL}
+                    {E \vdash e_1 != e_2 : bool}
+\\\\
 &\inference[$BOOL_{BBOP}$]{E \vdash e_1 : bool \\
                        E \vdash e_2 : bool}
                     {E \vdash e_1 \mathbin{\textrm{BBOP}} e_2 : bool}
 \end{align*}
-
 \subsubsection{Conditional Expressions}
 \begin{align*}
 &\inference[$IF$]{E \vdash b : bool \\
-                  E \vdash e : BT}
+                  E \vdash e : BL}
                  {E \vdash \mathbin{\textrm{if}} \; (b) \; {e}: void}
 &
 &\inference[$IF-ELSE$]{E \vdash b : bool \\
-                  E \vdash e_1 : BT \\
-                  E \vdash e_2 : BT}
+                  E \vdash e_1 : BL \\
+                  E \vdash e_2 : BL'}
                  {E \vdash \mathbin{\textrm{if}} \; (b) \; {e_1} \mathbin{\textrm{else}} {e_2}: void}
 \end{align*}
 
@@ -104,7 +123,12 @@ Using the above definition the type system can be categorised as \emph{strong}, 
                   E \vdash e : BT}
                  {E \vdash \mathbin{\textrm{while}} \; (b) \; {e}: void}
 &
-&\inference[$FOR_1$]{E \vdash l : [BT] \\
-                  E \vdash e_2 : BT}
-                 {E \vdash \mathbin{\textrm{for}} \; e in \; {e_1} \mathbin{\textrm{else}} {e_2}: void}
+&\inference[$FOR$]{E \vdash l : [BT] \\
+                  E \vdash e : BT'}
+                 {E \vdash \mathbin{\textrm{for}} \; \mathbin{\textrm{x}} \; \mathbin{\textrm{in}} \; {l} \; \mathbin{\textrm{else}} \; {e}: void	| E \vdash x : BT}
+\\\\
+&\inference[$FOR$]{E \vdash l : [BT] \\
+                  E \vdash e : BT' \\
+									E \vdash y : int}
+                 {E \vdash \mathbin{\textrm{for}} (x,y) \mathbin{\textrm{in}} \; {l} \; \mathbin{\textrm{else}} \; {e}: void	| E \vdash x : BT}
 \end{align*}
