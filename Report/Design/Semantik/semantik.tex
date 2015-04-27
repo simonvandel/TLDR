@@ -134,4 +134,10 @@
 \\\\
 &\inference[$PARENS_{S2}$]{\Braket{S,s} \Rightarrow_S \Braket{s'}}
                        {\Braket{(S), s} \Rightarrow_S \Braket{s'}}
+\\\\
+&\inference[$BLOCK_1$]{\Braket{S,e_v,e_p} \Rightarrow_S \Braket{S',e_v',e_p'}}
+                         {\Braket{\{S\}, e_v, e_p} \Rightarrow_S \Braket{\{S'\}, e_v',e_p'}}
+\\\\
+&\inference[$BLOCK_2$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
+                         {\Braket{S_1 ; S_2, s} \Rightarrow_S \Braket{S_2, s'}}
 \end{align*}
