@@ -125,10 +125,10 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 &
 &\inference[$FOR$]{E \vdash l : [BT] \\
                   E \vdash e : BT'}
-                 {E \vdash \mathbin{\textrm{for}} \; \mathbin{\textrm{x}} \; \mathbin{\textrm{in}} \; {l} \; \mathbin{\textrm{else}} \; {e}: void	| E \vdash x : BT}
+                 {E \vdash \mathbin{\textrm{for}} \; \mathbin{\textrm{x}} \; \mathbin{\textrm{in}} \; {l} \; \{e\}: void	| E \vdash x : BT}
 \\\\
 &\inference[$FOR$]{E \vdash l : [BT] \\
                   E \vdash e : BT' \\
 									E \vdash y : int}
-                 {E \vdash \mathbin{\textrm{for}} (x,y) \mathbin{\textrm{in}} \; {l} \; \mathbin{\textrm{else}} \; {e}: void	| E \vdash x : BT}
+                 {E \vdash \mathbin{\textrm{for}} (x,y) \mathbin{\textrm{in}} \; {l} \; \{e\}: void	| E \vdash x : BT}
 \end{align*}
