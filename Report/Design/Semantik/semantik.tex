@@ -96,8 +96,14 @@
 &\inference[$AND_3$]{b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
 								    {b_1 \;\; \textrm{AND} \;\; b_2 \Rightarrow_B \top}
 \\\\
+&\inference[$NAND$]{}
+								   {b_1 \;\; \textrm{NAND} \;\; b_2 \Rightarrow_B \textrm{NOT} ( b_1 \;\; \textrm{AND} \;\; b_2 )}
+\\\\
 &\inference[$OR$]{}
                  {b_1 \;\; \textrm{OR} \;\; b_2 \Rightarrow_B \textrm{NOT}(\textrm{NOT} \;\; b_1 \;\; \textrm{AND} \;\; \textrm{NOT} \;\; b_2)}
+\\\\
+&\inference[$NOR$]{}
+								   {b_1 \;\; \textrm{NOR} \;\; b_2 \Rightarrow_B \textrm{NOT} ( b_1 \;\; \textrm{OR} \;\; b_2 )}
 \\\\
 &\inference[$XOR$]{}
                   {b_1 \;\; \textrm{XOR} \;\; b_2 \Rightarrow_B (\textrm{NOT}(b_1 \;\; \textrm{AND} \;\; b_2)) \;\; \textrm{AND} \;\; (b_1 \;\; \textrm{OR} \;\; b_2)}
@@ -119,15 +125,9 @@
 \\\\
 &\inference[$IF_\bot$]{b \Rightarrow_B \bot}
                       {\Braket{if(b)\{S\}, s} \Rightarrow_S \Braket{s}}
-%\\\\
-%&\inference[$FOR_{11}$]{\Braket{S_1,s} \Rightarrow_S \Braket{S_1',s'}}
-                       %{\Braket{for(S_1;b;S_2)\{S_3\}, s} \Rightarrow_S \Braket{for(S_1';b;S_2)\{S_3\}, s'}}
-%\\\\
-%&\inference[$FOR_{11}$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
-                       %{\Braket{for(S_1;b;S_2)\{S_3\}, s} \Rightarrow_S \Braket{for(b;S_2)\{S_3\}, s'}}
 \\\\
 &\inference[$FOR_{11}$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
-                       {\Braket{for e in li, s} \Rightarrow_S \Braket{for(b;S_2)\{S_3\}, s'}}
+                       {\Braket{for e in [], s} \Rightarrow_S \Braket{}}
 \\\\
 &\inference[$PARENS_{S1}$]{\Braket{S,s} \Rightarrow_S \Braket{S',s'}}
                        {\Braket{(S), s} \Rightarrow_S \Braket{(S'), s'}}

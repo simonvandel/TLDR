@@ -28,7 +28,7 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 \begin{align*}
 &\textrm{let} \;\; AOP = [+, -, *, /, \%, \;^\wedge{} \;]
 &
-&\textrm{let} \;\; BAOP = [=, !=, <, <=, >, >=]
+&\textrm{let} \;\; BAOP = [<, <=, >, >=]
 \\\\
 &\textrm{let} \;\; BBOP = [\textrm{AND, NAND, OR, NOR, XOR}]
 \end{align*}
@@ -40,33 +40,18 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 \\\\
 &\textrm{let} \;\; TUPLE = (BT, BT^+)
 \end{align*}
+
 \subsubsection{Arithmetic Expressions}
 \begin{align*}
 &\inference[$EXPR_{int,int}$]{E \vdash e_1 : int \\
                        E \vdash e_2 : int}
                     {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : int}
 &
-&\inference[$EXPR_{int,real}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : real}
-                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
-\\\\
-&\inference[$EXPR_{real,int}$]{E \vdash e_1 : real \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
-&
 &\inference[$EXPR_{real,real}$]{E \vdash e_1 : real \\
                        E \vdash e_2 : real}
                     {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
 \\\\  
 &\inference[$ROOT_{int,int}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\#} e_2 : real}
-&
-&\inference[$ROOT_{int,real}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : real}
-                    {E \vdash e_1 \mathbin{\#} e_2 : real}
-\\\\
-&\inference[$ROOT_{real,int}$]{E \vdash e_1 : real \\
                        E \vdash e_2 : int}
                     {E \vdash e_1 \mathbin{\#} e_2 : real}
 &
@@ -81,16 +66,8 @@ Using the above definition the type system can be categorised as \emph{strong}, 
                        E \vdash e_2 : int}
                     {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
 &
-&\inference[$BOOL_{BAOP-int,float}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : float}
-                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
-\\\\
-&\inference[$BOOL_{BAOP-float,int}$]{E \vdash e_1 : float \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
-&
-&\inference[$BOOL_{BAOP-float,float}$]{E \vdash e_1 : float \\
-                       E \vdash e_2 : float}
+&\inference[$BOOL_{BAOP-real,real}$]{E \vdash e_1 : real \\
+                       E \vdash e_2 : real}
                     {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
 \\\\
 &\inference[$BOOL_{EQUALS}$]{E \vdash e_1 : BL \\
@@ -109,12 +86,12 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 \begin{align*}
 &\inference[$IF$]{E \vdash b : bool \\
                   E \vdash e : BL}
-                 {E \vdash \mathbin{\textrm{if}} \; (b) \; {e}: void}
+                 {E \vdash \mathbin{\textrm{if}} \; (b) \; \{e\}: void}
 &
 &\inference[$IF-ELSE$]{E \vdash b : bool \\
                   E \vdash e_1 : BL \\
                   E \vdash e_2 : BL'}
-                 {E \vdash \mathbin{\textrm{if}} \; (b) \; {e_1} \mathbin{\textrm{else}} {e_2}: void}
+                 {E \vdash \mathbin{\textrm{if}} \; (b) \; \{e_1\} \mathbin{\textrm{else}} \{e_2\}: void}
 \end{align*}
 
 \subsubsection{Loop Expressions}
