@@ -10,7 +10,7 @@ module CommonTypes =
     let  (|Success|Failure|) = 
         function Choice1Of2 x -> Success x | Choice2Of2 x -> Failure x
 
-    let addResults (results:Result<'a> list) : Result<'a> =
+    let sumResults (results:Result<'a> list) : Result<'a> =
         results
         |> List.reduce (fun accum elem -> match accum, elem with
                                                 | Failure msg1, Failure msg2 -> Failure (msg1 @ msg2)
