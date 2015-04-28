@@ -114,30 +114,36 @@
 
 \subsection{Statements}
 \begin{align*}
-&\inference[$STATEMENTS_1$]{\Braket{S_1,s} \Rightarrow_S \Braket{S_1',s'}}
-                         {\Braket{S_1 ; S_2, s} \Rightarrow_S \Braket{S_1' ; S_2, s'}}
+&\inference[$STATEMENTS_1$]{\Braket{S_1,e,s} \Rightarrow_S \Braket{S_1',e',s'}}
+                         {\Braket{S_1;S_2,e,s} \Rightarrow_S \Braket{S_1';S_2,e',s'}}
 \\\\
-&\inference[$STATEMENTS_2$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
-                         {\Braket{S_1 ; S_2, s} \Rightarrow_S \Braket{S_2, s'}}
+&\inference[$STATEMENTS_2$]{\Braket{S_1,e,s} \Rightarrow_S \Braket{e',s'}}
+                         {\Braket{S_1;S_2,e,s} \Rightarrow_S \Braket{S_2,e',s'}}
 \\\\
-&\inference[$IF_\top$]{b \Rightarrow_B \top \\ \Braket{S, s} \Rightarrow \Braket{S', s'}}
-                      {\Braket{if(b)\{S\}, s} \Rightarrow_S \Braket{S', s'}}
+&\inference[$BLOCK_1$]{\Braket{S,e,s} \Rightarrow_S \Braket{S',e',s'}}
+                         {\Braket{\{S\},e,s} \Rightarrow_S \Braket{\{S'\},e',s'}}
+\\\\
+&\inference[$BLOCK_1$]{\Braket{S,e,s} \Rightarrow_S \Braket{e',s'}}
+                         {\Braket{\{S\},e,s} \Rightarrow_S \Braket{e',s'}}
+\\\\
+&\inference[$IF_\top$]{b \Rightarrow_B \top}
+                      {\Braket{if(b)\{S\},e,st} \Rightarrow_S \Braket{\{S\},e,st}}
 \\\\
 &\inference[$IF_\bot$]{b \Rightarrow_B \bot}
-                      {\Braket{if(b)\{S\}, s} \Rightarrow_S \Braket{s}}
+                      {\Braket{if(b)\{S\},e,s} \Rightarrow_S \Braket{e,s}}
+\\\\
+&\inference[$IF-ELSE_\top$]{b \Rightarrow_B \top}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e,st} \Rightarrow_S \Braket{\{S_1\},e,s}}
+\\\\
+&\inference[$IF-ELSE_\bot$]{b \Rightarrow_B \bot}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e,s} \Rightarrow_S \Braket{\{S_2\},e,s}}
 \\\\
 &\inference[$FOR_{11}$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
                        {\Braket{for e in [], s} \Rightarrow_S \Braket{}}
-\\\\
-&\inference[$PARENS_{S1}$]{\Braket{S,s} \Rightarrow_S \Braket{S',s'}}
-                       {\Braket{(S), s} \Rightarrow_S \Braket{(S'), s'}}
-\\\\
-&\inference[$PARENS_{S2}$]{\Braket{S,s} \Rightarrow_S \Braket{s'}}
-                       {\Braket{(S), s} \Rightarrow_S \Braket{s'}}
-\\\\
-&\inference[$BLOCK_1$]{\Braket{S,e_v,e_p} \Rightarrow_S \Braket{S',e_v',e_p'}}
-                         {\Braket{\{S\}, e_v, e_p} \Rightarrow_S \Braket{\{S'\}, e_v',e_p'}}
-\\\\
-&\inference[$BLOCK_2$]{\Braket{S_1,s} \Rightarrow_S \Braket{s'}}
-                         {\Braket{S_1 ; S_2, s} \Rightarrow_S \Braket{S_2, s'}}
+%\\\\
+%&\inference[$PARENS_{S1}$]{\Braket{S,e_v,e_p,st} \Rightarrow_S \Braket{S',e_v',e_p',st'}}
+                       %{\Braket{(S),e_v,e_p,st} \Rightarrow_S \Braket{(S'),e_v',e_p',st'}}
+%\\\\
+%&\inference[$PARENS_{S2}$]{\Braket{S,e_v,e_p,st} \Rightarrow_S \Braket{e_v',e_p',st'}}
+                       %{\Braket{(S),e_v,e_p,st} \Rightarrow_S \Braket{e_v',e_p',st'}}
 \end{align*}
