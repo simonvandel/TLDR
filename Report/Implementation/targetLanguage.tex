@@ -1,18 +1,18 @@
 \section{Target Language}
-\lable{sec:targetLanguage}
+\label{sec:targetLanguage}
 
-The target language is the language the the compiler translates the source language into. In this section the choise of target language will be described. The language and how it will be implemented are are documented in this chapter.
+The target language is the language that the compiler translates the source language into. In this section the choice of target language will be described. %Reformuler
 
-\subsection{Choise of target language}
+\subsection{Choice of target language}
 
-Different languages types was considered stack based and register based languages or C.
-Higher level of languages were not an opportunity because of the simplicity of translating one high level language to another. 
+Different language types were considered, stack based and register based languages or C. %Giver ikke mening, det er maskinen der er det og ikke sproget - siger Simon
+Languages with higher levels of abstractions were not an opportunity because of the simplicity of translating one high level language to another. %Expand on this, det var en mulighed vi valgte det bare ikke 
 Creating a compiler from one high level language to another were not assumed complex enough for learning goal of this project. 
 
-This languages were the ones considered:
+Following languages were considered:
 
 C:
-C is the only high level language considered because of it's complexcity due to the the lack of memory management. C has a lot of libraries, and are a well known language and are more readable by humans. C was not chosen because it can run different on different platform and machines.
+C is the only high level language considered because of it's complexcity due to the the lack of memory management. C has a lot of libraries, and are a well known language and are more readable by humans. C was not chosen because it can run different on different platform and machines. %Wat er det en dårlig ting?
 
 Java bytecode: 
 java bytecode runs on almost any any java virtual machine (jvm), which makes the language vary cross platform. java bytecode is a instruction and stack based language. Java bytecode has large set of framework and libraries, because alle java and scala libraries can be compiled to java bytecode. All java virtual machines has a garba collector furthermore, in java bytecode it is possible to chose the garbage collections strategy.
