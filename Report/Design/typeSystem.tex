@@ -32,29 +32,29 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 \newcommand{\Tvoid}{\text{void}}
 \newcommand{\Taop}{\text{AOP}}
 \newcommand{\Tbaop}{\text{BAOP}}
-\newcommand{\Tbbop}{\text{BBOP}}
-\newcommand{\Tbl}{\text{BL}}
-\newcommand{\Tbt}{\text{BT}}
+\newcommand{\Tbop}{\text{BOP}}
+\newcommand{\Tconct}{\text{CONCT}}
+\newcommand{\Tpt}{\text{PT}}
 \newcommand{\Tenv}{E \vdash}
 
 \subsubsection{Common Notation}
-The following variables are used when any elements of the set can be used. For example the variable $AOP$ can be a $+$.
+The following variables are used when any elements of the set can be used. For example the variable $AOP$, Arithmetic OPeration, can be a $+$.
 \paragraph{Operators}
 \begin{align*}
 &\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
 \\
 &\Tbaop = \left\{ {<, <=, >, >=} \right\}
 \\
-&\Tbbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
+&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
 \end{align*}
 
 \paragraph{Types}
 \begin{align*}
-&\Tbt = \left\{ {\Tint, \Treal, \Tbool, \Tchar} \right\}
+&\Tpt = \left\{ {\Tint, \Treal, \Tbool, \Tchar} \right\}
 \\
-&\text{TUPLE} = (\Tbl, \Tbl^+)
+&\text{TUPLE} = (\Tconct, \Tconct^+)
 \\            
-&\Tbl = \left\{ { \left[ \Tbl \right], \Tbt, \text{TUPLE}, \text{struct<TUPLE>}} \right\}
+&\Tconct = \left\{ { \left[ \Tconct \right], \Tpt, \text{TUPLE}, \text{struct<TUPLE>}} \right\}
 \end{align*}
 
 \subsubsection{Arithmetic Expressions}
@@ -92,55 +92,55 @@ The following variables are used when any elements of the set can be used. For e
                     {\Tenv e_1 \mathbin{\Tbaop} e_2 : \Tbool}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
-&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tbl &
-                       \Tenv e_2 : \Tbl}
+&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tconct &
+                       \Tenv e_2 : \Tconct}
                     {\Tenv e_1 = e_2 : \Tbool}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
-&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tbl &
-                       \Tenv e_2 : \Tbl}
+&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tconct &
+                       \Tenv e_2 : \Tconct}
                     {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
 &\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
                        \Tenv e_2 : \Tbool}
-                    {\Tenv e_1 \mathbin{\Tbbop} e_2 : \Tbool}
+                    {\Tenv e_1 \mathbin{\Tbop} e_2 : \Tbool}
 \end{align*}
 \subsubsection{Conditional Expressions}
 \begin{align*}
-\intertext{The conditional body of a if-statement must be of type bool. The body can be of any type defined in $\Tbl$. The type of the if-statement is void.}
+\intertext{The conditional body of a if-statement must be of type bool. The body can be of any type defined in $\Tconct$. The type of the if-statement is void.}
 &\inference[$\text{IF}$]{\Tenv b : \Tbool &
-                  \Tenv e : \Tbl}
+                  \Tenv e : \Tconct}
                  {\Tenv \mathbin{\text{if}} \; (b) \; \{e\}: \Tvoid}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The conditional body of a if-else-statement must be of type bool. The two bodies can be of any type defined in $\Tbl$. The type of the if-else-statement is void.}
+\intertext{The conditional body of a if-else-statement must be of type bool. The two bodies can be of any type defined in $\Tconct$. The type of the if-else-statement is void.}
 &\inference[$\text{IF-ELSE}$]{\Tenv b : \Tbool &
-                  \Tenv e_1 : \Tbl &
-                  \Tenv e_2 : \Tbl'}
+                  \Tenv e_1 : \Tconct &
+                  \Tenv e_2 : \Tconct'}
                  {\Tenv \mathbin{\text{if}} \; (b) \; \{e_1\} \mathbin{\text{else}} \{e_2\}: \Tvoid}
 \end{align*}
 
 \subsubsection{Loop Expressions}
 \begin{align*}
-\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tbl$}
+\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tconct$}
 &\inference[WHILE]{\Tenv b : \Tbool &
-                  \Tenv e : \Tbt}
+                  \Tenv e : \Tpt}
                  {\Tenv \mathbin{\text{while}} \; (b) \; {e}: \Tvoid}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
-&\inference[FOR]{\Tenv l : [\Tbt]}
-                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : \Tvoid },	 \Tenv x : \Tbt
+&\inference[FOR]{\Tenv l : [\Tpt]}
+                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : \Tvoid },	 \Tenv x : \Tpt
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\                                  
-&\inference[FOR]{\Tenv l : [\Tbt]} 
-                 {\Tenv \mathbin{\text{for}} (x,y) \mathbin{\text{in}} \; {l} \; : \Tvoid } , \Tenv x : \Tbt, \Tenv y : \Tint
+&\inference[FOR]{\Tenv l : [\Tpt]} 
+                 {\Tenv \mathbin{\text{for}} (x,y) \mathbin{\text{in}} \; {l} \; : \Tvoid } , \Tenv x : \Tpt, \Tenv y : \Tint
 \end{align*}
 
 \subsubsection{Match statements}
 \begin{align*}
-\intertext{When matching on an expression of type $\Tbl$ each match case must be of the same type as the expression. There can be multiple match cases as denoted by the plus. The body of each match case can be any type of $\Tbl'$ different from the type of the expression being matched on. The whole match statement has type void.}
-&\inference[MATCH]{\Tenv e_1 : \Tbl &
-                   \Tenv e_2 : \Tbl &
-                   \Tenv S : \Tbl'}
+\intertext{When matching on an expression of type $\Tconct$ each match case must be of the same type as the expression. There can be multiple match cases as denoted by the plus. The body of each match case can be any type of $\Tconct'$ different from the type of the expression being matched on. The whole match statement has type void.}
+&\inference[MATCH]{\Tenv e_1 : \Tconct &
+                   \Tenv e_2 : \Tconct &
+                   \Tenv S : \Tconct'}
                  {\Tenv \mathbin{\text{match}} \; e_1 \; {(e_2 -> S)^+}: \Tvoid}
 \end{align*}
