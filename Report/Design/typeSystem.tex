@@ -23,89 +23,124 @@ Using the above definition the type system can be categorised as \emph{strong}, 
 
 \subsection{Type Rules}
 
+% macros for symbols:
+\newcommand{\Tpot}{^\wedge{}}
+\newcommand{\Tint}{\text{int}}
+\newcommand{\Treal}{\text{real}}
+\newcommand{\Tbool}{\text{bool}}
+\newcommand{\Tchar}{\text{char}}
+\newcommand{\Tvoid}{\text{void}}
+\newcommand{\Taop}{\text{AOP}}
+\newcommand{\Tbaop}{\text{BAOP}}
+\newcommand{\Tbbop}{\text{BBOP}}
+\newcommand{\Tbl}{\text{BL}}
+\newcommand{\Tbt}{\text{BT}}
+\newcommand{\Tenv}{E \vdash}
+
 \subsubsection{Common Notation}
-\textbf{Operators}
+The following variables are used when any elements of the set can be used. For example the variable $AOP$ can be a $+$.
+\paragraph{Operators}
 \begin{align*}
-&\textrm{let} \;\; AOP = [+, -, *, /, \%, \;^\wedge{} \;]
-&
-&\textrm{let} \;\; BAOP = [<, <=, >, >=]
-\\\\
-&\textrm{let} \;\; BBOP = [\textrm{AND, NAND, OR, NOR, XOR}]
+&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
+\\
+&\Tbaop = \left\{ {<, <=, >, >=} \right\}
+\\
+&\Tbbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
 \end{align*}
-\textbf{Types}
+
+\paragraph{Types}
 \begin{align*}
-&\textrm{let} \;\; BT = [int, real, bool, char]
-&
-&\textrm{let} \;\; BL = [[BL], BT, TUPLE, struct<TUPLE>]
-\\\\
-&\textrm{let} \;\; TUPLE = (BT, BT^+)
+&\Tbt = \left\{ {\Tint, \Treal, \Tbool, \Tchar} \right\}
+\\
+&\text{TUPLE} = (\Tbl, \Tbl^+)
+\\            
+&\Tbl = \left\{ { \left[ \Tbl \right], \Tbt, \text{TUPLE}, \text{struct<TUPLE>}} \right\}
 \end{align*}
 
 \subsubsection{Arithmetic Expressions}
 \begin{align*}
-&\inference[$EXPR_{int,int}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : int}
-&
-&\inference[$EXPR_{real,real}$]{E \vdash e_1 : real \\
-                       E \vdash e_2 : real}
-                    {E \vdash e_1 \mathbin{\textrm{AOP}} e_2 : real}
-\\\\  
-&\inference[$ROOT_{int,int}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\#} e_2 : real}
-&
-&\inference[$ROOT_{real,real}$]{E \vdash e_1 : real \\
-                       E \vdash e_2 : real}
-                    {E \vdash e_1 \mathbin{\#} e_2 : real}
+&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\Taop} e_2 : \Tint}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\Taop} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
 \end{align*}
+\sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
 
 \subsubsection{Boolean Expressions}
 \begin{align*}
-&\inference[$BOOL_{BAOP-int,int}$]{E \vdash e_1 : int \\
-                       E \vdash e_2 : int}
-                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
-&
-&\inference[$BOOL_{BAOP-real,real}$]{E \vdash e_1 : real \\
-                       E \vdash e_2 : real}
-                    {E \vdash e_1 \mathbin{\textrm{BAOP}} e_2 : bool}
+&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\Tbaop} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
-&\inference[$BOOL_{EQUALS}$]{E \vdash e_1 : BL \\
-                       E \vdash e_2 : BL}
-                    {E \vdash e_1 = e_2 : bool}
-&
-&\inference[$BOOL_{NEQUALS}$]{E \vdash e_1 : BL \\
-                       E \vdash e_2 : BL}
-                    {E \vdash e_1 != e_2 : bool}
+&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\Tbaop} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
-&\inference[$BOOL_{BBOP}$]{E \vdash e_1 : bool \\
-                       E \vdash e_2 : bool}
-                    {E \vdash e_1 \mathbin{\textrm{BBOP}} e_2 : bool}
+&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tbl &
+                       \Tenv e_2 : \Tbl}
+                    {\Tenv e_1 = e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tbl &
+                       \Tenv e_2 : \Tbl}
+                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
+                       \Tenv e_2 : \Tbool}
+                    {\Tenv e_1 \mathbin{\Tbbop} e_2 : \Tbool}
 \end{align*}
 \subsubsection{Conditional Expressions}
 \begin{align*}
-&\inference[$IF$]{E \vdash b : bool \\
-                  E \vdash e : BL}
-                 {E \vdash \mathbin{\textrm{if}} \; (b) \; \{e\}: void}
-&
-&\inference[$IF-ELSE$]{E \vdash b : bool \\
-                  E \vdash e_1 : BL \\
-                  E \vdash e_2 : BL'}
-                 {E \vdash \mathbin{\textrm{if}} \; (b) \; \{e_1\} \mathbin{\textrm{else}} \{e_2\}: void}
+\intertext{The conditional body of a if-statement must be of type bool. The body can be of any type defined in $\Tbl$. The type of the if-statement is void.}
+&\inference[$\text{IF}$]{\Tenv b : \Tbool &
+                  \Tenv e : \Tbl}
+                 {\Tenv \mathbin{\text{if}} \; (b) \; \{e\}: \Tvoid}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The conditional body of a if-else-statement must be of type bool. The two bodies can be of any type defined in $\Tbl$. The type of the if-else-statement is void.}
+&\inference[$\text{IF-ELSE}$]{\Tenv b : \Tbool &
+                  \Tenv e_1 : \Tbl &
+                  \Tenv e_2 : \Tbl'}
+                 {\Tenv \mathbin{\text{if}} \; (b) \; \{e_1\} \mathbin{\text{else}} \{e_2\}: \Tvoid}
 \end{align*}
 
 \subsubsection{Loop Expressions}
 \begin{align*}
-&\inference[$WHILE$]{E \vdash b : bool \\
-                  E \vdash e : BT}
-                 {E \vdash \mathbin{\textrm{while}} \; (b) \; {e}: void}
-&
-&\inference[$FOR$]{E \vdash l : [BT] \\
-                  E \vdash e : BT'}
-                 {E \vdash \mathbin{\textrm{for}} \; \mathbin{\textrm{x}} \; \mathbin{\textrm{in}} \; {l} \; \{e\}: void	| E \vdash x : BT}
-\\\\
-&\inference[$FOR$]{E \vdash l : [BT] \\
-                  E \vdash e : BT' \\
-									E \vdash y : int}
-                 {E \vdash \mathbin{\textrm{for}} (x,y) \mathbin{\textrm{in}} \; {l} \; \{e\}: void	| E \vdash x : BT}
+\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tbl$}
+&\inference[WHILE]{\Tenv b : \Tbool &
+                  \Tenv e : \Tbt}
+                 {\Tenv \mathbin{\text{while}} \; (b) \; {e}: \Tvoid}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
+&\inference[FOR]{\Tenv l : [\Tbt]}
+                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : \Tvoid },	 \Tenv x : \Tbt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\                                  
+&\inference[FOR]{\Tenv l : [\Tbt]} 
+                 {\Tenv \mathbin{\text{for}} (x,y) \mathbin{\text{in}} \; {l} \; : \Tvoid } , \Tenv x : \Tbt, \Tenv y : \Tint
+\end{align*}
+
+\subsubsection{Match statements}
+\begin{align*}
+\intertext{When matching on an expression of type $\Tbl$ each match case must be of the same type as the expression. There can be multiple match cases as denoted by the plus. The body of each match case can be any type of $\Tbl'$ different from the type of the expression being matched on. The whole match statement has type void.}
+&\inference[MATCH]{\Tenv e_1 : \Tbl &
+                   \Tenv e_2 : \Tbl &
+                   \Tenv S : \Tbl'}
+                 {\Tenv \mathbin{\text{match}} \; e_1 \; {(e_2 -> S)^+}: \Tvoid}
 \end{align*}
