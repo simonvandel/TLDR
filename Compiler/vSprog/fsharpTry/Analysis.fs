@@ -12,7 +12,9 @@ module Analysis =
         | Program stms | Block stms | Body stms-> 
           state 
             {
+              do! openScope
               do! forAll buildSymbolTable stms
+              do! closeScope
             }
         | Assignment (mutability, varId, rhs) as ass-> 
           state 
