@@ -2,30 +2,28 @@
 By choosing the actor model it is, possible to create continuous simulations in the language with a good abstraction for simulations and models in general. Unfortunately the actor model does not support discrete simulations very well, and when trying to create discrete simulations with this, a problem arises that needs to be addressed.
 
 The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the user must to be able to implement iteration steps if he or she is to create discrete simulations. He or she has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
+
 For an actor to have stopped the programmer needs to know the three following:
 \begin{itemize}
 \item The actor is not currently executing any messages
 \item The actors message queue is empty
 \item The actor will not receive any further messages
 \end{itemize}
+
 The two first conditions are inherently easy to check. But for the last condition to hold one must make sure that all other actors that know about this actor also have stopped for else they can send messages to the actor and thereby \enquote{reviving} it. First of all the programmer must be able to group actors together thereby making sure that only actors in these groups can communicate with each other. This is done so he or she can know what actors must have stopped.
 
 In this project the scope of parallelisation is within simulations. The rest of this section will describe some general properties and processes of computer simulations. At last this section will discuss generalisations and assumptions, that can be made on the basis of the understanding of the problem domain. This can be used to provide the design phase with some ideas of abstractions the language should implement.
 
-\emph{Understanding the problem domain}
+\subsubsection{Understanding the problem domain}
 
 Firstly before spending time in an attempt to develop a parallel solution for any problem, one should first determine whether or not the problem is one that can actually be parallelised. This will be described in \cref{top}.
 
-\emph{Granularity}
+\subsubsection{Granularity}
 
 In order to do a computable simulation of a problem, a level of granularity is to be determined, this is a significant for both computation time and accuracy of the simulation. A description of this process is giving in \cref{dis}
 
-\emph{Helping processes and tools for making solutions parallel}
+\subsubsection{Helping processes and tools for making solutions parallel}
 
-Designing and developing parallel programs is characteristically a very manual process. The programmer is typically responsible for both identifying and actually implementing parallelism.
-
-Manually developing parallel solutions is a time consuming, complex, error-prone and an iterative process.
-
-Various tools can assist the programmer with converting serial programs into parallel programs. The most common type of tool used to automatically parallelise a serial program is a parallelising compiler or pre-processor.
+Designing and developing parallel programs is characteristically a very manual process. The programmer is typically responsible for both identifying and actually implementing parallelism. Manually developing parallel solutions is a time consuming, complex, error-prone and an iterative process. Various tools can assist the programmer with converting serial programs into parallel programs. The most common type of tool used to automatically parallelise a serial program is a parallelising compiler or pre-processor.
 
 This is usually a process of the compiler analysing the source code of a serial solution and identifying opportunities for parallelism. The analysis includes identifying inhibitors to parallelism and possibly a cost weighting on whether or not the parallelism would actually improve performance. For example loops (do, for) are the most frequent subject to automatic parallelisation.
