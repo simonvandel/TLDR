@@ -1,12 +1,9 @@
 \subsubsection{For-loop Statements}
 \label{subsec:forLoopStatements}
 
-There are two for-loop statements defined in the language. A for-in loop and a variation of the for-in loop where both the index and the element of the collection being looped is provided.
+A for-loop iterates through a list of elements.
 
-\paragraph{For-in loop}
-\label{sec:forInLoop}
-
-The for-in loop statement has the following syntax.
+The for loop statement has the following syntax.
 
 \begin{verbatim}
   for <element> in <collection> {<loopBody>}
@@ -16,21 +13,4 @@ A concrete example:
 
 \begin{verbatim}
   for i:int in [0..10]:[int] { /* Do stuff with i elements */ }
-\end{verbatim}
-
-\paragraph{For-in loop with index}
-\label{sec:forInLoopIndex}
-
-A variation of the for-in loop that also provides the index of the current element, has the following syntax.
-
-\begin{verbatim}
-  for (<index>, <element>) in <collection> {<loopBody>}
-\end{verbatim}
-
-A concrete example:
-
-\begin{verbatim}
-  for (index:int, elem:int) in [0..10]:[int] { 
-    /* Do stuff with i elements and index */ 
-  }
 \end{verbatim}
