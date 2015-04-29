@@ -79,8 +79,8 @@ grammar vSprogGrammar{
                       | Return^
                       | Send^
                       | If^
+                      | While^
                       | ForIn^;
-                      //| Match;
 
     Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Operation;
 
