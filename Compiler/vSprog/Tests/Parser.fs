@@ -223,8 +223,8 @@ module ParserTest =
     let ``When syntax for operation is given, expect Operation AST`` () =
         debugTestParseWith "2 + 3 + 4"
         <| should equal (Program [Body [
-                                    Operation (
-                                                    Operation (
+                                    BinOperation (
+                                                    BinOperation (
                                                                     Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2),
                                                                     Plus,
                                                                     (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 3)) 
@@ -239,8 +239,8 @@ module ParserTest =
     let ``When syntax for operation is given with modulo and equals, expect Operation AST`` () =
         debugTestParseWith "i % 20 = 0"
         <| should equal (Program [Body [
-                                    Operation (
-                                                    Operation (
+                                    BinOperation (
+                                                    BinOperation (
                                                                     Identifier (SimpleIdentifier "i"),
                                                                     Modulo,
                                                                     (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 20)) 

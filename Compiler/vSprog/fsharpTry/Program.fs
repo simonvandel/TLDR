@@ -20,7 +20,7 @@ module Main =
                                         lift (toAST parseTree))
                   >>= fun ast -> //printfn "%A" ast
                                  Success ast
-                  //>>= analyse
+                  >>= analyse
 
         match res with
         | Success _ -> printfn "success"

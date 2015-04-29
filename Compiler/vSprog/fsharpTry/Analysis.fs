@@ -143,7 +143,7 @@ module Analysis =
         | Receive (msgName, msgType, body) -> SameState getState
         | ForIn (counterName, list, body) -> SameState getState
         | ListRange content -> SameState getState
-        | Operation (lhs, op, rhs) -> SameState getState
+        | BinOperation (lhs, op, rhs) -> SameState getState
         | Identifier id -> SameState getState
         | Function (funcName, arguments, types, body) -> SameState getState
         | StructLiteral fieldNamesAndVals -> SameState getState
@@ -174,12 +174,21 @@ module Analysis =
       match res with
       | [] -> Success symTable
       | xs -> sumResults xs
-      
-    
+
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
       Success (SimplePrimitive Primitive.Int)
-      
+
+    let checkReass (symTable:SymbolTable) : Result<unit> = 
+        //printfn "%A" symTable
         
+        symTable 
+        |> List.filter (fun entry -> entry.statementType = Reass)
+        |> printfn "%A"
+        Success ()
 
-
-
+    let analyse (ast:AST) : Result<AST> = 
+        printfn "%A" ast
+        //let environment = evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}
+        //environment |> printf "%A"
+        //environment |> (fun env -> checkReass env.symbolList)
+        Success ast

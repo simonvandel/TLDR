@@ -46,25 +46,42 @@ module AST =
         | Spawn of LValue * string * AST // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
+        | While of AST * AST // condition, body
         | ListRange of AST list // content
-        | Operation of AST * Operator * AST // lhs, op, rhs
+        | BinOperation of AST * BinOperator * AST // lhs, op, rhs
+        | UnaryOperation of UnaryOperator * AST // op, rhs
         | Identifier of Identifier
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list // functionName, parameters
-        //| Error // Only for making it compile temporarily
 
     and Identifier =
         | SimpleIdentifier of string // x
         | IdentifierAccessor of string list // x.y == ["x"; "y"]
 
 
-    and Operator =
+    and BinOperator =
         | Plus
         | Minus
         | Modulo
-        | Equals
         | Multiply
+        | Divide
+        | Power
+        | Root
+        | Equals
+        | NotEquals
+        | LargerThan
+        | LargerThanOrEq
+        | SmallerThan
+        | SmallerThanOrEq
+        | And
+        | Or
+        | Xor
+        | Nor
+        | Nand
+
+    and UnaryOperator = 
+        | Not
 
     and LValue = {
         identity:Identifier
@@ -115,7 +132,7 @@ module AST =
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
 
-    let toOperator (operator:string) : Operator =
+    let toOperator (operator:string) : BinOperator =
         match operator with
         | "+" -> Plus
         | "-" -> Minus
@@ -235,7 +252,7 @@ module AST =
                 let operation = toAST (root.Children.Item 0)
                 let operator = toOperator (root.Children.Item 1).Symbol.Value
                 let operand = toAST (root.Children.Item 2)
-                Operation (operation, operator, operand)
+                BinOperation (operation, operator, operand)
             | 1 -> 
                 toAST (root.Children.Item 0)
             | err -> failwith (sprintf "This should never be reached: %A" err)

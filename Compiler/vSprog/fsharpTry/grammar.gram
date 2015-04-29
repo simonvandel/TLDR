@@ -28,10 +28,9 @@ grammar vSprogGrammar{
     RETURN        -> 'return';
     PRIMITIVE     -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER    -> [a-zA-Z_][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF);
+    IDENTIFIER    -> [a-zA-Z_][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | WHILE);
 
     /*--------- Symbols ---------*/
-    EQUALS        -> '=';
     ASSIGN        -> ':=';
     LPARENS       -> '(';
     RPARENS       -> ')';
@@ -48,8 +47,10 @@ grammar vSprogGrammar{
     ENDLIST       -> ']';
     COMMA         -> ',';
 
-    PZEROOPERATOR -> '*' | '/' | '%';
+    PZEROOPERATOR -> '*' | '/' | '%' | '^' | '#';
     PONEOPERATOR  -> '+' | '-';
+    PTWOOPERATOR  -> '=' | '!=' | '<' | '<=' | '>' | '>=';
+    PTHREEOPERATOR  -> 'AND' | 'OR' | 'XOR' | 'NOR' | 'NOT' | 'NAND';
 
     /*--------- Numbers ---------*/
     INT           -> '-'?[1-9][0-9]* | '0'; 
@@ -95,7 +96,10 @@ grammar vSprogGrammar{
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
 
     /*--------- For ---------*/
-    ForIn              -> FOR! Ids IN! ListRange Block;
+    ForIn            -> FOR! Ids IN! (ListRange | Identifier ) Block;
+
+    /*--------- While ------*/
+    While            -> WHILE! LPARENS! Operation RPARENS! Block;
 
     /*--------- If ---------*/
     If               -> IF! Operation Block;
@@ -105,7 +109,7 @@ grammar vSprogGrammar{
                       | BLOCKSTART! BLOCKEND!;
 
     /*--------- Operation ---------*/
-    Operation        -> Operation EQUALS Factor
+    Operation        -> Operation PTWOOPERATOR Factor
                       | Factor;
     Factor           -> Factor PONEOPERATOR Term
                       | Term^;
@@ -126,7 +130,6 @@ grammar vSprogGrammar{
     Real             -> REAL;
     Identifier       -> IDENTIFIER;
 
-  //  Logic            -> EQUALS;
 
     Literals         -> String^
                       | ListRange^
@@ -195,9 +198,5 @@ grammar vSprogGrammar{
                       | DOT! Identifier^ Accessor
                       | DOT! STARTLIST! INT ENDLIST!
                       | DOT! STARTLIST! INT ENDLIST! Accessor;
-
-    /*--------- ForLoop ---------*/
-    //ForLoop          -> FOR LPARENS 'blabla' SEMICOLON expression SEMICOLON expression RPARENS ASSIGN Block
-    //ForLoop          ->
   }
 }
