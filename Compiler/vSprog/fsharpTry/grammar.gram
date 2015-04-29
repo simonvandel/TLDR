@@ -146,7 +146,6 @@ grammar vSprogGrammar{
                       | Initialisation^
                       | Assignment^
                       | Function^
-                      | TypeDecl^
                       | Reassignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
