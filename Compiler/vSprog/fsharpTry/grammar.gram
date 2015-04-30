@@ -65,8 +65,8 @@ grammar vSprogGrammar{
     BOOL          -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING        -> '"'[a-zA-Z_0-9]*'"';
-    CHAR          -> '\''[a-zA-Z_0-9]|' ''\'';
+    STRING        -> '"'[a-zA-Z_0-9 ]*'"';
+    CHAR          -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 
   rules{
@@ -86,10 +86,11 @@ grammar vSprogGrammar{
                       | Return^
                       | Send^
                       | If^
+                      | IfElse^
                       | While^
                       | ForIn^;
 
-    Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Operation;
+    Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Operation?;
 
     Send	           -> SEND! Identifier Operation;
 
@@ -163,7 +164,7 @@ grammar vSprogGrammar{
     StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
     Field            -> Identifier ASSIGN! Operation; 
 
-    Invocation       -> Identifier LPARENS! Ids? RPARENS!;
+    Invocation       -> Identifier LPARENS! Operations? RPARENS!;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^

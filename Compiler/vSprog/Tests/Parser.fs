@@ -166,7 +166,7 @@ module ParserTest =
         let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg")
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
-        <| should equal (Program [Body [(Spawn (lhs, actorType, initMsg))]])
+        <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
 
     [<Test>]
     let ``When syntax for spawn is given with mutable actor, expect Spawn AST`` () =
@@ -175,7 +175,7 @@ module ParserTest =
         let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg")
         debugTestParseWith "var actorHandle:actorName := spawn actorName initMsg"
-        <| should equal (Program [Body [(Spawn (lhs, actorType, initMsg))]])
+        <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
 
     (* --------------------------- Receive --------------------------- *)
 
@@ -315,10 +315,14 @@ module ParserTest =
     (* --------------------------- String literal --------------------------- *)
     [<Test>]
     let ``When syntax for string literal, expect string literal AST`` () =
-        let fieldName1 = "field1"
-        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "\"Tub\""
         <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+
+    [<Test>]
+    let ``When syntax for string literal with spaces, expect string literal AST`` () =
+        debugTestParseWith "\"T ub\""
+        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char ' '; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+
 
     (* --------------------------- NOT --------------------------- *)
     [<Test>]

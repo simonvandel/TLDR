@@ -1,4 +1,4 @@
-﻿namespace vSprog
+namespace vSprog
 
 open Hime.CentralDogma
 open Hime.Redist
@@ -42,8 +42,9 @@ module AST =
         | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
         | If of AST * AST // conditional, body
+        | IfElse of AST * AST * AST // conditional, trueBody, falseBody
         | Send of string * string // actorName, msgName
-        | Spawn of LValue * string * AST // lvalue, actorName, initMsg
+        | Spawn of LValue * string * AST option // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | While of AST * AST // condition, body
@@ -210,6 +211,11 @@ module AST =
             let conditional = toAST (root.Children.Item 0)
             let body = toAST (root.Children.Item 1)
             If (conditional, body)
+        | "IfElse" ->
+            let conditional = toAST (root.Children.Item 0)
+            let trueBody = toAST (root.Children.Item 1)
+            let falseBody = toAST (root.Children.Item 2)
+            IfElse (conditional, trueBody, falseBody)
         | "Boolean" ->
             let value = 
                 match (root.Children.Item 0).Symbol.Value with
@@ -246,8 +252,11 @@ module AST =
             let typeName = (getChildByIndexes [1;1;0;0] root)
             let lhs = toLValue mutability name typeName
             let actorName = (getChildByIndexes [2;0] root).Symbol.Value
-            let initMsg = toAST (getChildByIndexes [3;0] root)
-            Spawn (lhs, actorName, initMsg)
+            if root.Children.Count = 4 then // msg was supplied
+                let initMsg = toAST (getChildByIndexes [3;0] root)
+                Spawn (lhs, actorName, Some initMsg)
+            else // no msg was supplied
+                Spawn (lhs, actorName, None)
         | "Receive" ->
             let msgName = (getChildByIndexes [0;0;0] root).Symbol.Value
             let msgType = toPrimitiveType (getChildByIndexes [0;1;0;0] root)
@@ -322,7 +331,7 @@ module AST =
                 Invocation (funcName, [])
             else
                 let parameters = seq { for c in (root.Children.Item 1).Children do   
-                                        yield (c.Children.Item 0).Symbol.Value                 
+                                        yield (getChildByIndexes [0;0] c).Symbol.Value                 
                                      }
                                  |> List.ofSeq
                 Invocation (funcName, parameters)
