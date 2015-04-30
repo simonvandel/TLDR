@@ -1,84 +1,84 @@
 \section{Semantics}
 \subsection{Arithmetic Expressions}
 \begin{align*}
-&\inference[$\text{ADD}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&\inference[$\text{ADD}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
-&\inference[$\text{ADD}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-										{e,s \vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+&\inference[$\text{ADD}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+										{e,st \vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
 &
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
 										{, v_1 + v_2 = v}
 \\\\
-&\inference[$\text{SUB}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&\inference[$\text{SUB}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
 &
-&\inference[$\text{SUB}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+&\inference[$\text{SUB}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
 &
 &\inference[$\text{SUB}_\text{V}$]{}
                     {v_1 - v_2 \Rightarrow_A v}
 										{, v_1 - v_2 = v}
 \\\\
-&\inference[$\text{MULT}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                     {e,s \vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&\inference[$\text{MULT}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                     {e,st \vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
 &
-&\inference[$\text{MULT}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                     {e,s \vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+&\inference[$\text{MULT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                     {e,st \vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
 &
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
 										 {, v_1 * v_2 = v}
 \\\\
-&\inference[$\text{DIV}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&\inference[$\text{DIV}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
 &
-&\inference[$\text{DIV}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+&\inference[$\text{DIV}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
 &
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
 										{, \frac{v_1}{v_2} = v}
 \\\\
-&\inference[$\text{MOD}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&\inference[$\text{MOD}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
-&\inference[$\text{MOD}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+&\inference[$\text{MOD}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
 &
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
 										{, v_1 \;\; \textrm{mod} \;\; v_2 = v}
 \\\\
-&\inference[$\text{POW}_\text{L}$]{e,s \vdash a_1  \Rightarrow_A a_1'}
-                    {e,s \vdash a_1 \; ^\wedge{} \; a_2 \Rightarrow_A a_1' P a_2}
+&\inference[$\text{POW}_\text{L}$]{e,st \vdash a_1  \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 \; ^\wedge{} \; a_2 \Rightarrow_A a_1' P a_2}
 &
-&\inference[$\text{POW}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_2 \; ^\wedge{} \; a_1 \Rightarrow_A a_2 P a_1'}
+&\inference[$\text{POW}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 \; ^\wedge{} \; a_1 \Rightarrow_A a_2 P a_1'}
 &
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \; ^\wedge{} \; v_2 \Rightarrow_A v}
 										{, v_1 ^ {v_2} = v}
 \\\\
-&\inference[$\text{ROOT}_\text{L}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&\inference[$\text{ROOT}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
 &
-&\inference[$\text{ROOT}_\text{R}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                    {e,s \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+&\inference[$\text{ROOT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
 &
 &\inference[$\text{ROOT}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
 										{, \sqrt[v_1]{v_2} = v}
 \\\\
-&\inference[$\text{PARENS}_\text{A}$]{e,s \vdash a_1 \Rightarrow_A a_1'}
-                       {e,s \vdash (a_1) \Rightarrow_A (a_1')}
+&\inference[$\text{PARENS}_\text{A}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                       {e,st \vdash (a_1) \Rightarrow_A (a_1')}
 &
 &\inference[$\text{PARENS}_\text{V}$]{}
                        {(v) \Rightarrow_A v}
 &
 &\inference[$NUM$]{}
-                  {e,s \vdash n \Rightarrow_A v}
+                  {e,st \vdash n \Rightarrow_A v}
 									{, \mathbb{N}(n) = v}
 \end{align*}
 
@@ -91,48 +91,57 @@
 \newcommand{\Txor}{\mathbin{\text{XOR}}}
 
 \begin{align*}
-&\inference[$\text{NOT}_\top$]{e,s \vdash b_1 \Rightarrow_B \top}
-                       {e,s \vdash \Tnot b_1 \Rightarrow_B \bot}
+&\inference[$\text{NOT}_\top$]{e,st \vdash b_1 \Rightarrow_B \top}
+                       {e,st \vdash \Tnot b_1 \Rightarrow_B \bot}
 \\\\
-&\inference[$\text{AND}_1$]{e,s \vdash b_1 \Rightarrow_B \bot}
-                    {e,s \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+&\inference[$\text{AND}_1$]{e,st \vdash b_1 \Rightarrow_B \bot}
+                    {e,st \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
 \\\\
-&\inference[$\text{AND}_2$]{e,s \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
-								    {e,s \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+&\inference[$\text{AND}_2$]{e,st \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+								    {e,st \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
 \\\\
-&\inference[$\text{AND}_3$]{e,s \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
-								    {e,s \vdash b_1 \Tand b_2 \Rightarrow_B \top}
+&\inference[$\text{AND}_3$]{e,st \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+								    {e,st \vdash b_1 \Tand b_2 \Rightarrow_B \top}
 \\\\
 &\inference[NAND]{}
-								   {e,s \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
+								   {e,st \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
 \\\\
 &\inference[OR]{}
-                 {e,s \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
+                 {e,st \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
 \\\\
 &\inference[NOR]{}
-								   {e,s \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \;\; \textrm{OR} \;\; b_2 )}
+								   {e,st \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \;\; \textrm{OR} \;\; b_2 )}
 \\\\
 &\inference[XOR]{}
-                  {e,s \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+                  {e,st \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
 \\\\
-&\inference[$\text{PARENS}_\text{B}$]{e,s \vdash b_1 \Rightarrow_B b_1'}
-                       {e,s \vdash (b_1) \Rightarrow_B (b_1')}
+&\inference[$\text{PARENS}_\text{B}$]{e,st \vdash b_1 \Rightarrow_B b_1'}
+                       {e,st \vdash (b_1) \Rightarrow_B (b_1')}
 \end{align*}
 
 \subsection{Statements}
+\newcommand{\Tlet}{\text{let}}
 \subsubsection{General}
 \begin{align*}
-&\inference[$\text{STATEMENTS}_1$]{\Braket{S_1,e,s} \Rightarrow_S \Braket{S_1',e',s'}}
-                         {\Braket{S_1;S_2,e,s} \Rightarrow_S \Braket{S_1';S_2,e',s'}}
+&\inference[$\text{DECL}$]{}
+                         {\Braket{\Tlet x := a,e,st} \Rightarrow_S \Braket{x := a, e',st}}
+												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 \\\\
-&\inference[$\text{STATEMENTS}_2$]{\Braket{S_1,e,s} \Rightarrow_S \Braket{e',s'}}
-                         {\Braket{S_1;S_2,e,s} \Rightarrow_S \Braket{S_2,e',s'}}
+&\inference[$\text{ASS}$]{e,st \vdash a \Rightarrow_A v}
+                         {\Braket{x := a,e,st} \Rightarrow_S \Braket{e,st'}}
+												{, l = e(x), st' = st[l\mapsto v]}
 \\\\
-&\inference[$\text{BLOCK}_1$]{\Braket{S,e,s} \Rightarrow_S \Braket{S',e',s'}}
-                         {\Braket{\{S\},e,s} \Rightarrow_S \Braket{\{S'\},e',s'}}
+&\inference[$\text{STATEMENTS}_1$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{S_1',e',st'}}
+                         {\Braket{S_1;S_2,e,st} \Rightarrow_S \Braket{S_1';S_2,e',st'}}
 \\\\
-&\inference[$\text{BLOCK}_1$]{\Braket{S,e,s} \Rightarrow_S \Braket{e',s'}}
-                         {\Braket{\{S\},e,s} \Rightarrow_S \Braket{e',s'}}
+&\inference[$\text{STATEMENTS}_2$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{e',st'}}
+                         {\Braket{S_1;S_2,e,st} \Rightarrow_S \Braket{S_2,e',st'}}
+\\\\
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
+                         {\Braket{\{S\},e,st} \Rightarrow_S \Braket{\{S'\},e',st'}}
+\\\\
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{e',st'}}
+                         {\Braket{\{S\},e,st} \Rightarrow_S \Braket{e',st'}}
 \end{align*}
 
 \subsubsection{Conditional}
@@ -141,16 +150,16 @@
 
 \begin{align*}
 &\inference[$\text{IF}_\top$]{b \Rightarrow_B \top}
-                      {\Braket{if(b)\{S\},e,s} \Rightarrow_S \Braket{\{S\},e,s}}
+                      {\Braket{if(b)\{S\},e,st} \Rightarrow_S \Braket{\{S\},e,st}}
 \\\\
 &\inference[$\text{IF}_\bot$]{b \Rightarrow_B \bot}
-                      {\Braket{if(b)\{S\},e,s} \Rightarrow_S \Braket{e,s}}
+                      {\Braket{if(b)\{S\},e,st} \Rightarrow_S \Braket{e,st}}
 \\\\
 &\inference[$\text{IF-ELSE}_\top$]{b \Rightarrow_B \top}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e,s} \Rightarrow_S \Braket{\{S_1\},e,s}}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e,st} \Rightarrow_S \Braket{\{S_1\},e,st}}
 \\\\
 &\inference[$\text{IF-ELSE}_\bot$]{b \Rightarrow_B \bot}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e,s} \Rightarrow_S \Braket{\{S_2\},e,s}}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e,st} \Rightarrow_S \Braket{\{S_2\},e,st}}
 \end{align*}
 \subsubsection{Loop}
 \newcommand{\Tfor}{\mathbin{\text{for}}}
@@ -159,24 +168,29 @@
 \newcommand{\Twhile}{\mathbin{\text{while}}}
 
 \begin{align*}
-&\inference[$\text{WHILE}_\top$]{e,s \vdash b \Rightarrow_B \top}
-                       {\Braket{\Twhile(b)\{S\},e,s} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},e,s}}
+&\inference[$\text{WHILE}_\top$]{e,st \vdash b \Rightarrow_B \top}
+                       {\Braket{\Twhile(b)\{S\},e,st} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},e,st}}
 \\\\
-&\inference[$\text{WHILE}_\bot$]{e,s \vdash b \Rightarrow_B \bot}
-                       {\Braket{\Twhile(b)\{S\},e,s} \Rightarrow_S \Braket{e,s}}
+&\inference[$\text{WHILE}_\bot$]{e,st \vdash b \Rightarrow_B \bot}
+                       {\Braket{\Twhile(b)\{S\},e,st} \Rightarrow_S \Braket{e,st}}
 \\\\
 &\inference[$\text{FOR}_1$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e,s} \Rightarrow_S \Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_1,\dots,n_m]\{S\},e',s}}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e,st} \Rightarrow_S \Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_1,\dots,n_m]\{S\},e',st}}
 \\
 &\mathbin{\text{where}} l = e(next), e' = e[x\mapsto l,next\mapsto new(l)]
 \\\\
 &\inference[$\text{FOR}_2$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e,s} \Rightarrow_S \Braket{\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e,s[l\mapsto v_1]}}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e,st} \Rightarrow_S \Braket{\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e,s[l\mapsto v_1]}}
 \\
-&\mathbin{\text{where}} e,s \vdash n_1 \Rightarrow_A v_1,e(x)=l
+&\mathbin{\text{where}} e,st \vdash n_1 \Rightarrow_A v_1,e(x)=l
 \\\\
 &\inference[$\text{FOR}_3$]{}
                        {\Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_m]\{S\},e,s} \Rightarrow_S \Braket{\{S\},e,s[l\mapsto v_m]}}
 \\
-&\mathbin{\text{where}} e,s \vdash n_m \Rightarrow_A v_m,e(x)=l
+&\mathbin{\text{where}} e,st \vdash n_m \Rightarrow_A v_m,e(x)=l
+\end{align*}
+
+\subsubsection{Misc}
+\begin{align*}
+
 \end{align*}
