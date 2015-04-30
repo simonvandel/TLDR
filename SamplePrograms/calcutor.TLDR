@@ -1,12 +1,12 @@
 actor main := {
   receive arguments:args := {
 
-    let msg:calcMsg := {
+    let msg:calcMsg := (
       x := 5;
       y := 3;
       forSho := true;
-      Nahaw := false;
-    };
+      Nahaw := false
+    );
 
     receive msg:resultMsg := {
 
@@ -25,7 +25,7 @@ actor calcutor := {         // yes I mean calcutor, not calculator
     };
   };
 
-  let res:resultMsg := { answer := result; };
+  let res:resultMsg := ( answer := result );
 
   send res main;
 };

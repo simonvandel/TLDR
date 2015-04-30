@@ -10,7 +10,7 @@ open System.IO
 module Main =
     [<EntryPoint>]
     let main argv = 
-        let input = File.ReadAllText "../../../../../SamplePrograms/fixerFix.tldr"
+        let input = File.ReadAllText "../../../../../SamplePrograms/calcutor.tldr"
 
         let res = parse input "../../grammar.gram"  //Generates hime AST
                 >>= fun tree -> Success (toAST tree)
