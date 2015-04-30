@@ -54,6 +54,9 @@ module AST =
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list // functionName, parameters
+        | Return of AST // body
+        | Kill of AST // whatToKill
+        | Me
 
     and Identifier =
         | SimpleIdentifier of string // x
@@ -339,6 +342,14 @@ module AST =
                                               |> Seq.map PrimitiveValue.Char
                                               |> List.ofSeq
             Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List chars)
+        | "Return" ->
+            let expr = toAST (root.Children.Item 0)
+            Return expr
+        | "Kill" ->
+            let expr = toAST (root.Children.Item 0)
+            Kill expr
+        | "Me" ->
+            Me
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             failwith "not all cases matched in toAST"

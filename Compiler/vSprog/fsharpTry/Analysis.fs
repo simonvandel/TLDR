@@ -181,6 +181,9 @@ module Analysis =
               do! buildSymbolTable body
               do! closeScope
             }
+        | Kill (arg) -> SameState getState
+        | Me -> SameState getState
+        | Return (arg) -> SameState getState
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
@@ -208,13 +211,15 @@ module Analysis =
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
       Success (SimplePrimitive Primitive.Int)
 
-    let checkReass (symTable:SymbolTable) : Result<unit> = 
-        //printfn "%A" symTable
-        
-        symTable 
-        |> List.filter (fun entry -> entry.statementType = Reass)
-        |> printfn "%A"
-        Success ()
+    let checkReass symTable = 
+      //printfn "%A" symTable
+      let res = symTable |> 
+                  List.filter (fun entry -> entry.statementType = Reass) |>
+                    List.filter (fun entry -> entry.symbol.isMutable = false) |>
+                      List.map (fun e -> Failure [sprintf "Invalid reassignment, %A is not mutable" e.symbol.identity.ToString])
+      match res with
+      | [] -> Success symTable
+      | xs -> sumResults xs
 
     let analyse (ast:AST) : Result<AST> = 
         printfn "%A" ast

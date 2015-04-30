@@ -1,0 +1,18 @@
+actor main := {
+  receive arguments:args := {
+
+    let x:int := 5;
+    let y:int := x;
+
+    let z:int := y + x + 3 * 5 + 1 - 2 / 2;
+
+    if(z <= 25 AND z > 5){
+      print("Expected");
+    }
+    else{
+      print("Not expected");
+    }
+  }
+}
+
+// z is expected to be 25
