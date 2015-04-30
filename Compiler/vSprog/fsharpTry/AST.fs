@@ -159,9 +159,8 @@ module AST =
         | "NAND" -> Nand
         | err -> failwith (sprintf "Not implemented yet %s" err)
 
-    let astNodeAccess (childIds:int list) (startNode:ASTNode) : ASTNode =
-        childIds
-        |> List.fold (fun node n -> node.Children.Item n) startNode
+    let getChildByIndexes (childIds:int list) (startNode:ASTNode) : ASTNode = // Access a specific child in a tree with index[n,m,..,z]
+        List.fold (fun node n -> node.Children.Item n) startNode childIds
 
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
@@ -172,30 +171,26 @@ module AST =
             let t = traverseChildren root
             Body t
         | "Block" -> 
-            let t =traverseChildren root
+            let t = traverseChildren root
             Block t
         | "Initialisation" ->
-            let name = toAST (astNodeAccess [1;0] root)
-            let typeName = (astNodeAccess [1;1] root)
+            let name = toAST (getChildByIndexes [1;0] root)
+            let typeName = (getChildByIndexes [1;1] root)
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
             Initialisation (lhs, rhs)
         | "Assignment" ->
             let mutability = toMutability (root.Children.Item 0)
-            let name = match toAST (astNodeAccess [1;0] root) with
+            let name = match toAST (getChildByIndexes [1;0] root) with
                        | Identifier (SimpleIdentifier str) -> str
                        | err -> failwith (sprintf "This should never be reached: %A" err)
             let rhs = toAST (root.Children.Item 2)
             Assignment (mutability, name, rhs)
         | "Reassignment" ->
-            let assignables = match toAST (root.Children.Item 0) with
-                              | Identifier id -> id
-                              | err -> failwith (sprintf "This should never be reached: %A" err)
-                                (*seq { for c in (root.Children.Item 0).Children do
-
-                                          yield (c.Children.Item 0).Symbol.Value
-                                 }
-                              |> List.ofSeq *)
+            let assignables = 
+                match toAST (root.Children.Item 0) with
+                | Identifier id -> id
+                | err -> failwith (sprintf "This should never be reached: %A" err)
             let body = toAST (root.Children.Item 1)
             Reassignment (assignables, body)
         | "Integer" ->
@@ -205,7 +200,7 @@ module AST =
             let value = PrimitiveValue.Real ( float ((root.Children.Item 0).Symbol.Value))
             Constant (SimplePrimitive (Primitive.Real), value) // FIXME: lav en real type. Lige nu bliver værdien af real konstanten ikke gemt
         | "Actor" ->
-            let name = (astNodeAccess [0;0] root).Symbol.Value
+            let name = (getChildByIndexes [0;0] root).Symbol.Value
             let block = toAST (root.Children.Item 1)
             Actor (name, block)
         | "If" ->
@@ -213,12 +208,12 @@ module AST =
             let body = toAST (root.Children.Item 1)
             If (conditional, body)
         | "Boolean" ->
-            let value = match (root.Children.Item 0).Symbol.Value with
-                        | "true" -> true
-                        | "false" -> false
-                        | _ -> failwith "Something terribly went wrong in toAST boolean. This should never be reached."
+            let value = 
+                match (root.Children.Item 0).Symbol.Value with
+                | "true" -> true
+                | "false" -> false
+                | _ -> failwith "Something terribly went wrong in toAST boolean. This should never be reached."
             Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool value)
-
         | "Struct" ->
             let name = ((root.Children.Item 0).Children.Item 0).Symbol.Value
             if root.Children.Count = 1 then
@@ -226,43 +221,43 @@ module AST =
             else
                 match (root.Children.Item 1).Symbol.Value with
                 | "TypeDecl" -> 
-                    let fieldName = (astNodeAccess [1;0;0] root).Symbol.Value
-                    let typeName = astNodeAccess [1;1;0;0] root
+                    let fieldName = (getChildByIndexes [1;0;0] root).Symbol.Value
+                    let typeName = getChildByIndexes [1;1;0;0] root
                     Struct (name, [(fieldName, toPrimitiveType typeName)])
                 | "TypeDecls" ->
-                    let blocks = seq { for c in (root.Children.Item 1).Children do
-                                          let fieldName = (astNodeAccess [0;0] c).Symbol.Value
-                                          let typeName = astNodeAccess [1;0;0] c
-                                          yield (fieldName, toPrimitiveType typeName)                        
-                                 }
-                                 |> List.ofSeq
+                    let blocks = 
+                        [for c in (root.Children.Item 1).Children do
+                            let fieldName = (getChildByIndexes [0;0] c).Symbol.Value
+                            let typeName = getChildByIndexes [1;0;0] c
+                            yield (fieldName, toPrimitiveType typeName)
+                        ]                        
                     Struct (name, blocks)
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
-            let actorHandle = (astNodeAccess [0;0] root).Symbol.Value
-            let msg = (astNodeAccess [1;0;0] root).Symbol.Value
+            let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
+            let msg = (getChildByIndexes [1;0;0] root).Symbol.Value
             Send (actorHandle, msg)
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
-            let name = toAST (astNodeAccess [1;0] root)
-            let typeName = (astNodeAccess [1;1;0;0] root)
+            let name = toAST (getChildByIndexes [1;0] root)
+            let typeName = (getChildByIndexes [1;1;0;0] root)
             let lhs = toLValue mutability name typeName
-            let actorName = (astNodeAccess [2;0] root).Symbol.Value
-            let initMsg = toAST (astNodeAccess [3;0] root)
+            let actorName = (getChildByIndexes [2;0] root).Symbol.Value
+            let initMsg = toAST (getChildByIndexes [3;0] root)
             Spawn (lhs, actorName, initMsg)
         | "Receive" ->
-            let msgName = (astNodeAccess [0;0;0] root).Symbol.Value
-            let msgType = toPrimitiveType (astNodeAccess [0;1;0;0] root)
+            let msgName = (getChildByIndexes [0;0;0] root).Symbol.Value
+            let msgType = toPrimitiveType (getChildByIndexes [0;1;0;0] root)
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
-            let counterName = (astNodeAccess [0;0;0] root).Symbol.Value
+            let counterName = (getChildByIndexes [0;0;0] root).Symbol.Value
             let list = toAST (root.Children.Item 1)
             let body = toAST (root.Children.Item 2)
             ForIn (counterName, list, body)
         | "ListRange" ->
-            let start = int (astNodeAccess [0;0;0;0] root).Symbol.Value
-            let end' = int (astNodeAccess [0;1;0;0] root).Symbol.Value
+            let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
+            let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
             ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
         | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
             match (root.Children.Count) with
@@ -280,18 +275,19 @@ module AST =
                 toAST (root.Children.Item 0)
             | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Identifier" ->
-            match root.Children.Count with
+            match root.Children.Count with // Identifier can only can only take 2 forms, IDENTIER or IDENTIFIER Accessor 
             | 1 -> Identifier (SimpleIdentifier (root.Children.Item 0).Symbol.Value)
             | 2 -> 
                 let ids = Seq.unfold (fun (node:ASTNode) -> 
                                         match node.Children.Count with
                                         | 0 -> None
-                                        | _ -> Some ((node.Children.Item 0).Symbol.Value, (node.Children.Item 1))) 
+                                        | _ -> Some ((node.Children.Item 0).Symbol.Value, (node.Children.Item 1))
+                                     ) 
                                         root
                           |> List.ofSeq
-                Identifier (IdentifierAccessor ids)
+                Identifier (IdentifierAccessor ids) // Subject to change....
         | "Function" ->
-            let funcName = (astNodeAccess [0;0] root).Symbol.Value
+            let funcName = (getChildByIndexes [0;0] root).Symbol.Value // [0;0] is a list of 0 and 0, for accessing child 0,0 which is the identifier, the name of the function
             if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
                 let args = []
                 let types = seq { for c in (root.Children.Item 1).Children do   
@@ -318,7 +314,7 @@ module AST =
                 let body = toAST (root.Children.Item 3)
                 Function (funcName, args, types, body)
         | "Invocation" ->
-            let funcName = (astNodeAccess [0;0] root).Symbol.Value
+            let funcName = (getChildByIndexes [0;0] root).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
                 Invocation (funcName, [])
             else
@@ -329,7 +325,7 @@ module AST =
                 Invocation (funcName, parameters)
         | "StructLiteral" ->
             let fields = seq { for c in root.Children do
-                                let fieldName1 = (astNodeAccess [0;0] c).Symbol.Value
+                                let fieldName1 = (getChildByIndexes [0;0] c).Symbol.Value
                                 let fieldValue1 = toAST (c.Children.Item 1)
                                 yield (fieldName1, fieldValue1)               
                              }
@@ -348,5 +344,5 @@ module AST =
             failwith "not all cases matched in toAST"
 
     and traverseChildren (root:ASTNode) : AST list =
-        List.ofSeq (seq { for i in root.Children -> i})
-            |> List.map toAST
+        [for i in root.Children -> i]
+            |> List.map toAST // Call toAST for all children and return the list of all children

@@ -12,15 +12,10 @@ module Main =
     let main argv = 
         let input = File.ReadAllText "../../calcutor.tldr"
 
-        let lift m = Success m
-
-        let res = parse input "../../grammar.gram"           //Generates hime AST
-                  >>= (fun parseTree -> 
-                                        //printTree parseTree 0
-                                        lift (toAST parseTree))
-                  >>= fun ast -> //printfn "%A" ast
-                                 Success ast
-                  >>= analyse
+        let res = parse input "../../grammar.gram"  //Generates hime AST
+                >>= fun tree -> Success (toAST tree)
+                //>>= fun ast -> Success ast  // Gør den noget?
+                >>= analyse
 
         match res with
         | Success _ -> printfn "success"
