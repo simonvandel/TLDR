@@ -1,0 +1,45 @@
+actor main := {
+
+  var counter:int := 0;
+
+  receive arguments:args := {
+    felix:fixxer := spawn fixxer;
+
+    for i in [0 .. 100] {
+      let fixmsg:fixermsg := { id := i; };
+
+      send fixmsg felix;
+    }
+  }
+
+  receive msg:flipflagMsg := {
+    print("At least one still lives");
+
+    let fixmsg:fixermsg := { id := counter; };
+    counter := counter + 1;
+
+    send fixmsg msg.handle;
+  }
+}
+
+actor fixxer := {  
+  recieve msg:fixerMsg := {
+    if(msg.id % 5 = 0) {
+
+      let msg:flipflagMsg := { handle := me; };
+      send msg main;
+
+    }
+    else {
+      kill(me);
+    }
+  }
+}
+
+struct fixerMsg := {
+  id:int;  
+}
+
+struct flipflagMsg := {
+  handle:fixxer;
+}
