@@ -9,10 +9,10 @@ actor main := {
     if(z >= 25 OR z < 5){
       print("Expected");
     }
-    else{
+    else {
       print("Not expected");
     }
-  }
-}
+  };
+};
 
 // z is expected to be 25

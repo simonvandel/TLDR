@@ -8,7 +8,7 @@ grammar vSprogGrammar{
   terminals{
     NEW_LINE      -> U+000D | U+000A | U+000D U+000A | U+2028 |  U+2029;
     WHITE_SPACE   -> U+0020 | U+0009 | U+000B | U+000C;
-    COMMENT_LINE  -> '//' (.* - (.* NEW_LINE .*)) NEW_LINE;
+    COMMENT_LINE  -> '//' (.* - (.* NEW_LINE .*)) NEW_LINE?;
     COMMENT_BLOCK -> '/*' (.* - (.* '*/' .*)) '*/';
     SEPARATOR     -> (NEW_LINE | WHITE_SPACE| COMMENT_LINE | COMMENT_BLOCK)+;
 
