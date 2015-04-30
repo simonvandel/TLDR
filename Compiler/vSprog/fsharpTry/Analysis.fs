@@ -181,6 +181,9 @@ module Analysis =
               do! buildSymbolTable body
               do! closeScope
             }
+        | Kill (arg) -> SameState getState
+        | Me -> SameState getState
+        | Return (arg) -> SameState getState
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
