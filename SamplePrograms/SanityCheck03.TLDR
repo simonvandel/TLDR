@@ -1,0 +1,19 @@
+actor main := {
+  receive arguments:args := {
+
+    var x:int := 5;
+    let y:int := x;
+    x := 10;
+
+    let z:int := y * x;
+
+    if(z = 50 OR z = 50){
+      print("Expected");
+    }
+    else{
+      print("Not expected");
+    }
+  }
+}
+
+// z is expected to be 50

@@ -1,0 +1,13 @@
+actor main := {
+  receive arguments:args := {
+
+    if( 3#{5^3} NAND 5){
+      print("Not expected");
+    }
+    else{
+      print("Expected");
+    }
+  }
+}
+
+// root should cancel out power
