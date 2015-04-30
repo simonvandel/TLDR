@@ -137,17 +137,50 @@ module Analysis =
               do! addEntry entry
             }
         | Constant (ptype, value)-> SameState getState
-        | If (condition, body) -> SameState getState
+        | If (condition, body) -> 
+          state 
+            {
+              do! openScope
+              do! buildSymbolTable body
+              do! closeScope
+            }
         | Send (actorName, msgName) -> SameState getState
         | Spawn (lvalue, actorName, initMsg) -> SameState getState
-        | Receive (msgName, msgType, body) -> SameState getState
-        | ForIn (counterName, list, body) -> SameState getState
+        | Receive (msgName, msgType, body) -> 
+          state 
+            {
+              do! openScope
+              do! buildSymbolTable body
+              do! closeScope
+            }
+        | ForIn (counterName, list, body) -> 
+          state 
+            {
+              do! openScope
+              do! buildSymbolTable body
+              do! closeScope
+            }
         | ListRange content -> SameState getState
         | BinOperation (lhs, op, rhs) -> SameState getState
         | Identifier id -> SameState getState
-        | Function (funcName, arguments, types, body) -> SameState getState
+        | Function (funcName, arguments, types, body) -> 
+          state 
+            {
+              do! openScope
+              do! buildSymbolTable body
+              do! closeScope
+            }
         | StructLiteral fieldNamesAndVals -> SameState getState
         | Invocation (functionName, parameters) -> SameState getState
+        | UnaryOperation (op, rhs) -> SameState getState
+        | BinOperation (lhs, op, rhs) -> SameState getState
+        | While (cond, body) ->
+          state 
+            {
+              do! openScope
+              do! buildSymbolTable body
+              do! closeScope
+            }
       
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
