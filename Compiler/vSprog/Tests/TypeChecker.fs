@@ -6,15 +6,15 @@ open vSprog.Analysis
 open vSprog.Parser
 open vSprog.AST
 open vSprog.CommonTypes
+open AnalysisUtils
 
 module TypeCheckerTest =
-
-    let typecheckWith (input:string) (typecheckFun:AST -> Result<PrimitiveType>) : Result<PrimitiveType> =
+    let typecheckWith (input:string) (typecheckFun:AST -> SymbolTable -> Result<PrimitiveType>) : Result<PrimitiveType> =
         parse input "../../../fsharpTry/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun ast -> match ast with
                       | Success ast' -> 
-                            let result = typecheckFun ast'
+                            let result = typecheckFun ast' (evalState (buildSymbolTable ast') {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}).symbolList
                             printfn "%A" result
                             result
                       | Failure msg  -> failwith (String.concat "" msg)

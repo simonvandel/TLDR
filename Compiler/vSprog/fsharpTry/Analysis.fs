@@ -181,20 +181,17 @@ module Analysis =
               do! buildSymbolTable body
               do! closeScope
             }
-      
+
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
         // for hver dupliket a, se om dupliketter b, har b.scope.outer = a.scope eller b.scope = a.scope
         // første entry af a: er nogen i samme scope af dem under mig i listen?
-        let res = symbolTable
-                    |> Seq.groupBy (fun entry -> entry.symbol.identity)
-                    |> Seq.map (fun (key, entries) -> (key, List.ofSeq entries))
-                    |> Seq.filter (fun (key, entries) -> isInSameScope entries)
-                    |> Seq.map(fun (key, entries) -> (key, entries |> List.filter(fun e -> e.statementType <> Reass)))
-                    |> Seq.filter (fun (key, entries) -> entries |> Seq.length > 1)
-                    |> Seq.map (fun (key, _) ->
-                              Failure [sprintf "Symbol \"%A\" declared multiple times in same scope." key])
-                    |> List.ofSeq
+        let mutable res:Result<SymbolTable> list = []
+        let NoReass = symbolTable |> List.filter (fun e -> e.statementType <> Reass)
+        for i in NoReass do
+          let seq = List.filter (fun e -> isVisible i e && i.symbol.identity = e.symbol.identity && i <> e && e.statementType <> Reass) symbolTable
+          if seq.Length > 0 then 
+            res <- Failure [sprintf "Element %A hides %A" i res] :: res
 
         match res with
         | [] -> Success symbolTable

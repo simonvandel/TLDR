@@ -14,6 +14,7 @@ open vSprog.AST
         level:int list
     }
 
+    [<ReferenceEquality>]
     type SymbolTableEntry = {
         symbol: LValue
         statementType:StatementType
@@ -92,3 +93,14 @@ open vSprog.AST
             //|> List.map (fun elem -> Failure [sprintf "Symbol %s already declared in scope" elem.symbol.identity])
             |> fun x -> x ||  isInSameScope xs
 
+    //Takes two symbolTableEntries and checks that the second is visible to the first
+    let isVisible (persp:SymbolTableEntry) (obj:SymbolTableEntry) : bool =
+      let mutable matches:bool = true
+      if persp.scope.level.Length < obj.scope.level.Length then
+        matches <- false
+
+      let zippedList = Seq.zip persp.scope.level obj.scope.level
+      for i in zippedList do
+        if fst i <> snd i then
+          matches <- false
+      matches
