@@ -1,0 +1,43 @@
+actor main := {
+  recieve arguments:args := {
+
+    let msg:calcMsg := {
+      x := 5;
+      y := 3;
+      forSho := true;
+      Nahaw := false;
+    };
+
+    receive msg:resultMsg := {
+
+    }
+  }
+}
+
+actor calcutor := {         // yes I mean calcutor, not calculator
+  
+  recieve msg:calcMsg := {
+
+    if( x+x-3 > y*y ) {
+      var result:int := {
+        x + x * y + y;
+      }
+    }
+  }
+
+  res:resultMsg := { answer := result; };
+
+  send res main;
+}
+
+struct calcMsg := {
+  x:int;
+  y:int;
+  forSho:bool;
+  Nahaw:bool;
+
+}
+
+struct resultMsg := {
+  answer:int;
+}
