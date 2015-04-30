@@ -50,3 +50,4 @@ module TypeCheckerTest =
         //|> printfn "%A"
         let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Int))
         res |> should equal expect
+

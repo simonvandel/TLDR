@@ -137,7 +137,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for struct is given with 1 field, expect struct AST``() =
         let fieldInBlock = ("field1", SimplePrimitive Primitive.Int)
-        debugTestParseWith "struct structName := {field1:int}"
+        debugTestParseWith "struct structName := {field1:int;}"
         <| should equal (Program [Body [(Struct ("structName", [ fieldInBlock ]))]])
 
     [<Test>]
@@ -319,3 +319,9 @@ module ParserTest =
         let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
         debugTestParseWith "\"Tub\""
         <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+
+    (* --------------------------- NOT --------------------------- *)
+    [<Test>]
+    let ``When syntax for NOT true, expect  AST`` () =
+        debugTestParseWith "NOT true"
+        <| should equal (Program [Body [ UnaryOperation (Not, Constant (SimplePrimitive Bool, PrimitiveValue.Bool true)) ]])

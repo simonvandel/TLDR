@@ -10,7 +10,7 @@ open System.IO
 module Main =
     [<EntryPoint>]
     let main argv = 
-        let input = File.ReadAllText "../../GoldenCode.bar"
+        let input = File.ReadAllText "../../calcutor.tldr"
 
         let lift m = Success m
 

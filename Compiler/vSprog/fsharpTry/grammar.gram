@@ -164,9 +164,9 @@ grammar vSprogGrammar{
                       | Reassignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    TypeDecls        -> TypeDecls SEMICOLON! TypeDecl SEMICOLON!
-                      | TypeDecls SEMICOLON!
-                      | TypeDecl^;
+    TypeDecls        -> //TypeDecls SEMICOLON! TypeDecl SEMICOLON!
+                      TypeDecl SEMICOLON! TypeDecls
+                      | TypeDecl^ SEMICOLON!;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 

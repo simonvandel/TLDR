@@ -18,25 +18,24 @@ actor calcutor := {         // yes I mean calcutor, not calculator
   
   receive msg:calcMsg := {
 
-    if( x+x-3 > y*y ) {
+    if( msg.x + msg.x - 3 > msg.y * msg.y ) {
       var result:int := {
-        x + x * y + y;
+        msg.x + msg.x * msg.y + msg.y;
       }
-    }
-  }
+    };
+  };
 
-  res:resultMsg := { answer := result; };
+  let res:resultMsg := { answer := result; };
 
   send res main;
-}
+};
 
 struct calcMsg := {
-  x:int;
-  y:int;
-  forSho:bool;
-  Nahaw:bool;
-
-}
+  x : int;
+  y : int;
+  forSho : bool;
+  Nahaw : bool;
+};
 
 struct resultMsg := {
   answer:int;

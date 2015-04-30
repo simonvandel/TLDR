@@ -132,13 +132,31 @@ module AST =
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
 
-    let toOperator (operator:string) : BinOperator =
+    let toUnaryOperator (operator:string) : UnaryOperator =
+        match operator with
+        | "NOT" -> Not
+        | err -> failwith (sprintf "Not implemented yet %s" err)
+
+    let toBinOperator (operator:string) : BinOperator =
         match operator with
         | "+" -> Plus
         | "-" -> Minus
         | "%" -> Modulo
-        | "=" -> Equals
         | "*" -> Multiply
+        | "/" -> Divide
+        | "^" -> Power
+        | "#" -> Root
+        | "=" -> Equals
+        | "!=" -> NotEquals
+        | ">" -> LargerThan
+        | ">=" -> LargerThanOrEq
+        | "<"  -> SmallerThan
+        | "<=" -> SmallerThanOrEq
+        | "AND" -> And
+        | "OR" -> Or
+        | "XOR" -> Xor
+        | "NOR" -> Nor
+        | "NAND" -> Nand
         | err -> failwith (sprintf "Not implemented yet %s" err)
 
     let astNodeAccess (childIds:int list) (startNode:ASTNode) : ASTNode =
@@ -246,13 +264,18 @@ module AST =
             let start = int (astNodeAccess [0;0;0;0] root).Symbol.Value
             let end' = int (astNodeAccess [0;1;0;0] root).Symbol.Value
             ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
-        | ("Factor" | "Term" | "Operation") ->
+        | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
             match (root.Children.Count) with
             | 3 -> 
                 let operation = toAST (root.Children.Item 0)
-                let operator = toOperator (root.Children.Item 1).Symbol.Value
+                let operator = toBinOperator (root.Children.Item 1).Symbol.Value
                 let operand = toAST (root.Children.Item 2)
                 BinOperation (operation, operator, operand)
+            | 2 -> 
+                 let operation = toUnaryOperator (root.Children.Item 0).Symbol.Value
+                 let body = toAST (root.Children.Item 1)
+                 UnaryOperation (operation, body)
+                 // UNARY operator
             | 1 -> 
                 toAST (root.Children.Item 0)
             | err -> failwith (sprintf "This should never be reached: %A" err)
@@ -306,7 +329,7 @@ module AST =
                 Invocation (funcName, parameters)
         | "StructLiteral" ->
             let fields = seq { for c in root.Children do
-                                let fieldName1 = (c.Children.Item 0).Symbol.Value
+                                let fieldName1 = (astNodeAccess [0;0] c).Symbol.Value
                                 let fieldValue1 = toAST (c.Children.Item 1)
                                 yield (fieldName1, fieldValue1)               
                              }
