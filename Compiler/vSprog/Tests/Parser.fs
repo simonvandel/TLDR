@@ -322,6 +322,18 @@ module ParserTest =
 
     (* --------------------------- NOT --------------------------- *)
     [<Test>]
-    let ``When syntax for NOT true, expect  AST`` () =
+    let ``When syntax for NOT true, expect UnaryOperation NOT AST`` () =
         debugTestParseWith "NOT true"
         <| should equal (Program [Body [ UnaryOperation (Not, Constant (SimplePrimitive Bool, PrimitiveValue.Bool true)) ]])
+
+    (* --------------------------- Return --------------------------- *)
+    [<Test>]
+    let ``When syntax for return with value true, expect return AST`` () =
+        debugTestParseWith "return true"
+        <| should equal (Program [Body [ Return (Constant (SimplePrimitive Bool, PrimitiveValue.Bool true)) ]])
+
+    (* --------------------------- Kill & me --------------------------- *)
+    [<Test>]
+    let ``When syntax for kill/me, expect kill + me AST`` () =
+        debugTestParseWith "kill me;"
+        <| should equal (Program [Body [ Kill Me ]])
