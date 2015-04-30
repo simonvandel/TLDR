@@ -28,5 +28,4 @@ module Main =
             printfn "Errors:"
             errs |> List.iter (printfn "%s")
 
-        System.Console.ReadLine()
         0 // return an integer exit code
