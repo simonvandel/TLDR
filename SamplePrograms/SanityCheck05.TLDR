@@ -1,19 +1,12 @@
 actor main := {
   receive arguments:args := {
-
-    var x:int := 5;
-    let y:int := x;
-    x := 10;
-
-    let z:int := y * x;
-
-    if(z = 50 OR z = 50){
-      print("Expected");
+    let x:int := 2;
+    if (x < 0) {
+      print("x is greater than 0");
+    } else {
+      print("hej");
     }
-    else{
-      print("Not expected");
-    }
-  }
-}
+  };
+};
 
-// z is expected to be 50
+// prints "can print!"

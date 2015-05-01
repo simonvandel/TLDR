@@ -74,10 +74,10 @@ module AST =
         | Root
         | Equals
         | NotEquals
-        | LargerThan
-        | LargerThanOrEq
-        | SmallerThan
-        | SmallerThanOrEq
+        | GreaterThan
+        | GreaterThanOrEq
+        | LessThan
+        | LessThanOrEq
         | And
         | Or
         | Xor
@@ -152,10 +152,10 @@ module AST =
         | "#" -> Root
         | "=" -> Equals
         | "!=" -> NotEquals
-        | ">" -> LargerThan
-        | ">=" -> LargerThanOrEq
-        | "<"  -> SmallerThan
-        | "<=" -> SmallerThanOrEq
+        | ">" -> GreaterThan
+        | ">=" -> GreaterThanOrEq
+        | "<"  -> LessThan
+        | "<=" -> LessThanOrEq
         | "AND" -> And
         | "OR" -> Or
         | "XOR" -> Xor
@@ -330,8 +330,11 @@ module AST =
             if root.Children.Count = 1 then // no parameters                
                 Invocation (funcName, [])
             else
-                let parameters = seq { for c in (root.Children.Item 1).Children do   
-                                        yield (getChildByIndexes [0;0] c).Symbol.Value                 
+                let parameters = seq { for c in (root.Children.Item 1).Children do
+                                        let rawParam = (getChildByIndexes [0;0] c).Symbol.Value
+                                        // trim quotation marks at start and end
+                                        let param = rawParam.Substring(1,rawParam.Length-2)
+                                        yield param          
                                      }
                                  |> List.ofSeq
                 Invocation (funcName, parameters)

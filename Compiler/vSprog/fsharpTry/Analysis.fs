@@ -173,7 +173,6 @@ module Analysis =
         | StructLiteral fieldNamesAndVals -> SameState getState
         | Invocation (functionName, parameters) -> SameState getState
         | UnaryOperation (op, rhs) -> SameState getState
-        | BinOperation (lhs, op, rhs) -> SameState getState
         | While (cond, body) ->
           state 
             {

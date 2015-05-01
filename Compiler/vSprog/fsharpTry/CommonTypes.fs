@@ -27,11 +27,6 @@ module CommonTypes =
     // State --------------------------------------------
     type State<'a, 's> = State of ('s -> 'a * 's)
 
-
-    let getState = State (fun s -> (s,s))
-    let putState newState = State (fun _ -> (), newState)
-
-
     let runState (State s) initState = s initState // return both value and state
     let execState s initState = runState s initState |> fst // return value
     let evalState s initState = runState s initState |> snd // return state
@@ -43,6 +38,10 @@ module CommonTypes =
                 in
                 runState (f firstVal) newState
                 )
+        
         member this.Return(x) = State (fun s -> (x,s))
 
     let state = new StateBuilder()
+
+    let getState = State (fun s -> (s,s))
+    let putState newState = State (fun _ -> (), newState)

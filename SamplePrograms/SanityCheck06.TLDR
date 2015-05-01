@@ -1,0 +1,7 @@
+actor main := {
+  receive arguments:args := {
+    print("can print!");
+  };
+};
+
+// prints "can print!"
