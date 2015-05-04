@@ -213,11 +213,16 @@ The formal semantics will also use the environment-store model.
 \newcommand{\Tspawn}{\mathbin{\text{spawn}}}
 \newcommand{\Tsend}{\mathbin{\text{send}}}
 \begin{align*}
-&\inference[$\text{SPAWN}_1$]{}
+&\inference[$\text{SPAWN}$]{}
                        {\Braket{\Tspawn \Tx m,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
 												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 \\\\
-&\inference[$\text{SEND}_1$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{S,e',st'}}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e,st} \Rightarrow_S \Braket{\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e,s[l\mapsto v_1]}}
+&\inference[$\text{SEND}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
+                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
 \\\\
+&\inference[$\text{SEND}_2$]{\Braket{S,e,st} \Rightarrow_S \Braket{e',st'}}
+                       {\Braket{\Tsend \Tx m,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
+\\\\
+&\inference[$\text{SEND}_3$]{}
+                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.m(m),e',st}}
 \end{align*}
