@@ -25,7 +25,7 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{ADD}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
 										{e,st \vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
-&
+\\\\
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
 										{, v_1 + v_2 = v}
@@ -35,7 +35,7 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{SUB}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
-&
+\\\\
 &\inference[$\text{SUB}_\text{V}$]{}
                     {v_1 - v_2 \Rightarrow_A v}
 										{, v_1 - v_2 = v}
@@ -45,7 +45,7 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{MULT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                      {e,st \vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
-&
+\\\\
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
 										 {, v_1 * v_2 = v}
@@ -55,7 +55,7 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{DIV}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
-&
+\\\\
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
 										{, \frac{v_1}{v_2} = v}
@@ -65,17 +65,18 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{MOD}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
-&
+\\\\
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
 										{, v_1 \;\; \textrm{mod} \;\; v_2 = v}
-\\\\
+\end{align*}
+\begin{align*}
 &\inference[$\text{POW}_\text{L}$]{e,st \vdash a_1  \Rightarrow_A a_1'}
                     {e,st \vdash a_1 \; ^\wedge{} \; a_2 \Rightarrow_A a_1' P a_2}
 &
 &\inference[$\text{POW}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 \; ^\wedge{} \; a_1 \Rightarrow_A a_2 P a_1'}
-&
+\\\\
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \; ^\wedge{} \; v_2 \Rightarrow_A v}
 										{, v_1 ^ {v_2} = v}
@@ -85,8 +86,18 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{ROOT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
-&
+\\\\
 &\inference[$\text{ROOT}_\text{V}$]{}
+                    {v_1 \# v_2 \Rightarrow_A v}
+										{, \sqrt[v_1]{v_2} = v}
+\\\\
+&\inference[$\text{EQALS}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&
+&\inference[$\text{EQALS}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+\\\\
+&\inference[$\text{EQALS}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
 										{, \sqrt[v_1]{v_2} = v}
 \\\\
@@ -95,10 +106,14 @@ The formal semantics will also use the environment-store model.
 &
 &\inference[$\text{PARENS}_\text{V}$]{}
                        {(v) \Rightarrow_A v}
-&
+\\\\
 &\inference[$NUM$]{}
                   {e,st \vdash n \Rightarrow_A v}
 									{, \mathbb{N}(n) = v}
+&
+&\inference[$VAR$]{}
+                  {e,st \vdash x \Rightarrow_A v}
+									{,e(x) = l, st(l) = v}
 \end{align*}
 
 \subsection{Boolean Expressions}
@@ -168,17 +183,21 @@ The formal semantics will also use the environment-store model.
 \newcommand{\Telse}{\text{else}}
 
 \begin{align*}
-&\inference[$\text{IF}_\top$]{b \Rightarrow_B \top}
+&\inference[$\text{IF}_\top$]{}
                       {\Braket{if(b)\{S\},e,st} \Rightarrow_S \Braket{\{S\},e,st}}
+											{,b \Rightarrow_B \top}
 \\\\
-&\inference[$\text{IF}_\bot$]{b \Rightarrow_B \bot}
+&\inference[$\text{IF}_\bot$]{}
                       {\Braket{if(b)\{S\},e,st} \Rightarrow_S \Braket{e,st}}
+											{,b \Rightarrow_B \bot}
 \\\\
-&\inference[$\text{IF-ELSE}_\top$]{b \Rightarrow_B \top}
+&\inference[$\text{IF-ELSE}_\top$]{}
                       {\Braket{if(b)\{S_1\}else\{S_2\},e,st} \Rightarrow_S \Braket{\{S_1\},e,st}}
+											{,b \Rightarrow_B \top}
 \\\\
-&\inference[$\text{IF-ELSE}_\bot$]{b \Rightarrow_B \bot}
+&\inference[$\text{IF-ELSE}_\bot$]{}
                       {\Braket{if(b)\{S_1\}else\{S_2\},e,st} \Rightarrow_S \Braket{\{S_2\},e,st}}
+											{,b \Rightarrow_B \bot}
 \end{align*}
 \subsubsection{Loop}
 \newcommand{\Tfor}{\mathbin{\text{for}}}
@@ -218,10 +237,10 @@ The formal semantics will also use the environment-store model.
 												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 \\\\
 &\inference[$\text{SEND}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
-                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
+                       {\Braket{\Tsend \Tx m ; S,e,st} \Rightarrow_S \Braket{\Tsend \Tx m;S',e',st'}}
 \\\\
 &\inference[$\text{SEND}_2$]{\Braket{S,e,st} \Rightarrow_S \Braket{e',st'}}
-                       {\Braket{\Tsend \Tx m,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
+                       {\Braket{\Tsend \Tx m;S,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st'}}
 \\\\
 &\inference[$\text{SEND}_3$]{}
                        {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.m(m),e',st}}
