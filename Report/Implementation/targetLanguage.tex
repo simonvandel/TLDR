@@ -1,28 +1,27 @@
 \section{Target Language}
 \label{sec:targetLanguage}
 
-The target language is the language that the compiler translates the source language into. In this section the choice of target language will be described. %Reformuler
+The target language is the language that the compiler translates the source language into. In this section the choice of target language will be described.
 
 \subsection{Choice of target language}
 
-Different language types were considered, stack based and register based languages or C. %Giver ikke mening, det er maskinen der er det og ikke sproget - siger Simon
-Languages with higher levels of abstractions were not an opportunity because of the simplicity of translating one high level language to another. %Expand on this, det var en mulighed vi valgte det bare ikke 
-Creating a compiler from one high level language to another were not assumed complex enough for learning goal of this project. 
+Different language types were considered as the target language of choice: assembly languages such as Java bytecode, CLI and LLVM IR, and languages just a level higher than assembly languages such C.
 
-Following languages were considered:
+Languages with higher levels of abstractions were not an opportunity because the authors of this report did not want to create a \enquote{search-and-replace} compiler. Such a compiler could for example translate a \emph{until} construct in a language to the \emph{do-while} loop of C. Such a compilation would not be much of a challenge.
 
-C:
-C is the only high level language considered because of it's complexcity due to the the lack of memory management. C has a lot of libraries, and are a well known language and are more readable by humans. C was not chosen because it can run different on different platform and machines. %Wat er det en dårlig ting?
+The following target languages were considered:
 
-Java bytecode: 
-java bytecode runs on almost any any java virtual machine (jvm), which makes the language vary cross platform. java bytecode is a instruction and stack based language. Java bytecode has large set of framework and libraries, because alle java and scala libraries can be compiled to java bytecode. All java virtual machines has a garba collector furthermore, in java bytecode it is possible to chose the garbage collections strategy.
-Java and Scala also has a lot of libraries and implementations of thread, which will be used for handling actors.
+\subsubsection{C}
+C is the only high level language considered because of it's complexity due to the the lack of memory management. C has a lot of libraries, is a well known language and is more readable by humans than a assembly language. C was not chosen because compilers interpret data types in different ways on different platforms.
 
-CLI:
-Common language interface are a ir language which C\#, F\# and many more languages targets. The language has garbage collection and primary targets windows machines.  It’s also possible to run it on linux machines but using a virtual machine called mono which seems to be slower and not as cross compatible as jvm. 
-CLI is also very object oriented, everything is forced to be in classes and The Language Described in this Report does not focus on objects. 
+\subsubsection{Java bytecode}
+Java bytecode runs on almost any Java Virtual Machine (JVM), which makes the language very cross-platform. Java bytecode is a instruction and stack based language. Because of its maturity lots of documentation is available. Java bytecode has large set of framework and libraries, because many languages run on the JVM. Many popular implementations exist for the actor model; for example Akka. Scala and Clojure are both examples of languages built upon the JVM. Many implementations of JVMs support garbage collection. Java bytecode was not chosen as the language of choice because its strong connection to the object oriented paradigm. A more paradigm neutral language is preferred, in order to not taint the design of The Language Described in this Report.
 
-LLVM:
-LLVM is an register and instruction based language close to assembly. It has infinitely many named registers, which ensures that no register allocation are needed. Still memory management both on heap and stack has to be handled, without any form of garbage collection. LLVM has a large set of libraries which are compatible, because very many languages can be compiled to LLVM a couple of them are C, cpp, Java, scala and many more, it’s the most used i+r language.  LLVM can be compiled to machine code which makes it a lot faster than the other languages described, it’s also very cross platform. 
+\subsubsection{Common Intermediate Language}
+Common Intermediate Language (CIL) is an Intermediate Language, C\#, F\# and many more languages targets. Common Intermediate Language and Common Language Infrastructure (CLI) have many things in common with Java bytecode and the JVM including support for garbage collection. The specification for CLI is open, so implementations can be made for many platforms. Microsoft has implemented its own CLI implementation called .NET Framework. Support for Linux is given by the Mono implementation. CIL was not chosen for the same reasons as Java bytecode.
 
-LLVM was chosen because of it’s many libraries and very good documentation. It also has a lot in common with x86 assembly which the group are up to some point familiar with. 
+\subsubsection{LLVM}
+LLVM is a register and instruction based language very similar to other assembly languages such as X86. Register allocation is handled automatically, so infinitely many registers can be used in LLVM IR source language. LLVM has support for both explicitly freeing memory and in recent versions gained support for garbage collection hooks. The language reference is very comprehensive and easily understood. LLVM has a large set of libraries which are compatible, because many languages can be compiled to LLVM IR. Frontend compilers to LLVM exist for C, C++, Java etc. LLVM IR is compiled to machine code for architectures that have a LLVM backend written for it.
+
+\subsubsection{Final Choice}
+LLVM was chosen because of it’s many libraries and very good documentation. It also has a lot in common with x86 assembly which the group has had prior experience with.
