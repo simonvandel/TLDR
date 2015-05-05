@@ -44,4 +44,4 @@ module CommonTypes =
     let state = new StateBuilder()
 
     let getState = State (fun s -> (s,s))
-    let putState newState = State (fun _ -> (), newState)
+    let putState newState = State (fun _ -> ((), newState))
