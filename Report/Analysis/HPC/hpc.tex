@@ -1,14 +1,16 @@
 \section{High Performance Computing}
 
-High Performance Computing (from here on, HPC) is a field of computing, where the main objective is performance, often measured in floating point operations per second (FLOPS). The term HPC is typically associated with supercomputers and large distributed system. 
+High Performance Computing (from here on, HPC) is a field of computing, where the main objective is performance, often measured in floating point operations per second (FLOPS). The term HPC is typically associated with supercomputers and large distributed systems. 
 
-HPC is rarely used by your \enquote{average Joe}, but more so by scientists and engineers who need to perform computation on very large data sets or \enquote{big data}, model reality with a lot of detail or calculate very large equations. It is this type of computing that The Language Described in this Report, will focus on.
+HPC is rarely used by your \enquote{average Joe}, but more so by scientists and engineers who need to perform computations on very large data sets or \enquote{big data}, model reality with a lot of detail or calculate very large equations. It is this type of computing that The Language Described in this Report, will focus on.
 
 
 \subsection{Supercomputers and Distributed Systems}
 
-Nearly all platforms for HPC are either supercomputers or distributed systems. Contemporary supercomputers are getting more and more powerful, with the current world leader, the Chinese Tianhe-2, having a theoretical peak performance of almost 55 petaFLOPS [http://www.top500.org/system/177999].
+Nearly all platforms for HPC are either supercomputers or distributed systems. Contemporary supercomputers are getting more and more powerful, with the current world leader, the Chinese Tianhe-2, having a theoretical peak performance of almost 55 petaFLOPS \cite{top500}.
+
 Distributed systems is generally a large group, called a \enquote{cluster}, consisting of computers, referred to as \enquote{nodes}. In these systems, the individual nodes might not be any more powerful than an ordinary desktop computer, but the collective processing power of the whole cluster can rival that of a supercomputer.
+
 A simple cluster could consist of the following nodes:
 \begin{description}
 	\item [Head]
@@ -21,10 +23,10 @@ A simple cluster could consist of the following nodes:
 
 These systems' performance is high, mainly due to their extensive use of parallel computing. This parallelism is achieved, in the case of Tianhe-2, by using MPICH2, one of the most popular implementations of the MPI specification for message passing interfaces. This requires the programmer to consider parallelism when writing the programs. Parallel computing will be described later in the report \kanote{Indsæt reference til rapport}.
 
-
 \subsection{Current Technology}
 
-Even though the hardware used in HPC-systems evolves at a very high rate, unfortunately the same cannot be said for the programming languages used to program the systems. The programming languages almost solely used to program HPC-systems are C and Fortran. At the time of writing, C is 43 years old and Fortran is 58 years old. For any technology related to software to survive this long is quite a feat, but also rather worrying considering its heavy use in HPC, which should be the milestone for efficient programming.
+Even though the hardware used in HPC-systems evolve at a very high rate, unfortunately the same cannot be said for the programming languages used to program the systems. The programming languages almost solely used to program HPC-systems are C and Fortran. At the time of writing, C is 43 years old and Fortran is 58 years old. For any technology related to software to survive this long is quite a feat, but also rather worrying considering its heavy use in HPC, which should be the milestone for efficient programming.
+
 So why is such a critical performance-oriented field still dominated by technologies which are about half a century old? There are three very big factors in why these languages are dominant:
 
 \begin{description}
