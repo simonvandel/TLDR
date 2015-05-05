@@ -11,8 +11,7 @@ For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decis
 
 \subsection{Mutability}
 An functions of computer science, other than return a result, can have a 'side-effect', somehow modifying the state of the outside computation in execution. We can therefore disguingish these functions as being pure or impure, if thus side-effect incurs. In the context of concurrent computating, that this project evolve around, pure function and variables can be benificial for the user to inspect what can change state and what cant. % Heider signin off, cant.
-
-%notes
+Within a function scope 
 effects other parts of the program
 isolate 
 In concurrent computing
