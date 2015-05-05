@@ -1,5 +1,17 @@
-\chapter{Analysis}\kanote{skriv introduktion til analysis}\label{part:analysis}
+\chapter{Problem Domain}\label{part:analysis}
+
+In this chapter of the report, we will expand on our view of the problem domain of simulations, in order to better provide an understanding of our intentions with The Language Described in this Report, and the basis upon which we argue. The chapter will briefly cover reasons for modelling and different aproaches to modelling. Following this is a section on simulations in general, and specific ways of doing theoretical simulations. This also adresses some problems with the creation of computer simulations, and how such a problem can be viewed.
+
 \input{Analysis/Supercomputing/simulation.tex}
+
+
+
+\chapter{Solution Domain}\kanote{dette virker til at være en dårlig navngivning}
+
+In this chapter of the report, we will examine certain technological tools for handling problems within the domain of computer simulations. This will include a section on High Performance Computing, which is the way to do simulations, and how this is done today. Right after the HPC section, a section on parallelism in computer science will follow, since this is the prefered way to operate a HPC-system. This section on parallelism covers the attractiveness of parallelism, as well as the problems which can occur in a prallel system. Then a section of the different memory architectures used in parallelism, and then a section on the usage of MPI.
+
+This all preceeds a section on the Actor Model, and how this modelling method can be used to do simulations, and also where problems can arise.
+
 \input{Analysis/HPC/hpc}
 \input{Analysis/Parallelism.tex}
 \input{Analysis/ParComputerMemoryArchitectures/main.tex}
