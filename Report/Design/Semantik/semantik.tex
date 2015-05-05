@@ -32,15 +32,15 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
                   {e,st \vdash n \Rightarrow_A v}
 									{, \mathcal{N}(n) = v}
 \\\\
-&\inference[$\text{INV}_1$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'},r]} \Rightarrow_S \Braket{S_1',e'}}
+&\inference[$\text{INV}_1$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
                   {\Braket{p_1(p_2),e} \Rightarrow_A \Braket{S_1',e'}}
 \\
 									&{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
 \\\\
-&\inference[$\text{INV}_2$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'},r]} \Rightarrow_S \Braket{e'}}
-                  {\Braket{p_1(p_2),e} \Rightarrow_A \Braket{S_1',e'}}
+&\inference[$\text{INV}_2$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A \Braket{e'}}
 \\
-									&{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+									&{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}, \Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S v}
 \\\\
 &\inference[$\text{PARENS}_\text{A}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                        {e,st \vdash (a_1) \Rightarrow_A (a_1')}
