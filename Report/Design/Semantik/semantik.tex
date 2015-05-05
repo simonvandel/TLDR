@@ -4,7 +4,7 @@ This section describes the semmantics of the constructs in The Language Describe
 \subsection{Formal semantics in The Language Described in this Report}
 To describe the semantics formally it was decided to use small-step semantics. The alternative was big-step semantics but since the language depends heavily on non-determinism and parallelism and this is not possible to represent in big-step semantics, small-step semantic was a better choice.
 
-The formal rules have three parts as illustrated in \cref{SM-semantics}
+The formal rules have three parts as illustrated in \cref{SS-semantics}
 
 \begin{figure}[H]
 \begin{align*}
@@ -13,13 +13,41 @@ The formal rules have three parts as illustrated in \cref{SM-semantics}
 												{,[SIDE-EFFECTS]}
 \end{align*}
 \caption{A desription of formal small-step semantics}
-\label{SM-semantics}
+\label{SS-semantics}
 \end{figure}
 
+\subsection{Environment-Store model}
 The formal semantics will also use the environment-store model.
 
+
+$\mathbb{A}\text{ct} = \mathbb{A}\text{names} \rightharpoonup \mathbb{E}\text{nv}$
+
+$\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm} \times \mathbb{P}\text{names}$
+
 \subsection{Arithmetic Expressions}
+\newcommand{\Twedge}{\mathbin{^\wedge{}}}
+
 \begin{align*}
+&\inference[NUM]{}
+                  {e,st \vdash n \Rightarrow_A v}
+									{, \mathcal{N}(n) = v}
+\\\\
+&\inference[$\text{INV}_1$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'},r]} \Rightarrow_S \Braket{S_1',e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A \Braket{S_1',e'}}
+\\
+									&{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+&\inference[$\text{INV}_2$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'},r]} \Rightarrow_S \Braket{e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A \Braket{S_1',e'}}
+\\
+									&{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+&\inference[$\text{PARENS}_\text{A}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                       {e,st \vdash (a_1) \Rightarrow_A (a_1')}
+&
+&\inference[$\text{PARENS}_\text{V}$]{}
+                       {(v) \Rightarrow_A v}
+\\\\
 &\inference[$\text{ADD}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
@@ -72,13 +100,13 @@ The formal semantics will also use the environment-store model.
 \end{align*}
 \begin{align*}
 &\inference[$\text{POW}_\text{L}$]{e,st \vdash a_1  \Rightarrow_A a_1'}
-                    {e,st \vdash a_1 \; ^\wedge{} \; a_2 \Rightarrow_A a_1' P a_2}
+                    {e,st \vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
 &
 &\inference[$\text{POW}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
-                    {e,st \vdash a_2 \; ^\wedge{} \; a_1 \Rightarrow_A a_2 P a_1'}
+                    {e,st \vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
 \\\\
 &\inference[$\text{POW}_\text{V}$]{}
-                    {v_1 \; ^\wedge{} \; v_2 \Rightarrow_A v}
+                    {v_1 \Twedge v_2 \Rightarrow_A v}
 										{, v_1 ^ {v_2} = v}
 \\\\
 &\inference[$\text{ROOT}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
@@ -90,44 +118,25 @@ The formal semantics will also use the environment-store model.
 &\inference[$\text{ROOT}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
 										{, \sqrt[v_1]{v_2} = v}
-\\\\
-&\inference[$\text{EQALS}_\text{L}$]{}
-                    {e,st \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
-										{}
-&
-&\inference[$\text{EQALS}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
-                    {e,st \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
-\\\\
-&\inference[$\text{EQALS}_\text{V}$]{}
-                    {v_1 \# v_2 \Rightarrow_A v}
-										{, \sqrt[v_1]{v_2} = v}
-\\\\
-&\inference[$\text{PARENS}_\text{A}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
-                       {e,st \vdash (a_1) \Rightarrow_A (a_1')}
-&
-&\inference[$\text{PARENS}_\text{V}$]{}
-                       {(v) \Rightarrow_A v}
-\\\\
-&\inference[$NUM$]{}
-                  {e,st \vdash n \Rightarrow_A v}
-									{, \mathbb{N}(n) = v}
-&
-&\inference[$VAR$]{}
-                  {e,st \vdash x \Rightarrow_A v}
-									{,e(x) = l, st(l) = v}
 \end{align*}
 
 \subsection{Boolean Expressions}
-\newcommand{\Tand}{\mathbin{\text{AND}}}
-\newcommand{\Tnot}{\mathbin{\text{NOT}}}
-\newcommand{\Tnand}{\mathbin{\text{NAND}}}
-\newcommand{\Tor}{\mathbin{\text{OR}}}
-\newcommand{\Tnor}{\mathbin{\text{NOR}}}
-\newcommand{\Txor}{\mathbin{\text{XOR}}}
+\newcommand{\Tand}{\text{\; AND \;}}
+\newcommand{\Tnot}{\text{NOT \;}}
+\newcommand{\Tnand}{\text{\; NAND \;}}
+\newcommand{\Tor}{\text{\; OR \;}} 
+\newcommand{\Tnor}{\text{\; NOR \;}}
+\newcommand{\Txor}{\text{\; XOR \;}}
 
 \begin{align*}
+&\inference[$\text{PARENS}_\text{B}$]{e,st \vdash b_1 \Rightarrow_B b_1'}
+                       {e,st \vdash (b_1) \Rightarrow_B (b_1')}
+\\\\
 &\inference[$\text{NOT}_\top$]{e,st \vdash b_1 \Rightarrow_B \top}
                        {e,st \vdash \Tnot b_1 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{NOT}_\bot$]{e,st \vdash b_1 \Rightarrow_B \bot}
+                       {e,st \vdash \Tnot b_1 \Rightarrow_B \top}
 \\\\
 &\inference[$\text{AND}_1$]{e,st \vdash b_1 \Rightarrow_B \bot}
                     {e,st \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
@@ -145,13 +154,64 @@ The formal semantics will also use the environment-store model.
                  {e,st \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
 \\\\
 &\inference[NOR]{}
-								   {e,st \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \;\; \textrm{OR} \;\; b_2 )}
+								   {e,st \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
 \\\\
 &\inference[XOR]{}
                   {e,st \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+\end{align*}
+
+\subsection{Logical Expressions}
+\begin{align*}
+&\inference[$\text{EQUALS}_\text{L}$]{e,st \vdash a_1 \Rightarrow_B a_1'}
+                    {e,st \vdash a_1 = a_2 \Rightarrow_B a_1' = a_2}
+&
+&\inference[$\text{EQUALS}_\text{R}$]{e,st \vdash a_1 \Rightarrow_B a_1'}
+                    {e,st \vdash a_2 = a_1 \Rightarrow_B a_2 = a_1'}
 \\\\
-&\inference[$\text{PARENS}_\text{B}$]{e,st \vdash b_1 \Rightarrow_B b_1'}
-                       {e,st \vdash (b_1) \Rightarrow_B (b_1')}
+&\inference[$\text{EQUALS}_\text{V1}$]{}
+                    {v_1 = v_2 \Rightarrow_B \top}
+										{, v_1 = v_2}
+&
+&\inference[$\text{EQUALS}_\text{V2}$]{}
+                    {v_1 = v_2 \Rightarrow_B \bot}
+										{, v_1 \neq v_2}
+\\\\
+&\inference[$NEQUALS$]{}
+                    {e,st \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
+\\\\
+&\inference[$\text{GT}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 > a_2 \Rightarrow_A a_1' > a_2}
+&
+&\inference[$\text{GT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 > a_1 \Rightarrow_A a_2 > a_1'}
+\\\\
+&\inference[$\text{GT}_\text{V1}$]{}
+                    {v_1 > v_2 \Rightarrow_B \top}
+										{, v_1 > v_2}
+&
+&\inference[$\text{GT}_\text{V2}$]{}
+                    {v_1 > v_2 \Rightarrow_B \bot}
+										{, v_1 \leq v_2}
+\\\\
+&\inference[$GTEQ$]{}
+                    {e,st \vdash a_1 >= a_2 \Rightarrow_A (a_1 > a_2) \Tor (a_1 = a_2)}
+\\\\
+&\inference[$\text{LT}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_1 < a_2 \Rightarrow_A a_1' < a_2}
+&
+&\inference[$\text{LT}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+                    {e,st \vdash a_2 < a_1 \Rightarrow_A a_2 < a_1'}
+\\\\
+&\inference[$\text{LT}_\text{V1}$]{}
+                    {v_1 < v_2 \Rightarrow_B \top}
+										{, v_1 < v_2}
+&
+&\inference[$\text{LT}_\text{V2}$]{}
+                    {v_1 < v_2 \Rightarrow_B \bot}
+										{, v_1 \geq v_2}
+\\\\
+&\inference[$LTEQ$]{}
+                    {e,st \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
 \end{align*}
 
 \subsection{Statements}
@@ -233,6 +293,22 @@ The formal semantics will also use the environment-store model.
 \newcommand{\Tspawn}{\mathbin{\text{spawn}}}
 \newcommand{\Tsend}{\mathbin{\text{send}}}
 \begin{align*}
+&\inference[TYPEOF]{}
+                  {e,st \vdash m \Rightarrow_A t}
+									{, \mathbb{T}(n) = t}
+\\\\
+&\inference[$\text{PAR}_1$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{S_1',e',st'}}
+                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1'|S_2,e',st'}}
+\\\\
+&\inference[$\text{PAR}_2$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{e',st'}}
+                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_2,e',st'}}
+\\\\
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{S_2',e',st'}}
+                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1|S_2',e',st'}}
+\\\\
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{e',st'}}
+                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1,e',st'}}
+\\\\
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Tspawn \Tx m,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st}}
 												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
@@ -244,5 +320,5 @@ The formal semantics will also use the environment-store model.
                        {\Braket{\Tsend \Tx m;S,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st'}}
 \\\\
 &\inference[$\text{SEND}_3$]{}
-                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.m(m),e',st}}
+                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.r(m),e',st}}
 \end{align*}
