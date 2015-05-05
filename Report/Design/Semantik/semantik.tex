@@ -91,8 +91,9 @@ The formal semantics will also use the environment-store model.
                     {v_1 \# v_2 \Rightarrow_A v}
 										{, \sqrt[v_1]{v_2} = v}
 \\\\
-&\inference[$\text{EQALS}_\text{L}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
+&\inference[$\text{EQALS}_\text{L}$]{}
                     {e,st \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+										{}
 &
 &\inference[$\text{EQALS}_\text{R}$]{e,st \vdash a_1 \Rightarrow_A a_1'}
                     {e,st \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
