@@ -1,72 +1,72 @@
 grammar vSprogGrammar{
 
   options{
-    Axiom         = "Program";
-    Separator     = "SEPARATOR";
+    Axiom             = "Program";
+    Separator         = "SEPARATOR";
   }
 
   terminals{
-    NEW_LINE      -> U+000D | U+000A | U+000D U+000A | U+2028 |  U+2029;
-    WHITE_SPACE   -> U+0020 | U+0009 | U+000B | U+000C;
-    COMMENT_LINE  -> '//' (.* - (.* NEW_LINE .*)) NEW_LINE?;
-    COMMENT_BLOCK -> '/*' (.* - (.* '*/' .*)) '*/';
-    SEPARATOR     -> (NEW_LINE | WHITE_SPACE| COMMENT_LINE | COMMENT_BLOCK)+;
+    NEW_LINE         -> U+000D | U+000A | U+000D U+000A | U+2028 |  U+2029;
+    WHITE_SPACE      -> U+0020 | U+0009 | U+000B | U+000C;
+    COMMENT_LINE     -> '//' (.* - (.* NEW_LINE .*)) NEW_LINE?;
+    COMMENT_BLOCK    -> '/*' (.* - (.* '*/' .*)) '*/';
+    SEPARATOR        -> (NEW_LINE | WHITE_SPACE| COMMENT_LINE | COMMENT_BLOCK)+;
 
     /*--------- Keywords ---------*/
-    LET           -> 'let';
-    WAIT          -> 'wait';
-    ACTOR         -> 'actor';
-    RECEIVE       -> 'receive';
-    SEND          -> 'send';
-    SPAWN         -> 'spawn';
-    VAR           -> 'var';
-    WHILE         -> 'while';
-    FOR           -> 'for';
-    KILL          -> 'kill';
-    ME            -> 'me';
-    IN            -> 'in';
-    IF            -> 'if';
-    ELSE          -> 'else';
-    STRUCT        -> 'struct';
-    RETURN        -> 'return';
-    PRIMITIVE     -> 'void' | 'int' | 'real' | 'char' | 'bool';
+    LET              -> 'let';
+    WAIT             -> 'wait';
+    ACTOR            -> 'actor';
+    RECEIVE          -> 'receive';
+    SEND             -> 'send';
+    SPAWN            -> 'spawn';
+    VAR              -> 'var';
+    WHILE            -> 'while';
+    FOR              -> 'for';
+    KILL             -> 'kill';
+    ME               -> 'me';
+    IN               -> 'in';
+    IF               -> 'if';
+    ELSE             -> 'else';
+    STRUCT           -> 'struct';
+    RETURN           -> 'return';
+    PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER    -> [a-zA-Z_][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | KILL | ME);
+    IDENTIFIER       -> [a-zA-Z_][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | KILL | ME);
 
     /*--------- Symbols ---------*/
-    ASSIGN        -> ':=';
-    LPARENS       -> '(';
-    RPARENS       -> ')';
-    STARTTUPLE    -> '<';
-    ENDTUPLE      -> '>';
-    LEADSTO       -> '->';
-    COLON         -> ':';
-    BLOCKSTART    -> '{';
-    BLOCKEND      -> '}';
-    TO            -> '..';
-    DOT           -> '.';
-    SEMICOLON     -> ';';
-    STARTLIST     -> '[';
-    ENDLIST       -> ']';
-    COMMA         -> ',';
+    ASSIGN           -> ':=';
+    LPARENS          -> '(';
+    RPARENS          -> ')';
+    STARTTUPLE       -> '<';
+    ENDTUPLE         -> '>';
+    LEADSTO          -> '->';
+    COLON            -> ':';
+    BLOCKSTART       -> '{';
+    BLOCKEND         -> '}';
+    TO               -> '..';
+    DOT              -> '.';
+    SEMICOLON        -> ';';
+    STARTLIST        -> '[';
+    ENDLIST          -> ']';
+    COMMA            -> ',';
 
-    PZEROOPERATOR -> '^' | '#';
-    PONEOPERATOR -> '*' | '/' | '%';
-    PTWOOPERATOR  -> '+' | '-';
-    PTHREEOPERATOR  -> '=' | '!=' | '<' | '<=' | '>' | '>=';
-    PFOUROPERATOR  -> 'NOT';
-    PFIVEOPERATOR  -> 'AND' | 'NAND';
-    PSIXOPERATOR  -> 'OR' | 'XOR' | 'NOR' ;
+    PZEROOPERATOR    -> '^' | '#';
+    PONEOPERATOR     -> '*' | '/' | '%';
+    PTWOOPERATOR     -> '+' | '-';
+    PTHREEOPERATOR   -> '=' | '!=' | '<' | '<=' | '>' | '>=';
+    PFOUROPERATOR    -> 'NOT';
+    PFIVEOPERATOR    -> 'AND' | 'NAND';
+    PSIXOPERATOR     -> 'OR' | 'XOR' | 'NOR' ;
 
     /*--------- Numbers ---------*/
-    INT           -> '-'?[1-9][0-9]* | '0'; 
-    REAL          -> ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+); 
+    INT              -> '-'?[1-9][0-9]* | '0'; 
+    REAL             -> ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+); 
 
-    BOOL          -> 'true' | 'false';
+    BOOL             -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING        -> '"'[a-zA-Z_0-9 !]*'"';
-    CHAR          -> '\''[a-zA-Z_0-9 ]|' ''\'';
+    STRING           -> '"'[a-zA-Z_0-9 !]*'"';
+    CHAR             -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 
   rules{
@@ -104,7 +104,7 @@ grammar vSprogGrammar{
     Kill             -> KILL! Operation;
 
     /*--------- Me ---------*/
-    Me             -> ME;
+    Me               -> ME;
 
     /*--------- For ---------*/
     ForIn            -> FOR! Ids IN! (ListRange | Identifier ) Block;
@@ -125,17 +125,17 @@ grammar vSprogGrammar{
     /*--------- Operation ---------*/
     Operation        -> Operation PSIXOPERATOR OP6
                       | OP6;
-    OP6           -> OP6 PFIVEOPERATOR OP5
+    OP6              -> OP6 PFIVEOPERATOR OP5
                       | OP5^;
-    OP5           -> PFOUROPERATOR OP5
+    OP5              -> PFOUROPERATOR OP5
                       | OP4^;
-    OP4           -> OP4 PTHREEOPERATOR OP3
+    OP4              -> OP4 PTHREEOPERATOR OP3
                       | OP3^;
-    OP3           -> OP3 PTWOOPERATOR OP2
+    OP3              -> OP3 PTWOOPERATOR OP2
                       | OP2^;
-    OP2           -> OP2 PONEOPERATOR OP1
+    OP2              -> OP2 PONEOPERATOR OP1
                       | OP1^;
-    OP1             -> Operand^
+    OP1              -> Operand^
                       | OP1 PZEROOPERATOR Operand
                       | LPARENS! Operation^ RPARENS!;
     Operand	         -> Block^
@@ -144,14 +144,14 @@ grammar vSprogGrammar{
                       | Boolean^
                       | Me^
                       | Identifier^
-                      | IdentifierAccessor^
                       | Literals^
                       | Invocation^;
 
     Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
-    Identifier       -> IDENTIFIER;
+    Identifier       -> IDENTIFIER
+                      | IDENTIFIER Accessor;
 
 
     Literals         -> String^
@@ -175,8 +175,7 @@ grammar vSprogGrammar{
                       | Reassignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    TypeDecls        -> //TypeDecls SEMICOLON! TypeDecl SEMICOLON!
-                      TypeDecl SEMICOLON! TypeDecls
+    TypeDecls        -> TypeDecl SEMICOLON! TypeDecls
                       | TypeDecl^ SEMICOLON!;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
@@ -190,9 +189,7 @@ grammar vSprogGrammar{
     TypeDecl         -> Identifier COLON! Types;
 
     /*--------- Reassignment ---------*/
-    Reassignment       -> (Identifier | IdentifierAccessor) ASSIGN! Operation;
-
-    IdentifierAccessor -> Identifier^ Accessor;
+    Reassignment     -> Identifier ASSIGN! Operation;
 
     /*-------- Type ---------*/
     Types            -> Type (LEADSTO! Type)*;
@@ -218,8 +215,6 @@ grammar vSprogGrammar{
 
     /*--------- Accessor ---------*/
     Accessor         -> DOT! Identifier^
-                      | DOT! Identifier^ Accessor
-                      | DOT! STARTLIST! INT ENDLIST!
-                      | DOT! STARTLIST! INT ENDLIST! Accessor;
+                      | DOT! STARTLIST! INT ENDLIST!;
   }
 }
