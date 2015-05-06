@@ -40,12 +40,14 @@ One of the main features of the actor model is, as Hoare describes it, the abili
 We have a system which can read a CSV-file and print it to stdout. This can be implemented by letting \emph{Reader} and \emph{Printer} be actors.
 
 \begin{tabular}{ | c | c | c | }
+\label{ReadPrintExample}
 \hline
 Step & Reader & Printer \\\hline
 1 & \textbf{Read CSV-file} & \textit{Wait for message} \\\hline
 2 & \textbf{Send data to Printer} & \textit{Wait for message}\\\hline
 3 & \textit{Wait for message} & \textbf{Receive data from Reader}\\\hline
 4 & \textit{Wait for message} & \textbf{Print data to stdout}\\\hline
+\caption{A simple example showing two actors reading a file and printing the contents, respectively.}
 \end{tabular}\\
 At some point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, \emph{Formatter}, which changes the flow of execution in this manner:\\
 
@@ -59,6 +61,7 @@ Step & Reader & Formatter & Printer \\\hline
 5 & \textit{Wait for message} & \textbf{Send data to Printer} & \textit{Wait for message} \\\hline
 6 & \textit{Wait for message} & \textit{Wait for message} & \textbf{Receive data}\\\hline
 7 & \textit{Wait for message} & \textit{Wait for message} & \textbf{Print data to stdout} \\\hline
+\caption{An example of extending the logic of \cref{ReadPrintExample} by also formatting the contents of the file, using another actor.}
 \end{tabular}\\
 
 Notice that in adding the new logic, the only existing logic that was changed is the actor whom \emph{Reader} sends data to.
@@ -83,6 +86,7 @@ Step & Thread A & Thread B \\\hline
 1 & \textbf{Read first element in collection} & \textit{No operation} \\\hline
 2 & \textbf{Process element} & \textbf{Delete collection}\\\hline
 3 & \textbf{\color{red} Read second element in collection} & \textit{No operation}\\\hline
+\caption{An example of a phantom read using two threads.}
 \end{tabular}\\
 
 As seen in this example, thread B is able to delete the collection, while thread A is still using it. This means that once thread A tries to access the second element of the collection, it runs into the phantom read problem and would likely terminate and throw an exception.
@@ -98,6 +102,7 @@ Step & Holder & Reader & Deleter \\\hline
 4 & \textit{Wait for message} & \textbf{Read second element in collection} & \textit{Wait for message} \\\hline
 \multicolumn{4}{ | c | }{...}\\\hline
 n & \textit{Wait for message} & \textbf{Read n\textsuperscript{th} element in collection} & \textit{Wait for message} \\\hline
+\caption{An example of avoiding a phantom read by using actors.}
 \end{tabular}\\
 
 As can be seen in the above example, using actors to model this system ensures that there are no phantom reads. This is ensured, by the fact that actors never share data; therefore, an arbitrary actor can never corrupt, or delete, the data of another.
