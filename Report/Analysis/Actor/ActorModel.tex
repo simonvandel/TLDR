@@ -20,7 +20,8 @@ Actors are very similar to the communicating sequential processes (CSP) describe
 
 In figure \ref{fig:actor}, a model of an actor based program can be seen.
 
-\begin{figure}
+\begin{figure}[htbp]
+  \centering
   \includegraphics[width=\textwidth]{Images/actors.pdf}
   \caption{A model of an example program using actors. The nodes in this graph represent actors and the edges represent messages being sent.}
   \label{fig:actor}
@@ -39,7 +40,8 @@ One of the main features of the actor model is, as Hoare describes it, the abili
 \paragraph{Example}
 We have a system which can read a CSV-file and print it to stdout. This can be implemented by letting \emph{Reader} and \emph{Printer} be actors.
 
-\begin{table}
+\begin{table}[htbp]
+\centering
 \begin{tabular}{ | c | c | c | }
 \hline
 Step & Reader & Printer \\\hline
@@ -54,7 +56,8 @@ Step & Reader & Printer \\\hline
 
 At some point we decide that we wish to format our data before printing it. To do so, we create and incorporate a new actor, \emph{Formatter}, which changes the flow of execution in this manner:\\
 
-\begin{table}
+\begin{table}[htbp]
+\centering
 \begin{tabular}{ | c | c | c | c | }
 \hline
 Step & Reader & Formatter & Printer \\\hline
@@ -81,11 +84,12 @@ As actors only communicate via message passing, each actor can have its own isol
 In the actor model, each actor has its own subprogram, which is only known by the actor itself and can be run in an infinite loop. A consequence of this is that an arbitrary actor never depends on another actor, meaning an actor's logic is isolated from the rest of the system and can be regarded as an atomic concurrent part of the system.
 
 \paragraph{Example}
-To demonstrate the actor model's ability to deal with classical concurrency problems, an example will be shown here. This example, shows the problem of phantom reads \sinote{Forklar lige hvad phantom reads er}, which can be a big problem in data-rich, highly parallel systems. In the example, a collection is being accessed by two concurrent processes, or threads, one tries to read the collection, the other tries to delete it.
+To demonstrate the actor model's ability to deal with classical concurrency problems, an example will be shown here. This example, shows the problem of phantom reads, which can be a big problem in data-rich, highly parallel systems. In the example, a collection is being accessed by two concurrent processes, or threads. One tries to read the collection, and the other tries to delete it.
 
-We start off, with the problem shown in a typically imperative way, using threads.\\\\
+We start off, with the problem shown in a typically imperative way, using threads. See \cref{table:eximpThreads}.
 %
-\begin{table}
+\begin{table}[htbp]
+\centering
 \begin{tabular}{ | c | c | c | }
 \hline
 Step & Thread A & Thread B \\\hline
@@ -93,15 +97,16 @@ Step & Thread A & Thread B \\\hline
 2 & \textbf{Process element} & \textbf{Delete collection}\\\hline
 3 & \textbf{\color{red} Read second element in collection} & \textit{No operation}\\\hline
 \end{tabular}
-\caption{An example of a phantom read using two threads.}
+\caption{An example of a phantom read using two threads.}\label{table:eximpThreads}
 \end{table}
 
 As seen in this example, thread B is able to delete the collection, while thread A is still using it. This means that once thread A tries to access the second element of the collection, it runs into the phantom read problem and would likely terminate and throw an exception.
 
-To demonstrate the same functionality that these threads are performing, using actors, we need three actors, \emph{Holder}, \emph{Reader} and \emph{Deleter}. \emph{Holder} contains the collection, \emph{Reader} reads and processes the elements in the collection and \emph{Deleter} wants to delete the collection.\\\\
+To demonstrate the same functionality that these threads are performing, using actors, we need three actors, \emph{Holder}, \emph{Reader} and \emph{Deleter}. \emph{Holder} contains the collection, \emph{Reader} reads and processes the elements in the collection and \emph{Deleter} wants to delete the collection.
 %
-\begin{table}
-\begin{tabular}{ | c | c | c | c | }
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ | m{0.7cm} | m{3.5cm} | m{4cm} | m{3cm} | }
 \hline
 Step & Holder & Reader & Deleter \\\hline
 1 & \textit{Wait for message} & \textbf{Send request to \emph{Holder}} & \textit{Wait for message} \\\hline
@@ -111,10 +116,10 @@ Step & Holder & Reader & Deleter \\\hline
 \multicolumn{4}{ | c | }{...}\\\hline
 n & \textit{Wait for message} & \textbf{Read n\textsuperscript{th} element in collection} & \textit{Wait for message} \\\hline
 \end{tabular}
-\caption{An example of avoiding a phantom read by using actors.}
+\caption{An example of avoiding a phantom read by using actors.}\label{table:exActorPhantom}
 \end{table}
 
-As can be seen in the above example, using actors to model this system ensures that there are no phantom reads. This is ensured, by the fact that actors never share data; therefore, an arbitrary actor can never corrupt, or delete, the data of another.
+As can be seen in \cref{table:exActorPhantom}, using actors to model this system ensures that there are no phantom reads. This is ensured, by the fact that actors never share data; therefore, an arbitrary actor can never corrupt, or delete, the data of another.
 
 \subsubsection{Supervisors}
 Most implementations of the actor model implement a form of a supervisor-worker relationship. This means that every actor has a supervisor, typically their parent, to whom they report failures. The supervisor then has to deal with the failure, by for example restarting the failed actor.
