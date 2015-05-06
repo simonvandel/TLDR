@@ -319,7 +319,7 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
 \\
-&												{\Twhere, \alpha' = \alpha[\Ta \mapsto \alpha(\Tm)]}
+&												{\Twhere, \alpha' = \alpha[\Ta \mapsto \alpha(\Tx)]}
 \\\\
 &\inference[$\text{SEND}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
                        {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm;S',\alpha',e'}}
@@ -328,5 +328,5 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
                        {\Braket{\Tsend \Ta \Tm;S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha',e'}}
 \\\\
 &\inference[$\text{SEND}_3$]{}
-                       {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.r(m),e',st}}
+                       {\Braket{\Tsend \Ta \Tm ; S',e,st} \Rightarrow_S \Braket{\Ta.r(m),e',st}}
 \end{align*}
