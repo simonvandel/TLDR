@@ -21,10 +21,10 @@ module TestUtils =
     let run (test:bool) : unit =
         test |> should equal true
 
-    let expectSuccess symTable = match checkHiding symTable with
+    let expectSuccess res = match res with
                                  | Success sym -> true
                                  | Failure _ -> false
 
-    let expectFailure symTable = match checkHiding symTable with
+    let expectFailure res = match res with
                                  | Success _ -> false
                                  | Failure _ -> true

@@ -17,7 +17,9 @@ module CheckReassignmentTest =
         let program = """var x:int := 2;
                          x := 5;"""
         let symTable = genSymTable program
-        run (expectSuccess symTable)
+        checkReass symTable
+        |> expectSuccess
+        |> run
 
     [<Test>]
     let ``valid in different scope, expect Success``() = 
@@ -26,7 +28,9 @@ module CheckReassignmentTest =
                            x := 5;
                          }"""
         let symTable = genSymTable program
-        run (expectSuccess symTable)
+        checkReass symTable
+        |> expectSuccess
+        |> run
 
     ///////////////////////// Failure expected //////////////////////
 
@@ -35,7 +39,9 @@ module CheckReassignmentTest =
         let program = """let x:int := 2;
                          x := 5;"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkReass symTable
+        |> expectFailure
+        |> run
 
     [<Test>]
     let ``invalid in different scope, expect Failure``() = 
@@ -44,4 +50,6 @@ module CheckReassignmentTest =
                            x := 5;
                          }"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkReass symTable
+        |> expectFailure
+        |> run

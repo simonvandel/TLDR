@@ -3,6 +3,7 @@
 open FsUnit
 open NUnit.Framework
 open vSprog.Tests.TestUtils
+open vSprog.Analysis
 
 module CheckHidingTest = 
 
@@ -13,14 +14,18 @@ module CheckHidingTest =
     let ``CheckHiding. No hiding, expect Success``() = 
         let program = """let x:int := 2;"""
         let symTable = genSymTable program
-        run (expectSuccess symTable)
+        checkHiding symTable
+        |> expectSuccess
+        |> run
 
     [<Test>]
     let ``CheckHiding. No hiding in outer scope, expect Success``() = 
         let program = """let x:int := 2;
                          { let y:int := 1;}"""
         let symTable = genSymTable program
-        run (expectSuccess symTable)
+        checkHiding symTable
+        |> expectSuccess
+        |> run
 
     ///////////////////////// Failure expected //////////////////////
        
@@ -29,7 +34,9 @@ module CheckHidingTest =
         let program = """let x:int := 2;
                          let x:real := 4.2"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkHiding symTable
+        |> expectFailure
+        |> run
 
     [<Test>]
     let ``CheckHiding. Hiding present in outer scope, expect Failure``() = 
@@ -38,7 +45,9 @@ module CheckHidingTest =
                            let x:real := 4.2
                          }"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkHiding symTable
+        |> expectFailure
+        |> run
 
     [<Test>]
     let ``CheckHiding. Hiding present in outer, outer scope, expect Failure``() = 
@@ -50,11 +59,15 @@ module CheckHidingTest =
                            }
                          }"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkHiding symTable
+        |> expectFailure
+        |> run
 
     [<Test>]
     let ``CheckHiding. hiding in block, expect Success``() = 
         let program = """let x:int := 2;
                          { let x:int := 1;}"""
         let symTable = genSymTable program
-        run (expectFailure symTable)
+        checkHiding symTable
+        |> expectFailure
+        |> run
