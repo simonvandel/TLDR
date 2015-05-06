@@ -19,7 +19,6 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \subsection{Environment-Store model}
 The formal semantics will also use the environment-store model.
 
-
 $\mathbb{A}\text{ct} = \mathbb{A}\text{names} \cup \{next\} \rightharpoonup \mathbb{E}\text{nv}$
 
 $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm} \times \mathbb{P}\text{names}$
@@ -275,7 +274,7 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 \end{align*}
 \subsubsection{Loop}
 \newcommand{\Tfor}{\mathbin{\text{for}}}
-\newcommand{\Tx}{\mathbin{\text{x}}}
+\newcommand{\Tx}{\mathbin{\; \text{x} \;}}
 \newcommand{\Tin}{\mathbin{\text{in}}}
 \newcommand{\Twhile}{\mathbin{\text{while}}}
 
@@ -296,6 +295,10 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 \subsubsection{Misc}
 \newcommand{\Tspawn}{\mathbin{\text{spawn}}}
 \newcommand{\Tsend}{\mathbin{\text{send}}}
+\newcommand{\Ta}{\; \mathbin{\text{a}} \;}
+\newcommand{\Tm}{\; \mathbin{\text{m}} \;}
+\newcommand{\Twhere}{\mathbin{\text{where}}}
+
 \begin{align*}
 &\inference[TYPEOF]{}
                   {e,st \vdash m \Rightarrow_A t}
@@ -314,14 +317,15 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
                        {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1,e',st'}}
 \\\\
 &\inference[$\text{SPAWN}$]{}
-                       {\Braket{\Tspawn \Tx m,a,e} \Rightarrow_S \Braket{\Tsend \Tx m,a',e}}
-												{, act = a(next), a' = a[x\mapsto act, next\mapsto new(act)]}
+                       {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
+\\
+&												{\Twhere, \alpha' = \alpha[\Ta \mapsto \alpha(\Tm)]}
 \\\\
 &\inference[$\text{SEND}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
-                       {\Braket{\Tsend \Tx m ; S,e,st} \Rightarrow_S \Braket{\Tsend \Tx m;S',e',st'}}
+                       {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm;S',\alpha',e'}}
 \\\\
 &\inference[$\text{SEND}_2$]{\Braket{S,e,st} \Rightarrow_S \Braket{e',st'}}
-                       {\Braket{\Tsend \Tx m;S,e,st} \Rightarrow_S \Braket{\Tsend \Tx m,e',st'}}
+                       {\Braket{\Tsend \Ta \Tm;S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha',e'}}
 \\\\
 &\inference[$\text{SEND}_3$]{}
                        {\Braket{\Tsend \Tx m ; S',e,st} \Rightarrow_S \Braket{\Tx.r(m),e',st}}
