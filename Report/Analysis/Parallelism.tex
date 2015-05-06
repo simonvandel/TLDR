@@ -34,25 +34,25 @@ Although multiple similar simulations can be observed as being independent of ea
 When trying to solve problems that are not embarrasingly parallel, with a parallel approach, some problems arise when multiple processes try to access the same memory. Among these the most common are race conditions and deadlocks.
 
 \subsubsection{Race conditions}
-This problem arise when multiple processes want to modify the same data in memory or similar recourse, and the outcome of the modification depends on the internal timing of processes. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations are operations which the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
+This problem arises when multiple processes want to modify the same data in memory or similar resource, and the outcome of the modification depends on the internal timing of processes. We call the resource the shared resource and the code which work with the shared resource the critical region. For example; if two processes want to raise the value of an integer by 1. In a normal modern day processor the process could be split into the three atomic operations\footnote{Atomic operations are operations which the hardware manufacturer ensures happens without disruptions and that cannot be split into smaller operations}:
 
 \begin{itemize}
-\item Copy the current value of the integer from main memory into working register
-\item Calculate the value puls one and place the result in the register
-\item Take the new value from the register and override the integer in memory
+\item Copy the current value of the integer from main memory into register A
+\item Calculate the value from register A, add 1 to it and place the result in register B
+\item Take the new value from register B and override the integer in memory
 \end{itemize}
 
-Since we don't know when each process will try to access the memory the value can either be raised by one, if both processes access it before the other overrides it, or raised by two, if one process finished before the other copy the value from memory. This is a well know problem and exists in many situations were multiple processes work with non-atomic operations on the same memory. Some software solutions, that ensures only one instance of the critical region have permission to access to the shared resource at the time, have been found and especially Gary L. Peterson's algorithm, published in 1981, is used today. Other solutions has also been found by creating atomic assembly instructions that can set a flag, thereby ensuring that only one critical region access the shared resource at the time.
+Since we don't know when each process will try to access the memory the value can either be raised by one, if both processes access it before the other overrides it, or raised by two, if one process finished before the other copy the value from memory. This is a well known problem and exists in many situations where multiple processes work with non-atomic operations on the same memory. Some software solutions, that ensures only one instance of the critical region have permission to access to the shared resource at the time, have been developed and especially Gary L. Peterson's algorithm, published in 1981, is used today. Other solutions has also been developed by creating atomic assembly instructions that can set a flag, thereby ensuring that only one critical region access the shared resource at the time.
 
 \subsubsection{Deadlocks}
 
-Deadlocks are a type of problem that occurs when two or more processes are waiting for at least one of the others to finish, before it itself finishes, thereby never finishing. This is a common problem within concurrent programming. Edward G. Coffman described four conditions that must be present if a deadlock is to occur. \kanote{insæt kilde til coffman artikel om deadlocks} These are the four conditions:
+Deadlocks are a type of problem that occurs when two or more processes are waiting for at least one of the others to finish, before it itself finishes, thereby never finishing. This is a common problem within concurrent programming. Edward G. Coffman described four conditions that must be present if a deadlock is to occur~\cite{Coffman:1971}. These are the four conditions:
 
-\begin{itemize}
-\item Mutual Exclusion - Resources can not be shared simultaniously by to processes.
-\item Hold and Wait - A process is at some point holding one resource, while waiting for another.
-\item No Preemption - A resources can not be released externally from a process.
-\item Circular Wait - A process must be waiting for a resource which is held by another process, which is waiting for the first process to release a resource.
-\end{itemize}
+\begin{description}
+\item[Mutual Exclusion] Resources can not be shared simultaneously by two processes.
+\item[Hold and Wait] A process is at some point holding one resource, while waiting for another.
+\item[No Preemption] A resources can not be released externally from a process.
+\item[Circular Wait] A process must be waiting for a resource which is held by another process, which is waiting for the first process to release a resource.
+\end{description}
 
 By knowing these four conditions, we can try prevent deadlocks by making sure at least one of the conditions are not present.
