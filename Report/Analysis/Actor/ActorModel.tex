@@ -206,5 +206,7 @@ object Main extends App {
 }
 \end{lstlisting}
 
+\input{Analysis/Supercomputing/TheIterationProblem.tex}
+
 \subsection{Summary}
-The actor model is a model for concurrency formalised by Carl Hewitt, based on the work of C.A.R. Hoare. The actor model provides an abstraction over concurrent processes, where locks, mutexes, semaphores and the like are unnecessary. The actor model's abstraction also solves some of the classical problems with concurrency, such as phantom reads. The actor model integrates very well with functional languages, as seen in \cref{sub:implementations}.
+The actor model is a model for concurrency formalised by Carl Hewitt, based on the work of C.A.R. Hoare. The actor model provides an abstraction over concurrent processes, where locks, mutexes, semaphores and the like are unnecessary. The actor model's abstraction also solves some of the classical problems with concurrency, such as phantom reads. The actor model integrates very well with functional languages, as seen in \cref{sub:implementations}. Based on these observations and with confidence that the iteration problem can be solved, the actor model is chosen as the concurrency model for The Language Described in this Report.

@@ -1,5 +1,7 @@
 \subsection{The Iteration Problem}
-By choosing the actor model it is possible to create continuous simulations in the language with a good abstraction for simulations and models in general. Unfortunately the actor model does not support discrete simulations very well, and when trying to create discrete simulations with this, a problem arises that needs to be addressed.
+
+If the actor model is chosen, it will be possible to create continuous simulations in the language, with a good abstraction for simulations and models in general. Unfortunately the actor model does not support discrete simulations as well. When trying to implement a discrete simulation solely with actor modelling, a problem arises that needs to be addressed. \\\\ 
+The problem is, that there is no way for the programmer in the language to tell whether a group of actors has completed their work or not. This is important since the user must to be able to implement iteration steps if he or she is to create discrete simulations. He or she has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
 
 The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the user must to be able to implement iteration steps if the programmer is to create discrete simulations. The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
 
