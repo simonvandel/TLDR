@@ -332,8 +332,11 @@ module AST =
             else
                 let parameters = seq { for c in (root.Children.Item 1).Children do
                                         let rawParam = (getChildByIndexes [0;0] c).Symbol.Value
-                                        // trim quotation marks at start and end
-                                        let param = rawParam.Substring(1,rawParam.Length-2)
+                                        // trim quotation marks at start and end if string
+                                        let param = if rawParam.StartsWith "\"" && rawParam.EndsWith "\"" then 
+                                                        rawParam.Substring(1,rawParam.Length-2)
+                                                    else
+                                                        rawParam
                                         yield param          
                                      }
                                  |> List.ofSeq
