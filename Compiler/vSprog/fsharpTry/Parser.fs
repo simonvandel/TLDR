@@ -3,10 +3,24 @@ namespace vSprog
 open Hime.CentralDogma
 open Hime.Redist
 open vSprog.CommonTypes
+open System.IO
 
 module Parser =
 
-    let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> =
+    let getAssemblyAndRun (srcInput:string) = 
+          let assembly = SDK.AssemblyReflection "vSprogGrammar.dll"
+
+          let parseResult = (assembly.GetParser<string> (srcInput)).Parse()
+     
+          if parseResult.Errors.Count = 0 && parseResult.IsSuccess then // TODO: Create fail function
+              Success parseResult.Root
+          else
+              Failure (parseResult.Errors 
+                   |> Seq.map (sprintf "%O")
+                   |> List.ofSeq
+                   )
+                  
+    let generateAssembly (grammarPath:string) = 
         let task = CompilationTask ()
         task.AddInputFile grammarPath
         task.Mode <- Hime.CentralDogma.Output.Mode.Assembly
@@ -17,15 +31,12 @@ module Parser =
                      |> Seq.append report.Warnings
                      |> Seq.map (sprintf "%O")
                      |> List.ofSeq)
-        else 
-            let assembly = SDK.AssemblyReflection "vSprogGrammar.dll"
+        else
+            Success ()
 
-            let parseResult = (assembly.GetParser<string> (srcInput)).Parse()
-         
-            if parseResult.Errors.Count = 0 && parseResult.IsSuccess then // TODO: Create fail function
-                Success parseResult.Root
-            else
-                Failure (parseResult.Errors 
-                     |> Seq.map (sprintf "%O")
-                     |> List.ofSeq
-                     )
+    let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> =
+        if File.Exists("vSprogGrammar.dll")  then
+            getAssemblyAndRun srcInput
+        else
+           generateAssembly grammarPath
+           >> getAssemblyAndRun srcInput

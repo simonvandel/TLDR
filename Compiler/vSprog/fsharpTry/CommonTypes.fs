@@ -19,10 +19,14 @@ module CommonTypes =
                                                 | Success a, Failure msg -> Failure msg
                                                 )
 
+    // Apply a function to a result. If the result was Success, apply the function. If not, don't apply it, and return Failure
     let (>>=) m f =
         match m with
         | Success r -> r |> f
         | Failure errs -> Failure errs
+
+    let (>>) m f =
+        m >>= (fun _ -> f)
 
     // State --------------------------------------------
     type State<'a, 's> = State of ('s -> 'a * 's)
