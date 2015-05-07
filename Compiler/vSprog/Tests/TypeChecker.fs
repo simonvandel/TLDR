@@ -7,6 +7,7 @@ open vSprog.Parser
 open vSprog.AST
 open vSprog.CommonTypes
 open AnalysisUtils
+open vSprog.Tests.TestUtils
 
 module TypeCheckerTest =
     let typecheckWith (input:string) (typecheckFun:AST -> SymbolTable -> Result<PrimitiveType>) : Result<PrimitiveType> =
@@ -36,18 +37,16 @@ module TypeCheckerTest =
     // virker ikke lige nu. Det er noget med at den ikke ser det som samme type
     [<Test>]
     let ``Initialisation where lhs is real and rhs is int, expects to NOT typecheck``() = 
-        let res = typecheckWith "let x:real := 2" checkTypes
-        // explicit types are needed to make the test pass correctly
-        let expect : Result<PrimitiveType> = (Failure ["Initialisation does not typecheck. Expected type SimplePrimitive Real, found type SimplePrimitive Int"])
-        res |> should equal expect 
+        typecheckWith "let x:real := 2" checkTypes
+        |> expectFailure
+        |> run
 
 
     (* -------------------- If statement ---------------- *)
-    // FIXME: Hvad blev vi enige med hinanden omkring if statements og typer?
     [<Test>]
     let ``If statement with condition of type Bool and body of type int, expects to typecheck with type int`` () =
         let res = typecheckWith "if ( true ) { 2 }" checkTypes
         //|> printfn "%A"
-        let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Int))
+        let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Void))
         res |> should equal expect
 
