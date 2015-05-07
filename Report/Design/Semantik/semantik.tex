@@ -313,16 +313,26 @@ d
                   %{e,st \vdash m \Rightarrow_A t}
 									%{, \mathbb{T}(n) = t}
 %\\\\
+&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1} \Rightarrow_S \Braket{S_1',e_1'}} 
+                           {\Braket{\Braket{S_1,e_1}|\Braket{S_2,e_2},\alpha} \Rightarrow_S \Braket{\Braket{S_1,e_1'}|\Braket{S_2,e_2},\alpha}} 
+\\\\ 
+&\inference[$\text{PAR}_2$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{e',st'}} 
+                           {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_2,e',st'}} 
+\\\\ 
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{S_2',e',st'}} 
+                           {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1|S_2',e',st'}} 
+\\\\ 
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{e',st'}} 
+                           {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1,e',st'}} 
+\\\\
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
 \\
 &												{\Twhere, \Ten \mapsto e(\alpha(\Tx)), \alpha' = \alpha[\Ta \mapsto \Ten]}
-%\\\\
-%&\inference[$\text{SEND}_1$]{\Braket{S,\alpha,e} \Rightarrow_S \Braket{S',\alpha',e'}}
-                       %{\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm;S',\alpha',e'}}
-%\\\\
-%&\inference[$\text{SEND}_2$]{\Braket{S,\alpha,e} \Rightarrow_S \Braket{\alpha',e'}}
-                       %{\Braket{\Tsend \Ta \Tm;S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha',e'}}
+\\\\
+&\inference[$\text{SEND}_2$]{e' = e(\alpha(\Ta))}
+                       {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Braket{\Ta.r(m),e'}\Braket{S,e},\alpha}}
+\end{align*}
 \\\\
 &\inference[$\text{SEND}_3$]{e' = e(\alpha(\Ta))}
                        {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Braket{\Ta.r(m),e'}\Braket{S,e},\alpha}}
