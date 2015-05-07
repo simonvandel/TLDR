@@ -7,6 +7,7 @@ open vSprog.AST
 open vSprog.ParserUtils
 open vSprog.CodeGen
 open System.IO
+open System
 
 module Main =
     let llvmToExec (llvmIr:string) : bool =
@@ -33,7 +34,13 @@ module Main =
     
     [<EntryPoint>]
     let main argv = 
-        let input = File.ReadAllText "../../../../../SamplePrograms/SanityCheck01.tldr"
+        let inputSrcPath = if argv.Length = 0 then 
+                             printfn "No input file specified"
+                             Environment.Exit -1
+                             ""
+                           else 
+                             argv.[0]
+        let input = File.ReadAllText inputSrcPath
 
         let res = parse input "../../grammar.gram"  //Generates hime AST
                 >>= fun tree -> Success (toAST tree)
