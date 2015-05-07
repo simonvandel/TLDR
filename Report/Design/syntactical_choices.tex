@@ -9,16 +9,6 @@ As with most of the choices made during the design of this language, we wanted t
 %impossible - but why?
 For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
 
-\subsection{Mutability}
-An functions of computer science, other than return a result, can have a 'side-effect', somehow modifying the state of the outside computation in execution. We can therefore disguingish these functions as being pure or impure, if thus side-effect incurs. In the context of concurrent computating, that this project evolve around, pure function and variables can be benificial for the user to inspect what can change state and what cant. % Heider signin off, cant.
-
-%notes
-effects other parts of the program
-isolate 
-In concurrent computing
-'let'  'var'
-
-
 \subsection{Logical Comparisons}
 
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison.
