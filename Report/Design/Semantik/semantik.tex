@@ -16,8 +16,8 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \label{SS-semantics}
 \end{figure}
 
-\subsection{Environment-Store model}
-The formal semantics will also use the environment-store model.
+\subsection{Actor-Environment model}
+The formal semantics will also use an actor-environment model.
 
 $\mathbb{A}\text{ct} = \mathbb{A}\text{names} \cup \{next\} \rightharpoonup \mathbb{E}\text{nv}$
 
@@ -225,7 +225,7 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 &\inference[$LTEQ$]{}
                     {e \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
 \end{align*}
-
+d
 \subsection{Statements}
 \newcommand{\Tlet}{\text{let}}
 \subsubsection{General}
@@ -234,9 +234,17 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 %                         {\Braket{\Tlet x := a,e,st} \Rightarrow_S \Braket{x := a, e',st}}
 %												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 %\\\\
-&\inference[$\text{ASS}$]{e \vdash a \Rightarrow_A v}
+&\inference[$\text{ASS}_A$]{e \vdash a \Rightarrow_A v}
                          {\Braket{x := a,e} \Rightarrow_S e'}
 												{, e' = e[x \mapsto v]}
+\\\\
+&\inference[$\text{ASS}_{B\top}$]{e \vdash a \Rightarrow_B \top}
+                         {\Braket{x := a,e} \Rightarrow_S e'}
+												{, e' = e[x \mapsto \top]}
+\\\\
+&\inference[$\text{ASS}_{B\bot}$]{e \vdash a \Rightarrow_B \bot}
+                         {\Braket{x := a,e} \Rightarrow_S e'}
+												{, e' = e[x \mapsto \bot]}
 \\\\
 &\inference[$\text{STATEMENTS}_1$]{\Braket{S_1,e} \Rightarrow_S \Braket{S_1',e'}}
                          {\Braket{S_1;S_2,e} \Rightarrow_S \Braket{S_1';S_2,e'}}
@@ -286,10 +294,10 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
                        {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S e}
 \\\\
 &\inference[$\text{FOR}_{1}$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e} \Rightarrow_S \Braket{\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e[x \mapsto e(n_1)]}}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e}}
 \\\\
 &\inference[$\text{FOR}_{2}$]{}
-                       {\Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{\{S\},e[x \mapsto e(n_m)]}}
+                       {\Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{x := n_m;\{S\},e}}
 \end{align*}
 
 \subsubsection{Misc}
@@ -298,35 +306,24 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 \newcommand{\Ta}{\; \mathbin{\text{a}} \;}
 \newcommand{\Tm}{\; \mathbin{\text{m}} \;}
 \newcommand{\Twhere}{\mathbin{\text{where}}}
+\newcommand{\Ten}{\mathbin{\text{env}}}
 
 \begin{align*}
-&\inference[TYPEOF]{}
-                  {e,st \vdash m \Rightarrow_A t}
-									{, \mathbb{T}(n) = t}
-\\\\
-&\inference[$\text{PAR}_1$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{S_1',e',st'}}
-                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1'|S_2,e',st'}}
-\\\\
-&\inference[$\text{PAR}_2$]{\Braket{S_1,e,st} \Rightarrow_S \Braket{e',st'}}
-                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_2,e',st'}}
-\\\\
-&\inference[$\text{PAR}_3$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{S_2',e',st'}}
-                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1|S_2',e',st'}}
-\\\\
-&\inference[$\text{PAR}_4$]{\Braket{S_2,e,st} \Rightarrow_S \Braket{e',st'}}
-                       {\Braket{S_1|S_2,e,st} \Rightarrow_S \Braket{S_1,e',st'}}
-\\\\
+%&\inference[TYPEOF]{}
+                  %{e,st \vdash m \Rightarrow_A t}
+									%{, \mathbb{T}(n) = t}
+%\\\\
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
 \\
-&												{\Twhere, \alpha' = \alpha[\Ta \mapsto \alpha(\Tx)]}
+&												{\Twhere, \Ten \mapsto e(\alpha(\Tx)), \alpha' = \alpha[\Ta \mapsto \Ten]}
+%\\\\
+%&\inference[$\text{SEND}_1$]{\Braket{S,\alpha,e} \Rightarrow_S \Braket{S',\alpha',e'}}
+                       %{\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm;S',\alpha',e'}}
+%\\\\
+%&\inference[$\text{SEND}_2$]{\Braket{S,\alpha,e} \Rightarrow_S \Braket{\alpha',e'}}
+                       %{\Braket{\Tsend \Ta \Tm;S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha',e'}}
 \\\\
-&\inference[$\text{SEND}_1$]{\Braket{S,e,st} \Rightarrow_S \Braket{S',e',st'}}
-                       {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm;S',\alpha',e'}}
-\\\\
-&\inference[$\text{SEND}_2$]{\Braket{S,e,st} \Rightarrow_S \Braket{e',st'}}
-                       {\Braket{\Tsend \Ta \Tm;S,\alpha,e} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha',e'}}
-\\\\
-&\inference[$\text{SEND}_3$]{}
-                       {\Braket{\Tsend \Ta \Tm ; S',e,st} \Rightarrow_S \Braket{\Ta.r(m),e',st}}
+&\inference[$\text{SEND}_3$]{e' = e(\alpha(\Ta))}
+                       {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Braket{\Ta.r(m),e'}\Braket{S,e},\alpha}}
 \end{align*}
