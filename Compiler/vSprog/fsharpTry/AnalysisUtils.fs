@@ -8,6 +8,7 @@ open vSprog.AST
         | Ass // var x := 5
         | Reass // x := 5
         | Def // Actor A := {} | Struct B := {}
+        | Use // x
 
     type Scope = {
         outer:Scope option //TODO: fjern outer, da det bare kan ses ud fra level

@@ -25,7 +25,7 @@ module Main =
             // --------------- clang -------------
             let clangProc = new System.Diagnostics.Process()
             clangProc.StartInfo.FileName <- "./a.out"
-            clangProc.Start()
+            clangProc.Start() |> ignore
             clangProc.WaitForExit()
             clangProc.ExitCode = 0
 

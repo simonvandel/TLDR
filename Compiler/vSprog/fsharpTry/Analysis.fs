@@ -171,7 +171,24 @@ module Analysis =
               do! buildSymbolTable lhs
               do! buildSymbolTable rhs
             }
-        | Identifier id -> SameState getState
+        | Identifier id -> 
+          state
+            {
+              let! curScope = getScope
+              let entry = 
+                {
+                  symbol = 
+                    {
+                      identity = id
+                      isMutable = false
+                      primitiveType = SimplePrimitive Void
+                    }
+                  statementType = Use
+                  scope = curScope
+                  value = Identifier id
+                }
+              do! addEntry entry
+            }
         | Function (funcName, arguments, types, body) -> 
           state 
             {
@@ -197,9 +214,17 @@ module Analysis =
               do! buildSymbolTable body
               do! closeScope
             }
-        | Kill (arg) -> SameState getState
+        | Kill (arg) -> 
+          state
+            {
+              do! buildSymbolTable arg
+            }
         | Me -> SameState getState
-        | Return (arg) -> SameState getState
+        | Return (arg) -> 
+          state
+            {
+              do! buildSymbolTable arg
+            }
         | IfElse(cond, tBody, fBody) ->
           state
             {

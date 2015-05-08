@@ -25,19 +25,19 @@ module TypeCheckerTest =
                     
     [<Test>]
     let ``Initialisation where lhs is int and rhs is int, expects to typecheck``() = 
-        typecheckWith "let x:int := 2" checkTypes
+        typecheckWith "let x:int := 2;" checkTypes
         |> should equal (Success (SimplePrimitive Primitive.Int))
 
     [<Test>]
     let ``Initialisation where lhs is real and rhs is real, expects to typecheck``() = 
-        typecheckWith "let x:real := 2.5" checkTypes
+        typecheckWith "let x:real := 2.5;" checkTypes
         |> should equal (Success (SimplePrimitive Primitive.Real))
 
 
     // virker ikke lige nu. Det er noget med at den ikke ser det som samme type
     [<Test>]
     let ``Initialisation where lhs is real and rhs is int, expects to NOT typecheck``() = 
-        typecheckWith "let x:real := 2" checkTypes
+        typecheckWith "let x:real := 2;" checkTypes
         |> expectFailure
         |> run
 
