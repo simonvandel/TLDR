@@ -27,6 +27,15 @@ module CheckHidingTest =
         |> expectSuccess
         |> run
 
+    [<Test>]
+    let ``CheckHiding. No hiding in parallel scopes, expect Success``() = 
+        let program = """{let x:int := 2;};
+                         { let x:int := 1;}"""
+        let symTable = genSymTable program
+        checkHiding symTable
+        |> expectSuccess
+        |> run
+
     ///////////////////////// Failure expected //////////////////////
        
     [<Test>]
