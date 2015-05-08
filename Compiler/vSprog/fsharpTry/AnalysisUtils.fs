@@ -44,7 +44,7 @@ open vSprog.AST
         state {
                 let! state = getState
                 let newScopeCtr = state.scopeCounter + 1
-                let newState = {state with scope = {outer = Some state.scope; level = newScopeCtr :: state.scope.level}
+                let newState = {state with scope = {outer = Some state.scope; level = state.scope.level @ [newScopeCtr]}
                                            scopeCounter = newScopeCtr
                                 }
                 do! putState newState
@@ -53,7 +53,9 @@ open vSprog.AST
     let closeScope : State<unit, Environment> =
         state {
                 let! state = getState
-                let newState = {state with scope = {outer = Option.bind (fun sc -> sc.outer) state.scope.outer; level = state.scope.level.Tail}
+                let newState = {state with 
+                                      scope = {outer = Option.bind (fun sc -> sc.outer) state.scope.outer; 
+                                      level = state.scope.level |> List.rev |> List.tail |> List.rev}
                                            //scopeCounter = 0
                                 }
                 do! putState newState

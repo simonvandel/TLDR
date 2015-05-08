@@ -64,7 +64,7 @@ module CheckHidingTest =
         |> run
 
     [<Test>]
-    let ``CheckHiding. hiding in block, expect Success``() = 
+    let ``CheckHiding. hiding in block, expect Failure``() = 
         let program = """let x:int := 2;
                          { let x:int := 1;}"""
         let symTable = genSymTable program

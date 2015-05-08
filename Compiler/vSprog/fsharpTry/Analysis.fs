@@ -9,7 +9,12 @@ open AnalysisUtils
 module Analysis =
     let rec buildSymbolTable (root:AST) :  State<unit, Environment> =
         match root with
-        | Program stms | Block stms | Body stms-> 
+        | Block stms | Program stms ->
+          state 
+            {
+              do! forAll buildSymbolTable stms
+            }
+        | Body stms -> 
           state 
             {
               do! openScope
@@ -136,7 +141,6 @@ module Analysis =
                   }
               do! addEntry entry
             }
-        | Constant (ptype, value)-> SameState getState
         | If (condition, body) -> 
           state 
             {
@@ -161,7 +165,12 @@ module Analysis =
               do! closeScope
             }
         | ListRange content -> SameState getState
-        | BinOperation (lhs, op, rhs) -> SameState getState
+        | BinOperation (lhs, op, rhs) -> 
+          state
+            {
+              do! buildSymbolTable lhs
+              do! buildSymbolTable rhs
+            }
         | Identifier id -> SameState getState
         | Function (funcName, arguments, types, body) -> 
           state 
@@ -170,9 +179,17 @@ module Analysis =
               do! buildSymbolTable body
               do! closeScope
             }
-        | StructLiteral fieldNamesAndVals -> SameState getState
+        | StructLiteral fieldNamesAndVals -> 
+          state
+            {
+              do! forAll buildSymbolTable (fieldNamesAndVals |> List.map (fun e -> snd e))
+            }
         | Invocation (functionName, parameters) -> SameState getState
-        | UnaryOperation (op, rhs) -> SameState getState
+        | UnaryOperation (op, rhs) -> 
+          state
+            {
+              do! buildSymbolTable rhs
+            }
         | While (cond, body) ->
           state 
             {
@@ -183,6 +200,18 @@ module Analysis =
         | Kill (arg) -> SameState getState
         | Me -> SameState getState
         | Return (arg) -> SameState getState
+        | IfElse(cond, tBody, fBody) ->
+          state
+            {
+              do! openScope
+              do! buildSymbolTable tBody
+              do! closeScope
+
+              do! openScope
+              do! buildSymbolTable fBody
+              do! closeScope
+            }
+        | Constant (ptype, value)-> SameState getState
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
