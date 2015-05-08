@@ -1,16 +1,24 @@
-\section{Summary}\label{analsum}
+\section{Criteria for Language Design}\label{analsum}
 
-This section will, in light of the preceeding two chapters, \cref{part:analysis1} and \cref{part:analysis2}, settle on some criteria for The Language Described in this Report. The criteria are inspired by the ones found in \kanote{indsæt ref til sebesta bog}. However, only those characteristics which differentiates the language will be discussed, even if it might be present in the language. Such would be simplicity, which while being a cherishable trait, is not one that is either especially catered to.
+This section will, in light of the preceeding two chapters, \cref{part:analysis1} and \cref{part:analysis2}, settle on some criteria for The Language Described in this Report. The criteria are inspired by the ones found in \kanote{indsæt ref til sebesta bog}. However, only those characteristics which differentiates the language will be discussed, even if it might be present in the language.
 
 
+\subsection{Simplicity, orthogonality and Syntax Design}
 
-Simplicty
-orthogonality
-data types
-syntax design
-support for abstraction
-expressivity
-type checking
-exception handling
-restricted aliasing
+In order to accommodate a usergroup with programming as secondairy skill sets, The Language Described in this Report should be simple. This would result in strict and straitforward rules regarding interactions. The language should try to keep simple rules regarding orthogonality as well, but not necessarily be highly orthogonal for that reason. One such rule, based on properties of the actor model, is that actors should, in the eyes of the programmer, only communicate through messages either sent or received. This would prohibit directly adressing fields in an actor, which would lower orthogonality, but keep the language simple. The syntax design, should for the same reasons, caters towards a modelling perspective and not nessesarily a technical accurate perspective.
 
+
+\subsection{Data Types}
+
+Since the users of the language are usually either with background in mathematics, or require to include some mathematics in order to asses the value of any given result of a simulation. Therefore the language should strive towards having data types which allow for traditional mathematical numbers.
+
+
+\subsection{Type checking and Exception Handling}
+
+Due to the language targeting high performance computation, the language should try to avoid runtime errors, and catch problems as early as possible. This suggests a strongly typed language, but we will elaborate further on this matter in \cref{typesys}. For the same reasons, the language will not value exception handling, since edge cases should be fully incompassed in a simulation. However it is worth noticing that the actor model could require exception handling, if communication problems, caused by either race conditions or network conditions, should prove frequent.
+
+
+%\subsection{Support for abstraction}
+
+
+%\subsection{Aliasing}
