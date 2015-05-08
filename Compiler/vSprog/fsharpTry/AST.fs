@@ -298,6 +298,7 @@ module AST =
                                         root
                           |> List.ofSeq
                 Identifier (IdentifierAccessor ids) // Subject to change....
+            | err -> failwith (sprintf "This should never be reached (\"Identifier\" in toAST): %A" err)
         | "Function" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value // [0;0] is a list of 0 and 0, for accessing child 0,0 which is the identifier, the name of the function
             if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
