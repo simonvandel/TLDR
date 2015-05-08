@@ -39,6 +39,7 @@
     <Compile Include="CommonTypes.fs">
     </Compile>
     <Compile Include="AnalysisUtils.fs" />
+    <Compile Include="TypeChecker.fs" />
     <Compile Include="Analysis.fs" />
     <Compile Include="ParserUtils.fs" />
     <Compile Include="Parser.fs" />

@@ -261,9 +261,6 @@ module Analysis =
       | [] -> Success symTable
       | xs -> sumResults xs
 
-    let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
-      Success (SimplePrimitive Primitive.Int)
-
     let checkReass symTable = 
       //printfn "%A" symTable
       let res = symTable |> 
