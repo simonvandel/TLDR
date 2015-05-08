@@ -308,22 +308,27 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
                   %{e,st \vdash m \Rightarrow_A t}
 									%{, \mathbb{T}(n) = t}
 %\\\\
+\intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}} 
                            {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}|\Braket{S_2,e_2,\alpha'}}
-\\\\ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\alpha} \Rightarrow_S \Braket{e_1',\alpha'}} 
                            {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_2,e_2,\alpha'}}
-\\\\ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
 &\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\alpha} \Rightarrow_S \Braket{S_2',e_1',\alpha'}} 
                            {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}|\Braket{S_2,e_2,\alpha'}}
-\\\\ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
 &\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\alpha'}}
                            {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
 \\
-&												{\Twhere, \Ten \mapsto e(\alpha(\Tx)), \alpha' = \alpha[\Ta \mapsto \Ten]}
+&												{, \alpha(x) \mapsto \Braket{S,p} , \alpha' = \alpha[\Ta \mapsto \Braket{S, p}]}
 \\\\
 &\inference[$\text{SEND}$]{}
                        {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Ta.r(m),e,\alpha}|\Braket{S,e,\alpha}}
