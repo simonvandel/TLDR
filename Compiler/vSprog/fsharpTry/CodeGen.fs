@@ -158,10 +158,6 @@ module CodeGen =
               return test
           }
 
-        | Assignment (mutability, varId, rhs) as ass-> 
-          state {
-              return ("","")
-          }
         | Reassignment (varId, rhs) as reass ->
           state {
               let sId = match varId with
@@ -186,10 +182,6 @@ module CodeGen =
               return idPtr
           }
 
-        | Declaration (name, ptype) as decl ->
-          state {
-              return ("","")
-          }
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
           state {
             match name with

@@ -39,4 +39,4 @@ module Parser =
             getAssemblyAndRun srcInput
         else
            generateAssembly grammarPath
-           >> getAssemblyAndRun srcInput
+           >-> getAssemblyAndRun srcInput

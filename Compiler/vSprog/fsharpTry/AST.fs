@@ -34,10 +34,8 @@ module AST =
         | Program of AST list
         | Block of AST list
         | Body of AST list
-        | Assignment of bool * string * AST // mutability, varId, value
         | Reassignment of Identifier * AST // varId, rhs
         | Initialisation of LValue * AST // lvalue, rhs
-        | Declaration of string * PrimitiveType
         | Constant of PrimitiveType * PrimitiveValue // type, value
         | Actor of string * AST // name, body FIXME: Add more fields?
         | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
@@ -183,13 +181,6 @@ module AST =
             let lhs = toLValue (root.Children.Item 0) name typeName
             let rhs = toAST (root.Children.Item 2)
             Initialisation (lhs, rhs)
-        | "Assignment" ->
-            let mutability = toMutability (root.Children.Item 0)
-            let name = match toAST (getChildByIndexes [1;0] root) with
-                       | Identifier (SimpleIdentifier str) -> str
-                       | err -> failwith (sprintf "This should never be reached: %A" err)
-            let rhs = toAST (root.Children.Item 2)
-            Assignment (mutability, name, rhs)
         | "Reassignment" ->
             let assignables = 
                 match toAST (root.Children.Item 0) with

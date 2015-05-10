@@ -7,33 +7,38 @@ open AnalysisUtils
 
 
 module TypeChecker = 
-    let rec checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
+    let checkTypesSymTable (symTable:SymbolTable) : Result<unit> =
+        Success ()
+
+    let rec checkTypesAST (root:AST) : Result<PrimitiveType> =
         match root with
         | Program stms | Block stms | Body stms ->
-
-        //| Assignment (mutability, varId, value) ->
+            stms 
+            |> List.map (fun stm -> checkTypesAST stm)
+            |> sumResults
         //| Reassignment ( varId, rhs) -> 
+
         //| Initialisation (lvalue, rhs) -> 
         //| Declaration ( name, ptype) -> 
         //| Constant (ptype,value) ->
         //| Actor (name, body) ->
         //| Struct ( name, field) -> 
         | If (conditional, body) ->
-            match checkTypes conditional symTable with
+            match checkTypesAST conditional with
             | Failure errMsgs -> 
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
-                checkTypes body symTable
+                checkTypesAST body
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if statement should be bool, found %A" illegalType]
 
         | IfElse (conditional,trueBody,falseBody) ->
-            match checkTypes conditional symTable with
+            match checkTypesAST conditional with
             | Failure errMsgs -> 
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
-                let trueRes = checkTypes trueBody symTable
-                let falseRes = checkTypes falseBody symTable
+                let trueRes = checkTypesAST trueBody
+                let falseRes = checkTypesAST falseBody
                 sumResults [trueRes; falseRes]
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if-else statement should be bool, found %A" illegalType]
@@ -43,11 +48,11 @@ module TypeChecker =
         //| Receive (msgName, msgType, body) -> 
         //| ForIn(counterName, list, body) ->
         | While(condition, body) ->
-            match checkTypes condition symTable with
+            match checkTypesAST condition with
             | Failure errMsgs -> 
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
-                checkTypes body symTable
+                checkTypesAST body
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in while statement should be bool, found %A" illegalType]
         //| ListRange (content) ->
@@ -61,4 +66,6 @@ module TypeChecker =
         //| Kill name ->
         //| Me ->
 
-      //Success (SimplePrimitive Primitive.Int)
+
+    let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
+        checkTypesSymTable symTable >-> checkTypesAST root

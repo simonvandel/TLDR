@@ -25,7 +25,7 @@ module CommonTypes =
         | Success r -> r |> f
         | Failure errs -> Failure errs
 
-    let (>>) m f =
+    let (>->) m f =
         m >>= (fun _ -> f)
 
     // State --------------------------------------------

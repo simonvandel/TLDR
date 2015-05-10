@@ -21,31 +21,6 @@ module Analysis =
               do! forAll buildSymbolTable stms
               do! closeScope
             }
-        | Assignment (mutability, varId, rhs) as ass-> 
-          state 
-            {
-              let! curScope = getScope
-              let! curState = getState
-              let entry = 
-                {
-                  symbol = 
-                    {
-                      identity = SimpleIdentifier varId
-                      isMutable = mutability
-                      primitiveType = 
-                        curState.symbolList |>
-                          List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier varId && (e.statementType = Decl || e.statementType = Init)) |>
-                          (fun e -> match e with 
-                                      | Some (sEntry) -> sEntry.symbol.primitiveType
-                                      | None -> HasNoType
-                          )
-                    }
-                  statementType = Ass
-                  scope = curScope
-                  value = rhs
-                }
-              do! addEntry entry
-            }
         | Reassignment (varId, rhs) as reass ->
           state 
             {
@@ -87,24 +62,7 @@ module Analysis =
                   }
               do! addEntry entry
             }
-        | Declaration (name, ptype) as decl ->
-          state
-            {
-              let! curScope = getScope
-              let entry =
-                  {
-                    symbol =
-                      {
-                        identity = SimpleIdentifier name
-                        isMutable = false
-                        primitiveType = ptype
-                      }
-                    statementType = Decl
-                    scope = curScope
-                    value = decl
-                  }
-              do! addEntry entry
-            }
+      
         | Actor (name, body) -> 
           state
             {

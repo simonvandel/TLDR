@@ -6,6 +6,7 @@ open vSprog.Analysis
 open vSprog.Parser
 open vSprog.AST
 open vSprog.CommonTypes
+open vSprog.TypeChecker
 open AnalysisUtils
 open vSprog.Tests.TestUtils
 
