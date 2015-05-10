@@ -19,9 +19,9 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \subsection{Actor-Environment model}
 The formal semantics will also use an actor-environment model.
 
-$\mathbb{A}\text{ct} = \mathbb{A}\text{names} \cup \{next\} \rightharpoonup \mathbb{E}\text{nv}$
+$a = \text{Anames} \cup \{current\} \rightharpoonup e$
 
-$\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm} \times \mathbb{P}\text{names}$
+$e = \text{Pnames} \rightharpoonup \mathbb{S}\text{tm} \times \text{Pnames}$
 
 \subsection{General Constructs}
 \begin{align*}
@@ -311,12 +311,22 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 \newcommand{\Tm}{\; \mathbin{\text{m}} \;}
 \newcommand{\Twhere}{\mathbin{\text{where}}}
 \newcommand{\Ten}{\mathbin{\text{env}}}
+\newcommand{\Tactor}{\mathbin{\text{actor}} \;}
+\newcommand{\Tact}{\; \mathbin{\text{act}} \;}
+\newcommand{\Trecieve}{\mathbin{\text{recieve}} \;}
+\newcommand{\Tr}{\; \mathbin{\text{r}} \;}
 
 \begin{align*}
-%&\inference[TYPEOF]{}
-                  %{e,st \vdash m \Rightarrow_A t}
-									%{, \mathbb{T}(n) = t}
-%\\\\
+&\inference[TYPEOF]{}
+                  {e \vdash m \Rightarrow_T t}
+									{, \mathbb{T}(n) = t}
+\\\\
+&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e]}
+                           {\Braket{\Tactor \Tact := \{S\};,a} \Rightarrow_S \Braket{S,e,a'}}
+\\\\
+&\inference[$\text{RECIEVE}$]{}
+                           {\Braket{\Trecieve r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}} 
                            {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}|\Braket{S_2,e_2,\alpha'}}
@@ -339,6 +349,9 @@ $\mathbb{E}\text{nv} = \mathbb{P}\text{names} \rightharpoonup \mathbb{S}\text{tm
 \\
 &												{, \alpha(x) \mapsto \Braket{S,p} , \alpha' = \alpha[\Ta \mapsto \Braket{S, p}]}
 \\\\
-&\inference[$\text{SEND}$]{}
-                       {\Braket{\Tsend \Ta \Tm ; S,\alpha,e} \Rightarrow_S \Braket{\Ta.r(m),e,\alpha}|\Braket{S,e,\alpha}}
+&\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
+                       {\Braket{\Tsend \Tact \Tm ; S,\alpha,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
+\\\\
+&\inference[$\text{MAIN}$]{input \mapsto \Braket{S,\epsilon}}
+                          {\Braket{\Trecieve \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}
