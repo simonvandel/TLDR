@@ -334,7 +334,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for return with value true, expect return AST`` () =
         debugTestParseWith "return true"
-        <| should equal (Program [Body [ Return (Constant (SimplePrimitive Bool, PrimitiveValue.Bool true)) ]])
+        <| should equal (Program [Body [ Return (Some (Constant (SimplePrimitive Bool, PrimitiveValue.Bool true))) ]])
 
     (* --------------------------- Kill & me --------------------------- *)
     [<Test>]

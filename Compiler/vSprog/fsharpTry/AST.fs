@@ -53,7 +53,7 @@ module AST =
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list // functionName, parameters
-        | Return of AST // body
+        | Return of AST option // body
         | Kill of AST // whatToKill
         | Me
 
@@ -350,8 +350,11 @@ module AST =
                                               |> List.ofSeq
             Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List chars)
         | "Return" ->
-            let expr = toAST (root.Children.Item 0)
-            Return expr
+            if root.Children.Count = 1 then
+              let expr = toAST (root.Children.Item 0)
+              Return (Some expr)
+            else
+              Return None
         | "Kill" ->
             let expr = toAST (root.Children.Item 0)
             Kill expr
