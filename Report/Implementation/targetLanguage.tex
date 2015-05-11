@@ -7,12 +7,12 @@ The target language is the language that the compiler translates the source lang
 
 Different language types were considered as the target language of choice: assembly languages such as Java bytecode, CLI and LLVM IR, and languages just a level higher than assembly languages such C.
 
-Languages with higher levels of abstractions were not an opportunity because the authors of this report did not want to create a \enquote{search-and-replace} compiler. Such a compiler could for example translate a \emph{until} construct in a language to the \emph{do-while} loop of C. Such a compilation would not be much of a challenge.
+Languages with higher levels of abstractions were not an opportunity because the authors of this report did not want to create a \enquote{search-and-replace} compiler. Such a compiler could for example translate a \emph{until} construct in a language to the \emph{do-while} loop of C. Such a compilation would not be much of a challenge. \chnote{in an academic context, learning experience}
 
 The following target languages were considered:
 
 \subsubsection{C}
-C is the only high level language considered because of it's complexity due to the the lack of memory management. C has a lot of libraries, is a well known language and is more readable by humans than a assembly language. C was not chosen because compilers interpret data types in different ways on different platforms.
+C is the only high level language considered because of it's complexity due to the the lack of memory management. C has a lot of libraries, is a well known language and is more readable by humans than a assembly language. C was not chosen because compilers interpret data types in different ways on different platforms. \chnote{Skriv de rigtige argumenter, det er platform specific, man kan ikke forvente noget omkring størrelsen på en predifineret datatype f.eks.}
 
 \subsubsection{Java bytecode}
 Java bytecode runs on almost any Java Virtual Machine (JVM), which makes the language very cross-platform. Java bytecode is a instruction and stack based language. Because of its maturity lots of documentation is available. Java bytecode has large set of framework and libraries, because many languages run on the JVM. Many popular implementations exist for the actor model; for example Akka. Scala and Clojure are both examples of languages built upon the JVM. Many implementations of JVMs support garbage collection. Java bytecode was not chosen as the language of choice because its strong connection to the object oriented paradigm. A more paradigm neutral language is preferred, in order to not taint the design of The Language Described in this Report.
