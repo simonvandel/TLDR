@@ -37,3 +37,58 @@ The char primitive can have values of the ASCII standard. It is written literall
 \label{sec:unit/empty/void}
 
 The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness.
+
+From the start the project group, aimed toward a language with type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the project. Although due to prioritisation and time span of the project, it was decided that the language should initially have an explicit type system.
+
+Types not being known an artifact in previously mentioned sciences mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen. In this signature the function can take any number of arguments and return either a single typed symbol or a new function. The input and output is differenciated by the amount of input parameters (arg1, arg1, ... ,argN) where N would be the amount of inputs and M - N would be the size of the output.
+
+\begin{verbatim}
+  functionName(arg1, arg1, ... ,argN) :: arg1Type -> arg2Type -> ... -> argMType
+\end{verbatim}
+\label{typesignature}
+
+If the user wants to use functions instead of single typed symbols he or she simply puts these in parentheses as seen in \cref{typesignatureexample0}. Here the function takes another function that maps an integer to an integer and maps this to a real.
+
+\begin{verbatim}
+  f(x) :: (int -> int) -> real
+\end{verbatim}
+\label{typesignatureexample0}
+
+This can of cause be nested in as many levels as the user decides as illustrated in \cref{typesignatureexample1}, where the function takes a function typed the same way as in \cref{typesignatureexample0} and maps this to a list of characters. Note that both \cref{typesignatureexample0} and \cref{typesignatureexample1} still only takes one argument (x) sinco this is a function and can be used as such in the body.
+
+\begin{verbatim}
+  f(x) :: ((int -> int) -> real) -> [char]
+\end{verbatim}
+\label{typesignatureexample1}
+
+This approach proposed a problem with the concept of \enquote{void}. This represents the non-existing value, for the type system. It means that something does not have a value and using it in any context does not make sense. For instance when a function returns nothing ie void, it cannot be assigned to anything. The need for explicitness resides in that The Language Described in This Report have functions as, what is called, \enquote{first class citisens}, meaning that functions can be used as arguments and essentially are treated in the same way as other symbols such as integers, structs ect. Here the language becomes umbigious with implicit void, ie the user not needing to explicitly tell when a function takes or returns void. For instance \cref{typesignatureexample0} we would not be able to tell wether the function takes a function that takes an int and returns an int or returns a function that goes from int to void since the syntax is the same.
+Several of proposed solution will be described here after.
+
+First the type signature of this language looks as follows:
+\begin{verbatim}
+  printint(a): int -> int
+\end{verbatim}
+Where the first $int$ is the parameter $a$ of the function $printint$, and the second $int$ of the signature is the return type.
+
+So in the case that the function $printint$ should not return anything, the last type of the type signature will be decorated with a type of nothing, e.g. void, as follows:
+\begin{verbatim}
+  printint(a): int -> void
+\end{verbatim}
+
+First proposal of a solution is to denote void as \enquote{nothing}, like this:
+\begin{verbatim}
+  printint(a): int ->
+\end{verbatim}
+but this is ambiguent, in that white space, \enquote{nothing}, if the type signature of a function is that it takes nothing as parameter but returns something, like this:
+\begin{verbatim}
+  printint(): -> int
+\end{verbatim}
+.... %Expand on this
+
+\kanote{var 'ugly' vores argument?}
+
+So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unnecessary by the project group though. So in the end the project group chose to explicitly express void to avoid confusion for users of the language. The explicit format ended up as follows:
+\begin{verbatim}
+  printint(a): int -> void
+\end{verbatim}
+
