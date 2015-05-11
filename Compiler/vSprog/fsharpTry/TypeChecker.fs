@@ -13,11 +13,7 @@ module TypeChecker =
         List.rev input |>
         List.head
 
-    let checkTypesSymTable (symTable:SymbolTable) : Result<unit> =
 
-        // for alle entries:
-        // check om entry.symbol.primitiveType er lig typen af entry.value
-        Success ()
 
     let rec checkTypesAST (root:AST) : Result<PrimitiveType> =
         match root with
@@ -158,11 +154,27 @@ module TypeChecker =
         | Invocation (functionName, parameters) ->
             Success HasNoType
         | Return body ->
-            checkTypesAST body
+            match body with
+            | Some realBody -> checkTypesAST realBody
+            | None -> Success HasNoType
         | Kill name ->
             Success HasNoType
         | Me ->
             Success HasNoType
 
+    let checkTypesSymTable (symTable:SymbolTable) : Result<unit> =
+
+        // for alle entries:
+        // check om entry.symbol.primitiveType er lig typen af entry.value
+        let results = List.map (fun entry -> 
+                         match checkTypesAST entry.value with
+                         | Success pType ->
+                           if entry.symbol.primitiveType = pType then
+                             Success ()
+                           else 
+                             Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol entry.symbol.primitiveType pType]
+                         | Failure err -> Failure err) symTable
+        sumResults results
+        
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
         checkTypesSymTable symTable >-> checkTypesAST root
