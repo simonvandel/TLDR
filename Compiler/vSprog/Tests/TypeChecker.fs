@@ -48,6 +48,5 @@ module TypeCheckerTest =
     let ``If statement with condition of type Bool and body of type int, expects to typecheck with type int`` () =
         let res = typecheckWith "if ( true ) { 2 }" checkTypes
         //|> printfn "%A"
-        let expect : Result<PrimitiveType> = (Success (SimplePrimitive Primitive.Void))
+        let expect : Result<PrimitiveType> = (Success HasNoType)
         res |> should equal expect
-

@@ -37,7 +37,8 @@ module TypeChecker =
             | Failure errMsgs -> 
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
-                checkTypesAST body
+                checkTypesAST body >->
+                Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if statement should be bool, found %A" illegalType]
 
@@ -174,7 +175,9 @@ module TypeChecker =
                            else 
                              Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol entry.symbol.primitiveType pType]
                          | Failure err -> Failure err) symTable
-        sumResults results
+        if results.Length = 0 then
+          Success ()
+        else sumResults results
         
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
         checkTypesSymTable symTable >-> checkTypesAST root
