@@ -181,7 +181,9 @@ module Analysis =
         | Return (arg) -> 
           state
             {
-              do! buildSymbolTable arg
+              match arg with
+              | Some someArg -> do! buildSymbolTable someArg
+              | None -> do! SameState getState
             }
         | IfElse(cond, tBody, fBody) ->
           state

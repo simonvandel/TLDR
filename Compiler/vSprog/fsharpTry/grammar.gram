@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     Send	           -> SEND! Identifier Operation;
 
     /*--------- Return ---------*/
-    Return           -> RETURN! Operation;
+    Return           -> RETURN! Operation?;
 
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;

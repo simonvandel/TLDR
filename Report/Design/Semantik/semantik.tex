@@ -8,9 +8,9 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 
 \begin{figure}[H]
 \begin{align*}
-&\inference[$RULE-NAME$]{[CONDITION]}
+&\inference[$RULE-NAME$]{[PREMIS]}
 												{[CONCLUSSION]}
-												{,[SIDE-EFFECTS]}
+												{,[SIDE-CONDITION]}
 \end{align*}
 \caption{A desription of formal small-step semantics}
 \label{SS-semantics}
@@ -19,9 +19,9 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \subsection{Actor-Environment model}
 The formal semantics will also use an actor-environment model.
 
-$a = \text{Anames} \cup \{current\} \rightharpoonup e$
+$a = \text{Anames} \cup \{next\} \rightharpoonup e$
 
-$e = \text{Pnames} \rightharpoonup \mathbb{S}\text{tm} \times \text{Pnames}$
+$e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 
 \subsection{General Constructs}
 \begin{align*}
