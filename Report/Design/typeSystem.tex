@@ -127,6 +127,10 @@ The type system for The Language Described in this Report is \emph{strong} stati
 &\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
                        \Tenv e_2 : \Tbool}
                     {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
+                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
 \end{align*}
 \paragraph{Conditional Expressions}
 \begin{align*}
