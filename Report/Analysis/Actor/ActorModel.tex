@@ -3,7 +3,7 @@ As described in \cref{}\jenote{find afsnit om hvorfor vi skal køre parallelt} m
 
 If we look at the definition given earlier about models, they consist of a general theory and a description of objects and systems. This is a definition is very similar to how object oriented programming works, where all programs consists of objects, with fields and methods, and systems are build around these. It is not surprising that this is a property of object oriented programming, since it has been designed to model the real world.
 Because of this it would be very beneficial to use a concurrent abstraction that has the same base where everything is objects.
-The actor model is often described as the object oriented concurrency model. The rest of this section will describe why this is the case, but because of its similarity to object oriented thinking the actor model was found to be the best concurrency model for simulations and therefore also The Language Described in this Report.
+The actor model is often described as the object oriented concurrency model. The rest of this section will describe why this is the case, but because of its similarity to object oriented thinking the actor model was found to be the best concurrency model for simulations and therefore also TLDR.
 
 The actor model is a concurrency model, which first appeared in 1973 in the report \enquote{A Universal Modular ACTOR Formalism for Artificial Intelligence} by Carl Hewitt, Peter Bishop and Richard Steiger \cite{Hewitt:1973}. This section will explain the model generally, be compared to alternative concurrency models and a few implementations of the model will be briefly described.
 
@@ -126,7 +126,7 @@ Most implementations of the actor model implement a form of a supervisor-worker 
 Supervisors in the actor model works very well with the \enquote{fail fast}-principle of programming, meaning, in the actor model, that an actor will not try to continue operation or correct an error when encountering a failure. An actor that has failed will, as soon as the failure is detected, report the failure to its supervisor and halt operation, moving the responsibility of handling the failure up the supervision tree.
 
 \subsection{Implementations}\label{sub:implementations}
-The Language Described in this Report is not the first language to implement the actor model. Two popular implementations, a mature one and a more current one, will be described here, to provide insight in the typical syntax and semantics of actors.
+TLDR is not the first language to implement the actor model. Two popular implementations, a mature one and a more current one, will be described here, to provide insight in the typical syntax and semantics of actors.
 
 \subsubsection{Erlang}
 When talking about the actor model, one cannot escape the subject of Erlang. Erlang was one of first languages to fully incorporate the actor model as the main model of concurrency. Erlang is a purely functional language, developed for the telecommunications industry, where a lot of concurrent processes have to be handled. 
@@ -209,4 +209,4 @@ object Main extends App {
 \input{Analysis/Supercomputing/TheIterationProblem.tex}
 
 \subsection{Summary}
-The actor model is a model for concurrency formalised by Carl Hewitt, based on the work of C.A.R. Hoare. The actor model provides an abstraction over concurrent processes, where locks, mutexes, semaphores and the like are unnecessary. The actor model's abstraction also solves some of the classical problems with concurrency, such as phantom reads. The actor model integrates very well with functional languages, as seen in \cref{sub:implementations}. Based on these observations and with confidence that the iteration problem can be solved, the actor model is chosen as the concurrency model for The Language Described in this Report.
+The actor model is a model for concurrency formalised by Carl Hewitt, based on the work of C.A.R. Hoare. The actor model provides an abstraction over concurrent processes, where locks, mutexes, semaphores and the like are unnecessary. The actor model's abstraction also solves some of the classical problems with concurrency, such as phantom reads. The actor model integrates very well with functional languages, as seen in \cref{sub:implementations}. Based on these observations and with confidence that the iteration problem can be solved, the actor model is chosen as the concurrency model for TLDR.

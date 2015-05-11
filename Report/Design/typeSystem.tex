@@ -2,7 +2,7 @@
 
 This section first defines what a type system is and presents two categories of type systems. The two type system categories are described and its properties are outlined.
 
-Later in this section, the type system decisions made for The Language Described in this Report are described, and formal type rules are given.
+Later in this section, the type system decisions made for TLDR are described, and formal type rules are given.
 
 \subsection{General Type Systems}
 
@@ -37,12 +37,12 @@ Dynamic typing checks types at run-time and therefore allows the programmer to n
 
 Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
 
-\subsection{Type System Choice for The Language Described in this Report}
+\subsection{Type System Choice for TLDR}
 
-This section describes some design choices about the type system used for The Language Described in this Report.
+This section describes some design choices about the type system used for TLDR.
 
 \subsubsection{Strictness \& Statical Typing}
-The type system for The Language Described in this Report is \emph{strong} statically typed. No implicit type conversions are made in the type system. This choice of static typing was made based on the domain in which The Language Described in this Report is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures. 
+The type system for TLDR is \emph{strong} statically typed. No implicit type conversions are made in the type system. This choice of static typing was made based on the domain in which TLDR is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures. 
 
 \subsubsection{Type Rules}
 

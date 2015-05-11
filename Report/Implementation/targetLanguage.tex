@@ -3,7 +3,7 @@
 
 The target language is the language that the compiler translates the source language into. In this section the choice of target language will be described.
 
-\subsection{Choice of target language}
+\subsection{Choice of Target Language}
 
 Different language types were considered as the target language of choice: assembly languages such as Java bytecode, CLI and LLVM IR, and languages just a level higher than assembly languages such C.
 
@@ -14,8 +14,8 @@ The following target languages were considered:
 \subsubsection{C}
 C is the only high level language considered because of it's complexity due to the the lack of memory management. C has a lot of libraries, is a well known language and is more readable by humans than a assembly language. C was not chosen because compilers interpret data types in different ways on different platforms. \chnote{Skriv de rigtige argumenter, det er platform specific, man kan ikke forvente noget omkring størrelsen på en predifineret datatype f.eks.}
 
-\subsubsection{Java bytecode}
-Java bytecode runs on almost any Java Virtual Machine (JVM), which makes the language very cross-platform. Java bytecode is a instruction and stack based language. Because of its maturity lots of documentation is available. Java bytecode has large set of framework and libraries, because many languages run on the JVM. Many popular implementations exist for the actor model; for example Akka. Scala and Clojure are both examples of languages built upon the JVM. Many implementations of JVMs support garbage collection. Java bytecode was not chosen as the language of choice because its strong connection to the object oriented paradigm. A more paradigm neutral language is preferred, in order to not taint the design of The Language Described in this Report.
+\subsubsection{Java Bytecode}
+Java bytecode runs on almost any Java Virtual Machine (JVM), which makes the language very cross-platform. Java bytecode is a instruction and stack based language. Because of its maturity lots of documentation is available. Java bytecode has large set of framework and libraries, because many languages run on the JVM. Many popular implementations exist for the actor model; for example Akka. Scala and Clojure are both examples of languages built upon the JVM. Many implementations of JVMs support garbage collection. Java bytecode was not chosen as the language of choice because its strong connection to the object oriented paradigm. A more paradigm neutral language is preferred, in order to not taint the design of TLDR.
 
 \subsubsection{Common Intermediate Language}
 Common Intermediate Language (CIL) is an Intermediate Language, C\#, F\# and many more languages targets. Common Intermediate Language and Common Language Infrastructure (CLI) have many things in common with Java bytecode and the JVM including support for garbage collection. The specification for CLI is open, so implementations can be made for many platforms. Microsoft has implemented its own CLI implementation called .NET Framework. Support for Linux is given by the Mono implementation. CIL was not chosen for the same reasons as Java bytecode.
