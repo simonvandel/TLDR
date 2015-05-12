@@ -18,7 +18,7 @@ module AST =
         | Bool
         | Void
         | Actor of string
-        | Function of PrimitiveType
+        //| Function of PrimitiveType
         | Struct of string * (TypeDeclaration list)
 
     and PrimitiveType =

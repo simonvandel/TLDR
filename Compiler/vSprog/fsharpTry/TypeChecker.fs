@@ -154,7 +154,7 @@ module TypeChecker =
             | Success bodyType, (ArrowPrimitive plist) ->
                 Last plist |>
                 fun e -> if bodyType = e then Success HasNoType 
-                         else Failure [sprintf "Return value of function body does not match return of definiton"]
+                         else Failure [sprintf "Return value of function body does not match return of definition. Found %A, expected %A" bodyType e]
             | Success bodyType, _ ->
                 Success HasNoType
             | Failure errMsgs, _ -> 
@@ -200,4 +200,4 @@ module TypeChecker =
           sumResults results
         
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
-        checkTypesSymTable symTable >-> checkTypesAST root
+        (*checkTypesSymTable symTable >-> *)checkTypesAST root

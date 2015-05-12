@@ -66,7 +66,7 @@ module Analysis =
                       }
                     statementType = Reass
                     scope = curScope
-                    value = newRhs
+                    value = Reassignment (varId, newRhs)
                   }
               do! addEntry entry
 
@@ -82,7 +82,7 @@ module Analysis =
                     symbol = lvalue
                     statementType = Init
                     scope = curScope
-                    value = newRhs
+                    value = Initialisation (lvalue, newRhs)
                   }
               do! addEntry entry
               return Initialisation (lvalue, newRhs)
@@ -244,11 +244,11 @@ module Analysis =
                       {
                         identity = SimpleIdentifier funcName
                         isMutable = false
-                        primitiveType = SimplePrimitive (Primitive.Function types)
+                        primitiveType = types  //SimplePrimitive (Primitive.Function types)
                       }
                     statementType = Def
                     scope = outside
-                    value = newBody
+                    value = Function (funcName, arguments, types, newBody)
                   }
               do! addEntry entry
 
@@ -270,6 +270,8 @@ module Analysis =
               let sDecl = 
                 curState.symbolList |>
                   List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier functionName && e.statementType = Def && isInScope e.scope curScope)
+              
+
               let newPType = match sDecl with
                              | Some decl -> decl.symbol.primitiveType
                              | None -> HasNoType
@@ -366,9 +368,9 @@ module Analysis =
       | xs -> sumResults xs
 
     let analyse (ast:AST) : Result<AST> =
-        let environment = evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
+        let (newAST, environment) = runState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
         checkReass environment.symbolList
         >>= checkUsedBeforeDecl
         >>= checkHiding
-        >>= checkTypes environment.ast
-        >-> Success environment.ast
+        >>= checkTypes newAST
+        >-> Success newAST
