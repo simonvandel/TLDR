@@ -15,7 +15,7 @@ module TestUtils =
         >>= fun tree -> Success (toAST tree)
         |> fun res -> match res with
                       | Success ast ->
-                        (evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}).symbolList
+                        (evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}).symbolList
                       | Failure _ -> failwith "failed in constructing ast"
 
     let run (test:bool) : unit =

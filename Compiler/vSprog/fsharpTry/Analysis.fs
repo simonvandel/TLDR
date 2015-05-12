@@ -5,21 +5,41 @@ open Hime.Redist;
 open vSprog.CommonTypes
 open vSprog.AST
 open AnalysisUtils
+open vSprog.TypeChecker
 
 module Analysis =
-    let rec buildSymbolTable (root:AST) :  State<unit, Environment> =
+    // applies a state workflow to all elements in list
+    let rec applyAll (p:('a ->State<'a,'b>)) (list:'a list) : State<'a list, 'b> =
+        state {
+            match list with
+            | [] -> return []
+            | x::xs ->
+                let! x1 = p x
+                let! xs1 = applyAll p xs
+                return x1 :: xs1
+              }
+
+    let rec buildSymbolTable (root:AST) :  State<AST, Environment> =
         match root with
-        | Block stms | Program stms ->
+        | Program stms ->
           state 
             {
-              do! forAll buildSymbolTable stms
+              let! newBodies = applyAll buildSymbolTable stms
+              return (Program newBodies)
+            }
+        | Block stms ->
+          state 
+            {
+              let! newBodies = applyAll buildSymbolTable stms
+              return (Block newBodies)
             }
         | Body stms -> 
           state 
             {
               do! openScope
-              do! forAll buildSymbolTable stms
+              let! newBodies = applyAll buildSymbolTable stms
               do! closeScope
+              return (Body newBodies)
             }
         | Reassignment (varId, rhs) as reass ->
           state 
@@ -28,7 +48,8 @@ module Analysis =
               let! curState = getState
               let sDecl = 
                 curState.symbolList |>
-                  List.tryFind (fun e -> e.symbol.identity = varId && (e.statementType = Decl || e.statementType = Init))
+                  List.tryFind (fun e -> e.symbol.identity = varId && e.statementType = Init && isInScope  e.scope curScope)
+              let! newRhs = buildSymbolTable rhs
               let entry = 
                   {
                     symbol = 
@@ -45,41 +66,49 @@ module Analysis =
                       }
                     statementType = Reass
                     scope = curScope
-                    value = rhs
+                    value = newRhs
                   }
               do! addEntry entry
+
+              return Reassignment (varId, newRhs)
             }
         | Initialisation (lvalue, rhs) as init ->
           state
             {
+              let! newRhs = buildSymbolTable rhs
               let! curScope = getScope
               let entry =
                   {
                     symbol = lvalue
                     statementType = Init
                     scope = curScope
-                    value = rhs
+                    value = newRhs
                   }
               do! addEntry entry
+              return Initialisation (lvalue, newRhs)
             }
       
         | Actor (name, body) -> 
           state
             {
               let! curScope = getScope
+              let! newBody = buildSymbolTable body
+              let newAST = Actor (name, newBody)
               let entry =
                   {
                     symbol = 
                       {
                         identity = SimpleIdentifier name
                         isMutable = false
-                        primitiveType = SimplePrimitive (Primitive.Actor name)
+                        primitiveType = HasNoType
                       }
                     statementType = Def
                     scope = curScope
-                    value = body
+                    value = newAST
                   }
               do! addEntry entry
+
+              return newAST
             }
         | Struct (name, fields) ->
           state
@@ -98,116 +127,197 @@ module Analysis =
                     value = Struct (name, fields)
                   }
               do! addEntry entry
+              return Struct (name, fields)
             }
         | If (condition, body) -> 
           state 
             {
               do! openScope
-              do! buildSymbolTable body
+              let! newCondition = buildSymbolTable condition
+              let! newBody = buildSymbolTable body
               do! closeScope
+              return If (newCondition, newBody)
             }
-        | Send (actorName, msgName) -> SameState getState
-        | Spawn (lvalue, actorName, initMsg) -> SameState getState
+        | Send (actorName, msgName) -> 
+          state {
+              return Send (actorName, msgName)
+          }
+        | Spawn (lvalue, actorName, initMsg) -> 
+          state {
+              match initMsg with
+              | Some msg -> 
+                  let! newInitMsg = buildSymbolTable msg
+                  return Spawn (lvalue, actorName, Some newInitMsg)
+              | None ->
+                  return Spawn (lvalue, actorName, initMsg)
+          }
         | Receive (msgName, msgType, body) -> 
           state 
             {
               do! openScope
-              do! buildSymbolTable body
+              let! newBody =  buildSymbolTable body
               do! closeScope
+              return Receive (msgName, msgType, newBody)
             }
         | ForIn (counterName, list, body) -> 
           state 
             {
               do! openScope
-              do! buildSymbolTable body
+              let! newList = buildSymbolTable list
+              let! newBody = buildSymbolTable body
               do! closeScope
+              return ForIn (counterName, newList, newBody)
             }
-        | ListRange content -> SameState getState
+        | ListRange content -> 
+            state {
+                let! newContent = applyAll buildSymbolTable content
+                return ListRange newContent
+            }
         | BinOperation (lhs, op, rhs) -> 
           state
             {
-              do! buildSymbolTable lhs
-              do! buildSymbolTable rhs
+              let! newLhs = buildSymbolTable lhs
+              let! newRhs = buildSymbolTable rhs
+              return BinOperation (newLhs, op, newRhs)
             }
-        | Identifier id -> 
+        | Identifier (id, pType) -> 
           state
             {
               let! curScope = getScope
+              let! curState = getState
+              let sDecl = 
+                curState.symbolList |>
+                  List.tryFind (fun e -> e.symbol.identity = id && e.statementType = Init && isInScope e.scope curScope)
+              let newPType = match sDecl with
+                             | Some decl -> decl.symbol.primitiveType
+                             | None -> HasNoType
               let entry = 
                 {
                   symbol = 
                     {
                       identity = id
-                      isMutable = false
-                      primitiveType = SimplePrimitive Void
+                      isMutable = match sDecl with
+                                  | Some decl -> decl.symbol.isMutable
+                                  | None -> false
+                      primitiveType = newPType
                     }
                   statementType = Use
                   scope = curScope
-                  value = Identifier id
+                  value = Identifier (id, newPType)
                 }
               do! addEntry entry
+              return Identifier (id, newPType)
             }
         | Function (funcName, arguments, types, body) -> 
           state 
             {
+              let! curScope = getScope
               do! openScope
-              do! buildSymbolTable body
+              let! newBody = buildSymbolTable body
+              let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier funcName
+                        isMutable = false
+                        primitiveType = SimplePrimitive (Primitive.Function types)
+                      }
+                    statementType = Def
+                    scope = curScope
+                    value = newBody
+                  }
+              do! addEntry entry
+
               do! closeScope
+              return Function (funcName, arguments, types, newBody)
             }
         | StructLiteral fieldNamesAndVals -> 
           state
             {
-              do! forAll buildSymbolTable (fieldNamesAndVals |> List.map (fun e -> snd e))
+              let fields = fieldNamesAndVals |> List.map (fun e -> snd e)
+              let fieldNames = fieldNamesAndVals |> List.map (fun e -> fst e)
+              let! newFields = applyAll buildSymbolTable fields
+              return StructLiteral (List.zip fieldNames newFields)
             }
-        | Invocation (functionName, parameters) -> SameState getState
+        | Invocation (functionName, parameters, functionType) -> 
+          state {
+              let! curScope = getScope
+              let! curState = getState
+              let sDecl = 
+                curState.symbolList |>
+                  List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier functionName && e.statementType = Def && isInScope e.scope curScope)
+              let newPType = match sDecl with
+                             | Some decl -> decl.symbol.primitiveType
+                             | None -> HasNoType
+              return Invocation (functionName, parameters, newPType)
+          }
         | UnaryOperation (op, rhs) -> 
           state
             {
-              do! buildSymbolTable rhs
+              let! newRhs = buildSymbolTable rhs
+              return UnaryOperation (op, rhs)
             }
         | While (cond, body) ->
           state 
             {
               do! openScope
-              do! buildSymbolTable body
+              let! newCondition = buildSymbolTable cond
+              let! newBody = buildSymbolTable body
               do! closeScope
+              return While (newCondition, newBody)
             }
         | Kill (arg) -> 
           state
             {
-              do! buildSymbolTable arg
+              let! newArg = buildSymbolTable arg
+              return Kill newArg
             }
-        | Me -> SameState getState
+        | Me -> 
+          state {
+              return Me
+          }
         | Return (arg) -> 
           state
             {
               match arg with
-              | Some someArg -> do! buildSymbolTable someArg
-              | None -> do! SameState getState
+              | Some someArg -> 
+                let! newArg = buildSymbolTable someArg
+                return Return (Some newArg)
+              | None -> 
+                return Return None
             }
         | IfElse(cond, tBody, fBody) ->
           state
             {
               do! openScope
-              do! buildSymbolTable tBody
+              let! newCondition = buildSymbolTable cond
               do! closeScope
 
               do! openScope
-              do! buildSymbolTable fBody
+              let! newTBody = buildSymbolTable tBody
               do! closeScope
+
+              do! openScope
+              let! newFBody = buildSymbolTable fBody
+              do! closeScope
+
+              return IfElse(newCondition, newTBody, newFBody)
             }
-        | Constant (ptype, value)-> SameState getState
+        | Constant (ptype, value) -> 
+          state {
+              return Constant (ptype, value)
+          }
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
         // for hver dupliket a, se om dupliketter b, har b.scope.outer = a.scope eller b.scope = a.scope
         // første entry af a: er nogen i samme scope af dem under mig i listen?
         let mutable res:Result<SymbolTable> list = []
-        let NoReass = symbolTable |> List.filter (fun e -> e.statementType <> Reass)
+        let NoReass = symbolTable |> List.filter (fun e -> e.statementType <> Reass && e.statementType <> Use)
         for i in NoReass do
-          let seq = List.filter (fun e -> isVisible i e && i.symbol.identity = e.symbol.identity && i <> e && e.statementType <> Reass) symbolTable
+          let seq = List.filter (fun e -> e <> i && isVisible i e && i.symbol.identity = e.symbol.identity && i <> e) NoReass
           if seq.Length > 0 then 
-            res <- Failure [sprintf "Element %A hides %A" i res] :: res
+            res <- Failure [sprintf "Element %A hides %A" i.symbol.identity seq] :: res
 
         match res with
         | [] -> Success symbolTable
@@ -215,8 +325,8 @@ module Analysis =
 
     let checkUsedBeforeDecl (symTable:SymbolTable) : Result<SymbolTable> =
       let res = symTable |>
-                    List.filter (fun e -> e.symbol.primitiveType = PrimitiveType.HasNoType ) |>
-                      List.map (fun e -> Failure [sprintf "Symbol \"%A\" is used before its declaration." e.symbol.identity.ToString])
+                    List.filter (fun e -> e.statementType <> Def && e.symbol.primitiveType = PrimitiveType.HasNoType ) |>
+                      List.map (fun e -> Failure [sprintf "Symbol \"%A\" is used before its declaration." e.symbol.identity])
       match res with
       | [] -> Success symTable
       | xs -> sumResults xs
@@ -226,14 +336,19 @@ module Analysis =
       let res = symTable |> 
                   List.filter (fun entry -> entry.statementType = Reass) |>
                     List.filter (fun entry -> entry.symbol.isMutable = false) |>
-                      List.map (fun e -> Failure [sprintf "Invalid reassignment, %A is not mutable" e.symbol.identity.ToString])
+                      List.map (fun e -> Failure [sprintf "Invalid reassignment, %A is not mutable" e.symbol.identity])
       match res with
       | [] -> Success symTable
       | xs -> sumResults xs
 
     let analyse (ast:AST) : Result<AST> = 
-        printfn "%A" ast
-        //let environment = evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0}
+        //printfn "%A" ast
+        let environment = evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
+        checkReass environment.symbolList
+        >>= checkUsedBeforeDecl
+        >>= checkHiding
+        >>= checkTypes environment.ast
+        >-> Success environment.ast
         //environment |> printf "%A"
         //environment |> (fun env -> checkReass env.symbolList)
-        Success ast
+        //Success ast

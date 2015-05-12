@@ -18,6 +18,7 @@ module AST =
         | Bool
         | Void
         | Actor of string
+        | Function of PrimitiveType
         | Struct of string * (TypeDeclaration list)
 
     and PrimitiveType =
@@ -49,10 +50,10 @@ module AST =
         | ListRange of AST list // content
         | BinOperation of AST * BinOperator * AST // lhs, op, rhs
         | UnaryOperation of UnaryOperator * AST // op, rhs
-        | Identifier of Identifier
+        | Identifier of Identifier * PrimitiveType // id, typeOfId
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
-        | Invocation of string * string list // functionName, parameters
+        | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
         | Return of AST option // body
         | Kill of AST // whatToKill
         | Me
@@ -129,7 +130,7 @@ module AST =
     let toLValue (mutability:ASTNode) (name:AST) (typeName:ASTNode) : LValue = 
         let isMutable = toMutability mutability
         {identity = (match name with
-                    | Identifier id -> id)
+                    | Identifier (id, _) -> id)
                     ; 
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
@@ -184,7 +185,7 @@ module AST =
         | "Reassignment" ->
             let assignables = 
                 match toAST (root.Children.Item 0) with
-                | Identifier id -> id
+                | Identifier (id,_) -> id
                 | err -> failwith (sprintf "This should never be reached: %A" err)
             let body = toAST (root.Children.Item 1)
             Reassignment (assignables, body)
@@ -279,7 +280,7 @@ module AST =
             | err -> failwith (sprintf "This should never be reached: %A" err)
         | "Identifier" ->
             match root.Children.Count with // Identifier can only can only take 2 forms, IDENTIER or IDENTIFIER Accessor 
-            | 1 -> Identifier (SimpleIdentifier (root.Children.Item 0).Symbol.Value)
+            | 1 -> Identifier (SimpleIdentifier (root.Children.Item 0).Symbol.Value, HasNoType)
             | 2 -> 
                 let ids = Seq.unfold (fun (node:ASTNode) -> 
                                         match node.Children.Count with
@@ -288,7 +289,7 @@ module AST =
                                      ) 
                                         root
                           |> List.ofSeq
-                Identifier (IdentifierAccessor ids) // Subject to change....
+                Identifier (IdentifierAccessor ids, HasNoType) // Subject to change....
             | err -> failwith (sprintf "This should never be reached (\"Identifier\" in toAST): %A" err)
         | "Function" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value // [0;0] is a list of 0 and 0, for accessing child 0,0 which is the identifier, the name of the function
@@ -320,7 +321,7 @@ module AST =
         | "Invocation" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
-                Invocation (funcName, [])
+                Invocation (funcName, [], HasNoType)
             else
                 let parameters = seq { for c in (root.Children.Item 1).Children do
                                         let rawParam = (getChildByIndexes [0;0] c).Symbol.Value
@@ -332,7 +333,7 @@ module AST =
                                         yield param          
                                      }
                                  |> List.ofSeq
-                Invocation (funcName, parameters)
+                Invocation (funcName, parameters, HasNoType)
         | "StructLiteral" ->
             let fields = seq { for c in root.Children do
                                 let fieldName1 = (getChildByIndexes [0;0] c).Symbol.Value

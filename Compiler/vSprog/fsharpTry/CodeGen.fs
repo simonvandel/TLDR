@@ -270,7 +270,7 @@ module CodeGen =
           }
 
           
-        | Identifier id -> 
+        | Identifier (id, pType) -> 
             // TODO: vi skal bruge typen på identifier her..
           state {
               match id with
@@ -290,7 +290,7 @@ module CodeGen =
           state {
               return ("","")
           }
-        | Invocation (functionName, parameters) -> 
+        | Invocation (functionName, parameters, functionType) -> 
           state {
               match functionName with
               | "print" ->
