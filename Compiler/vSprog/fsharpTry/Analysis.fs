@@ -211,8 +211,32 @@ module Analysis =
         | Function (funcName, arguments, types, body) -> 
           state 
             {
-              let! curScope = getScope
+              let! outside = getScope
               do! openScope
+              let! inside = getScope
+              // add arguments as symbols
+              let argsWithTypes = match types with
+                                  | SimplePrimitive _ | ListPrimitive _ | HasNoType -> [] // no arguments to add
+                                  | ArrowPrimitive prims ->
+                                    Seq.zip arguments prims
+                                    |> List.ofSeq
+
+              let argumentEntries = argsWithTypes
+                                    |> List.map (fun (argName, argType) -> 
+                                         {
+                                          symbol = 
+                                            {
+                                              identity = SimpleIdentifier argName
+                                              isMutable = false
+                                              primitiveType = argType
+                                            }
+                                          statementType = Init
+                                          scope = inside
+                                          value = Identifier (SimpleIdentifier argName, argType)
+                                        })
+
+              do! forAll addEntry argumentEntries
+
               let! newBody = buildSymbolTable body
               let entry =
                   {
@@ -223,7 +247,7 @@ module Analysis =
                         primitiveType = SimplePrimitive (Primitive.Function types)
                       }
                     statementType = Def
-                    scope = curScope
+                    scope = outside
                     value = newBody
                   }
               do! addEntry entry
@@ -341,14 +365,10 @@ module Analysis =
       | [] -> Success symTable
       | xs -> sumResults xs
 
-    let analyse (ast:AST) : Result<AST> = 
-        //printfn "%A" ast
+    let analyse (ast:AST) : Result<AST> =
         let environment = evalState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
         checkReass environment.symbolList
         >>= checkUsedBeforeDecl
         >>= checkHiding
         >>= checkTypes environment.ast
         >-> Success environment.ast
-        //environment |> printf "%A"
-        //environment |> (fun env -> checkReass env.symbolList)
-        //Success ast

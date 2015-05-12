@@ -192,7 +192,7 @@ module TypeChecker =
                            if entry.symbol.primitiveType = pType then
                              Success ()
                            else 
-                             Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol entry.symbol.primitiveType pType]
+                             Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol.identity entry.symbol.primitiveType pType]
                          | Failure err -> Failure err) symTable
         if results.Length = 0 then
           Success ()

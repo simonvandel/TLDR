@@ -27,7 +27,6 @@ module AST =
         | ArrowPrimitive of PrimitiveType list
         | UserType of string
         | HasNoType
-        | StillUnknown of AST
 
     and TypeDeclaration = string * PrimitiveType // name, type. Example: fieldName:int
 
