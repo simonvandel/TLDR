@@ -188,6 +188,13 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
                     {v_1 = v_2 \Rightarrow_B \bot}
 										{, v_1 \neq v_2}
 \\\\
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e}
+                    {act_1 = act_2 \Rightarrow_B \top}
+&
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e'}
+                    {act_1 = act_2 \Rightarrow_B \bot}
+										{e \neq e'}
+\\\\
 &\inference[$NEQUALS$]{}
                     {e \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
 \\\\
