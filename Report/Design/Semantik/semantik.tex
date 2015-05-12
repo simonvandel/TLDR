@@ -255,11 +255,11 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 %												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 %\\\\
 &\inference[$\text{INIT}_{SYM}$]{}
-                         {\Braket{\Tlet \Tx := S,e} \Rightarrow_S e'}
+                         {\Braket{\Tlet \Tx := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \\\\
 &\inference[$\text{INIT}_{FUNC}$]{}
-                         {\Braket{\Tlet \Tx(y) := S,e} \Rightarrow_S e'}
+                         {\Braket{\Tlet \Tx(y) := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,y}]}
 \\\\
 &\inference[$\text{INIT}$]{}
