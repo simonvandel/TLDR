@@ -10,7 +10,7 @@ The following primitives exist in the language. All primitives are lower-cased.
   \item real
   \item bool
   \item char
-  \item unit/void/empty \sinote{bliv enige om navn. Skal rettes længere nede også}
+  \item unit
 \end{itemize}
 
 \paragraph{Integer}
@@ -33,10 +33,11 @@ The bool primitive's value can be either \emph{true} or \emph{false}.
 
 The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single quotation marks. For example: \emph{ '0' } and \emph{ 'A' }.
 
-\paragraph{Unit/void/empty}
-\label{sec:unit/empty/void}
+\paragraph{Unit}
+\label{sec:unit}
+\kanote{overvej om vi kan forklare unit type uden syntax}
 
-The unit/void/empty primitive can have only one value: itself. The use of the primitive is to signal emptiness.
+The unit primitive can have only one value: itself. The use of the primitive is to signal emptiness.
 
 From the start the project group, aimed toward a language with type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the project. Although due to prioritisation and time span of the project, it was decided that the language should initially have an explicit type system.
 
@@ -61,7 +62,7 @@ This can of cause be nested in as many levels as the user decides as illustrated
 \end{verbatim}
 \label{typesignatureexample1}
 
-This approach proposed a problem with the concept of \enquote{void}. This represents the non-existing value, for the type system. It means that something does not have a value and using it in any context does not make sense. For instance when a function returns nothing ie void, it cannot be assigned to anything. The need for explicitness resides in that The Language Described in This Report have functions as, what is called, \enquote{first class citisens}, meaning that functions can be used as arguments and essentially are treated in the same way as other symbols such as integers, structs ect. Here the language becomes umbigious with implicit void, ie the user not needing to explicitly tell when a function takes or returns void. For instance \cref{typesignatureexample0} we would not be able to tell wether the function takes a function that takes an int and returns an int or returns a function that goes from int to void since the syntax is the same.
+This approach proposed a problem with the concept of \enquote{unit}. This represents the non-existing value, for the type system. It means that something does not have a value and using it in any context does not make sense. For instance when a function returns nothing ie unit, it cannot be assigned to anything. The need for explicitness resides in that The Language Described in This Report have functions as, what is called, \enquote{first class citisens}, meaning that functions can be used as arguments and essentially are treated in the same way as other symbols such as integers, structs ect. Here the language becomes umbigious with implicit unit, ie the user not needing to explicitly tell when a function takes or returns unit. For instance \cref{typesignatureexample0} we would not be able to tell wether the function takes a function that takes an int and returns an int or returns a function that goes from int to unit since the syntax is the same.
 Several of proposed solution will be described here after.
 
 First the type signature of this language looks as follows:
@@ -70,12 +71,12 @@ First the type signature of this language looks as follows:
 \end{verbatim}
 Where the first $int$ is the parameter $a$ of the function $printint$, and the second $int$ of the signature is the return type.
 
-So in the case that the function $printint$ should not return anything, the last type of the type signature will be decorated with a type of nothing, e.g. void, as follows:
+So in the case that the function $printint$ should not return anything, the last type of the type signature will be decorated with a type of nothing, e.g. unit, as follows:
 \begin{verbatim}
-  printint(a): int -> void
+  printint(a): int -> unit
 \end{verbatim}
 
-First proposal of a solution is to denote void as \enquote{nothing}, like this:
+First proposal of a solution is to denote unit as \enquote{nothing}, like this:
 \begin{verbatim}
   printint(a): int ->
 \end{verbatim}
@@ -87,8 +88,8 @@ but this is ambiguent, in that white space, \enquote{nothing}, if the type signa
 
 \kanote{var 'ugly' vores argument?}
 
-So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unnecessary by the project group though. So in the end the project group chose to explicitly express void to avoid confusion for users of the language. The explicit format ended up as follows:
+So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unnecessary by the project group though. So in the end the project group chose to explicitly express unit to avoid confusion for users of the language. The explicit format ended up as follows:
 \begin{verbatim}
-  printint(a): int -> void
+  printint(a): int -> unit
 \end{verbatim}
 
