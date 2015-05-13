@@ -21,7 +21,7 @@ module Main =
         proc.StartInfo.Arguments <- "out.ll -O2 -Wall"
         let llcRes = proc.Start()
         proc.WaitForExit()
-        if llcRes then // only run clang when llc succeeded
+        if llcRes && proc.ExitCode = 0 then // only run clang when llc succeeded
             // --------------- clang -------------
             let clangProc = new System.Diagnostics.Process()
             clangProc.StartInfo.FileName <- "./a.out"
