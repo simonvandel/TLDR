@@ -4,6 +4,7 @@ open Hime.CentralDogma
 open Hime.Redist
 open vSprog.CommonTypes
 open System.IO
+open System
 
 module Parser =
 
@@ -35,7 +36,8 @@ module Parser =
             Success ()
 
     let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> =
-        if File.Exists("vSprogGrammar.dll")  then
+        // only generate new grammar if it was not written to within 3 seconds
+        if File.Exists("vSprogGrammar.dll") && (DateTime.UtcNow.Subtract(File.GetLastWriteTimeUtc("vSprogGrammar.dll"))) < TimeSpan.FromSeconds(3.0)  then
             getAssemblyAndRun srcInput
         else
            generateAssembly grammarPath

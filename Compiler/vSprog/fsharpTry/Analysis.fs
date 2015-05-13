@@ -66,7 +66,7 @@ module Analysis =
                       }
                     statementType = Reass
                     scope = curScope
-                    value = Reassignment (varId, newRhs)
+                    value = newRhs
                   }
               do! addEntry entry
 
@@ -82,7 +82,7 @@ module Analysis =
                     symbol = lvalue
                     statementType = Init
                     scope = curScope
-                    value = Initialisation (lvalue, newRhs)
+                    value = newRhs
                   }
               do! addEntry entry
               return Initialisation (lvalue, newRhs)
@@ -120,7 +120,7 @@ module Analysis =
                       {
                         identity = SimpleIdentifier name
                         isMutable = false
-                        primitiveType = SimplePrimitive (Primitive.Struct (name, fields))
+                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
                       }
                     statementType = Def
                     scope = curScope

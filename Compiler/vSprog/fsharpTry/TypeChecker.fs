@@ -200,4 +200,4 @@ module TypeChecker =
           sumResults results
         
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
-        (*checkTypesSymTable symTable >-> *)checkTypesAST root
+        checkTypesSymTable symTable >-> checkTypesAST root

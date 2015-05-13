@@ -293,6 +293,16 @@ module ParserTest =
         debugTestParseWith "f(x)"
         <| should equal (Program [Body [ Invocation ("f",["x"], HasNoType) ]])
 
+    [<Test>]
+    let ``When syntax for function invocation with 2 userdefined parameters, expect Function invocation AST`` () =
+        debugTestParseWith "f(x,y)"
+        <| should equal (Program [Body [ Invocation ("f",["x"; "y"], HasNoType) ]])
+
+    [<Test>]
+    let ``When syntax for function invocation with 3 userdefined parameters, expect Function invocation AST`` () =
+        debugTestParseWith "f(x,y,z)"
+        <| should equal (Program [Body [ Invocation ("f",["x"; "y"; "z"], HasNoType) ]])
+
     (* --------------------------- Struct Literal --------------------------- *)
     [<Test>]
     let ``When syntax for struct literal with 1 field, expect Struct literal AST`` () =

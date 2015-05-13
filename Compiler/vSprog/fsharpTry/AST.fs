@@ -321,15 +321,14 @@ module AST =
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
                 Invocation (funcName, [], HasNoType)
-            else
-                let parameters = seq { for c in (root.Children.Item 1).Children do
-                                        let rawParam = (getChildByIndexes [0;0] c).Symbol.Value
-                                        // trim quotation marks at start and end if string
-                                        let param = if rawParam.StartsWith "\"" && rawParam.EndsWith "\"" then 
-                                                        rawParam.Substring(1,rawParam.Length-2)
-                                                    else
-                                                        rawParam
-                                        yield param          
+            else // there are root.Children.Count - 1 parameters
+                let parameters = seq { for childNum in [1.. root.Children.Count - 1] do
+                                       let rawParam = (getChildByIndexes [childNum;0;0] root).Symbol.Value
+                                       // trim quotation marks at start and end if string
+                                       if rawParam.StartsWith "\"" && rawParam.EndsWith "\"" then 
+                                         yield rawParam.Substring(1,rawParam.Length-2)
+                                       else
+                                         yield rawParam
                                      }
                                  |> List.ofSeq
                 Invocation (funcName, parameters, HasNoType)
