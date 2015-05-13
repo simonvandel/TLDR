@@ -1,7 +1,8 @@
+\section{Grammar}
 \begin{grammar}
-<statement> ::= <ident> ‘=’ <expr>
-\alt ‘for’ <ident> ‘=’ <expr> ‘to’ <expr> ‘do’ <statement>
-\alt ‘{’ <stat-list> ‘}’
-\alt <empty>
-<stat-list> ::= <statement> ‘;’ <stat-list> | <statement>
+<Program> ::= <StatementList> <SimpleType>
+
+<StatementList> ::= <Statement> ‘;’ <StatementList>
+ \alt <Statement> ‘;’
+ \alt <Statement>
 \end{grammar}
