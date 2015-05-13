@@ -1,26 +1,19 @@
 \subsection{Primitive Operators}
 \label{subsec:primitiveOps}
+\newcommand{\Twedge}{\mathbin{^\wedge{}}}
+\newcommand{\Tand}{\text{\; AND \;}}
+\newcommand{\Tnot}{\text{NOT \;}}
+\newcommand{\Tnand}{\text{\; NAND \;}}
+\newcommand{\Tor}{\text{\; OR \;}} 
+\newcommand{\Tnor}{\text{\; NOR \;}}
+\newcommand{\Txor}{\text{\; XOR \;}}
 
 Primitive operations are the operations that are build into the language.
 
 \subsubsection{Mathematical Operators}
 \label{sec:mathOps}
 
-The following mathematical operations are built into the language.
-
-\begin{itemize}
-  \item \textbf{+} A binary operator that adds two numbers of the same type
-  \item \textbf{-} A binary operator that subtracts two numbers of the same type
-  \item \textbf{/} A binary operator that divides two numbers of the same type
-  \item \textbf{\%} A binary operator that returns the remainder of a floored division of two numbers of the same type
-  \item \textbf{\^}  A binary operator that lifts the first number to the power of the second number
-  \item \textbf{\#} A binary operator that roots the first operand to the second operand
-\end{itemize}
-
-\sinote{Vi skal nok forklare hvilke nummer typer der kan plusses sammen osv.}
-
-%\subsubsection{Arithmetic Expressions}
-\newcommand{\Twedge}{\mathbin{^\wedge{}}}
+The following mathematical operations are built into the language. They follow these sematic base rules:
 
 \begin{align*}
 &\inference[NUM]{}
@@ -33,15 +26,14 @@ The following mathematical operations are built into the language.
 \\\\
 &\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
                   {\Braket{p_1(p_2),e} \Rightarrow_A v}
-\\                  
-&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
 \\\\
-&\inference[$\text{PARENS}_\text{A}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                       {e \vdash (a_1) \Rightarrow_A (a_1')}
-&
-&\inference[$\text{PARENS}_\text{V}$]{}
-                       {(v) \Rightarrow_A v}
-\\\\
+\end{align*}
+
+\begin{itemize}
+\item \textbf{+} A binary operator that adds two numbers of the same type
+
+\begin{align*}
 &\inference[$\text{ADD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
@@ -51,7 +43,11 @@ The following mathematical operations are built into the language.
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
                     {, v_1 + v_2 = v}
-\\\\
+\end{align*}
+
+\item \textbf{-} A binary operator that subtracts two numbers of the same type
+
+\begin{align*}
 &\inference[$\text{SUB}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
 &
@@ -62,6 +58,9 @@ The following mathematical operations are built into the language.
                     {v_1 - v_2 \Rightarrow_A v}
                     {, v_1 - v_2 = v}
 \end{align*}
+
+\item \textbf{*} A binary operator that multiplies two numbers of the same type
+
 \begin{align*}
 &\inference[$\text{MULT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                      {e \vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
@@ -72,7 +71,11 @@ The following mathematical operations are built into the language.
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
                      {, v_1 * v_2 = v}
-\\\\
+\end{align*}
+
+\item \textbf{/} A binary operator that divides two numbers of the same type
+
+\begin{align*}
 &\inference[$\text{DIV}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
 &
@@ -82,7 +85,11 @@ The following mathematical operations are built into the language.
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
                     {, \frac{v_1}{v_2} = v}
-\\\\
+\end{align*}
+
+\item \textbf{\%} A binary operator that returns the remainder of a floored division of two numbers of the same type
+
+\begin{align*}
 &\inference[$\text{MOD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
@@ -92,7 +99,11 @@ The following mathematical operations are built into the language.
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
                     {, v_1 \;\; \textrm{mod} \;\; v_2 = v}
-\\\\
+\end{align*}
+
+\item \textbf{\^}  A binary operator that lifts the first number to the power of the second number
+
+\begin{align*}
 &\inference[$\text{POW}_\text{L}$]{e \vdash a_1  \Rightarrow_A a_1'}
                     {e \vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
 &
@@ -102,7 +113,10 @@ The following mathematical operations are built into the language.
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \Twedge v_2 \Rightarrow_A v}
                     {, v_1 ^ {v_2} = v}
-\\\\
+\end{align*}
+
+\item \textbf{\#} A binary operator that roots the first operand to the second operand
+\begin{align*}
 &\inference[$\text{ROOT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
 &
@@ -114,28 +128,188 @@ The following mathematical operations are built into the language.
                     {, \sqrt[v_1]{v_2} = v}
 \end{align*}
 
+\item \textbf{( )} Parenteses gives what they surrounds the highest precedence.
+
+\begin{align*}
+&\inference[$\text{PARENS}_\text{A}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                       {e \vdash (a_1) \Rightarrow_A (a_1')}
+&
+&\inference[$\text{PARENS}_\text{V}$]{}
+                       {(v) \Rightarrow_A v}
+\end{align*}
+\end{itemize}
+
+\sinote{Vi skal nok forklare hvilke nummer typer der kan plusses sammen osv.}
+
 \paragraph{Logical Operations}
 \label{sec:logicOps}
 
 \begin{itemize}
-  \item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
-  \item \textbf{!=} A binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
-  \item \textbf{<} A binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
-  \item \textbf{<=} A binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
-  \item \textbf{>} A binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
-  \item \textbf{>=} A binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
+\item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
+
+\begin{align*}
+&\inference[$\text{EQUALS}_\text{L}$]{e \vdash a_1 \Rightarrow_B a_1'}
+                    {e \vdash a_1 = a_2 \Rightarrow_B a_1' = a_2}
+&
+&\inference[$\text{EQUALS}_\text{R}$]{e \vdash a_1 \Rightarrow_B a_1'}
+                    {e \vdash a_2 = a_1 \Rightarrow_B a_2 = a_1'}
+\\\\
+&\inference[$\text{EQUALS}_\text{V1}$]{}
+                    {v_1 = v_2 \Rightarrow_B \top}
+                    {, v_1 = v_2}
+&
+&\inference[$\text{EQUALS}_\text{V2}$]{}
+                    {v_1 = v_2 \Rightarrow_B \bot}
+                    {, v_1 \neq v_2}
+\\\\
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e}
+                    {act_1 = act_2 \Rightarrow_B \top}
+&
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e'}
+                    {act_1 = act_2 \Rightarrow_B \bot}
+                    {e \neq e'}
+\end{align*}
+
+\item \textbf{!=} A binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
+
+\begin{align*}
+&\inference[$NEQUALS$]{}
+                    {e \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
+\end{align*}
+
+\item \textbf{<} A binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
+
+\begin{align*}
+&\inference[$\text{LT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 < a_2 \Rightarrow_A a_1' < a_2}
+&
+&\inference[$\text{LT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 < a_1 \Rightarrow_A a_2 < a_1'}
+\\\\
+&\inference[$\text{LT}_\text{V1}$]{}
+                    {v_1 < v_2 \Rightarrow_B \top}
+                    {, v_1 < v_2}
+&
+&\inference[$\text{LT}_\text{V2}$]{}
+                    {v_1 < v_2 \Rightarrow_B \bot}
+                    {, v_1 \geq v_2}
+\end{align*}
+
+\item \textbf{<=} A binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
+
+\begin{align*}
+&\inference[$LTEQ$]{}
+                    {e \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
+\end{align*}
+
+\item \textbf{>} A binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
+
+\begin{align*}
+&\inference[$\text{GT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 > a_2 \Rightarrow_A a_1' > a_2}
+&
+&\inference[$\text{GT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 > a_1 \Rightarrow_A a_2 > a_1'}
+\\\\
+&\inference[$\text{GT}_\text{V1}$]{}
+                    {v_1 > v_2 \Rightarrow_B \top}
+                    {, v_1 > v_2}
+&
+&\inference[$\text{GT}_\text{V2}$]{}
+                    {v_1 > v_2 \Rightarrow_B \bot}
+                    {, v_1 \leq v_2}
+\end{align*}
+
+\item \textbf{>=} A binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
+
+\begin{align*}
+&\inference[$GTEQ$]{}
+                    {e \vdash a_1 >= a_2 \Rightarrow_A (a_1 > a_2) \Tor (a_1 = a_2)}
+\end{align*}
 \end{itemize}
+
+
+\subsection{Logical Expressions}
 
 \paragraph{Boolean Operations}
 \label{sec:boolOps}
 
 The following operations only operate on bool types.
 
+\begin{align*}
+&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,e} \Rightarrow_B \top}
+                  {\Braket{p_1,e} \Rightarrow_B \top}
+                  {,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,e} \Rightarrow_B \bot}
+                  {\Braket{p_1,e} \Rightarrow_B \bot}
+                  {,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \top}
+                  {\Braket{p_1(p_2),e} \Rightarrow_B \top}
+\\                  
+&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \bot}
+                  {\Braket{p_1(p_2),e} \Rightarrow_B \bot}
+\\                  
+&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+&\inference[$\text{PARENS}_\text{B}$]{e \vdash b_1 \Rightarrow_B b_1'}
+                       {e \vdash (b_1) \Rightarrow_B (b_1')}
+\end{align*}
+
 \begin{itemize}
-  \item \textbf{AND} A binary operator that returns true if both values are true. False otherwise
-  \item \textbf{OR} A binary operator that returns true if at least one value is true. False otherwise
-  \item \textbf{XOR} A binary operator that returns true if only one operand is true. False otherwise
-  \item \textbf{NOR} OR negated.
-  \item \textbf{NOT} A unary operator that returns the opposite value of the operand.
-  \item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise
+\item \textbf{AND} A binary operator that returns true if both values are true. False otherwise
+
+\begin{align*}
+&\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
+                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{AND}_2$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{AND}_3$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \top}
+\end{align*}
+
+
+\item \textbf{OR} A binary operator that returns true if at least one value is true. False otherwise
+
+\begin{align*}
+&\inference[OR]{}
+                 {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
+\end{align*}
+
+\item \textbf{XOR} A binary operator that returns true if only one operand is true. False otherwise
+
+\begin{align*}
+&\inference[XOR]{}
+                  {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+\end{align*}
+
+\item \textbf{NOR} OR negated.
+
+\begin{align*}
+&\inference[NOR]{}
+                   {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
+\end{align*}
+
+\item \textbf{NOT} A unary operator that returns the opposite value of the operand.
+
+\begin{align*}
+&\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
+                       {e \vdash \Tnot b_1 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{NOT}_\bot$]{e \vdash b_1 \Rightarrow_B \bot}
+                       {e \vdash \Tnot b_1 \Rightarrow_B \top}
+\end{align*}
+
+\item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise.
+
+\begin{align*}
+&\inference[NAND]{}
+                   {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
+\end{align*}
+
 \end{itemize}
