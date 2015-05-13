@@ -23,7 +23,7 @@ module AST =
 
     and PrimitiveType =
         | SimplePrimitive of Primitive
-        | ListPrimitive of PrimitiveType
+        | ListPrimitive of PrimitiveType * int // typeOfElements, length
         | ArrowPrimitive of PrimitiveType list
         | UserType of string
         | HasNoType
@@ -46,7 +46,7 @@ module AST =
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | While of AST * AST // condition, body
-        | ListRange of AST list // content
+        | ListRange of AST list * PrimitiveType // content, type
         | BinOperation of AST * BinOperator * AST // lhs, op, rhs
         | UnaryOperation of UnaryOperator * AST // op, rhs
         | Identifier of Identifier * PrimitiveType // id, typeOfId
@@ -115,7 +115,7 @@ module AST =
                     |> List.ofSeq
                     |> ArrowPrimitive
                 
-            | "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0))
+            | "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0), int (input.Children.Item 1).Symbol.Value)
             | "PrimitiveType" -> toPrimitiveType (input.Children.Item 0)
             | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str
@@ -265,7 +265,7 @@ module AST =
         | "ListRange" ->
             let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
             let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
-            ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
+            ListRange ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
         | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
             match (root.Children.Count) with
             | 3 -> 
@@ -351,7 +351,7 @@ module AST =
                                                 str.Substring (1, (str.Length - 2))
                                               |> Seq.map PrimitiveValue.Char
                                               |> List.ofSeq
-            Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List chars)
+            Constant (ListPrimitive (SimplePrimitive Primitive.Char, chars.Length), PrimitiveValue.List chars)
         | "Return" ->
             if root.Children.Count = 1 then
               let expr = toAST (root.Children.Item 0)

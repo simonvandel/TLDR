@@ -168,10 +168,10 @@ module Analysis =
               do! closeScope
               return ForIn (counterName, newList, newBody)
             }
-        | ListRange content -> 
+        | ListRange (content, pType) -> 
             state {
                 let! newContent = applyAll buildSymbolTable content
-                return ListRange newContent
+                return ListRange (newContent, pType)
             }
         | BinOperation (lhs, op, rhs) -> 
           state
