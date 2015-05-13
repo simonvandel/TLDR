@@ -37,7 +37,7 @@ Dynamic typing checks types at run-time and therefore allows the programmer to n
 
 Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
 
-\subsection{Type System Choice for TLDR}
+\subsection{Type System Choice for TLDR} \kanote{denne burde fjernes hvis der ikke kommer mere intro}
 
 This section describes some design choices about the type system used for TLDR.
 
@@ -61,7 +61,7 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 
 \begin{align*}
 \intertext{The following sets will be used throughout this section}
-&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
+&\Taop = \left\{ {+, -, *, /, \%, \#, \; \Tpot \;} \right\}
 \\
 &\Tbaop = \left\{ {<, <=, >, >=} \right\}
 \\

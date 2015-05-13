@@ -44,3 +44,95 @@ The following operations only operate on bool types.
   \item \textbf{NOT} A unary operator that returns the opposite value of the operand.
   \item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise
 \end{itemize}
+
+
+\subsection{Arithmetic Expressions}
+\newcommand{\Twedge}{\mathbin{^\wedge{}}}
+
+\begin{align*}
+&\inference[NUM]{}
+                  {e \vdash n \Rightarrow_A v}
+                  {, \mathcal{N}(n) = v}
+\\\\
+&\inference[$\text{INVOKE}_A$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
+\\                  
+&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+&\inference[$\text{PARENS}_\text{A}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                       {e \vdash (a_1) \Rightarrow_A (a_1')}
+&
+&\inference[$\text{PARENS}_\text{V}$]{}
+                       {(v) \Rightarrow_A v}
+\\\\
+&\inference[$\text{ADD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&
+&\inference[$\text{ADD}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+\\\\
+&\inference[$\text{ADD}_\text{V}$]{}
+                    {v_1 + v_2 \Rightarrow_A v}
+                    {, v_1 + v_2 = v}
+\\\\
+&\inference[$\text{SUB}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&
+&\inference[$\text{SUB}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+\\\\
+&\inference[$\text{SUB}_\text{V}$]{}
+                    {v_1 - v_2 \Rightarrow_A v}
+                    {, v_1 - v_2 = v}
+\end{align*}
+\begin{align*}
+&\inference[$\text{MULT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                     {e \vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&
+&\inference[$\text{MULT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                     {e \vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+\\\\
+&\inference[$\text{MULT}_\text{V}$]{}
+                     {v_1 * v_2 \Rightarrow_A v}
+                     {, v_1 * v_2 = v}
+\\\\
+&\inference[$\text{DIV}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&
+&\inference[$\text{DIV}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+\\\\
+&\inference[$\text{DIV}_\text{V}$]{}
+                    {v_1 / v_2 \Rightarrow_A v}
+                    {, \frac{v_1}{v_2} = v}
+\\\\
+&\inference[$\text{MOD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&
+&\inference[$\text{MOD}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+\\\\
+&\inference[$\text{MOD}_\text{V}$]{}
+                    {v_1 \% v_2 \Rightarrow_A v}
+                    {, v_1 \;\; \textrm{mod} \;\; v_2 = v}
+\\\\
+&\inference[$\text{POW}_\text{L}$]{e \vdash a_1  \Rightarrow_A a_1'}
+                    {e \vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
+&
+&\inference[$\text{POW}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
+\\\\
+&\inference[$\text{POW}_\text{V}$]{}
+                    {v_1 \Twedge v_2 \Rightarrow_A v}
+                    {, v_1 ^ {v_2} = v}
+\\\\
+&\inference[$\text{ROOT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&
+&\inference[$\text{ROOT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+\\\\
+&\inference[$\text{ROOT}_\text{V}$]{}
+                    {v_1 \# v_2 \Rightarrow_A v}
+                    {, \sqrt[v_1]{v_2} = v}
+\end{align*}

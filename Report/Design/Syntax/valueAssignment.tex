@@ -5,13 +5,12 @@ A value can be assigned to a symbol in either a constant binding or a variable b
 
 \paragraph{Constant Binding}
 
-A constant binding can never have its value changed. For example, if \enquote{a} is bound to \enquote{5}, \enquote{a} can never refer to another value than \enquote{5} in the same lexical scope.
+A constant binding can never have its value changed. For example, if \enquote{a} is bound to \enquote{5}, \enquote{a} can never refer to another value than \enquote{5} in the same lexical scope. 
 
-The syntax for constant value assignment is as follows.
+\\The syntax for constant value assignment is as follows.
 \begin{verbatim}
   let <symbolName> : <type> := <value>
 \end{verbatim}
-
 A concrete example:
 
 \begin{verbatim}
@@ -22,19 +21,19 @@ A concrete example:
 
 A variable binding can always change the value it refers to. For example, if \enquote{b} is bound to \enquote{2}, it is perfectly possible to later in the source code refer to {10}.
 
-The syntax for variable value assignment is as follows.
+\\The syntax for variable value assignment is as follows.
+
 \begin{verbatim}
   var <symbolName> : <type> := <value>
 
-  // a later reassignment
+// a later reassignment
   <symbolName> := <value>
 \end{verbatim}
-
 A concrete example:
 
 \begin{verbatim}
   var a : int := 2
   
-  // a later reassignment
+// a later reassignment
   a := 2
 \end{verbatim}
