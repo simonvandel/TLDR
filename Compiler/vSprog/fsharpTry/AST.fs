@@ -207,6 +207,10 @@ module AST =
             let trueBody = toAST (root.Children.Item 1)
             let falseBody = toAST (root.Children.Item 2)
             IfElse (conditional, trueBody, falseBody)
+        | "While" ->
+            let condition = toAST (root.Children.Item 0)
+            let body = toAST (root.Children.Item 1)
+            While (condition, body)
         | "Boolean" ->
             let value = 
                 match (root.Children.Item 0).Symbol.Value with

@@ -1,24 +1,11 @@
 actor main := {
   receive arguments:args := {
-
-    let x:int := 5;
-    let y:int := x;
-
-    let z:int := plus(x, y);
-
-    if(z = 10){
-      print("Expected");
-    }
-    else {
-      print("Not expected");
-    }
+    var x:int := 2;
+    if (x < 4) {
+      print("x is less than 4");
+    };
+    if (x < 4) {
+      print("x is less than 4");
+    };
   };
 };
-
-let plus(a,b) : int -> int -> int := {
-  a + b
-  };
-
-
-
-// z is expected to be 10

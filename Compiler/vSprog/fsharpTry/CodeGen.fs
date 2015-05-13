@@ -208,28 +208,30 @@ module CodeGen =
         | If (condition, body) -> 
           state {
               let! (condName, condType) = internalCodeGen condition
-              do! append (sprintf "br i1 %s, label %cifTrue, label %%cont \n" condName '%')
+              let coName = condName.[1..];
+              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
 
-              let contCode = append "br label %cont\n" // to jump to a continuation label
-              do! genLabel "ifTrue" body
+              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              do! genLabel (sprintf "ifTrue%s" coName) body
               do! contCode
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
 
-              do! append "cont:\n" // to allow for code after if-else
+              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               return ("","")    
           }
         | IfElse (condition, trueBody, falseBody) ->
           state {
               let! (condName, condType) = internalCodeGen condition
-              do! append (sprintf "br i1 %s, label %cifTrue, label %cifFalse \n" condName '%' '%')
+              let coName = condName.[1..];
+              do! append (sprintf "br i1 %s, label %%cifTrue%s, label %%cifFalse%s \n" condName coName coName)
 
-              let contCode = append "br label %cont\n" // to jump to a continuation label
-              do! genLabel "ifTrue" trueBody
+              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              do! genLabel (sprintf "ifTrue%s" coName) trueBody
               do! contCode
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              do! genLabel "ifFalse" falseBody
+              do! genLabel (sprintf "ifFalse%s" coName) falseBody
               do! contCode
-              do! append "cont:\n" // to allow for code after if-else
+              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               return ("","")
           }
         | Send (actorName, msgName) -> 
@@ -314,11 +316,18 @@ module CodeGen =
           state {
               return ("","")
           }
-        | While (cond, body) ->
+        | While (condition, body) ->
           state {
+              let! (condName, condType) = internalCodeGen condition
+              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName condName condName)
 
+              let contCode = append "br label %cont%s\n" // to jump to a continuation label
+              do! genLabel "ifTrue" body
+              do! contCode
+              let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
 
-              return ("","")
+              do! append "cont:\n" // to allow for code after if-else
+              return ("","")  
           }
         | Kill (arg) -> 
           state {

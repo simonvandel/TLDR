@@ -40,7 +40,7 @@ module Main =
                              ""
                            else 
                              argv.[0]
-        let input = File.ReadAllText "../../../../../SamplePrograms/SanityCheck07.tldr"
+        let input = File.ReadAllText "../../../../../SamplePrograms/SanityCheck08.tldr"
 
         let res = parse input "../../grammar.gram"  //Generates hime AST
                 >>= fun tree -> Success (toAST tree)
