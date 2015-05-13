@@ -1,9 +1,9 @@
-\subsubsection{Primitive Operators}
+\subsection{Primitive Operators}
 \label{subsec:primitiveOps}
 
 Primitive operations are the operations that are build into the language.
 
-\paragraph{Mathematical Operators}
+\subsubsection{Mathematical Operators}
 \label{sec:mathOps}
 
 The following mathematical operations are built into the language.
@@ -19,34 +19,7 @@ The following mathematical operations are built into the language.
 
 \sinote{Vi skal nok forklare hvilke nummer typer der kan plusses sammen osv.}
 
-\paragraph{Logical Operations}
-\label{sec:logicOps}
-
-\begin{itemize}
-  \item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
-  \item \textbf{!=} A binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
-  \item \textbf{<} A binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
-  \item \textbf{<=} A binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
-  \item \textbf{>} A binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
-  \item \textbf{>=} A binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
-\end{itemize}
-
-\paragraph{Boolean Operations}
-\label{sec:boolOps}
-
-The following operations only operate on bool types.
-
-\begin{itemize}
-  \item \textbf{AND} A binary operator that returns true if both values are true. False otherwise
-  \item \textbf{OR} A binary operator that returns true if at least one value is true. False otherwise
-  \item \textbf{XOR} A binary operator that returns true if only one operand is true. False otherwise
-  \item \textbf{NOR} OR negated.
-  \item \textbf{NOT} A unary operator that returns the opposite value of the operand.
-  \item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise
-\end{itemize}
-
-
-\subsection{Arithmetic Expressions}
+%\subsubsection{Arithmetic Expressions}
 \newcommand{\Twedge}{\mathbin{^\wedge{}}}
 
 \begin{align*}
@@ -54,7 +27,11 @@ The following operations only operate on bool types.
                   {e \vdash n \Rightarrow_A v}
                   {, \mathcal{N}(n) = v}
 \\\\
-&\inference[$\text{INVOKE}_A$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
+                  {\Braket{p,e} \Rightarrow_A v}
+                  {,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
                   {\Braket{p_1(p_2),e} \Rightarrow_A v}
 \\                  
 &                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
@@ -136,3 +113,29 @@ The following operations only operate on bool types.
                     {v_1 \# v_2 \Rightarrow_A v}
                     {, \sqrt[v_1]{v_2} = v}
 \end{align*}
+
+\paragraph{Logical Operations}
+\label{sec:logicOps}
+
+\begin{itemize}
+  \item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
+  \item \textbf{!=} A binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
+  \item \textbf{<} A binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
+  \item \textbf{<=} A binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
+  \item \textbf{>} A binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
+  \item \textbf{>=} A binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
+\end{itemize}
+
+\paragraph{Boolean Operations}
+\label{sec:boolOps}
+
+The following operations only operate on bool types.
+
+\begin{itemize}
+  \item \textbf{AND} A binary operator that returns true if both values are true. False otherwise
+  \item \textbf{OR} A binary operator that returns true if at least one value is true. False otherwise
+  \item \textbf{XOR} A binary operator that returns true if only one operand is true. False otherwise
+  \item \textbf{NOR} OR negated.
+  \item \textbf{NOT} A unary operator that returns the opposite value of the operand.
+  \item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise
+\end{itemize}

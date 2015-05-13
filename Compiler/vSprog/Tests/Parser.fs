@@ -93,13 +93,13 @@ module ParserTest =
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor, expect reassignment AST with constant value``() =
-        let rhs = Identifier ( IdentifierAccessor ["a"; "b"] )
+        let rhs = Identifier ( IdentifierAccessor ["a"; "b"], HasNoType )
         debugTestParseWith "x.y := a.b;"
         <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor.accessor, expect reassignment AST with constant value``() =
-        let rhs = Identifier ( IdentifierAccessor ["a"; "b"; "c"] )
+        let rhs = Identifier ( IdentifierAccessor ["a"; "b"; "c"], HasNoType )
         debugTestParseWith "x.y := a.b.c;"
         <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
 
@@ -164,7 +164,7 @@ module ParserTest =
         let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = false; primitiveType = UserType "actorName"}
         let actorType = "actorName"
-        let initMsg = Identifier (SimpleIdentifier "initMsg")
+        let initMsg = Identifier (SimpleIdentifier "initMsg", HasNoType)
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
 
@@ -173,7 +173,7 @@ module ParserTest =
         let ident = SimpleIdentifier "actorHandle"
         let lhs = {identity = ident; isMutable = true; primitiveType = UserType "actorName"}
         let actorType = "actorName"
-        let initMsg = Identifier (SimpleIdentifier "initMsg")
+        let initMsg = Identifier (SimpleIdentifier "initMsg", HasNoType)
         debugTestParseWith "var actorHandle:actorName := spawn actorName initMsg"
         <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
 
@@ -241,7 +241,7 @@ module ParserTest =
         <| should equal (Program [Body [
                                     BinOperation (
                                                     BinOperation (
-                                                                    Identifier (SimpleIdentifier "i"),
+                                                                    Identifier (SimpleIdentifier "i", HasNoType),
                                                                     Modulo,
                                                                     (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 20)) 
                                                                     ),
@@ -262,7 +262,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for function with 1 argument, expect Function AST`` () =
-        let body = Block [ Body [ Identifier (SimpleIdentifier "x") ] ]
+        let body = Block [ Body [ Identifier (SimpleIdentifier "x", HasNoType) ] ]
         debugTestParseWith "let func1(x) : int -> int := {x}"
             <| should equal (Program [Body [
                                         Function ("func1", ["x"], ArrowPrimitive [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], body)
@@ -270,7 +270,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for function with 2 arguments, expect Function AST`` () =
-        let body = Block [ Body [ Identifier (SimpleIdentifier "x") ] ]
+        let body = Block [ Body [ Identifier (SimpleIdentifier "x", HasNoType) ] ]
         debugTestParseWith "let func2(x, y) : int -> int -> int := {x}"
         <| should equal (Program [Body [
                                     Function (
@@ -285,13 +285,23 @@ module ParserTest =
     [<Test>]
     let ``When syntax for function invocation with 0 parameters, expect Function invocation AST`` () =
         debugTestParseWith "f()"
-        <| should equal (Program [Body [ Invocation ("f",[]) ]])
+        <| should equal (Program [Body [ Invocation ("f",[], HasNoType) ]])
 
 
     [<Test>]
     let ``When syntax for function invocation with 1 userdefined parameter, expect Function invocation AST`` () =
         debugTestParseWith "f(x)"
-        <| should equal (Program [Body [ Invocation ("f",["x"]) ]])
+        <| should equal (Program [Body [ Invocation ("f",["x"], HasNoType) ]])
+
+    [<Test>]
+    let ``When syntax for function invocation with 2 userdefined parameters, expect Function invocation AST`` () =
+        debugTestParseWith "f(x,y)"
+        <| should equal (Program [Body [ Invocation ("f",["x"; "y"], HasNoType) ]])
+
+    [<Test>]
+    let ``When syntax for function invocation with 3 userdefined parameters, expect Function invocation AST`` () =
+        debugTestParseWith "f(x,y,z)"
+        <| should equal (Program [Body [ Invocation ("f",["x"; "y"; "z"], HasNoType) ]])
 
     (* --------------------------- Struct Literal --------------------------- *)
     [<Test>]

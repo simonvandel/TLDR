@@ -1,0 +1,8 @@
+actor main := {
+  receive arguments:args := {
+    let x:int := 4;
+    if (x > 2) {
+      print("x is greater than 2");
+    } 
+  };
+};

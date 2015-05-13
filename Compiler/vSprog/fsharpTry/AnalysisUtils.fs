@@ -4,8 +4,6 @@ open vSprog.AST
 
     type StatementType =
         | Init // var x:int := 5
-        | Decl // x: int
-        | Ass // var x := 5
         | Reass // x := 5
         | Def // Actor A := {} | Struct B := {}
         | Use // x
@@ -30,6 +28,7 @@ open vSprog.AST
         errors: string list
         scope: Scope
         scopeCounter: int
+        ast: AST
     }
     // applies a state workflow to all elements in list
     let rec forAll (p:('a ->State<unit,'b>)) (list:'a list) : State<unit, 'b> =
@@ -82,8 +81,8 @@ open vSprog.AST
           do! putState curState
         }
 
-    let rec isInScope (scopeToCheckIfIn:Scope) (otherScope:Scope) : bool =
-        otherScope = scopeToCheckIfIn || match otherScope.outer with
+    let rec isInScope (scopeToCheckIfIn:Scope) (perspective:Scope) : bool =
+        perspective = scopeToCheckIfIn || match perspective.outer with
                                           | None -> false
                                           | Some s -> isInScope scopeToCheckIfIn s
 

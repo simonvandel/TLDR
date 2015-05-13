@@ -99,6 +99,16 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 &\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
                        \Tenv e_2 : \Treal}
                     {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Tint,\Treal}$]{\Tenv e_1 : \Tint &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Treal,\Tint}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
 \end{align*}
 \sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
 

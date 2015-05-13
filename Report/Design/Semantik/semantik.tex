@@ -31,8 +31,6 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 &									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
 \end{align*}
 
-
-
 \subsection{Boolean Expressions}
 \newcommand{\Tand}{\text{\; AND \;}}
 \newcommand{\Tnot}{\text{NOT \;}}
@@ -42,12 +40,20 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \newcommand{\Txor}{\text{\; XOR \;}}
 
 \begin{align*}
-&\inference[$\text{INVOKE}_{B\top}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \top}
+&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,e} \Rightarrow_B \top}
+                  {\Braket{p_1,e} \Rightarrow_B \top}
+									{,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,e} \Rightarrow_B \bot}
+                  {\Braket{p_1,e} \Rightarrow_B \bot}
+									{,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \top}
                   {\Braket{p_1(p_2),e} \Rightarrow_B \top}
 \\									
 &									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
 \\\\
-&\inference[$\text{INVOKE}_{B\bot}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \bot}
+&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \bot}
                   {\Braket{p_1(p_2),e} \Rightarrow_B \bot}
 \\									
 &									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
@@ -154,11 +160,11 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 %												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
 %\\\\
 &\inference[$\text{INIT}_{SYM}$]{}
-                         {\Braket{\Tlet \Tx := S,e} \Rightarrow_S e'}
+                         {\Braket{\Tlet \Tx := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \\\\
 &\inference[$\text{INIT}_{FUNC}$]{}
-                         {\Braket{\Tlet \Tx(y) := S,e} \Rightarrow_S e'}
+                         {\Braket{\Tlet \Tx(y) := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,y}]}
 \\\\
 &\inference[$\text{INIT}$]{}
@@ -237,7 +243,7 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \begin{align*}
 &\inference[TYPEOF]{}
                   {e \vdash m \Rightarrow_T t}
-									{, \mathbb{T}(n) = t}
+									{, \mathbb{T}(m) = t}
 \\\\
 &\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e]}
                            {\Braket{\Tactor \Tact := \{S\};,a} \Rightarrow_S \Braket{S,e,a'}}

@@ -20,11 +20,16 @@ module TypeChecker =
         | Program stms | Block stms | Body stms ->
             stms 
             |> List.map (fun stm -> checkTypesAST stm)
-            |> sumResults
+            |> fun xs -> if xs.Length = 0 then
+                           Success HasNoType
+                         else
+                           sumResults xs
         | Reassignment ( varId, rhs) -> 
-            Success HasNoType
+            checkTypesAST rhs
+            >-> Success HasNoType
         | Initialisation (lvalue, rhs) ->
-            checkTypesAST rhs 
+            checkTypesAST rhs
+            >-> Success HasNoType
         | Constant (ptype,value) ->
             Success ptype
         | Actor (name, body) ->
@@ -38,6 +43,7 @@ module TypeChecker =
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
                 checkTypesAST body
+                >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if statement should be bool, found %A" illegalType]
         | IfElse (conditional,trueBody,falseBody) ->
@@ -48,12 +54,18 @@ module TypeChecker =
                 let trueRes = checkTypesAST trueBody
                 let falseRes = checkTypesAST falseBody
                 sumResults [trueRes; falseRes]
+                >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if-else statement should be bool, found %A" illegalType]
         | Send (actorName, msgName ) ->
             Success HasNoType
         | Spawn (lvalue, actorName, initMsg) ->
-            Success HasNoType
+            match initMsg with
+            | Some msg -> 
+              checkTypesAST msg
+              >-> Success HasNoType
+            | None ->
+              Success HasNoType
         | Receive (msgName, msgType, body) -> 
             checkTypesAST body >->
             Success HasNoType
@@ -72,8 +84,9 @@ module TypeChecker =
                 Failure errMsgs
             | Success (SimplePrimitive Bool) -> 
                 checkTypesAST body
+                >-> Success HasNoType
             | Success illegalType ->
-                Failure [sprintf "Conditional statement in while statement should be bool, found %A" illegalType]
+                Failure [sprintf "Conditional statement in while statement:, found %A, expected bool" illegalType]
         | ListRange (content) ->
             match checkTypesAST content.Head with
             | Success head ->
@@ -92,15 +105,13 @@ module TypeChecker =
                 | SimplePrimitive Real, SimplePrimitive Real ->
                     Success (SimplePrimitive Real)
                 | _ ->
-                    Failure [sprintf "Mismatch in imediate constituents types of binary operation(Plus | Minus | Multiply | Divide | Modulo | Power), found %A and %A" lhsRes rhsRes]
+                    Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]
             | Success lhsRes , Root, Success rhsRes ->
                 match lhsRes, rhsRes with
-                | SimplePrimitive Int, SimplePrimitive Int ->
-                    Success (SimplePrimitive Real)
-                | SimplePrimitive Real, SimplePrimitive Real ->
+                | (SimplePrimitive Int | SimplePrimitive Real), (SimplePrimitive Int | SimplePrimitive Real) ->
                     Success (SimplePrimitive Real)
                 | _ -> 
-                    Failure [sprintf "Mismatch in imediate constituents types of binary operation(Root), found %A and %A" lhsRes rhsRes]
+                    Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]
             | Success lhsRes, (GreaterThan | GreaterThanOrEq | LessThan | LessThanOrEq), Success rhsRes ->
                 match lhsRes, rhsRes with
                 | SimplePrimitive Int, SimplePrimitive Int ->
@@ -108,19 +119,19 @@ module TypeChecker =
                 | SimplePrimitive Real, SimplePrimitive Real ->
                     Success (SimplePrimitive Bool)
                 | _ -> 
-                    Failure [sprintf "Mismatch in imediate constituents types of binary operation(GreaterThan | GreaterThanOrEq | LessThan | LessThanOrEq), found %A and %A" lhsRes rhsRes]
+                    Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]
             | Success lhsRes, (Equals | NotEquals), Success rhsRes ->
                 match lhsRes, rhsRes with
                 | lhsType, rhsType when lhsType = rhsType ->
                     Success (SimplePrimitive Bool)
                 | _ -> 
-                    Failure [sprintf "Mismatch in imediate constituents types of binary operation(Equals | NotEquals), found %A and %A" lhsRes rhsRes]
+                    Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]
             | Success lhsRes, (And | Or | Xor | Nor | Nand), Success rhsRes ->
                 match lhsRes, rhsRes with
                 | SimplePrimitive Bool, SimplePrimitive Bool ->
                     Success (SimplePrimitive Bool)
                 | _ -> 
-                    Failure [sprintf "Mismatch in imediate constituents types of binary operation(And | Or | Xor | Nor | Nand), found %A and %A" lhsRes rhsRes]
+                    Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A, expected bool" op lhsRes rhsRes]
             | (Failure errMsgsLhs as lhsFail), _, (Failure errMsgsRhs as rhsFail) -> 
                 sumResults [lhsFail; rhsFail]
             | Failure errMsgs, _, _ -> 
@@ -134,8 +145,8 @@ module TypeChecker =
                 Success (SimplePrimitive Bool)
             | Not, rhsRes ->
                 Failure [sprintf "Cannot apply (Not) to anything else than Bools, found %A" rhsRes ]
-        | Identifier name ->
-            Success HasNoType
+        | Identifier (name, pType) ->
+            Success pType
         | Function (funcName, arguments, types, body) ->
             match checkTypesAST body, types with
             | Success bodyType, ((ListPrimitive _ | SimplePrimitive _) as Arg) when bodyType = Arg ->
@@ -143,15 +154,25 @@ module TypeChecker =
             | Success bodyType, (ArrowPrimitive plist) ->
                 Last plist |>
                 fun e -> if bodyType = e then Success HasNoType 
-                         else Failure [sprintf "Return value of function body does not match return of definiton"]
+                         else Failure [sprintf "Return value of function body does not match return of definition. Found %A, expected %A" bodyType e]
             | Success bodyType, _ ->
                 Success HasNoType
             | Failure errMsgs, _ -> 
                 Failure errMsgs
         | StructLiteral fields ->
+            let fieldBodies = fields |> List.map snd
+            let fieldNames = fields |> List.map fst
+            // TODO: hvordan tjekker vi det her??
             Success HasNoType
-        | Invocation (functionName, parameters) ->
-            Success HasNoType
+        | Invocation (functionName, parameters, functionType) ->
+            match functionType with
+            | SimplePrimitive pType when parameters.Length = 0 -> 
+              Success functionType
+            | ListPrimitive prim when parameters.Length = 0 ->
+              Success functionType
+            | ArrowPrimitive prims when parameters.Length = prims.Length - 1 ->
+              Success (Last prims)
+            | HasNoType -> Success HasNoType
         | Return body ->
             match body with
             | Some realBody -> checkTypesAST realBody
@@ -171,9 +192,12 @@ module TypeChecker =
                            if entry.symbol.primitiveType = pType then
                              Success ()
                            else 
-                             Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol entry.symbol.primitiveType pType]
+                             Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol.identity entry.symbol.primitiveType pType]
                          | Failure err -> Failure err) symTable
-        sumResults results
+        if results.Length = 0 then
+          Success ()
+        else
+          sumResults results
         
     let checkTypes (root:AST) (symTable:SymbolTable): Result<PrimitiveType> =
         checkTypesSymTable symTable >-> checkTypesAST root

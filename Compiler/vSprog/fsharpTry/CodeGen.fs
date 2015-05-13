@@ -207,7 +207,16 @@ module CodeGen =
 
         | If (condition, body) -> 
           state {
-              return ("","")
+              let! (condName, condType) = internalCodeGen condition
+              do! append (sprintf "br i1 %s, label %cifTrue, label %%cont \n" condName '%')
+
+              let contCode = append "br label %cont\n" // to jump to a continuation label
+              do! genLabel "ifTrue" body
+              do! contCode
+              let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
+
+              do! append "cont:\n" // to allow for code after if-else
+              return ("","")    
           }
         | IfElse (condition, trueBody, falseBody) ->
           state {
@@ -270,7 +279,7 @@ module CodeGen =
           }
 
           
-        | Identifier id -> 
+        | Identifier (id, pType) -> 
             // TODO: vi skal bruge typen på identifier her..
           state {
               match id with
@@ -290,7 +299,7 @@ module CodeGen =
           state {
               return ("","")
           }
-        | Invocation (functionName, parameters) -> 
+        | Invocation (functionName, parameters, functionType) -> 
           state {
               match functionName with
               | "print" ->
@@ -307,6 +316,8 @@ module CodeGen =
           }
         | While (cond, body) ->
           state {
+
+
               return ("","")
           }
         | Kill (arg) -> 

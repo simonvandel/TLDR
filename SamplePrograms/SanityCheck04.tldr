@@ -1,7 +1,7 @@
 actor main := {
   receive arguments:args := {
 
-    if( 3#{5^3} NAND 5){
+    if( 3#{5^3} != 5){
       print("Not expected");
     }
     else{
