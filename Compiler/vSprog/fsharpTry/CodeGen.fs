@@ -18,7 +18,7 @@ module CodeGen =
             let! st = getState
             let newEnv = {st with regCounter = st.regCounter + 1}
             do! putState newEnv
-            return (sprintf "%%%d" newEnv.regCounter)
+            return (sprintf "%%_%d" newEnv.regCounter)
         }
 
 //    let append (code:string) : State<unit, Environment> =
@@ -376,16 +376,25 @@ module CodeGen =
         | While (condition, body) ->
           state {
               let! (condName, condType, condCode) = internalCodeGen condition
-              //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName condName condName)
+              let coName = condName.[1..]
+              let brCode = sprintf "br label %%switch%s\n" coName
+
+              let switcCode = sprintf "switch%s: \n %s"  coName condCode
+              let brStr = sprintf "br i1 %s, label %%body%s, label %%cont%s\n" condName coName coName
+
+              let! (_,_,bodyCode) = internalCodeGen body
+
+              let bodyLabel = sprintf "body%s: \n" coName
+
+              let bodyCodeString = sprintf  "%s\n br label %%switch%s\n" bodyCode coName
 
 
-              //let contCode = append "br label %cont%s\n" // to jump to a continuation label
-              //do! genLabel "ifTrue" body
-              //do! contCode
-              //let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
+              let con = sprintf "\ncont%s:\n" coName
 
-              //do! append "cont:\n" // to allow for code after if-else
-              return ("","", "")  
+
+              let fullString = brCode + switcCode + brStr + bodyLabel + bodyCodeString + con
+
+              return ("","", fullString)  
           }
         | Kill (arg) -> 
           state {
