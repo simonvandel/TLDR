@@ -36,9 +36,7 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 
 
 \subsection{Statements}
-\newcommand{\Tx}{\mathbin{\; \text{x} \;}}
-\newcommand{\Tlet}{\text{let}}
-\newcommand{\Tvar}{\text{var}}
+
 \subsubsection{General}
 \begin{align*}
 %&\inference[$\text{DECL}$]{}
@@ -74,31 +72,8 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
                          {\Braket{\{S\},e} \Rightarrow_S e'}
 \end{align*}
 
-\subsubsection{Conditional}
-\newcommand{\Tif}{\text{if}}
-\newcommand{\Telse}{\text{else}}
 
-\begin{align*}
-&\inference[$\text{IF}_\top$]{}
-                      {\Braket{if(b)\{S\},e} \Rightarrow_S \Braket{\{S\},e}}
-											{,b \Rightarrow_B \top}
-\\\\
-&\inference[$\text{IF}_\bot$]{}
-                      {\Braket{if(b)\{S\},e} \Rightarrow_S e}
-											{,b \Rightarrow_B \bot}
-\\\\
-&\inference[$\text{IF-ELSE}_\top$]{}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_1\},e}}
-											{,b \Rightarrow_B \top}
-\\\\
-&\inference[$\text{IF-ELSE}_\bot$]{}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_2\},e}}
-											{,b \Rightarrow_B \bot}
-\end{align*}
 \subsubsection{Loop}
-\newcommand{\Tfor}{\mathbin{\text{for}}}
-\newcommand{\Tin}{\mathbin{\text{in}}}
-\newcommand{\Twhile}{\mathbin{\text{while}}}
 
 \begin{align*}
 &\inference[$\text{WHILE}_\top$]{e \vdash b \Rightarrow_B \top}
@@ -106,25 +81,10 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \\\\
 &\inference[$\text{WHILE}_\bot$]{e \vdash b \Rightarrow_B \bot}
                        {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S e}
-\\\\
-&\inference[$\text{FOR}_{1}$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e}}
-\\\\
-&\inference[$\text{FOR}_{2}$]{}
-                       {\Braket{\Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{x := n_m;\{S\},e}}
 \end{align*}
 
 \subsubsection{Misc}
-\newcommand{\Tspawn}{\mathbin{\text{spawn}}}
-\newcommand{\Tsend}{\mathbin{\text{send}}}
-\newcommand{\Ta}{\; \mathbin{\text{a}} \;}
-\newcommand{\Tm}{\; \mathbin{\text{m}} \;}
-\newcommand{\Twhere}{\mathbin{\text{where}}}
-\newcommand{\Ten}{\mathbin{\text{env}}}
-\newcommand{\Tactor}{\mathbin{\text{actor}} \;}
-\newcommand{\Tact}{\; \mathbin{\text{act}} \;}
-\newcommand{\Trecieve}{\mathbin{\text{recieve}} \;}
-\newcommand{\Tr}{\; \mathbin{\text{r}} \;}
+
 
 \begin{align*}
 &\inference[TYPEOF]{}
