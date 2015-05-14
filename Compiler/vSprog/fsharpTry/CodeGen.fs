@@ -221,10 +221,7 @@ module CodeGen =
               | PrimitiveValue.Int n -> 
                 let name = string n
                 let type' = genType ptype
-                let body = sprintf "%s %s" type' name
-                let! regName = freshReg
-                let! reg = newRegister regName type' body
-                return reg
+                return (name, type', "")
           }
 
         | If (condition, body) -> 
@@ -368,8 +365,8 @@ module CodeGen =
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
                 //do! append (sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName)
-                let putsCode = sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName
-                let fullString = sprintf "%s\n%s\n%s" strCode loadCode putsCode
+                let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
+                let fullString = sprintf "%s\n%s" loadCode putsCode
                 return ("","", fullString)
           }
         | UnaryOperation (op, rhs) -> 
