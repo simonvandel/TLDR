@@ -87,11 +87,11 @@ module TypeChecker =
                 >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in while statement:, found %A, expected bool" illegalType]
-        | ListRange (content) ->
+        | ListRange (content, pType) ->
             match checkTypesAST content.Head with
             | Success head ->
                 if List.forall(fun e -> checkTypesAST content.Head = checkTypesAST e) content then
-                    Success (ListPrimitive head)
+                    Success (ListPrimitive (head, content.Length))
                 else
                     Failure [sprintf "Lists are monomorphic, all element should of the same type as %A" head ]
             | Failure errMsgs -> 
@@ -168,7 +168,7 @@ module TypeChecker =
             match functionType with
             | SimplePrimitive pType when parameters.Length = 0 -> 
               Success functionType
-            | ListPrimitive prim when parameters.Length = 0 ->
+            | ListPrimitive (prim, len) when parameters.Length = 0 ->
               Success functionType
             | ArrowPrimitive prims when parameters.Length = prims.Length - 1 ->
               Success (Last prims)

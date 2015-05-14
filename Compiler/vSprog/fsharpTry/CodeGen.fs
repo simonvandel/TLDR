@@ -49,11 +49,12 @@ module CodeGen =
             return Map.find regName st.registers
         }
     
-    let argsStruct = SimplePrimitive 
+    let argsStruct = SimplePrimitive
                       (
-                        Primitive.Struct ("args",  [
-                          ("argv", ListPrimitive (ListPrimitive (SimplePrimitive Primitive.Char)));
-                          ("argc", SimplePrimitive Int)
+                        Primitive.Struct ("args",
+                         [
+                           ("argv", ListPrimitive (ListPrimitive (SimplePrimitive Primitive.Char, 128), 128)); // TODO: vi bliver nødt til at hard code længden af lister
+                           ("argc", SimplePrimitive Int)
                          ])
                       )
 
@@ -119,11 +120,13 @@ module CodeGen =
             return (strName, regType)
         }
 
-    let genType (type':PrimitiveType) : string = 
+    let rec genType (type':PrimitiveType) : string = 
         match type' with
         | SimplePrimitive p ->
             match p with
             | Int -> "i32"
+        | ListPrimitive (prim, len) ->
+            sprintf "[%d x %s]" len (genType prim)
         
     let rec findMainReceive (ast:AST) : AST option =
         match ast with
@@ -148,6 +151,16 @@ module CodeGen =
                 return res
         }
 
+    // applies a state workflow to all elements in list
+    let rec collectAll (p:('a ->State<'b,'c>)) (list:'a list) : State<'b list, 'c> =
+        state {
+            match list with
+            | [] -> return []
+            | x::xs ->
+                let! x1 = p x
+                let! xs1 = collectAll p xs
+                return x1 :: xs1
+              }
 
     let rec internalCodeGen (ast:AST) : State<Value, Environment> =
         match ast with
@@ -208,28 +221,30 @@ module CodeGen =
         | If (condition, body) -> 
           state {
               let! (condName, condType) = internalCodeGen condition
-              do! append (sprintf "br i1 %s, label %cifTrue, label %%cont \n" condName '%')
+              let coName = condName.[1..];
+              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
 
-              let contCode = append "br label %cont\n" // to jump to a continuation label
-              do! genLabel "ifTrue" body
+              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              do! genLabel (sprintf "ifTrue%s" coName) body
               do! contCode
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
 
-              do! append "cont:\n" // to allow for code after if-else
+              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               return ("","")    
           }
         | IfElse (condition, trueBody, falseBody) ->
           state {
               let! (condName, condType) = internalCodeGen condition
-              do! append (sprintf "br i1 %s, label %cifTrue, label %cifFalse \n" condName '%' '%')
+              let coName = condName.[1..];
+              do! append (sprintf "br i1 %s, label %%cifTrue%s, label %%cifFalse%s \n" condName coName coName)
 
-              let contCode = append "br label %cont\n" // to jump to a continuation label
-              do! genLabel "ifTrue" trueBody
+              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              do! genLabel (sprintf "ifTrue%s" coName) trueBody
               do! contCode
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              do! genLabel "ifFalse" falseBody
+              do! genLabel (sprintf "ifFalse%s" coName) falseBody
               do! contCode
-              do! append "cont:\n" // to allow for code after if-else
+              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               return ("","")
           }
         | Send (actorName, msgName) -> 
@@ -247,9 +262,14 @@ module CodeGen =
           state {
               return ("","")
           }
-        | ListRange content -> 
+        | ListRange (contents, pType) -> 
           state {
-              return ("","")
+              let! test = collectAll internalCodeGen contents
+              let listContent = test
+                                |> List.map (fun (name, typ) -> sprintf "%s %s" typ name)
+                                |> String.concat ", "
+              let targetType = genType pType
+              return (sprintf "[ %s ]" listContent, targetType)
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
@@ -314,11 +334,18 @@ module CodeGen =
           state {
               return ("","")
           }
-        | While (cond, body) ->
+        | While (condition, body) ->
           state {
+              let! (condName, condType) = internalCodeGen condition
+              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName condName condName)
 
+              let contCode = append "br label %cont%s\n" // to jump to a continuation label
+              do! genLabel "ifTrue" body
+              do! contCode
+              let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
 
-              return ("","")
+              do! append "cont:\n" // to allow for code after if-else
+              return ("","")  
           }
         | Kill (arg) -> 
           state {

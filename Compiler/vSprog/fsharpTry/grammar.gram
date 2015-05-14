@@ -200,7 +200,7 @@ grammar vSprogGrammar{
                       | TupleType^;
 
     TupleType        -> LPARENS! Types RPARENS!;
-    ListType         -> STARTLIST! Types ENDLIST!;
+    ListType         -> STARTLIST! Types COMMA! INT ENDLIST!;
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
