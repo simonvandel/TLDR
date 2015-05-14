@@ -1,8 +1,5 @@
 \section{Type System Implementation}\label{TypSysImp}
 
-This section will breifly describe the implmentaion of the type system. From the sematics\cref{} defined in the design part, every rule of arithmetic, boolean and logic operations is enforced by extruding type information about each node in AST from the root and then cascading down to the literals, then checking if the AST is legal according to sematic rules.
+This section will breifly describe the implmentaion of the type system. From the sematics\cref{semantics} defined in the design part, every rule of arithmetic, boolean and logic operations is enforced by extruding type information about each node in AST from the root and then cascading down to the literals, then checking if the AST is legal according to sematic rules.
 
-
-
-%notes:
-%Symboltable Implementation - Hvad ender det med?
+For all the entries in the symboltable, previously constructed in the parsing phase, the typechecker check if the lefthand and righthand side of e.g. assignments. In which we check the declared type matches the actual type of the symbolTableEntry.
