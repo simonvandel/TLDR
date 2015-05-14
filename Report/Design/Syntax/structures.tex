@@ -10,6 +10,19 @@ Structures are defined by using the \enquote{struct} keyword.
   struct <structName> := {<structFields>}
 \end{verbatim}
 
+\begin{align*}
+&\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S \Braket{S', e'}}
+                            {\Braket{struct\;s := \{S\}, st} \Rightarrow_S \Braket{struct\;s := \{S'\}, st[s \mapsto e']}}
+                            {e=st(s)}
+\\\\
+&\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S e'}
+                            {\Braket{struct\;s := \{S\}, st} \Rightarrow_S \Braket{st[s \mapsto e']}}
+                            {e=st(s)}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{x:T, e} \Rightarrow_S e[x]}
+\end{align*}
+
 A concrete example:
 
 \begin{verbatim}

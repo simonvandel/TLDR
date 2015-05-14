@@ -19,9 +19,11 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \subsection{Actor-Environment model}
 The formal semantics will also use an actor-environment model.
 
-$a = \text{Anames} \cup \{next\} \rightharpoonup e$
+$a = \text{Anames} \cup \{next\} \rightharpoonup e \times st$
 
 $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+$st = \text{Structs} \rightharpoonup \text{Stm}$
+$at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 
 \subsection{General Constructs}
 \begin{align*}
@@ -80,37 +82,40 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
                   {e \vdash m \Rightarrow_T t}
 									{, \mathbb{T}(m) = t}
 \\\\
-&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e]}
-                           {\Braket{\Tactor \Tact := \{S\};,a} \Rightarrow_S \Braket{S,e,a'}}
+&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e \times st]}
+                           {\Braket{\Tactor \Tact := \{S\}, a} \Rightarrow_S \Braket{S,e,at[\Tact \mapsto S],a'}}
+\\\\
+&\inference[$\text{ACTOR}$]{}
+                           {\Braket{\Tactor \Tact := 1S, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
 \\\\
 &\inference[$\text{RECIEVE}$]{}
-                           {\Braket{\Trecieve r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
+                           {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}} 
-                           {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}|\Braket{S_2,e_2,\alpha'}}
+&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\alpha} \Rightarrow_S \Braket{e_1',\alpha'}} 
-                           {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_2,e_2,\alpha'}}
+&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2,e_2,\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\alpha} \Rightarrow_S \Braket{S_2',e_1',\alpha'}} 
-                           {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}|\Braket{S_2,e_2,\alpha'}}
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\Ta} \Rightarrow_S \Braket{S_2',e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\alpha'}}
-                           {\Braket{S_1,e_1,\alpha}|\Braket{S_2,e_2,\alpha} \Rightarrow_S \Braket{S_1',e_1',\alpha'}}
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\Ta'}}
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
 &\inference[$\text{SPAWN}$]{}
-                       {\Braket{\Ta := \Tspawn \Tx \Tm,\alpha} \Rightarrow_S \Braket{\Tsend \Ta \Tm,\alpha'}}
+                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Ta} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Ta[act \mapsto e \times st]}}
 \\
-&												{, \alpha(x) \mapsto \Braket{S,p} , \alpha' = \alpha[\Ta \mapsto \Braket{S, p}]}
+&												{, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
 \\\\
 &\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
-                       {\Braket{\Tsend \Tact \Tm ; S,\alpha,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
+                       {\Braket{\Tsend \Tact \Tm ; S,\Ta,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
 \\\\
 &\inference[$\text{MAIN}$]{input \mapsto \Braket{S,\epsilon}}
-                          {\Braket{\Trecieve \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
+                          {\Braket{\Treceive \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}
