@@ -5,7 +5,7 @@ open vSprog.CommonTypes
 open AnalysisUtils
 
 module CodeGen =
-    type Value = (string * string) // name, type
+    type Value = (string * string * string) // name, type, code
     type Environment = {
         regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition
         genString:string // the code generated
@@ -18,15 +18,15 @@ module CodeGen =
             let! st = getState
             let newEnv = {st with regCounter = st.regCounter + 1}
             do! putState newEnv
-            return (sprintf "%c%d" '%' newEnv.regCounter)
+            return (sprintf "%%%d" newEnv.regCounter)
         }
 
-    let append (code:string) : State<unit, Environment> =
-        state {
-            let! st = getState
-            let newEnv = {st with genString = st.genString + code}
-            do! putState newEnv
-        }
+//    let append (code:string) : State<unit, Environment> =
+//        state {
+//            let! st = getState
+//            let newEnv = {st with genString = st.genString + code}
+//            do! putState newEnv
+//        }
 
     let addRegister (regName:string) (regType:string) : State<unit, Environment> =
         state {
@@ -38,9 +38,8 @@ module CodeGen =
     let newRegister (regName:string) (regType:string) (rhs:string) : State<Value, Environment> =
         state {
             let code = sprintf "%s = %s" regName rhs
-            do! append code
             do! addRegister regName regType
-            return (regName, regType)
+            return (regName, regType, code)
         }
 
     let findRegister (regName:string) : State<string, Environment> =
@@ -60,15 +59,15 @@ module CodeGen =
 
     let genLoad targetName sourceType sourceName : State<Value, Environment> =
         state {
-            let code = sprintf "load %s %s \n" sourceType sourceName
+            let code = sprintf "load %s %s" sourceType sourceName
             let loadedType = sourceType.Substring(0, sourceType.Length-1) // remove 1 pointer from type
             let! res = newRegister targetName loadedType code
             return res
         }
 
-    let genLoadString targetName ((strName, strType):Value) : State<Value, Environment> =
+    let genLoadString targetName ((strName, strType, strCode):Value) : State<Value, Environment> =
         state {
-            let code = sprintf "getelementptr %s %s, i64 0, i64 0\n" strType strName
+            let code = sprintf "getelementptr %s %s, i64 0, i64 0" strType strName
             let! res = newRegister targetName "i8*" code
             return res
         }
@@ -76,17 +75,18 @@ module CodeGen =
     let genAlloca targetName type' : State<Value, Environment> = 
         state {
             let lhs = sprintf "%c%s" '%' targetName
-            let code = sprintf "alloca %s \n" type'
+            let code = sprintf "alloca %s" type'
             let lhsType = sprintf "%s*" type'
 
             let! res = newRegister lhs lhsType code
             return res
         }
 
-    let genStore sourceName sourceType targetName targetType : State<unit, Environment> = 
+    let genStore sourceName sourceType targetName targetType : State<Value, Environment> = 
         state {
-            let code = sprintf "store %s %s, %s %s \n" sourceType sourceName targetType targetName
-            do! append code
+            let code = sprintf "store %s %s, %s %s" sourceType sourceName targetType targetName
+            //do! append code
+            return ("", "", code)
         }
 
     let icmpString binOp sLhsType sLhsName sRhsName : string =
@@ -97,7 +97,7 @@ module CodeGen =
                  | GreaterThanOrEq -> "sge"
                  | Equals -> "eq"
                  | NotEquals -> "ne"
-        sprintf "icmp %s %s %s, %s\n" op sLhsType sLhsName sRhsName
+        sprintf "icmp %s %s %s, %s" op sLhsType sLhsName sRhsName
 
     let declareStringConstant (str:string) : State<Value, Environment> =
         state {
@@ -117,7 +117,8 @@ module CodeGen =
             let newEnv = {st with globalVars = entry :: st.globalVars}
             do! putState newEnv
             let regType = sprintf "%s*" strType
-            return (strName, regType)
+            let fullString = sprintf "%s %s" regType strName
+            return (strName, regType, fullString)
         }
 
     let rec genType (type':PrimitiveType) : string = 
@@ -166,9 +167,10 @@ module CodeGen =
         match ast with
         | Program stms | Block stms | Body stms ->
           state {
-              let! test = applyAll stms internalCodeGen
-              //let! test = internalCodeGen stms.Head
-              return test
+              let! fullStringValues = collectAll internalCodeGen stms
+              let fullString = fullStringValues |> List.map (fun (_,_,body) -> body) |> String.concat "\n"
+
+              return ("","", fullString)
           }
 
         | Reassignment (varId, rhs) as reass ->
@@ -176,23 +178,24 @@ module CodeGen =
               let sId = match varId with
                         | SimpleIdentifier id -> id
                         | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
-              let! (toStoreName, toStoreType) = internalCodeGen rhs
-              let toUpdateName = sprintf "%c%s" '%' sId
+              let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+              let toUpdateName = sprintf "%%%s" sId
               let! toUpdateType = findRegister toUpdateName
-              do! genStore toStoreName toStoreType toUpdateName toUpdateType
-              return ("","")
+              let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
+              let fullString = sprintf "%s\n%s" code storeCode
+              return ("","", fullString)
           }
         | Initialisation (lvalue, rhs) -> // TODO: vi kan bruge 'contant' attribut til 'let' bindings
-
           state {
               let sId = match lvalue.identity with
                         | SimpleIdentifier id -> id
                         | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
               let sType = genType lvalue.primitiveType
-              let! (idPtrName, idPtrType) as idPtr = genAlloca sId sType
-              let! (toStoreName, toStoreType) = internalCodeGen rhs
-              do! genStore toStoreName toStoreType idPtrName idPtrType
-              return idPtr
+              let! (idPtrName, idPtrType, allocCode) = genAlloca sId sType
+              let! (toStoreName, toStoreType, rhsCode) = internalCodeGen rhs
+              let! (_,_,storeCode) = genStore toStoreName toStoreType idPtrName idPtrType
+              let fullString = sprintf "%s\n%s\n%s" allocCode rhsCode storeCode
+              return (idPtrName, idPtrType, fullString)
           }
 
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
@@ -204,98 +207,135 @@ module CodeGen =
                               | None -> failwith "Could not find a receive method in main actor accepting arguments"
               
             
-                let! _ = genFunctionDefine "main" (SimplePrimitive Int) [] receive
-                return ("","")
+                let! res = genFunctionDefine "main" (SimplePrimitive Int) [] receive
+                return res
           }
 
         | Struct (name, fields) ->
           state {
-              return ("","")
+              return ("","", "")
           }
         | Constant (ptype, value)-> 
           state {
               match value with
-              | PrimitiveValue.Int n -> return (string n, genType ptype)
+              | PrimitiveValue.Int n -> 
+                let name = string n
+                let type' = genType ptype
+                let body = sprintf "%s %s" type' name
+                let! regName = freshReg
+                let! reg = newRegister regName type' body
+                return reg
           }
 
         | If (condition, body) -> 
           state {
-              let! (condName, condType) = internalCodeGen condition
+              let! (condName, condType, condCode) = internalCodeGen condition
               let coName = condName.[1..];
-              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
+              //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
+              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName
 
-              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
-              do! genLabel (sprintf "ifTrue%s" coName) body
-              do! contCode
+
+              //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              let! trueBody  = genLabel (sprintf "ifTrue%s" coName) body
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
+              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
 
-              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
-              return ("","")    
+              //do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
+              let contLabel = (sprintf "cont%s:\n" coName) // to allow for code after if
+              let fullString = sprintf "%s\n%s\n%s\n%s\n%s" condCode brStr trueBody contCode contLabel
+              return ("","", fullString)
           }
         | IfElse (condition, trueBody, falseBody) ->
           state {
-              let! (condName, condType) = internalCodeGen condition
+              let! (condName, condType, condCode) = internalCodeGen condition
               let coName = condName.[1..];
-              do! append (sprintf "br i1 %s, label %%cifTrue%s, label %%cifFalse%s \n" condName coName coName)
+              //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
+              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%ifFalse%s \n" condName coName coName
 
-              let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
-              do! genLabel (sprintf "ifTrue%s" coName) trueBody
-              do! contCode
+              //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
+              let! trueBodyCode  = genLabel (sprintf "ifTrue%s" coName) trueBody
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              do! genLabel (sprintf "ifFalse%s" coName) falseBody
-              do! contCode
-              do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
-              return ("","")
+              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
+
+              let! falseBodyCode  = genLabel (sprintf "ifFalse%s" coName) falseBody
+              let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
+              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
+
+              //do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
+              let contLabel = (sprintf "cont%s:\n" coName) // to allow for code after if
+              let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s" brStr trueBodyCode contCode falseBodyCode contCode contLabel
+              return ("","", fullString)
           }
         | Send (actorName, msgName) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | Spawn (lvalue, actorName, initMsg) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | Receive (msgName, msgType, body) -> 
           // TODO: lige nu gør vi ikke det rigtige ved receive. Vi genererer bare for body. SKal vi ikke gøre mere?
           internalCodeGen body
         | ForIn (counterName, list, body) -> 
           state {
-              return ("","")
+              // idxCounter = 0
+              let! idxCounterReg = freshReg
+              let idxCounterLValue = {identity = SimpleIdentifier "a"; isMutable = true; primitiveType = SimplePrimitive Int}
+              //let! (idxCounterVal, idxCounterType,) = internalCodeGen (Initialisation (idxCounterLValue, Constant (SimplePrimitive Int, PrimitiveValue.Int 0)))
+
+              // counterName = defaultValue list
+
+              
+
+              // label:start
+              //do! genLabel "label1" 
+
+              // assign list[idxCounter] to counterName
+
+
+              // i++
+              // gen body
+              // if i == length(list) - 1 then it is finished. Else jump to label:start
+              return ("","", "")
           }
         | ListRange (contents, pType) -> 
           state {
               let! test = collectAll internalCodeGen contents
               let listContent = test
-                                |> List.map (fun (name, typ) -> sprintf "%s %s" typ name)
+                                |> List.map (fun (name, typ, code) -> sprintf "%s %s" typ name)
                                 |> String.concat ", "
               let targetType = genType pType
-              return (sprintf "[ %s ]" listContent, targetType)
+              let name = sprintf "[ %s ]"listContent
+              let fullString = sprintf "%s %s" name targetType
+              return (name , targetType, fullString)
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
               // TODO: OBS. lige nu er det altid af type i32 Typen for hele BinOperation skal bruges her. Indsæt det f.eks. i træet
               // TODO: support for floats
-              let! (sLhsName, sLhsType) = internalCodeGen lhs
-              let! (sRhsName, sRhsType) = internalCodeGen rhs
+              let! (sLhsName, sLhsType, lhsCode) = internalCodeGen lhs
+              let! (sRhsName, sRhsType, rhsCode) = internalCodeGen rhs
               let! tempReg = freshReg
               let (code, targetType) = 
                   match op with
                   | Multiply -> 
-                    sprintf "mul %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "mul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Plus ->
-                    sprintf "add %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "add %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Minus ->
-                    sprintf "sub %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "sub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Divide ->
-                    sprintf "sdiv %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "sdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Or -> 
-                    sprintf "or %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "or %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | And -> 
-                    sprintf "and %s %s, %s\n" sLhsType sLhsName sRhsName, sLhsType
+                    sprintf "and %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | GreaterThan | GreaterThanOrEq | LessThan | LessThanOrEq | Equals | NotEquals -> 
                     (icmpString op sLhsType sLhsName sRhsName, "i1")
-              let! res = newRegister tempReg targetType code
-              return res
+              let! (resName, resType, resCode) = newRegister tempReg targetType code
+              let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode resCode
+              return (resName, resType, fullString)
           }
 
           
@@ -313,51 +353,54 @@ module CodeGen =
           }
         | Function (funcName, arguments, types, body) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | StructLiteral fieldNamesAndVals -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | Invocation (functionName, parameters, functionType) -> 
           state {
               match functionName with
               | "print" ->
                 let stringToPrint = parameters.Head
-                let! (strName, strType) as str = declareStringConstant stringToPrint
+                let! (strName, strType, strCode) as str = declareStringConstant stringToPrint
                 let! regName = freshReg
-                let! (loadedStringName, loadedStringType) = genLoadString regName str
-                do! append (sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName)
-                return ("","")
+                let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
+                //do! append (sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName)
+                let putsCode = sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName
+                let fullString = sprintf "%s\n%s\n%s" strCode loadCode putsCode
+                return ("","", fullString)
           }
         | UnaryOperation (op, rhs) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | While (condition, body) ->
           state {
-              let! (condName, condType) = internalCodeGen condition
-              do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName condName condName)
+              let! (condName, condType, condCode) = internalCodeGen condition
+              //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName condName condName)
 
-              let contCode = append "br label %cont%s\n" // to jump to a continuation label
-              do! genLabel "ifTrue" body
-              do! contCode
-              let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
 
-              do! append "cont:\n" // to allow for code after if-else
-              return ("","")  
+              //let contCode = append "br label %cont%s\n" // to jump to a continuation label
+              //do! genLabel "ifTrue" body
+              //do! contCode
+              //let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
+
+              //do! append "cont:\n" // to allow for code after if-else
+              return ("","", "")  
           }
         | Kill (arg) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | Me -> 
           state {
-              return ("","")
+              return ("","", "")
           }
         | Return (arg) -> 
           state {
-              return ("","")
+              return ("","", "")
           }
 
     and genFunctionDefine (name:string) (retType:PrimitiveType) (args:TypeDeclaration list) (body:AST) : State<Value, Environment> =
@@ -368,26 +411,31 @@ module CodeGen =
                                               (argName, argType) -> sprintf "%s %s" argName (genType argType)
                                             )
                                 |> String.concat ", "
-            do! append (sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList)
+            //do! append (sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList)
+            let defineCode = sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList
 
-            let! _ = internalCodeGen body
-            do! append (if name = "main" then 
-                          "ret i32 0\n}"
-                        else "}")
-            return (name, sRetType)
+            let! (_,_,bodyCode) = internalCodeGen body
+//            do! append (if name = "main" then 
+//                          "ret i32 0\n}"
+//                        else "}")
+            let mainHackCode = if name = "main" then 
+                                 "ret i32 0\n}"
+                               else "}"
+            let fullString = sprintf "%s\n%s\n%s" defineCode bodyCode mainHackCode
+            return (name, sRetType, fullString)
         }
 
-    and genLabel labelName body : State<unit, Environment> =
+    and genLabel labelName body : State<string, Environment> =
         state {
-            let code = sprintf "%s:\n" labelName
-            do! append code
-            let! _ = internalCodeGen body
-            return ()
+            let label = sprintf "%s:" labelName
+            //do! append code
+            let! (bodyName, bodyType, bodyCode) = internalCodeGen body
+            let fullString = sprintf "%s\n%s" label bodyCode
+            return fullString
         }
 
     let codeGen (ast:AST) : string =
-        let env = (evalState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []})
-        let genString = env.genString
+        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []})
         let globals = env.globalVars
                       |> List.map
                         (fun (varName, varType, initVal) -> 
@@ -395,4 +443,4 @@ module CodeGen =
                       |> String.concat ""
         let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"]
                                 
-        externalFunctions + globals + genString
+        externalFunctions + globals + fullString
