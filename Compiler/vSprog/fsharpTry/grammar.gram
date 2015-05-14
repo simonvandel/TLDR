@@ -22,8 +22,7 @@ grammar vSprogGrammar{
     VAR              -> 'var';
     WHILE            -> 'while';
     FOR              -> 'for';
-    KILL             -> 'kill';
-    ME               -> 'me';
+    DIE              -> 'die';
     IN               -> 'in';
     IF               -> 'if';
     ELSE             -> 'else';
@@ -81,7 +80,7 @@ grammar vSprogGrammar{
     Expression       -> Declaration^
                       | Operation^
                       | Receive^
-                      | Kill^
+                      | Die^
                       | Spawn^
                       | Return^
                       | Send^
@@ -100,11 +99,8 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
 
-    /*--------- Kill ---------*/
-    Kill             -> KILL! Operation;
-
-    /*--------- Me ---------*/
-    Me               -> ME;
+    /*--------- Die ---------*/
+    Die             -> DIE;
 
     /*--------- For ---------*/
     ForIn            -> FOR! Ids IN! (ListRange | Identifier ) Block;
@@ -200,7 +196,7 @@ grammar vSprogGrammar{
                       | TupleType^;
 
     TupleType        -> LPARENS! Types RPARENS!;
-    ListType         -> STARTLIST! Types COMMA! INT ENDLIST!;
+    ListType         -> STARTLIST! Types COMMA! Integer ENDLIST!;
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
@@ -211,8 +207,7 @@ grammar vSprogGrammar{
 
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Operations COMMA! Operation RPARENS!;
-    Operations       -> 
-                      Operations COMMA! Operation^
+    Operations       -> Operations COMMA! Operation^
                       | Operation;
 
     /*--------- Accessor ---------*/

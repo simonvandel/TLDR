@@ -1,8 +1,163 @@
 \section{Grammar}
+\setlength{\grammarindent}{100pt}
 \begin{grammar}
-<Program> ::= <StatementList> <SimpleType>
+<Program> ::= <Body>
 
-<StatementList> ::= <Statement> ‘;’ <StatementList>
- \alt <Statement> ‘;’
- \alt <Statement>
+<Body> ::= <Body> ';' <Expression>
+ \alt <Body> ';'
+ \alt <Expression>
+
+<Expression> ::= <Declaration>
+ \alt <Operation>
+ \alt <Receive>
+ \alt <Die>
+ \alt <Spawn>
+ \alt <Return>
+ \alt <Send>
+ \alt <If>
+ \alt <IfElse>
+ \alt <While>
+ \alt <ForIn>;
+
+<Spawn> ::= ('let' | 'var') <TypeDecl> := <Spawn> <Identifier> <Operation>
+
+<Send> ::= 'send' <Identifier> <Operation>
+
+<Return> ::= 'return' <Operation>
+
+<Receive> ::= 'receive' <TypeDecl> := <Block>
+
+<Die> ::= 'die'
+
+<ForIn> ::= 'for' <Ids> 'in' (<ListRange> | <Identifier> ) <Block>
+
+<While> ::= 'while' <Operation> <Block>
+
+<If> ::= <If> <Operation> <Block>
+
+<IfElse> ::= <If> <Operation> <Block> 'else' <Block>
+
+<Block> ::= '\{' Body '\}'
+ \alt '\{' '\}'
+
+<Operation> ::= <Operation> <PSIXOPERATOR> <OP6>
+ \alt <OP6>
+
+<OP6> ::= <OP6> <PFIVEOPERATOR> <OP5>
+ \alt <OP5>
+
+<OP5> ::= <PFOUROPERATOR> <OP5>
+ \alt <OP4>
+
+<OP4> ::= <OP4> <PTHREEOPERATOR> <OP3>
+ \alt <OP3>
+
+<OP3> ::= <OP3> <PTWOOPERATOR> <OP2>
+ \alt <OP2>
+
+<OP2> ::= <OP2> <PONEOPERATOR> <OP1>
+ \alt <OP1>
+
+<OP1> ::= <Operand>
+ \alt <OP1> <PZEROOPERATOR> <Operand>
+ \alt '(' <Operation> ')'
+
+<Operand>	::= <Block>
+ \alt <Integer>
+ \alt <Real>
+ \alt <Boolean>
+ \alt <Me>
+ \alt <Identifier>
+ \alt <Literals>
+ \alt <Invocation>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+    
+<Identifier> ::= <Identifier>
+ \alt <Identifier> <Accessor>
+
+<Literals> ::= <String>
+ \alt <ListRange>
+ \alt <StructLiteral>
+ \alt <Tuple>
+
+<String> ::= 'string'
+
+<StructLiteral> ::= '(' Field (';' <Field>)* ')'
+
+<Field> ::= <Identifier> := <Operation> 
+
+<Invocation> ::= <Identifier> '(' (<Operation> (',' <Operation>)*)? ')'
+
+<Declaration> ::= <Struct>
+ \alt <Actor>
+ \alt <Initialisation>
+ \alt <Assignment>
+ \alt <Function>
+ \alt <Reassignment>
+
+<Struct> ::= 'struct' <Identifier> := '\{' <TypeDecls>? '\}'
+
+<TypeDecls> ::= <TypeDecl> ';' <TypeDecls>
+ \alt <TypeDecl> ';'
+
+<Actor> ::= 'actor' <Identifier> := <Block>
+
+<Assignment> ::= ('let' | 'var') <Identifier> := <Operation>
+
+<Initialisation> ::= ('let' | 'var') <TypeDecl> := <Operation>
+
+<Function> ::= 'let' <Identifier> '(' <Ids>? ')' ';' <Types> := <Operation>
+
+<Ids> ::= <Identifier> (',' <Identifier>)*
+
+<TypeDecl> ::= <Identifier> ';' <Types>
+
+<Reassignment> ::= <Identifier> := <Operation>
+
+<Types> ::= <Type> ('->' <Type>)*
+
+<Type> ::= <PrimitiveType>
+ \alt <Identifier>
+ \alt <ListType>
+ \alt <TupleType>
+
+<TupleType> ::= '(' <Types> ')'
+
+<ListType> ::= '\{' <Types> ',' <Integer> '\}'
+
+<PrimitiveType> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+
+<ListRange> ::= '[' <ListParams> ']'
+
+<ListParams> ::= <ListParams> ',' <Operation>
+ \alt <Operation> '..' <Operation>
+ \alt <Operation>
+
+<Tuple> ::= '(' <Operations> ',' <Operation> ')'
+
+<Operations> ::= <Operations> ',' <Operation>
+ \alt <Operation>
+
+<Accessor> ::= '.' <Identifier>
+ \alt '.' '[' Integer ']';
+
+<PZEROOPERATOR> ::= '$\Twedge$' | '\#';
+
+<PONEOPERATOR> ::= '*' | '/' | '%';
+
+<PTWOOPERATOR> ::= '+' | '-';
+
+<PTHREEOPERATOR> ::= '=' | '!=' | '<' | '<=' | '>' | '>=';
+
+<PFOUROPERATOR> ::= 'NOT';
+
+<PFIVEOPERATOR> ::= 'AND' | 'NAND';
+
+<PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR' ;
+
 \end{grammar}
