@@ -214,6 +214,10 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 \intertext{}
 &\inference[NUM1]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
                  {\Tenv n_1.n_2: \Treal}    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[INVOKE]{\Tenv n:\T}
+                 {\Tenv n: \T}
 \end{align*}
 
 

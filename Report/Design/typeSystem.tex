@@ -37,7 +37,7 @@ Dynamic typing checks types at run-time and therefore allows the programmer to n
 
 Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
 
-\subsection{Type System Choice for TLDR} \kanote{denne burde fjernes hvis der ikke kommer mere intro}
+\subsection{Type System Choice for TLDR}
 
 This section describes some design choices about the type system used for TLDR.
 
@@ -61,7 +61,7 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 
 \begin{align*}
 \intertext{The following sets will be used throughout this section}
-&\Taop = \left\{ {+, -, *, /, \%, \#, \; \Tpot \;} \right\}
+&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
 \\
 &\Tbaop = \left\{ {<, <=, >, >=} \right\}
 \\
@@ -98,16 +98,6 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 \\\\
 &\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
                        \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Tint,\Treal}$]{\Tenv e_1 : \Tint &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Treal,\Tint}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Tint}
                     {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
 \end{align*}
 \sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
@@ -224,6 +214,10 @@ The type system for TLDR is \emph{strong} statically typed. No implicit type con
 \intertext{}
 &\inference[NUM1]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
                  {\Tenv n_1.n_2: \Treal}    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[INVOKE]{\Tenv n: \Tt}
+                 {\Tenv n: \Tt}
 \end{align*}
 
 
