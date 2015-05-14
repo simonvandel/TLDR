@@ -1,0 +1,9 @@
+actor main := {
+  receive arguments:args := {
+
+    let xs:[int, 11] := [0 .. 10];
+    for x in xs {
+      print("ja");
+    }
+  }
+}
