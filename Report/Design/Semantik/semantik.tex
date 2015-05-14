@@ -73,18 +73,7 @@ $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \end{align*}
 
 
-\subsubsection{Loop}
-
-\begin{align*}
-&\inference[$\text{WHILE}_\top$]{e \vdash b \Rightarrow_B \top}
-                       {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},e}}
-\\\\
-&\inference[$\text{WHILE}_\bot$]{e \vdash b \Rightarrow_B \bot}
-                       {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S e}
-\end{align*}
-
 \subsubsection{Misc}
-
 
 \begin{align*}
 &\inference[TYPEOF]{}
