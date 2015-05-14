@@ -72,9 +72,12 @@ module CodeGen =
             return res
         }
 
-    let genAlloca targetName type' : State<Value, Environment> = 
+    let genAlloca (targetName:string) type' : State<Value, Environment> = 
         state {
-            let lhs = sprintf "%c%s" '%' targetName
+            let lhs = if targetName.StartsWith("%_") then // only prepend % when targetName is named e.g. "x"
+                        targetName
+                      else
+                        sprintf "%c%s" '%' targetName
             let code = sprintf "alloca %s" type'
             let lhsType = sprintf "%s*" type'
 
@@ -179,7 +182,7 @@ module CodeGen =
                         | SimpleIdentifier id -> id
                         | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
               let! (toStoreName, toStoreType, code) = internalCodeGen rhs
-              let toUpdateName = sprintf "%%%s" sId
+              let toUpdateName = sId
               let! toUpdateType = findRegister toUpdateName
               let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
               let fullString = sprintf "%s\n%s" code storeCode
@@ -274,27 +277,49 @@ module CodeGen =
         | Receive (msgName, msgType, body) -> 
           // TODO: lige nu gør vi ikke det rigtige ved receive. Vi genererer bare for body. SKal vi ikke gøre mere?
           internalCodeGen body
-        | ForIn (counterName, list, body) -> 
+        | ForIn (elem, list', body) -> 
           state {
-              // idxCounter = 0
-              let! idxCounterReg = freshReg
-              let idxCounterLValue = {identity = SimpleIdentifier "a"; isMutable = true; primitiveType = SimplePrimitive Int}
-              //let! (idxCounterVal, idxCounterType,) = internalCodeGen (Initialisation (idxCounterLValue, Constant (SimplePrimitive Int, PrimitiveValue.Int 0)))
+              let! idxCounterRegName = freshReg
+              let idxCounterLValue = {identity = SimpleIdentifier idxCounterRegName; isMutable = true; primitiveType = SimplePrimitive Int}
+              let! (idxCounterVal, idxCounterType, idxCounterCode) = internalCodeGen (Initialisation (idxCounterLValue, Constant (SimplePrimitive Int, PrimitiveValue.Int 0)))
 
-              // counterName = defaultValue list
-
+              let (elemType, listLength) = match list' with
+                                              | ListRange (contents, ListPrimitive (ptype, n)) -> (ptype, n)
+                                              | Identifier (_, ListPrimitive (ptype, n)) -> (ptype, n)
               
+              let conditionAST = BinOperation (
+                                   Identifier (SimpleIdentifier idxCounterRegName, SimplePrimitive Int), 
+                                   NotEquals, 
+                                   Constant (SimplePrimitive Int, PrimitiveValue.Int listLength)
+                                 ) 
+              let incrementCounter = BinOperation (
+                                       Identifier (SimpleIdentifier idxCounterRegName, elemType),
+                                       Plus,
+                                       Constant (SimplePrimitive Int, PrimitiveValue.Int 1)
+                                     )
 
-              // label:start
-              //do! genLabel "label1" 
+              let reassCounter = Reassignment (
+                                       SimpleIdentifier idxCounterRegName,
+                                       incrementCounter
+                                       )
 
-              // assign list[idxCounter] to counterName
+              let! tempElemAssign = freshReg
+              let! (_,_,allocatedTempElemAssign) = genAlloca tempElemAssign (genType elemType)
+             
+              // TODO: assign element til elem
+              //let elemAssign = Reassignment (SimpleIdentifier elem, Identifier (SimpleIdentifier tempElemAssign, elemType)) // TODO
 
+              let bodyAST = Body [ body; reassCounter]
+              let whileCodeAST = While (conditionAST, bodyAST)
 
-              // i++
-              // gen body
-              // if i == length(list) - 1 then it is finished. Else jump to label:start
-              return ("","", "")
+              let declElemCodeLValue = {identity = SimpleIdentifier elem; isMutable = true; primitiveType = elemType}
+              let declElemDefaultVal = match elemType with
+                                       | SimplePrimitive Int -> PrimitiveValue.Int 0
+              let declElemCodeAST = Initialisation (declElemCodeLValue, Constant (elemType, declElemDefaultVal))
+              let! (_,_, declElemCode) = internalCodeGen declElemCodeAST
+              let! (_,_,whileCode) = internalCodeGen whileCodeAST
+              let fullString = sprintf "%s\n%s\n%s\n" idxCounterCode declElemCode whileCode
+              return ("","",fullString)
           }
         | ListRange (contents, pType) -> 
           state {
@@ -305,7 +330,7 @@ module CodeGen =
               let targetType = genType pType
               let name = sprintf "[ %s ]"listContent
               let fullString = sprintf "%s %s" name targetType
-              return (name , targetType, fullString)
+              return (name , targetType, "")
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
@@ -342,10 +367,9 @@ module CodeGen =
               match id with
               | SimpleIdentifier str -> 
                 let! regName = freshReg
-                let toLoadName = (sprintf "%c%s" '%' str)
+                let toLoadName = str
                 let! toLoadType = findRegister toLoadName
                 let! loadedValue = genLoad regName toLoadType toLoadName
-                //return (sprintf "%c%s" '%' str, "i32")
                 return loadedValue
           }
         | Function (funcName, arguments, types, body) -> 
