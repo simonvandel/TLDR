@@ -229,13 +229,13 @@ module CodeGen =
               let! (condName, condType, condCode) = internalCodeGen condition
               let coName = condName.[1..];
               //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
-              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName
+              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s" condName coName coName
 
 
               //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
               let! trueBody  = genLabel (sprintf "ifTrue%s" coName) body
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
+              let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
               //do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               let contLabel = (sprintf "cont%s:\n" coName) // to allow for code after if
@@ -247,20 +247,20 @@ module CodeGen =
               let! (condName, condType, condCode) = internalCodeGen condition
               let coName = condName.[1..];
               //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
-              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%ifFalse%s \n" condName coName coName
+              let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%ifFalse%s" condName coName coName
 
               //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
               let! trueBodyCode  = genLabel (sprintf "ifTrue%s" coName) trueBody
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
+              let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
               let! falseBodyCode  = genLabel (sprintf "ifFalse%s" coName) falseBody
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
-              let contCode = sprintf "br label %%cont%s\n" coName // to jump to a continuation label
+              let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
               //do! append (sprintf "cont%s:\n" coName) // to allow for code after if-else
               let contLabel = (sprintf "cont%s:\n" coName) // to allow for code after if
-              let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s" brStr trueBodyCode contCode falseBodyCode contCode contLabel
+              let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" condCode brStr trueBodyCode contCode falseBodyCode contCode contLabel
               return ("","", fullString)
           }
         | Send (actorName, msgName) -> 
