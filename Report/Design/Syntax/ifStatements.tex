@@ -1,5 +1,7 @@
 \subsubsection{If-statements}
 \label{subsec:ifStatements}
+\newcommand{\Tif}{\text{if}}
+\newcommand{\Telse}{\text{else}}
 
 If-statements can be written either as a if-then-else statement or just as an if-statement. The following shows either way.
 
@@ -22,3 +24,23 @@ A concrete example:
   // if-statement
   if (remainingTime < 10) {initiateCountdown()}
 \end{verbatim}
+
+\subsubsection{semantics}
+
+\begin{align*}
+&\inference[$\text{IF}_\top$]{}
+                      {\Braket{if(b)\{S\},e} \Rightarrow_S \Braket{\{S\},e}}
+                      {,b \Rightarrow_B \top}
+\\\\
+&\inference[$\text{IF}_\bot$]{}
+                      {\Braket{if(b)\{S\},e} \Rightarrow_S e}
+                      {,b \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{IF-ELSE}_\top$]{}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_1\},e}}
+                      {,b \Rightarrow_B \top}
+\\\\
+&\inference[$\text{IF-ELSE}_\bot$]{}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_2\},e}}
+                      {,b \Rightarrow_B \bot}
+\end{align*}

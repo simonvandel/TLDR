@@ -1,6 +1,7 @@
 \subsubsection{For-loop Statements}
 \label{subsec:forLoopStatements}
 
+
 A for-loop iterates through a list of elements.
 
 The for loop statement has the following syntax.
@@ -14,3 +15,13 @@ A concrete example:
 \begin{verbatim}
   for i:int in [0..10]:[int] { /* Do stuff with i elements */ }
 \end{verbatim}
+
+\subsubsection{Semantics}
+
+\begin{align*}
+&\inference[$\text{FOR}_{1}$]{}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e}}
+\\\\
+&\inference[$\text{FOR}_{2}$]{}
+                       {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{x := n_m;\{S\},e}}
+\end{align*}
