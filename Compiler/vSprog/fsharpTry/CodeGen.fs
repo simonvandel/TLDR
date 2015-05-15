@@ -203,15 +203,16 @@ module CodeGen =
 
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
           state {
-            match name with
-            | "main" -> 
-                let receive = match findMainReceive body with
-                              | Some a -> a
-                              | None -> failwith "Could not find a receive method in main actor accepting arguments"
-              
-            
-                let! res = genFunctionDefine "main" (SimplePrimitive Int) [] receive
-                return res
+              let! res = genActorDefine (sprintf "_actor_%s" name) "i8*" [] body
+//            match name with
+//            | "main" -> 
+//                let receive = match findMainReceive body with
+//                              | Some a -> a
+//                              | None -> failwith "Could not find a receive method in main actor accepting arguments"
+//              
+//            
+//                let! res = genFunctionDefine "main" (SimplePrimitive Int) [] receive
+              return res
           }
 
         | Struct (name, fields) ->
@@ -433,26 +434,24 @@ module CodeGen =
               return ("","", "")
           }
 
-    and genFunctionDefine (name:string) (retType:PrimitiveType) (args:TypeDeclaration list) (body:AST) : State<Value, Environment> =
+    and genActorDefine (name:string) (retType:string) (args:TypeDeclaration list) (body:AST) : State<Value, Environment> =
         state {
-            let sRetType = genType retType
             let sArgumentList = args
                                 |> List.map (fun
                                               (argName, argType) -> sprintf "%s %s" argName (genType argType)
                                             )
                                 |> String.concat ", "
             //do! append (sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList)
-            let defineCode = sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList
+            let defineCode = sprintf "define %s @%s(%s) {\n" retType name sArgumentList
 
             let! (_,_,bodyCode) = internalCodeGen body
 //            do! append (if name = "main" then 
 //                          "ret i32 0\n}"
 //                        else "}")
-            let mainHackCode = if name = "main" then 
-                                 "ret i32 0\n}"
-                               else "}"
+            let mainHackCode = "ret i8* null\n}"
+                               
             let fullString = sprintf "%s\n%s\n%s" defineCode bodyCode mainHackCode
-            return (name, sRetType, fullString)
+            return (name, retType, fullString)
         }
 
     and genLabel labelName body : State<string, Environment> =
@@ -474,6 +473,30 @@ module CodeGen =
         let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"
                                                  ;"declare void @actor_init(...)\n"
                                                  ;"declare void @actor_wait_finish(...)\n"
-                                                 ;"declare void @actor_destroy_all(...)\n"]
-                                
-        externalFunctions + globals + fullString
+                                                 ;"declare void @actor_destroy_all(...)\n"
+                                                 ;"%struct.actor_message_struct = type { %struct.actor_message_struct*, i64, i64, i64, i8*, i64}\n"
+                                                 ;"%struct.actor_main = type { i32, i8** }\n"
+                                                 ;"declare void @exit(i32)\n"
+                                                 ;"declare i64 @spawn_actor(i8* (i8*)*, i8*)\n"
+                                                 ;"declare void @actor_send_msg(i64, i64, i8*, i64)\n"]
+          
+        let main = """define i32 @main(i32 %argc, i8** %argv) {
+  %1 = alloca i32
+  %2 = alloca i32
+  %3 = alloca i8**
+  store i32 0, i32* %1
+  store i32 %argc, i32* %2
+  store i8** %argv, i8*** %3
+  call void (...)* @actor_init()
+  %4 = call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_main to i8* (i8*)*), i8* null)
+  call void (...)* @actor_wait_finish()
+  call void (...)* @actor_destroy_all()
+  call void @exit(i32 0)
+  unreachable
+                                                  ; No predecessors!
+  %6 = load i32* %1
+  ret i32 %6
+}
+                """
+                                                                       
+        externalFunctions + globals + main + fullString
