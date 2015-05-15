@@ -138,7 +138,6 @@ grammar vSprogGrammar{
                       | Integer^
             	        | Real^
                       | Boolean^
-                      | Me^
                       | Identifier^
                       | Literals^
                       | Invocation^;
