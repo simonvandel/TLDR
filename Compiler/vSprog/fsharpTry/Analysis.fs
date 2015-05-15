@@ -163,6 +163,21 @@ module Analysis =
           state 
             {
               do! openScope
+              let! curScope = getScope
+
+              let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier counterName
+                        isMutable = false
+                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
+                      }
+                    statementType = Init
+                    scope = curScope
+                    value = Block []
+                  }
+              do! addEntry entry
               let! newList = buildSymbolTable list
               let! newBody = buildSymbolTable body
               do! closeScope

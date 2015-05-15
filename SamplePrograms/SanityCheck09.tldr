@@ -3,6 +3,7 @@ actor main := {
 
     let xs:[int, 11] := [0 .. 10];
     for x in xs {
+      x;
       print("ja");
     }
   }
