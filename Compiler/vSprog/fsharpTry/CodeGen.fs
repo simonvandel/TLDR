@@ -367,7 +367,7 @@ module CodeGen =
               match id with
               | SimpleIdentifier str -> 
                 let! regName = freshReg
-                let toLoadName = str
+                let toLoadName = sprintf "%%%s" str
                 let! toLoadType = findRegister toLoadName
                 let! loadedValue = genLoad regName toLoadType toLoadName
                 return loadedValue
@@ -471,6 +471,9 @@ module CodeGen =
                         (fun (varName, varType, initVal) -> 
                           sprintf "%s = constant %s c\"%s\00\"\n" varName varType initVal)
                       |> String.concat ""
-        let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"]
+        let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"
+                                                 ;"declare void @actor_init(...)\n"
+                                                 ;"declare void @actor_wait_finish(...)\n"
+                                                 ;"declare void @actor_destroy_all(...)\n"]
                                 
         externalFunctions + globals + fullString
