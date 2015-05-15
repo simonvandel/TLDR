@@ -164,21 +164,23 @@ module Analysis =
             {
               do! openScope
               let! curScope = getScope
-
+              let! newList = buildSymbolTable list
               let entry =
                   {
                     symbol = 
                       {
                         identity = SimpleIdentifier counterName
                         isMutable = false
-                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
+                        primitiveType = match newList with
+                                        | ListRange (content, pType) -> pType
+                                        | Identifier (id, pType) -> pType
+                                        | _ -> HasNoType
                       }
                     statementType = Init
                     scope = curScope
                     value = Block []
                   }
               do! addEntry entry
-              let! newList = buildSymbolTable list
               let! newBody = buildSymbolTable body
               do! closeScope
               return ForIn (counterName, newList, newBody)
