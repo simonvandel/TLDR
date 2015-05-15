@@ -1,9 +1,10 @@
 \subsection{The Iteration Problem}
 
-If the actor model is chosen, it will be possible to create continuous simulations in the language, with a good abstraction for simulations and models in general. Unfortunately the actor model does not support discrete simulations as well. When trying to implement a discrete simulation solely with actor modelling, a problem arises that needs to be addressed. \\\\ 
+If the actor model is chosen, it will be possible to create continuous simulations in the language, with a good abstraction for simulations and models in general. Unfortunately the actor model does not support discrete simulations as well. When trying to implement a discrete simulation solely with actor modelling, a problem arises that needs to be addressed.
+ 
 The problem is, that there is no way for the programmer in the language to tell whether a group of actors has completed their work or not. This is important since the user must to be able to implement iteration steps if he or she is to create discrete simulations. He or she has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
 
-The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the user must to be able to implement iteration steps if the programmer is to create discrete simulations. The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
+The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the user must to be able to implement iteration steps if the programmer is to create discrete simulations.\jenote{Øhh ekko? Merge med overstående afsnit} The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
 
 For an actor to have stopped, the programmer needs to know that the three following conditions are fulfilled:
 \begin{itemize}
@@ -18,6 +19,14 @@ The two first conditions are inherently easy to check. But for the last conditio
 \item The programmer must be able to assure which actors can communicate with each other. Without this knowledge it is impossible to know that a given actor will receive future messages.
 \item The actors must keep track of and report their status.
 \end{itemize} 
+
+To illustrate the solution we first look at the first condition.
+
+To assure that which actors can communicate with witch actors there must be some way to group actors together. If we look to discrete simulations here each iteration illustrates an update for all objects and subsystems within a demarcated system. The initial idea was one could create actors within actors. The problem with this solution is that actors can see symbols declared in the same scope as themselves. This means that if they are declared within an other actor they can also see the symbols declared within that actor thereby violating one of the principles of MPI. There could be made a special case for this but this could result in complicated rules that can be hard to remember especially for people that are not too use to program.
+
+Another way to model this was therefore found. \jenote{Not done}
+
+Now we look at the second condition; how actors should keep track of and report their status.
 
 The naive solution would be to have all the actors report when they have no messages and when they are not running, and then reporting to a central controller, assuming that when the controller has received a message from all actors, that they will be done running. The problem with this approach can be illustrated with the figure \cref{iterationproblem_img}. 
 
