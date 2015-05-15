@@ -1,6 +1,12 @@
 \subsection{Primitive Data Types}
 \label{subsec:primitives}
 
+Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have psychical limits which makes it complicated or inefficient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason, namely the different charateristics numbers have.
+
+However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
+
+When initialising a variable, it being either mutable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
+
 A primitive is a predefined value type that cannot be constructed using other value types.
 
 The following primitives exist in the language. All primitives are lower-cased.
@@ -12,6 +18,8 @@ The following primitives exist in the language. All primitives are lower-cased.
   \item char
   \item unit
 \end{itemize}
+
+
 
 \paragraph{Integer}
 \label{subsubsec:int}
@@ -32,19 +40,6 @@ The bool primitive's value can be either \emph{true} or \emph{false}.
 \label{sec:char}
 
 The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single quotation marks. For example: \emph{ '0' } and \emph{ 'A' }.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \paragraph{Unit}

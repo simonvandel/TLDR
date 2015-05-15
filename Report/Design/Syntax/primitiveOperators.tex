@@ -12,6 +12,10 @@ Primitive operations are the operations that are build into the language.
 \subsubsection{Mathematical Operators}
 \label{sec:mathOps}
 
+For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
+
+\kanote{moar text needed plz}
+
 The following mathematical operations are built into the language. They follow these sematic base rules:
 
 \begin{align*}
@@ -142,6 +146,8 @@ The following mathematical operations are built into the language. They follow t
 
 \paragraph{Logical Operations}
 \label{sec:logicOps}
+
+For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison. The same arguments exist for other types of logical operations.
 
 \begin{itemize}
 \item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.

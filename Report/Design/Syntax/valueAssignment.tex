@@ -1,7 +1,11 @@
 \subsubsection{Value Assignment}
 \label{subsec:value_assignment}
 
-A value can be assigned to a symbol in either a constant binding or a variable binding. 
+A value can be assigned to a symbol in either a constant binding or a variable binding.
+
+In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We wanted to follow this construct as well letting immutable assignment be denoted in this fashion, since they are comparable to definitions. 
+
+But since we wanted assignments, be it mutable or immutable, to have a similarities, we chose \enquote{:=} for all assignments. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{:=} was chosen, since it is a known symbol from other languages. The asymmetry of the \enquote{:=} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
 
 \paragraph{Constant Binding}
 

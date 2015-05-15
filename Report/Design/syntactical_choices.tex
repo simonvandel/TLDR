@@ -1,34 +1,5 @@
-\section{Prominent Syntactical Decision}
-\label{cha:syntax}
-For TLDR certain syntactical constructs have been decided upon. Here follows the choices made and the reasoning behind them.
-
-
 \subsection{Scoping}
 
 As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
 %impossible - but why?
 For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
-
-\subsection{Logical Comparisons}
-
-For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison.
-
-
-\subsection{Assignment}
-
-In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We have chosen to follow this construct as well, letting immutable assignment be denoted in this fashion, \enquote{let x = 2}, since they are comparable to definitions.
-
-For assigning mutable variables we chose \enquote{<-}. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{<-} was chosen, since it is a known symbol from other languages, and also since the arrow symbolises transition or transformation. The asymmetry of the \enquote{<-} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
-
-
-\subsection{Initialisation/Type Declaration}
-
-Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have psychical limits which makes it complicated or inefficient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason. 
-%what reason?
-However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
-
-When initialising a variable, it being either mutable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
-
-\subsection{Function Declarations}
-
-For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
