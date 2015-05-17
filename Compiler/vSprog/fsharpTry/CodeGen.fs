@@ -227,7 +227,7 @@ module CodeGen =
 
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
           state {
-              let activeLValue = {identity = SimpleIdentifier "_active"; isMutable = true; primitiveType = SimplePrimitive Bool}
+              let activeLValue = {identity = SimpleIdentifier "%_active"; isMutable = true; primitiveType = SimplePrimitive Bool}
               let activeInitial = Initialisation (activeLValue , Constant (SimplePrimitive Bool, PrimitiveValue.Bool true))
               let! (_,_,activeBoolCode) = internalCodeGen activeInitial
 
@@ -241,7 +241,7 @@ module CodeGen =
                                        else
                                          internalCodeGen (Program []) // do not generate anything
 
-              let! conditionalCode = internalCodeGen (Identifier (SimpleIdentifier "_active", SimplePrimitive Bool))
+              let! conditionalCode = internalCodeGen (Identifier (SimpleIdentifier "%_active", SimplePrimitive Bool))
 
               let! actorReceiveReg = freshReg
               let! (actorReceiveCallName, actorReceiveCallType, actorReceiveCallCode) = newRegister actorReceiveReg "%struct.actor_message_struct*" "call %struct.actor_message_struct* (...)* @actor_receive()"
@@ -382,12 +382,14 @@ module CodeGen =
               let (elemType, listLength) = match list' with
                                               | ListRange (contents, ListPrimitive (ptype, n)) -> (ptype, n)
                                               | Identifier (_, ListPrimitive (ptype, n)) -> (ptype, n)
+
+              let! (listName, listType, listCode) = internalCodeGen list'
               
-              let conditionAST = BinOperation (
-                                   Identifier (SimpleIdentifier idxCounterRegName, SimplePrimitive Int), 
-                                   NotEquals, 
-                                   Constant (SimplePrimitive Int, PrimitiveValue.Int listLength)
-                                 ) 
+              let! conditionCode = internalCodeGen ( BinOperation (
+                                                       Identifier (SimpleIdentifier idxCounterRegName, SimplePrimitive Int), 
+                                                       NotEquals, 
+                                                       Constant (SimplePrimitive Int, PrimitiveValue.Int listLength)
+                                 ) )
               let incrementCounter = BinOperation (
                                        Identifier (SimpleIdentifier idxCounterRegName, elemType),
                                        Plus,
@@ -400,21 +402,18 @@ module CodeGen =
                                        )
 
               let! tempElemAssign = freshReg
-              let! (_,_,allocatedTempElemAssign) = genAlloca tempElemAssign (genType elemType)
+              let! (allocatedTempElemAssignName,allocatedTempElemAssignType,allocatedTempElemAssignCode) = genAlloca tempElemAssign (genType elemType)
              
-              // TODO: assign element til elem
-              //let elemAssign = Reassignment (SimpleIdentifier elem, Identifier (SimpleIdentifier tempElemAssign, elemType)) // TODO
+              let! curElemReg = freshReg
+              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (genType elemType) (sprintf "extractelement %s %s, i32 %s" listType listName idxCounterRegName)
 
-              let bodyAST = Body [ body; reassCounter]
-              let whileCodeAST = While (conditionAST, bodyAST)
+              let! (_,_,elemReass) = genStore curElemName curElemType allocatedTempElemAssignName allocatedTempElemAssignType
 
-              let declElemCodeLValue = {identity = SimpleIdentifier elem; isMutable = true; primitiveType = elemType}
-              let declElemDefaultVal = match elemType with
-                                       | SimplePrimitive Int -> PrimitiveValue.Int 0
-              let declElemCodeAST = Initialisation (declElemCodeLValue, Constant (elemType, declElemDefaultVal))
-              let! (_,_, declElemCode) = internalCodeGen declElemCodeAST
-              let! (_,_,whileCode) = internalCodeGen whileCodeAST
-              let fullString = sprintf "%s\n%s\n%s\n" idxCounterCode declElemCode whileCode
+              let! (_,_,bodyCode) = internalCodeGen (Body [ body; reassCounter])
+              let fullBodyCode = sprintf "%s\n%s\n%s" curElemCode elemReass bodyCode
+
+              let! (_,_,whileCode) = genWhile conditionCode ("","",fullBodyCode)
+              let fullString = sprintf "%s\n%s\n%s\n%s\n" idxCounterCode listCode allocatedTempElemAssignCode whileCode
               return ("","",fullString)
           }
         | ListRange (contents, pType) -> 
@@ -463,7 +462,8 @@ module CodeGen =
               match id with
               | SimpleIdentifier str -> 
                 let! regName = freshReg
-                let toLoadName = sprintf "%%%s" str
+                let toLoadName = if str.StartsWith("%") then sprintf "%s" str 
+                                 else sprintf "%%%s" str
                 let! toLoadType = findRegister toLoadName
                 let! loadedValue = genLoad regName toLoadType toLoadName
                 return loadedValue
