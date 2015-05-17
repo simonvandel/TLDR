@@ -1,0 +1,12 @@
+actor main := {
+  receive arguments:args := {
+    let x:test := spawn test;
+    send test 5;
+  };
+};
+
+actor test := {
+  receive msg:int := {
+    print("ja");
+ };
+};

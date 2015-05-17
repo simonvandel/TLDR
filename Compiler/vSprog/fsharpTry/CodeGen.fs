@@ -59,7 +59,7 @@ module CodeGen =
 
     let genLoad targetName sourceType sourceName : State<Value, Environment> =
         state {
-            let code = sprintf "load %s %s" sourceType sourceName
+            let code = sprintf "load %s %s\n" sourceType sourceName
             let loadedType = sourceType.Substring(0, sourceType.Length-1) // remove 1 pointer from type
             let! res = newRegister targetName loadedType code
             return res
@@ -129,6 +129,7 @@ module CodeGen =
         | SimplePrimitive p ->
             match p with
             | Int -> "i32"
+            | Bool -> "i1"
         | ListPrimitive (prim, len) ->
             sprintf "[%d x %s]" len (genType prim)
         
@@ -139,9 +140,32 @@ module CodeGen =
           |> List.map findMainReceive
           |> List.filter Option.isSome // 'Some' means that the main receive was found
           |> List.head
-        | Receive ("arguments", argsStruct, _) as mainReceive -> 
+        | Receive ("arguments", UserType "args", _) as mainReceive -> 
             Some mainReceive
         | _ -> None
+
+    let rec findAllReceives (ast:AST) : AST list =
+        match ast with
+        | Block stms | Body stms ->
+          stms
+          |> List.map findAllReceives
+          |> List.concat
+        | Receive (_, _, _) as mainReceive -> 
+            [mainReceive]
+        | _ -> []
+
+    let receiveLabelName (types:PrimitiveType) : string =
+        (sprintf "rec_%A" types).Replace(' ', '_').Replace('"', '_')
+
+    let rec calcReceiveJumps (asts:AST list) : (int * string) list =
+        Seq.zip (Seq.unfold (fun x -> Some(x, x + 1)) 102) asts // start from 102. must be above 100. 101 is reserved for die message
+        |> Seq.map (fun (idx,ast) ->
+            match ast with
+            | Receive (name, types, body) -> (idx, receiveLabelName types)
+            | _ -> failwith "should only be receive"
+            )
+        |> List.ofSeq
+        
 
     let rec applyAll (l:'a list) (p:'a->State<'b, Environment>) : State<'b, Environment> = 
         state {
@@ -203,12 +227,59 @@ module CodeGen =
 
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
           state {
-              //let activeInitial = Initialisation (lvalue, Bool
-              //let conditional = 
-              //let whileCode = While(conditional, whileBody)
+              let activeLValue = {identity = SimpleIdentifier "_active"; isMutable = true; primitiveType = SimplePrimitive Bool}
+              let activeInitial = Initialisation (activeLValue , Constant (SimplePrimitive Bool, PrimitiveValue.Bool true))
+              let! (_,_,activeBoolCode) = internalCodeGen activeInitial
 
-              let! (_,_,genBody) = internalCodeGen body 
-              let fullBody = genBody
+              let! (msgAllocaName,msgAllocaType,msgAllocaCode) = genAlloca "_msg" "%struct.actor_message_struct*"
+
+              let! (_,_,mainReceive) = if name = "main" then
+                                         match findMainReceive body with
+                                         | Some a ->
+                                           internalCodeGen a
+                                         | None -> failwith "Could not find a receive method in main actor accepting arguments"
+                                       else
+                                         internalCodeGen (Program []) // do not generate anything
+
+              let! conditionalCode = internalCodeGen (Identifier (SimpleIdentifier "_active", SimplePrimitive Bool))
+
+              let! actorReceiveReg = freshReg
+              let! (actorReceiveCallName, actorReceiveCallType, actorReceiveCallCode) = newRegister actorReceiveReg "%struct.actor_message_struct*" "call %struct.actor_message_struct* (...)* @actor_receive()"
+              let! (_,_,actorReceiveRes) = genStore actorReceiveCallName actorReceiveCallType msgAllocaName msgAllocaType
+
+              let! loadedMsg = freshReg
+              let! (loadedMsgName, loadedMsgType, loadedMsgCode) = genLoad loadedMsg msgAllocaType msgAllocaName
+
+              let! msgTypePtr = freshReg
+              let getMsgTypeCode = sprintf "%s = getelementptr inbounds %%struct.actor_message_struct* %s, i32 0, i32 3" msgTypePtr loadedMsgName
+
+              let! msgTypeReg = freshReg
+              let! (msgTypeName,msgTypeType,msgTypeCode) = genLoad msgTypeReg "i64*" msgTypePtr
+
+              let receivesToGen = findAllReceives body // don't generate code for main receive
+                                  |> List.filter (fun ast -> match ast with
+                                                             | Receive(_, UserType "args", _) -> false
+                                                             | _ -> true
+                                                 )
+              let receivesJumps = calcReceiveJumps receivesToGen
+                                  |> List.map (fun (k, t) -> sprintf "i64 %d, label %%%s" k t)
+                                  |> String.concat "\n"
+              let gotoReceive = sprintf "switch %s %s, label %%start [ %s ]" msgTypeType msgTypeName receivesJumps
+
+              let bodyCode = ("","",sprintf "%s\n%s\n%s\n%s\n%s\n%s\n" actorReceiveCallCode actorReceiveRes loadedMsgCode getMsgTypeCode msgTypeCode gotoReceive)
+              let! whileCode = genWhile conditionalCode bodyCode
+              let gotoStart = "br label %start"
+              let! startLabel = genLabel "start" whileCode
+
+              let returnAfterWhile = "ret i8* null"
+
+              let! receivesCode = collectAll internalCodeGen receivesToGen
+              let receivesGeneratedCode = receivesCode
+                                          |> List.map (fun (_,_,c) -> c)
+                                          |> String.concat "\n"
+
+              //let! (_,_,genBody) = internalCodeGen body 
+              let fullBody = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" activeBoolCode msgAllocaCode mainReceive gotoStart startLabel returnAfterWhile receivesGeneratedCode
               let! res = genActorDefine (sprintf "_actor_%s" name) "i8*" [] fullBody
 //            match name with
 //            | "main" -> 
@@ -232,6 +303,10 @@ module CodeGen =
                 let name = string n
                 let type' = genType ptype
                 return (name, type', "")
+              | PrimitiveValue.Bool value ->
+                let name = if value then "true" else "false"
+                let type' = genType ptype
+                return (name, type', "")
           }
 
         | If (condition, body) -> 
@@ -241,9 +316,9 @@ module CodeGen =
               //do! append (sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s \n" condName coName coName)
               let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%cont%s" condName coName coName
 
-
+              let! trueBodyCode = (internalCodeGen body)
               //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
-              let! trueBody  = genLabel (sprintf "ifTrue%s" coName) body
+              let! trueBody  = genLabel (sprintf "ifTrue%s" coName) trueBodyCode
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
               let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
@@ -260,11 +335,13 @@ module CodeGen =
               let brStr = sprintf "br i1 %s, label %%ifTrue%s, label %%ifFalse%s" condName coName coName
 
               //let contCode = append (sprintf "br label %%cont%s\n" coName) // to jump to a continuation label
-              let! trueBodyCode  = genLabel (sprintf "ifTrue%s" coName) trueBody
+              let! trueBodyGen = internalCodeGen trueBody
+              let! trueBodyCode = genLabel (sprintf "ifTrue%s" coName) trueBodyGen
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
               let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
-              let! falseBodyCode  = genLabel (sprintf "ifFalse%s" coName) falseBody
+              let! falseBodyGen = internalCodeGen falseBody
+              let! falseBodyCode  = genLabel (sprintf "ifFalse%s" coName) falseBodyGen
               let! _ = freshReg // TODO: always increment regCounter after a termination of a block. Here br
               let contCode = sprintf "br label %%cont%s" coName // to jump to a continuation label
 
@@ -285,8 +362,17 @@ module CodeGen =
               return reg
           }
         | Receive (msgName, msgType, body) -> 
-          // TODO: lige nu gør vi ikke det rigtige ved receive. Vi genererer bare for body. SKal vi ikke gøre mere?
-          internalCodeGen body
+          state {
+              match msgType with
+              | UserType "args" ->
+                let! genBody = internalCodeGen body
+                return genBody
+              | _ ->
+                let labelName = receiveLabelName msgType
+                let! genBody = internalCodeGen body
+                let! label = genLabel labelName genBody
+                return ("","",label)
+          }
         | ForIn (elem, list', body) -> 
           state {
               let! idxCounterRegName = freshReg
@@ -409,26 +495,10 @@ module CodeGen =
           }
         | While (condition, body) ->
           state {
-              let! (condName, condType, condCode) = internalCodeGen condition
-              let coName = condName.[1..]
-              let brCode = sprintf "br label %%switch%s\n" coName
-
-              let switcCode = sprintf "switch%s: \n %s"  coName condCode
-              let brStr = sprintf "br i1 %s, label %%body%s, label %%cont%s\n" condName coName coName
-
-              let! (_,_,bodyCode) = internalCodeGen body
-
-              let bodyLabel = sprintf "body%s: \n" coName
-
-              let bodyCodeString = sprintf  "%s\n br label %%switch%s\n" bodyCode coName
-
-
-              let con = sprintf "\ncont%s:\n" coName
-
-
-              let fullString = brCode + switcCode + brStr + bodyLabel + bodyCodeString + con
-
-              return ("","", fullString)  
+              let! conditionGen = internalCodeGen condition
+              let! bodyGen = internalCodeGen body
+              let! (_,_,whileCode) = genWhile conditionGen bodyGen
+              return ("","",whileCode)
           }
         | Kill (arg) -> 
           state {
@@ -462,13 +532,31 @@ module CodeGen =
             return (name, retType, fullString)
         }
 
-    and genLabel labelName body : State<string, Environment> =
+    and genLabel labelName (bodyName, bodyType, bodyCode) : State<string, Environment> =
         state {
             let label = sprintf "%s:" labelName
             //do! append code
-            let! (bodyName, bodyType, bodyCode) = internalCodeGen body
             let fullString = sprintf "%s\n%s" label bodyCode
             return fullString
+        }
+
+    and genWhile (condName:string, condType, condCode) (_,_,bodyCode) : State<Value, Environment> =
+        state {
+            let coName = condName.[1..]
+            let brCode = sprintf "br label %%switch%s\n" coName
+           
+            let switcCode = sprintf "switch%s: \n %s"  coName condCode
+            let brStr = sprintf "br i1 %s, label %%body%s, label %%cont%s\n" condName coName coName
+           
+            let bodyLabel = sprintf "body%s: \n" coName
+          
+            let bodyCodeString = sprintf  "%s\n br label %%switch%s\n" bodyCode coName
+          
+            let con = sprintf "\ncont%s:\n" coName
+          
+            let fullString = brCode + switcCode + brStr + bodyLabel + bodyCodeString + con
+          
+            return ("","", fullString)  
         }
 
     let codeGen (ast:AST) : string =
@@ -486,7 +574,8 @@ module CodeGen =
                                                  ;"%struct.actor_main = type { i32, i8** }\n"
                                                  ;"declare void @exit(i32)\n"
                                                  ;"declare i64 @spawn_actor(i8* (i8*)*, i8*)\n"
-                                                 ;"declare void @actor_send_msg(i64, i64, i8*, i64)\n"]
+                                                 ;"declare void @actor_send_msg(i64, i64, i8*, i64)\n"
+                                                 ;"declare %struct.actor_message_struct* @actor_receive(...)\n"]
           
         let main = """define i32 @main(i32 %argc, i8** %argv) {
   %1 = alloca i32
@@ -504,7 +593,6 @@ module CodeGen =
                                                   ; No predecessors!
   %6 = load i32* %1
   ret i32 %6
-}
-                """
+}"""
                                                                        
         externalFunctions + globals + main + fullString
