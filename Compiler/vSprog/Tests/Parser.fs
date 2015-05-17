@@ -63,8 +63,8 @@ module ParserTest =
     [<Test>]
     let ``When initialisation syntax is given with constant binding, expect initialisation AST with constant value``() =
         let ident = SimpleIdentifier "x"
-        let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char);}
-        let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char),PrimitiveValue.List [PrimitiveValue.Char 'T'])
+        let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char, 1);}
+        let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char, 1),PrimitiveValue.List [PrimitiveValue.Char 'T'])
         debugTestParseWith "let x:[char] := \"T\""
         <| should equal (Program [Body [(Initialisation (lValue, rhs))]])
 
@@ -197,7 +197,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for for-in-loop is given with empty body, expect ForIn AST`` () =
-        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)))
+        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, 3))
         let body = Block []
         debugTestParseWith "for i in [0 .. 2] {}"
         <| should equal (Program [Body [(ForIn ("i", list, body))]])
@@ -208,13 +208,13 @@ module ParserTest =
     let ``When syntax for list from 0 to 3 is given, expect List AST`` () =
         let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[0 .. 3]"
-        <| should equal (Program [Body [(ListRange list)]])
+        <| should equal (Program [Body [(ListRange (list, ListPrimitive (SimplePrimitive Int, 4)))]])
 
     [<Test>]
     let ``When syntax for list from -5 to 2 is given, expect List AST`` () =
         let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[-5 .. 2]"
-        <| should equal (Program [Body [(ListRange list)]])
+        <| should equal (Program [Body [(ListRange (list, ListPrimitive (SimplePrimitive Int, 8)))]])
 
 
     (* --------------------------- Operation --------------------------- *)
@@ -326,12 +326,12 @@ module ParserTest =
     [<Test>]
     let ``When syntax for string literal, expect string literal AST`` () =
         debugTestParseWith "\"Tub\""
-        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char, 3), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
 
     [<Test>]
     let ``When syntax for string literal with spaces, expect string literal AST`` () =
         debugTestParseWith "\"T ub\""
-        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char ' '; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char, 3), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char ' '; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
 
 
     (* --------------------------- NOT --------------------------- *)
