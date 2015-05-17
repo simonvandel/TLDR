@@ -1,67 +1,14 @@
 %mainfile: ../../master.tex
 
-\section{Semantics}\label{semantics}
-This section describes the semantics of the constructs in TLDR both formally and informally. It is split into pieces each describing one construct both formally and informally.
 
-\subsection{Formal semantics in TLDR}
-To describe the semantics formally it was decided to use small-step semantics. The alternative was big-step semantics but since the language depends heavily on non-determinism and parallelism and this is not possible to represent in big-step semantics, small-step semantic was a better choice.
-
-The formal rules have three parts as illustrated in \cref{SS-semantics}
-
-\begin{figure}[H]
-\begin{align*}
-&\inference[$RULE-NAME$]{[PREMISE]}
-												{[CONCLUSSION]}
-												{,[SIDE-CONDITION]}
-\end{align*}
-\caption{A desription of formal small-step semantics}
-\label{SS-semantics}
-\end{figure}
-
-\subsection{Actor-Environment model}
-The formal semantics will also use an actor-environment model.
-
-$a = \text{Anames} \cup \{next\} \rightharpoonup e \times st$
-
-$e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
-$st = \text{Structs} \rightharpoonup \text{Stm}$
-$at = \text{ActorTypes} \rightharpoonup \text{Stm}$
-
-\subsection{General Constructs}
-\begin{align*}
-&\inference[$\text{INVOKE}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
-                  {\Braket{p_1(p_2),e} \Rightarrow_S \Braket{S_1',e'}}
-\\
-&									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\end{align*}
-
-
-
-
-
-\subsection{Statements}
+\subsection{Statements - (alt her skal flyttes)}
 
 \subsubsection{General}
 \begin{align*}
-%&\inference[$\text{DECL}$]{}
-%                         {\Braket{\Tlet x := a,e,st} \Rightarrow_S \Braket{x := a, e',st}}
-%												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
-%\\\\
-&\inference[$\text{INIT}_{SYM}$]{}
-                         {\Braket{\Tlet \Tx := \{S\};,e} \Rightarrow_S e'}
-												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \\\\
 &\inference[$\text{INIT}_{FUNC}$]{}
                          {\Braket{\Tlet \Tx(y) := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,y}]}
-\\\\
-&\inference[$\text{INIT}$]{}
-                         {\Braket{\Tvar \Tx := S,e} \Rightarrow_S e'}
-												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
-\\\\
-&\inference[ASS]{}
-                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
-								 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \\\\
 &\inference[$\text{STATEMENTS}_1$]{\Braket{S_1,e} \Rightarrow_S \Braket{S_1',e'}}
                          {\Braket{S_1;S_2,e} \Rightarrow_S \Braket{S_1';S_2,e'}}
@@ -77,21 +24,9 @@ $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 \end{align*}
 
 
-\subsubsection{Misc}
-
+\subsubsection{Misc - (alt her skal flyttes)}
+ 
 \begin{align*}
-&\inference[TYPEOF]{}
-                  {e \vdash m \Rightarrow_T t}
-									{, \mathbb{T}(m) = t}
-\\\\
-&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e \times st]}
-                           {\Braket{\Tactor \Tact := \{S\}, a} \Rightarrow_S \Braket{S,e,at[\Tact \mapsto S],a'}}
-\\\\
-&\inference[$\text{ACTOR}$]{}
-                           {\Braket{\Tactor \Tact := 1S, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
-\\\\
-&\inference[$\text{RECIEVE}$]{}
-                           {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}} 
@@ -109,15 +44,4 @@ $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 &\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\Ta'}}
                            {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{SPAWN}$]{}
-                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Ta} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Ta[act \mapsto e \times st]}}
-\\
-&												{, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
-\\\\
-&\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
-                       {\Braket{\Tsend \Tact \Tm ; S,\Ta,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
-\\\\
-&\inference[$\text{MAIN}$]{input \mapsto \Braket{S,\epsilon}}
-                          {\Braket{\Treceive \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}

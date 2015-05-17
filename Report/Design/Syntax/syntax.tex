@@ -4,7 +4,40 @@ In this section, will present and discuss some considerations made regarding the
 
 The primitive data types and operators will be described in \cref{subsec:primitives,subsec:primitiveOps}. After this, functions and their declarations are explained in \cref{subsec:functions}. Next, comments will be briefly mentioned in \cref{subsec:comments}, followed by assignment, or binding, of values to symbols in \cref{subsec:value_assignment}. After this, more complex syntactical constructs, such as actors, structures, loops and selective control structures, will be explained in \cref{subsec:actors,subsec:structs,subsec:forLoopStatements,subsec:ifStatements}.
 
+\section{Semantics}\label{semantics}
+This section describes the semantics of the constructs in TLDR both formally and informally. It is split into pieces each describing one construct both formally and informally.
 
+\subsection{Formal semantics in TLDR}
+To describe the semantics formally it was decided to use small-step semantics. The alternative was big-step semantics but since the language depends heavily on non-determinism and parallelism and this is not possible to represent in big-step semantics, small-step semantic was a better choice.
+
+The formal rules have three parts as illustrated in \cref{SS-semantics}
+
+\begin{figure}[H]
+\begin{align*}
+&\inference[$RULE-NAME$]{[PREMISE]}
+												{[CONCLUSSION]}
+												{,[SIDE-CONDITION]}
+\end{align*}
+\caption{A desription of formal small-step semantics}
+\label{SS-semantics}
+\end{figure}
+
+\subsection{Actor-Environment model}
+The formal semantics will also use an actor-environment model.
+
+$a = \text{Anames} \cup \{next\} \rightharpoonup e \times st$
+
+$e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+$st = \text{Structs} \rightharpoonup \text{Stm}$
+$at = \text{ActorTypes} \rightharpoonup \text{Stm}$
+
+\subsection{General Constructs}
+\begin{align*}
+&\inference[$\text{INVOKE}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_S \Braket{S_1',e'}}
+\\
+&									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\end{align*}
 
 \input{Design/syntactical_choices.tex}
 
