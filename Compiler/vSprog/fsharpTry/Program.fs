@@ -8,6 +8,7 @@ open vSprog.ParserUtils
 open vSprog.CodeGen
 open System.IO
 open System
+open vSprog.Utils
 
 module Main =
     let llvmToExec (llvmIr:string) : bool =
@@ -31,6 +32,8 @@ module Main =
 
         else false
 
+
+
     
     [<EntryPoint>]
     let main argv = 
@@ -43,11 +46,7 @@ module Main =
 
         let input = File.ReadAllText inputSrcPath
 
-        let res = parse input "../../grammar.gram"  //Generates hime AST
-                >>= fun tree -> Success (toAST tree)
-                //>>= fun ast -> Success ast  // Gør den noget?
-                >>= analyse
-                >>= (fun ast -> Success (codeGen ast))
+        let res = genProgram input
 
         match res with
         | Success a -> 

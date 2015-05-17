@@ -203,7 +203,13 @@ module CodeGen =
 
         | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
           state {
-              let! res = genActorDefine (sprintf "_actor_%s" name) "i8*" [] body
+              //let activeInitial = Initialisation (lvalue, Bool
+              //let conditional = 
+              //let whileCode = While(conditional, whileBody)
+
+              let! (_,_,genBody) = internalCodeGen body 
+              let fullBody = genBody
+              let! res = genActorDefine (sprintf "_actor_%s" name) "i8*" [] fullBody
 //            match name with
 //            | "main" -> 
 //                let receive = match findMainReceive body with
@@ -273,7 +279,10 @@ module CodeGen =
           }
         | Spawn (lvalue, actorName, initMsg) -> 
           state {
-              return ("","", "")
+              let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
+              let! tempReg = freshReg
+              let! reg = newRegister tempReg "i64" code
+              return reg
           }
         | Receive (msgName, msgType, body) -> 
           // TODO: lige nu gør vi ikke det rigtige ved receive. Vi genererer bare for body. SKal vi ikke gøre mere?
@@ -434,7 +443,7 @@ module CodeGen =
               return ("","", "")
           }
 
-    and genActorDefine (name:string) (retType:string) (args:TypeDeclaration list) (body:AST) : State<Value, Environment> =
+    and genActorDefine (name:string) (retType:string) (args:TypeDeclaration list) (body:string) : State<Value, Environment> =
         state {
             let sArgumentList = args
                                 |> List.map (fun
@@ -444,13 +453,12 @@ module CodeGen =
             //do! append (sprintf "define %s @%s(%s) {\n" sRetType name sArgumentList)
             let defineCode = sprintf "define %s @%s(%s) {\n" retType name sArgumentList
 
-            let! (_,_,bodyCode) = internalCodeGen body
 //            do! append (if name = "main" then 
 //                          "ret i32 0\n}"
 //                        else "}")
             let mainHackCode = "ret i8* null\n}"
                                
-            let fullString = sprintf "%s\n%s\n%s" defineCode bodyCode mainHackCode
+            let fullString = sprintf "%s\n%s\n%s" defineCode body mainHackCode
             return (name, retType, fullString)
         }
 
