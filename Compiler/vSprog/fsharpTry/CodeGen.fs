@@ -10,7 +10,7 @@ module CodeGen =
         regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition
         genString:string // the code generated
         registers:Map<string,string> // key is regName, value is regType
-        globalVars:(string * string * string) list // name, type, initialValue 
+        globalVars:(string * string * string) list // name, type, initialValue
         }
 
     let freshReg : State<string, Environment> =
@@ -262,6 +262,7 @@ module CodeGen =
                                                              | _ -> true
                                                  )
               let receivesJumps = calcReceiveJumps receivesToGen
+                                  |> (fun xs -> (101, "rec_kill")::xs)
                                   |> List.map (fun (k, t) -> sprintf "i64 %d, label %%%s" k t)
                                   |> String.concat "\n"
               let gotoReceive = sprintf "switch %s %s, label %%start [ %s ]" msgTypeType msgTypeName receivesJumps
@@ -500,13 +501,9 @@ module CodeGen =
               let! (_,_,whileCode) = genWhile conditionGen bodyGen
               return ("","",whileCode)
           }
-        | Kill (arg) -> 
+        | Die -> 
           state {
-              return ("","", "")
-          }
-        | Me -> 
-          state {
-              return ("","", "")
+              return ("","","")
           }
         | Return (arg) -> 
           state {

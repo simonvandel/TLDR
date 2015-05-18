@@ -177,9 +177,7 @@ module TypeChecker =
             match body with
             | Some realBody -> checkTypesAST realBody
             | None -> Success HasNoType
-        | Kill name ->
-            Success HasNoType
-        | Me ->
+        | Die ->
             Success HasNoType
 
     let checkTypesSymTable (symTable:SymbolTable) : Result<unit> =

@@ -309,16 +309,10 @@ module Analysis =
               do! closeScope
               return While (newCondition, newBody)
             }
-        | Kill (arg) -> 
-          state
-            {
-              let! newArg = buildSymbolTable arg
-              return Kill newArg
+        | Die -> 
+            state {
+                return Die
             }
-        | Me -> 
-          state {
-              return Me
-          }
         | Return (arg) -> 
           state
             {

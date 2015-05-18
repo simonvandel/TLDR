@@ -346,8 +346,8 @@ module ParserTest =
         debugTestParseWith "return true"
         <| should equal (Program [Body [ Return (Some (Constant (SimplePrimitive Bool, PrimitiveValue.Bool true))) ]])
 
-    (* --------------------------- Kill & me --------------------------- *)
+    (* --------------------------- Die --------------------------- *)
     [<Test>]
     let ``When syntax for kill/me, expect kill + me AST`` () =
-        debugTestParseWith "kill me;"
-        <| should equal (Program [Body [ Kill Me ]])
+        debugTestParseWith "die;"
+        <| should equal (Program [Body [ Die ]])

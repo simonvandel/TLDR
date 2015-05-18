@@ -54,8 +54,7 @@ module AST =
         | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
         | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
         | Return of AST option // body
-        | Kill of AST // whatToKill
-        | Me
+        | Die
 
     and Identifier =
         | SimpleIdentifier of string // x
@@ -358,11 +357,8 @@ module AST =
               Return (Some expr)
             else
               Return None
-        | "Kill" ->
-            let expr = toAST (root.Children.Item 0)
-            Kill expr
-        | "Me" ->
-            Me
+        | "Die" ->
+            Die
         | sym -> 
             printfn "ERROR: No match case for: %A" sym
             failwith "not all cases matched in toAST"
