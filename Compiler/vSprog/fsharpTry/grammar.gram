@@ -110,7 +110,7 @@ grammar vSprogGrammar{
     /*--------- If ---------*/
     If               -> IF! Operation Block;
 
-    /*--------- Ifelse ---------*/
+    /*--------- IfElse ---------*/
     IfElse           -> IF! Operation Block ELSE! Block;
 
     /*--------- Block ---------*/
@@ -135,7 +135,7 @@ grammar vSprogGrammar{
                       | LPARENS! Operation^ RPARENS!;
     Operand	         -> Block^
                       | Integer^
-            	        | Real^
+            	      | Real^
                       | Boolean^
                       | Identifier^
                       | Literals^
@@ -159,7 +159,6 @@ grammar vSprogGrammar{
     Field            -> Identifier ASSIGN! Operation; 
 
     Invocation       -> Identifier LPARENS! (Operation (COMMA! Operation)*)? RPARENS!;
-    //Invocation       -> Identifier LPARENS! Operations? RPARENS!;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -198,16 +197,16 @@ grammar vSprogGrammar{
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
-    List             -> STARTLIST! Operations ENDLIST!
-                      | STARTLIST! Operation TO Operation ENDLIST!;
-                      
+    List             -> STARTLIST! Lists ENDLIST!;
+    Lists            -> Lists COMMA! Lists
+	                  | Operation TO Operation
+					  | Operation;
+                                 
     /*--------- Tuple ---------*/
-    Tuple            -> LPARENS! Operations COMMA! Operation RPARENS!;
-    Operations       -> Operations COMMA! Operation^
-                      | Operation^;
+    Tuple            -> LPARENS! Operation (COMMA! Operation)+ RPARENS!;
 
     /*--------- Accessor ---------*/
     Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST! INT ENDLIST!;
+                      | DOT! STARTLIST! Operation ENDLIST!;
   }
 }
