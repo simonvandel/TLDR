@@ -2,19 +2,24 @@ actor main := {
   receive arguments:args := {
     let x:test := spawn test;
     for x in [0 .. 100] {
-    send test x;
+      send test 2;
     };
+    print("finished");
     die;
   };
 };
 
 actor test := {
+  var runs:int := 0;
   receive msg:int := {
     print("ja");
-    die;
+    runs := runs + 1;
+    if(runs = 1) {
+      die;
+    };
  };
   receive msg2:real := {
     print("nej");
-    die;
+    //die;
  };
 };
