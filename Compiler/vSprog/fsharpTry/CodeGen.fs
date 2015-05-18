@@ -11,6 +11,7 @@ module CodeGen =
         genString:string // the code generated
         registers:Map<string,string> // key is regName, value is regType
         globalVars:(string * string * string) list // name, type, initialValue
+        actors:Map<string, (int * string) list> // key is actorName, value is receiveLabels
         }
 
     let freshReg : State<string, Environment> =
@@ -27,6 +28,13 @@ module CodeGen =
 //            let newEnv = {st with genString = st.genString + code}
 //            do! putState newEnv
 //        }
+
+    let addActorReceiveLabels (actorName:string) (receiveLabels:(int * string) list) : State<unit, Environment> =
+        state {
+            let! st = getState
+            let newSt = {st with actors = st.actors.Add (actorName, receiveLabels)}
+            do! putState newSt
+        }
 
     let addRegister (regName:string) (regType:string) : State<unit, Environment> =
         state {
@@ -165,7 +173,21 @@ module CodeGen =
             | _ -> failwith "should only be receive"
             )
         |> List.ofSeq
-        
+
+    let getReverseType (revType:string) : PrimitiveType =
+        match revType with
+        | "i32" -> SimplePrimitive Int
+
+    let getReceiveID (msgGenType:string) (actorName:string) : State<int, Environment> =
+        state {
+            let! st = getState
+            let reverseType = getReverseType msgGenType
+            let res = st.actors.Item actorName
+                      |> List.find (fun (_, labelName) -> labelName = receiveLabelName reverseType)
+                      |> fst
+            return res
+            
+        }
 
     let rec applyAll (l:'a list) (p:'a->State<'b, Environment>) : State<'b, Environment> = 
         state {
@@ -233,6 +255,14 @@ module CodeGen =
 
               let! (msgAllocaName,msgAllocaType,msgAllocaCode) = genAlloca "_msg" "%struct.actor_message_struct*"
 
+              let receivesToGen = findAllReceives body // don't generate code for main receive
+                                  |> List.filter (fun ast -> match ast with
+                                                             | Receive(_, UserType "args", _) -> false
+                                                             | _ -> true
+                                                 )
+              let receiveLabels = calcReceiveJumps receivesToGen
+              do! addActorReceiveLabels name receiveLabels  
+
               let! (_,_,mainReceive) = if name = "main" then
                                          match findMainReceive body with
                                          | Some a ->
@@ -256,13 +286,10 @@ module CodeGen =
               let! msgTypeReg = freshReg
               let! (msgTypeName,msgTypeType,msgTypeCode) = genLoad msgTypeReg "i64*" msgTypePtr
 
-              let receivesToGen = findAllReceives body // don't generate code for main receive
-                                  |> List.filter (fun ast -> match ast with
-                                                             | Receive(_, UserType "args", _) -> false
-                                                             | _ -> true
-                                                 )
-              let receivesJumps = calcReceiveJumps receivesToGen
-                                  |> (fun xs -> (101, "rec_kill")::xs)
+                              
+
+              let receivesJumps = receiveLabels
+                                  //|> (fun xs -> (101, "rec_kill")::xs)
                                   |> List.map (fun (k, t) -> sprintf "i64 %d, label %%%s" k t)
                                   |> String.concat "\n"
               let gotoReceive = sprintf "switch %s %s, label %%start [ %s ]" msgTypeType msgTypeName receivesJumps
@@ -351,14 +378,18 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" condCode brStr trueBodyCode contCode falseBodyCode contCode contLabel
               return ("","", fullString)
           }
-        | Send (actorName, msgName) -> 
+        | Send (actorName, msg) -> 
           state {
-              return ("","", "")
+              let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
+              let! msgId = getReceiveID msgGenType actorName
+              let msgSize = "0"
+              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* null, i64 %s)" actorName msgId msgSize 
+              return ("","", code)
           }
         | Spawn (lvalue, actorName, initMsg) -> 
           state {
               let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
-              let! tempReg = freshReg
+              let tempReg = sprintf "%%_spawned_%s" actorName
               let! reg = newRegister tempReg "i64" code
               return reg
           }
@@ -503,7 +534,10 @@ module CodeGen =
           }
         | Die -> 
           state {
-              return ("","","")
+              let! (_,_,reassignment) = internalCodeGen (Reassignment (SimpleIdentifier "%_active", Constant (SimplePrimitive Bool, PrimitiveValue.Bool false)))
+              let jumpToStart = "br label %start"
+              let fullString = sprintf "%s\n%s" reassignment jumpToStart
+              return ("","",fullString)
           }
         | Return (arg) -> 
           state {
@@ -556,8 +590,23 @@ module CodeGen =
             return ("","", fullString)  
         }
 
+    let rec findAllActorLabels (ast:AST) : Map<string, (int * string) list> =
+        match ast with
+        | Program stms | Body stms ->
+            stms
+            |> List.map findAllActorLabels
+            |> List.reduce (Map.fold (fun acc key value -> Map.add key value acc)) // merge all maps
+        | Actor (name, body) ->
+            findAllReceives body
+            |> calcReceiveJumps
+            |> fun xs -> Map.ofList [(name,xs)]
+
+                   
+            
+
     let codeGen (ast:AST) : string =
-        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []})
+        let filledActors = findAllActorLabels ast
+        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []; actors = filledActors})
         let globals = env.globalVars
                       |> List.map
                         (fun (varName, varType, initVal) -> 

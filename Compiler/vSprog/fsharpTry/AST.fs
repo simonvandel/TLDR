@@ -41,7 +41,7 @@ module AST =
         | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
         | If of AST * AST // conditional, body
         | IfElse of AST * AST * AST // conditional, trueBody, falseBody
-        | Send of string * string // actorName, msgName
+        | Send of string * AST // actorName, msg
         | Spawn of LValue * string * AST option // lvalue, actorName, initMsg
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
@@ -238,7 +238,7 @@ module AST =
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
             let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
-            let msg = (getChildByIndexes [1;0;0] root).Symbol.Value
+            let msg = toAST (getChildByIndexes [1;0] root)
             Send (actorHandle, msg)
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
