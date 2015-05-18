@@ -120,7 +120,6 @@ module CodeGen =
                             "@g1"
                           else
                             st.globalVars
-                            |> List.rev 
                             |> List.head 
                             |> fun (name,_,_) -> name  + "1"
             let strType = sprintf "[%d x i8]" strSize
@@ -161,6 +160,16 @@ module CodeGen =
         | Receive (_, _, _) as mainReceive -> 
             [mainReceive]
         | _ -> []
+
+    let rec findOtherThanReceives (ast:AST) : AST list =
+        match ast with
+        | Block stms | Body stms ->
+          stms
+          |> List.map findOtherThanReceives
+          |> List.concat
+        | Receive (_, _, _) as mainReceive -> 
+            []
+        | k -> [k]
 
     let receiveLabelName (types:PrimitiveType) : string =
         (sprintf "rec_%A" types).Replace(' ', '_').Replace('"', '_')
@@ -228,7 +237,8 @@ module CodeGen =
                         | SimpleIdentifier id -> id
                         | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
               let! (toStoreName, toStoreType, code) = internalCodeGen rhs
-              let toUpdateName = sId
+              let toUpdateName = if sId.StartsWith("%") then sprintf "%s" sId 
+                                 else sprintf "%%%s" sId
               let! toUpdateType = findRegister toUpdateName
               let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
               let fullString = sprintf "%s\n%s" code storeCode
@@ -255,6 +265,11 @@ module CodeGen =
 
               let! (msgAllocaName,msgAllocaType,msgAllocaCode) = genAlloca "_msg" "%struct.actor_message_struct*"
 
+              let! codeOtherThanReceivesInActorBodyList = collectAll internalCodeGen (findOtherThanReceives body)
+              let codeOtherThanReceivesInActorBody = codeOtherThanReceivesInActorBodyList
+                                                     |> List.map (fun (_,_,n) -> n)
+                                                     |> String.concat "\n"
+
               let receivesToGen = findAllReceives body // don't generate code for main receive
                                   |> List.filter (fun ast -> match ast with
                                                              | Receive(_, UserType "args", _) -> false
@@ -280,8 +295,9 @@ module CodeGen =
               let! loadedMsg = freshReg
               let! (loadedMsgName, loadedMsgType, loadedMsgCode) = genLoad loadedMsg msgAllocaType msgAllocaName
 
+              // look at type of message
               let! msgTypePtr = freshReg
-              let getMsgTypeCode = sprintf "%s = getelementptr inbounds %%struct.actor_message_struct* %s, i32 0, i32 3" msgTypePtr loadedMsgName
+              let getMsgTypeCode = sprintf "%s = getelementptr %%struct.actor_message_struct* %s, i32 0, i32 3" msgTypePtr loadedMsgName
 
               let! msgTypeReg = freshReg
               let! (msgTypeName,msgTypeType,msgTypeCode) = genLoad msgTypeReg "i64*" msgTypePtr
@@ -306,8 +322,8 @@ module CodeGen =
                                           |> List.map (fun (_,_,c) -> c)
                                           |> String.concat "\n"
 
-              //let! (_,_,genBody) = internalCodeGen body 
-              let fullBody = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" activeBoolCode msgAllocaCode mainReceive gotoStart startLabel returnAfterWhile receivesGeneratedCode
+              //let! (_,_,genBody) = internalCodeGen body
+              let fullBody = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" codeOtherThanReceivesInActorBody activeBoolCode msgAllocaCode mainReceive gotoStart startLabel returnAfterWhile receivesGeneratedCode
               let! res = genActorDefine (sprintf "_actor_%s" name) "i8*" [] fullBody
 //            match name with
 //            | "main" -> 
@@ -401,48 +417,63 @@ module CodeGen =
                 return genBody
               | _ ->
                 let labelName = receiveLabelName msgType
-                let! genBody = internalCodeGen body
-                let! label = genLabel labelName genBody
+                let! (_,_,genBody) = internalCodeGen body
+                let jumpBackToStart = "br label %start"
+                let bodyString = sprintf "%s\n%s" genBody jumpBackToStart
+                let! label = genLabel labelName ("","",bodyString)
                 return ("","",label)
           }
         | ForIn (elem, list', body) -> 
           state {
+              // Initialise index counter to 0. This counter is incremented by 1 at the end of the while body
               let! idxCounterRegName = freshReg
               let idxCounterLValue = {identity = SimpleIdentifier idxCounterRegName; isMutable = true; primitiveType = SimplePrimitive Int}
               let! (idxCounterVal, idxCounterType, idxCounterCode) = internalCodeGen (Initialisation (idxCounterLValue, Constant (SimplePrimitive Int, PrimitiveValue.Int 0)))
 
+              // 
               let (elemType, listLength) = match list' with
                                               | List (contents, ListPrimitive (ptype, n)) -> (ptype, n)
                                               | Identifier (_, ListPrimitive (ptype, n)) -> (ptype, n)
-
-              let! (listName, listType, listCode) = internalCodeGen list'
               
+              // generate the code for the list
+              let! (listName, listType, listCode) = internalCodeGen list'
+
+              // generate the code for the while conditional. while (counter != length of list)
               let! conditionCode = internalCodeGen ( BinOperation (
                                                        Identifier (SimpleIdentifier idxCounterRegName, SimplePrimitive Int), 
                                                        NotEquals, 
                                                        Constant (SimplePrimitive Int, PrimitiveValue.Int listLength)
                                  ) )
+              // generate the code that increments the index counter by 1
               let incrementCounter = BinOperation (
                                        Identifier (SimpleIdentifier idxCounterRegName, elemType),
                                        Plus,
                                        Constant (SimplePrimitive Int, PrimitiveValue.Int 1)
                                      )
-
               let reassCounter = Reassignment (
                                        SimpleIdentifier idxCounterRegName,
                                        incrementCounter
                                        )
 
-              let! tempElemAssign = freshReg
-              let! (allocatedTempElemAssignName,allocatedTempElemAssignType,allocatedTempElemAssignCode) = genAlloca tempElemAssign (genType elemType)
+              // allocate a pointer to the elem variable in the for-in loop. That is, x in for x in xs {}
+              let! (allocatedTempElemAssignName,allocatedTempElemAssignType,allocatedTempElemAssignCode) = genAlloca elem (genType elemType)
              
-              let! curElemReg = freshReg
-              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (genType elemType) (sprintf "extractelement %s %s, i32 %s" listType listName idxCounterRegName)
+              // load the index counter
+              let! tempLoadedCounterName = freshReg
+              let! (loadedCounterName, loadedCounterType, loadedCounterCode) = genLoad tempLoadedCounterName idxCounterType idxCounterVal
 
-              let! (_,_,elemReass) = genStore curElemName curElemType allocatedTempElemAssignName allocatedTempElemAssignType
+              // calculate a pointer to the element to assign to elem
+              let! curElemReg = freshReg
+              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (sprintf "%s*" (genType elemType)) (sprintf "getelementptr %s %s, i32 0, %s %s" listType listName loadedCounterType loadedCounterName)
+
+              // load the pointer to the value
+              let! loadedElemReg = freshReg
+              let! (loadedElemName, loadedElemType, loadedElemCode) = genLoad loadedElemReg curElemType curElemName
+
+              let! (_,_,elemReass) = genStore loadedElemName loadedElemType allocatedTempElemAssignName allocatedTempElemAssignType
 
               let! (_,_,bodyCode) = internalCodeGen (Body [ body; reassCounter])
-              let fullBodyCode = sprintf "%s\n%s\n%s" curElemCode elemReass bodyCode
+              let fullBodyCode = sprintf "%s\n%s\n%s\n%s\n%s" loadedCounterCode curElemCode loadedElemCode elemReass bodyCode
 
               let! (_,_,whileCode) = genWhile conditionCode ("","",fullBodyCode)
               let fullString = sprintf "%s\n%s\n%s\n%s\n" idxCounterCode listCode allocatedTempElemAssignCode whileCode
@@ -455,9 +486,15 @@ module CodeGen =
                                 |> List.map (fun (name, typ, code) -> sprintf "%s %s" typ name)
                                 |> String.concat ", "
               let targetType = genType pType
+              let! ptrReg = freshReg
+              // allocate pointer in which the list will be stored
+              let! (ptrToListName, ptrToListType, ptrToListCode) = genAlloca ptrReg targetType
               let name = sprintf "[ %s ]"listContent
-              let fullString = sprintf "%s %s" name targetType
-              return (name , targetType, "")
+              // store the list content in the pointer allocated earlier
+              let! (_,_,storeListCode) = genStore name targetType ptrToListName ptrToListType
+
+              let fullString = sprintf "%s\n%s" ptrToListCode storeListCode
+              return (ptrToListName , ptrToListType, fullString)
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
@@ -600,9 +637,7 @@ module CodeGen =
             findAllReceives body
             |> calcReceiveJumps
             |> fun xs -> Map.ofList [(name,xs)]
-
-                   
-            
+  
 
     let codeGen (ast:AST) : string =
         let filledActors = findAllActorLabels ast
