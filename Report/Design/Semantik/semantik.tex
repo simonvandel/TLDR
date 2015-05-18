@@ -5,22 +5,11 @@
 
 \subsubsection{General}
 \begin{align*}
-\\\\
-&\inference[$\text{INIT}_{FUNC}$]{}
-                         {\Braket{\Tlet \Tx(y) := \{S\};,e} \Rightarrow_S e'}
-												 {, e' = e[\Tx \mapsto \Braket{S,y}]}
-\\\\
 &\inference[$\text{STATEMENTS}_1$]{\Braket{S_1,e} \Rightarrow_S \Braket{S_1',e'}}
                          {\Braket{S_1;S_2,e} \Rightarrow_S \Braket{S_1';S_2,e'}}
 \\\\
 &\inference[$\text{STATEMENTS}_2$]{\Braket{S_1,e} \Rightarrow_S e'}
                          {\Braket{S_1;S_2,e} \Rightarrow_S \Braket{S_2,e'}}
-\\\\
-&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
-                         {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
-\\\\
-&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S e'}
-                         {\Braket{\{S\},e} \Rightarrow_S e'}
 \end{align*}
 
 

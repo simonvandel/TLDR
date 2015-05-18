@@ -3,3 +3,13 @@
 As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
 %impossible - but why?
 For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+
+Here are the semantics for the block statement:
+
+\begin{align*}
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
+                         {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
+\\\\
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S e'}
+                         {\Braket{\{S\},e} \Rightarrow_S e'}
+\end{align*}

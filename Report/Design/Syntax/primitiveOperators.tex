@@ -1,15 +1,4 @@
-\subsection{Primitive Operators}
-\label{subsec:primitiveOps}
-\newcommand{\Tand}{\text{\; AND \;}}
-\newcommand{\Tnot}{\text{NOT \;}}
-\newcommand{\Tnand}{\text{\; NAND \;}}
-\newcommand{\Tor}{\text{\; OR \;}} 
-\newcommand{\Tnor}{\text{\; NOR \;}}
-\newcommand{\Txor}{\text{\; XOR \;}}
-
-Primitive operations are the operations that are build into the language.
-
-\subsubsection{Mathematical Operators}
+\subsubsection{Primitive Mathematical Operators}
 \label{sec:mathOps}
 
 For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
@@ -34,7 +23,7 @@ The following mathematical operations are built into the language. They follow t
 \end{align*}
 
 \begin{itemize}
-\item \textbf{+} A binary operator that adds two numbers of the same type
+\item "+" is a binary operator that adds two numbers of the same type
 
 \begin{align*}
 &\inference[$\text{ADD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -48,7 +37,7 @@ The following mathematical operations are built into the language. They follow t
                     {, v_1 + v_2 = v}
 \end{align*}
 
-\item \textbf{-} A binary operator that subtracts two numbers of the same type
+\item "-" is a binary operator that subtracts two numbers of the same type
 
 \begin{align*}
 &\inference[$\text{SUB}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -62,7 +51,7 @@ The following mathematical operations are built into the language. They follow t
                     {, v_1 - v_2 = v}
 \end{align*}
 
-\item \textbf{*} A binary operator that multiplies two numbers of the same type
+\item "*" is a binary operator that multiplies two numbers of the same type
 
 \begin{align*}
 &\inference[$\text{MULT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -76,7 +65,7 @@ The following mathematical operations are built into the language. They follow t
                      {, v_1 * v_2 = v}
 \end{align*}
 
-\item \textbf{/} A binary operator that divides two numbers of the same type
+\item "/" is a binary operator that divides two numbers of the same type
 
 \begin{align*}
 &\inference[$\text{DIV}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -90,7 +79,7 @@ The following mathematical operations are built into the language. They follow t
                     {, \frac{v_1}{v_2} = v}
 \end{align*}
 
-\item \textbf{\%} A binary operator that returns the remainder of a floored division of two numbers of the same type
+\item "\%" is a binary operator that returns the remainder of a floored division of two numbers of the same type
 
 \begin{align*}
 &\inference[$\text{MOD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -104,7 +93,7 @@ The following mathematical operations are built into the language. They follow t
                     {, v_1 \;\; \textrm{mod} \;\; v_2 = v}
 \end{align*}
 
-\item \textbf{\^}  A binary operator that lifts the first number to the power of the second number
+\item "\^" is a binary operator that lifts the first number to the power of the second number
 
 \begin{align*}
 &\inference[$\text{POW}_\text{L}$]{e \vdash a_1  \Rightarrow_A a_1'}
@@ -118,7 +107,7 @@ The following mathematical operations are built into the language. They follow t
                     {, v_1 ^ {v_2} = v}
 \end{align*}
 
-\item \textbf{\#} A binary operator that roots the first operand to the second operand
+\item "\#" is a binary operator that roots the first operand to the second operand
 \begin{align*}
 &\inference[$\text{ROOT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
                     {e \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
@@ -131,7 +120,7 @@ The following mathematical operations are built into the language. They follow t
                     {, \sqrt[v_1]{v_2} = v}
 \end{align*}
 
-\item \textbf{( )} Parenteses gives what they surrounds the highest precedence.
+\item "( )" Parenteses gives what they surrounds the highest precedence.
 
 \begin{align*}
 &\inference[$\text{PARENS}_\text{A}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -150,7 +139,7 @@ The following mathematical operations are built into the language. They follow t
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison. The same arguments exist for other types of logical operations.
 
 \begin{itemize}
-\item \textbf{=} A binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
+\item "=" is a binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
 
 \begin{align*}
 &\inference[$\text{EQUALS}_\text{L}$]{e \vdash a_1 \Rightarrow_B a_1'}
@@ -175,14 +164,14 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
                     {e \neq e'}
 \end{align*}
 
-\item \textbf{!=} A binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
+\item "!=" is a binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.
 
 \begin{align*}
 &\inference[$NEQUALS$]{}
                     {e \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
 \end{align*}
 
-\item \textbf{<} A binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
+\item "<" is a binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
 
 \begin{align*}
 &\inference[$\text{LT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -200,14 +189,14 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
                     {, v_1 \geq v_2}
 \end{align*}
 
-\item \textbf{<=} A binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
+\item "<=" is a binary operator that compares the two operands. Returns true if the first operand is less than or equal to the second operand. False otherwise.
 
 \begin{align*}
 &\inference[$LTEQ$]{}
                     {e \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
 \end{align*}
 
-\item \textbf{>} A binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
+\item ">" is a binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
 
 \begin{align*}
 &\inference[$\text{GT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
@@ -225,7 +214,7 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
                     {, v_1 \leq v_2}
 \end{align*}
 
-\item \textbf{>=} A binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
+\item ">=" is a binary operator that compares the two operands. Returns true if the first operand is greater than or equal to the second operand. False otherwise.
 
 \begin{align*}
 &\inference[$GTEQ$]{}
@@ -262,7 +251,7 @@ The following operations only operate on bool types.
 \end{align*}
 
 \begin{itemize}
-\item \textbf{AND} A binary operator that returns true if both values are true. False otherwise
+\item "AND" is a binary operator that returns true if both values are true. False otherwise
 
 \begin{align*}
 &\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
@@ -276,28 +265,28 @@ The following operations only operate on bool types.
 \end{align*}
 
 
-\item \textbf{OR} A binary operator that returns true if at least one value is true. False otherwise
+\item "OR" is a binary operator that returns true if at least one value is true. False otherwise
 
 \begin{align*}
 &\inference[OR]{}
                  {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
 \end{align*}
 
-\item \textbf{XOR} A binary operator that returns true if only one operand is true. False otherwise
+\item "XOR" is a binary operator that returns true if only one operand is true. False otherwise
 
 \begin{align*}
 &\inference[XOR]{}
                   {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
 \end{align*}
 
-\item \textbf{NOR} OR negated.
+\item "NOR" is OR negated.
 
 \begin{align*}
 &\inference[NOR]{}
                    {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
 \end{align*}
 
-\item \textbf{NOT} A unary operator that returns the opposite value of the operand.
+\item "NOT" is a unary operator that returns the opposite value of the operand.
 
 \begin{align*}
 &\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
@@ -307,7 +296,7 @@ The following operations only operate on bool types.
                        {e \vdash \Tnot b_1 \Rightarrow_B \top}
 \end{align*}
 
-\item \textbf{NAND} A binary operator that returns true if none or a single operand is true. False otherwise.
+\item "NAND" is a binary operator that returns true if none or a single operand is true. False otherwise.
 
 \begin{align*}
 &\inference[NAND]{}

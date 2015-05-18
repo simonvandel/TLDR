@@ -1,6 +1,5 @@
 \subsection{Actors}
 
-\kanote{er `kill' stadig vores keyword? ellers ret}
 \kanote{hvis vi har variable actors, skal spawn beskrivelsen ændres}
 
 % Actors inde i actors, nested, ejerskab, synlighed.
@@ -51,7 +50,7 @@ Some general semantics of actors:
 
 \subsubsection{Basic actor functionality}
 
-There are four basic functionalities: \enquote{spawn}, \enquote{kill}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to these and more differences, which follows below, we decided to separate them syntactically. Actors can also reference themselves with the \enquote{me} keyword.
+There are four basic functionalities: \enquote{spawn}, \enquote{die}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to these and more differences, which follows below, we decided to separate them syntactically. Actors can also reference themselves with the \enquote{me} keyword.
 
 The \enquote{spawn} functionality is used to create new instances of actors. And example could be:
 
@@ -115,8 +114,10 @@ The semantics of \enquote{receive} is as follows:
                            {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
 \end{align*}
 
-When an actor is no longer needed, it is possible to discard it with the \enquote{kill} keyword. As opposed to other languages where \enquote{kill} is called by a parent, that is the actor that spawned the actor, kill can only be called by the actor itself. 
+When an actor is no longer needed, it is possible to discard it with the \enquote{die} keyword. As opposed to other languages where \enquote{die} is called by a parent, that is the actor that spawned the actor, \enquote{die} can only be called by the actor itself. This is done in order to keep the principle of only having actors react to messages.
 
+
+\subsubsection{Main is an Actor}
 
 Main is always the first actor, and any program writtin in TLDR is started with main receiving the arguments message. This is done for multiple reasons. Foremost, having main behaving like an actor, better supports the actor modelling perspective.
 
