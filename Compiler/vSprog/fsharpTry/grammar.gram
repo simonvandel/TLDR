@@ -22,7 +22,8 @@ grammar vSprogGrammar{
     VAR              -> 'var';
     WHILE            -> 'while';
     FOR              -> 'for';
-    DIE              -> 'die';
+    KILL             -> 'kill';
+    ME               -> 'me';
     IN               -> 'in';
     IF               -> 'if';
     ELSE             -> 'else';
@@ -30,7 +31,7 @@ grammar vSprogGrammar{
     RETURN           -> 'return';
     PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE);
+    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | KILL | ME);
 
     /*--------- Symbols ---------*/
     ASSIGN           -> ':=';
@@ -80,7 +81,7 @@ grammar vSprogGrammar{
     Expression       -> Declaration^
                       | Operation^
                       | Receive^
-                      | Die^
+                      | Kill^
                       | Spawn^
                       | Return^
                       | Send^
@@ -99,11 +100,14 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
 
-    /*--------- Die ---------*/
-    Die             -> DIE;
+    /*--------- Kill ---------*/
+    Kill             -> KILL! Operation;
+
+    /*--------- Me ---------*/
+    Me               -> ME;
 
     /*--------- For ---------*/
-    ForIn            -> FOR! Ids IN! (ListRange | Identifier ) Block;
+    ForIn            -> FOR! Ids IN! (List| Identifier ) Block;
 
     /*--------- While ------*/
     While            -> WHILE! Operation Block;
@@ -138,6 +142,7 @@ grammar vSprogGrammar{
                       | Integer^
             	        | Real^
                       | Boolean^
+                      | Me^
                       | Identifier^
                       | Literals^
                       | Invocation^;
@@ -150,7 +155,7 @@ grammar vSprogGrammar{
 
 
     Literals         -> String^
-                      | ListRange^
+                      | List^
                       | StructLiteral^
                       | Tuple^;
 
@@ -195,19 +200,17 @@ grammar vSprogGrammar{
                       | TupleType^;
 
     TupleType        -> LPARENS! Types RPARENS!;
-    ListType         -> STARTLIST! Types COMMA! Integer ENDLIST!;
+    ListType         -> STARTLIST! Types COMMA! INT ENDLIST!;
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
-    ListRange        -> STARTLIST! ListParams ENDLIST!;
-    ListParams       ->	ListParams COMMA! Operation
-                      | Operation TO! Operation
-                      | Operation;
-
+    List             -> STARTLIST! Operations ENDLIST!
+                      | STARTLIST! Operation TO Operation ENDLIST!;
+                      
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Operations COMMA! Operation RPARENS!;
     Operations       -> Operations COMMA! Operation^
-                      | Operation;
+                      | Operation^;
 
     /*--------- Accessor ---------*/
     Accessor         -> DOT! Identifier^

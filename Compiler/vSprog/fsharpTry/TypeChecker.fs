@@ -87,7 +87,7 @@ module TypeChecker =
                 >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in while statement:, found %A, expected bool" illegalType]
-        | ListRange (content, pType) ->
+        | List (content, pType) ->
             match checkTypesAST content.Head with
             | Success head ->
                 if List.forall(fun e -> checkTypesAST content.Head = checkTypesAST e) content then

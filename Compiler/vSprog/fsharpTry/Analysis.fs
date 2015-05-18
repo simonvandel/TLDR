@@ -172,7 +172,7 @@ module Analysis =
                         identity = SimpleIdentifier counterName
                         isMutable = false
                         primitiveType = match newList with
-                                        | ListRange (content, pType) -> pType
+                                        | List (content, pType) -> pType
                                         | Identifier (id, pType) -> pType
                                         | _ -> HasNoType
                       }
@@ -185,10 +185,10 @@ module Analysis =
               do! closeScope
               return ForIn (counterName, newList, newBody)
             }
-        | ListRange (content, pType) -> 
+        | List (content, pType) -> 
             state {
                 let! newContent = applyAll buildSymbolTable content
-                return ListRange (newContent, pType)
+                return List (newContent, pType)
             }
         | BinOperation (lhs, op, rhs) -> 
           state

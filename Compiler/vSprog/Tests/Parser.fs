@@ -154,8 +154,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for send is given, expect Send AST`` () =
         debugTestParseWith "send actorHandle msg"
-        <| should equal (Program [Body [(Send ("actorHandle", "msg"))]])
-
+        <| should equal (Program [Body [(Send ("actorHandle", Identifier(SimpleIdentifier "msg",SimplePrimitive Int)))]])
 
     (* --------------------------- Spawn --------------------------- *)
 
@@ -197,7 +196,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for for-in-loop is given with empty body, expect ForIn AST`` () =
-        let list = ListRange ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, 3))
+        let list = List ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, 3))
         let body = Block []
         debugTestParseWith "for i in [0 .. 2] {}"
         <| should equal (Program [Body [(ForIn ("i", list, body))]])
@@ -208,13 +207,20 @@ module ParserTest =
     let ``When syntax for list from 0 to 3 is given, expect List AST`` () =
         let list = [0;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[0 .. 3]"
-        <| should equal (Program [Body [(ListRange (list, ListPrimitive (SimplePrimitive Int, 4)))]])
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,4)))]])
 
     [<Test>]
     let ``When syntax for list from -5 to 2 is given, expect List AST`` () =
         let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[-5 .. 2]"
-        <| should equal (Program [Body [(ListRange (list, ListPrimitive (SimplePrimitive Int, 8)))]])
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,9)))]])
+
+    (* --------------------------- Lists --------------------------- *)
+    [<Test>]
+    let ``When syntax for list consisting of [1,2,3], expect List AST`` () =
+        let list = [1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[1,2,3]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,3)))]])
 
 
     (* --------------------------- Operation --------------------------- *)

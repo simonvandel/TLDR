@@ -412,7 +412,7 @@ module CodeGen =
               let! (idxCounterVal, idxCounterType, idxCounterCode) = internalCodeGen (Initialisation (idxCounterLValue, Constant (SimplePrimitive Int, PrimitiveValue.Int 0)))
 
               let (elemType, listLength) = match list' with
-                                              | ListRange (contents, ListPrimitive (ptype, n)) -> (ptype, n)
+                                              | List (contents, ListPrimitive (ptype, n)) -> (ptype, n)
                                               | Identifier (_, ListPrimitive (ptype, n)) -> (ptype, n)
 
               let! (listName, listType, listCode) = internalCodeGen list'
@@ -448,7 +448,7 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n%s\n" idxCounterCode listCode allocatedTempElemAssignCode whileCode
               return ("","",fullString)
           }
-        | ListRange (contents, pType) -> 
+        | List (contents, pType) -> 
           state {
               let! test = collectAll internalCodeGen contents
               let listContent = test
