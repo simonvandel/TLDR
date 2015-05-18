@@ -137,6 +137,7 @@ module CodeGen =
             match p with
             | Int -> "i32"
             | Bool -> "i1"
+            | Real -> "double"
         | ListPrimitive (prim, len) ->
             sprintf "[%d x %s]" len (genType prim)
         
@@ -351,6 +352,10 @@ module CodeGen =
                 let name = if value then "true" else "false"
                 let type' = genType ptype
                 return (name, type', "")
+              | PrimitiveValue.Real n -> 
+                let name = string n
+                let type' = genType ptype
+                return (name, type', "")
           }
 
         | If (condition, body) -> 
@@ -504,21 +509,34 @@ module CodeGen =
               let! (sRhsName, sRhsType, rhsCode) = internalCodeGen rhs
               let! tempReg = freshReg
               let (code, targetType) = 
-                  match op with
-                  | Multiply -> 
+                  match op, sLhsType with
+                  | Multiply, "i32" -> 
                     sprintf "mul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Plus ->
+                  | Multiply, "double" -> 
+                    sprintf "fmul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Modulo, "i32" -> 
+                    sprintf "srem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Modulo, "double" -> 
+                    sprintf "frem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Plus, "i32" ->
                     sprintf "add %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Minus ->
+                  | Plus, "double" ->
+                    sprintf "fadd %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Minus, "i32" ->
                     sprintf "sub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Divide ->
+                  | Minus, "double" ->
+                    sprintf "fsub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Divide, "i32" ->
                     sprintf "sdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Or -> 
+                  | Divide, "double" ->
+                    sprintf "fdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                  | Or, "i1" -> 
                     sprintf "or %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | And -> 
+                  | And, "i1" -> 
                     sprintf "and %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | GreaterThan | GreaterThanOrEq | LessThan | LessThanOrEq | Equals | NotEquals -> 
-                    (icmpString op sLhsType sLhsName sRhsName, "i1")
+                  | GreaterThan, "i1" | GreaterThanOrEq, "i1" | LessThan, "i1" | LessThanOrEq, "i1" | Equals, "i1" | NotEquals, "i1" -> 
+                    (icmpString op sLhsType sLhsName sRhsName, sLhsType)
+                  | _,_ as err -> failwith (sprintf "%A not matched" err)
               let! (resName, resType, resCode) = newRegister tempReg targetType code
               let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode resCode
               return (resName, resType, fullString)

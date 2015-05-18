@@ -1,0 +1,16 @@
+actor main := {
+  receive arguments:args := {
+    print("hej");
+    die;
+  };
+
+  receive res:[char] := {
+    print(res);
+  };
+};
+
+actor stringer := {
+  receive n:int := {
+    
+  };
+};
