@@ -1,5 +1,8 @@
 \subsection{Actors}
 
+\kanote{er `kill' stadig vores keyword? ellers ret}
+\kanote{hvis vi har variable actors, skal spawn beskrivelsen ændres}
+
 % Actors inde i actors, nested, ejerskab, synlighed.
 % Hvad gør kill? er det instantly? efter køen er kørt færdig?
 % blocking vs. non-blocking messages? hvordan skelnes de? skal vi have begge?
@@ -74,13 +77,14 @@ The semantics of \enquote{spawn} is as follows:
 
 
 %beskeder sent til sig selv, behandles på lige fod med andre beskeder.
-%After an actor has been spawned, it will be possible to send messages to it. This is done with the \enquote{send} keyword. This could be done as follows:
-%\label{actorfuncSend}
-%\begin{lstlisting}
-%MyMsg:int := 42;
+After an actor has been spawned, it will be possible to send messages to it. This is done with the \enquote{send} keyword. This could be done as follows:
 
-%Send MyActor MyMsg;
-%\end{lstlisting}
+\label{actorfuncSend}
+\begin{lstlisting}
+MyMsg:int := 42;
+
+Send MyActor MyMsg;
+\end{lstlisting}
 
 \kanote{skriv om 'send'}
 
@@ -104,17 +108,17 @@ actor <nameOfActor> := {
 
 In this example the receive defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message, and this message is immutable no matter if it was mutable where it was sent from. This is done to discourage further use of old messages.
 
-The semantics of \enquote{spawn} is as follows:
+The semantics of \enquote{receive} is as follows:
 
 \begin{align*}
-&\inference[$\text{RECIEVE}$]{}
+&\inference[$\text{RECEIVE}$]{}
                            {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
 \end{align*}
 
 When an actor is no longer needed, it is possible to discard it with the \enquote{kill} keyword. As opposed to other languages where \enquote{kill} is called by a parent, that is the actor that spawned the actor, kill can only be called by the actor itself. 
 
 
-Main is also an actor.
+Main is always the first actor, and any program writtin in TLDR is started with main receiving the arguments message. This is done for multiple reasons. Foremost, having main behaving like an actor, better supports the actor modelling perspective.
 
 \kanote{main er en actor. Beskriv plz}
 
