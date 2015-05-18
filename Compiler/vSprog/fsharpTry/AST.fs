@@ -114,7 +114,7 @@ module AST =
                     |> List.ofSeq
                     |> ArrowPrimitive
                 
-            | "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0), 0) // TODO: lige nu bliver det bare gemt at listen er 0 lang
+            //| "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0), 0) // TODO: lige nu bliver det bare gemt at listen er 0 lang
             | "PrimitiveType" -> toPrimitiveType (input.Children.Item 0)
             | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str
@@ -350,7 +350,7 @@ module AST =
                                                 str.Substring (1, (str.Length - 2))
                                               |> Seq.map PrimitiveValue.Char
                                               |> List.ofSeq
-            Constant (ListPrimitive (SimplePrimitive Primitive.Char, chars.Length), PrimitiveValue.List chars)
+            Constant (ListPrimitive (SimplePrimitive Primitive.Char, (root.Children.Item 0).Symbol.Value.Length), PrimitiveValue.List chars)
         | "Return" ->
             if root.Children.Count = 1 then
               let expr = toAST (root.Children.Item 0)
