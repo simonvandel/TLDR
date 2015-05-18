@@ -21,9 +21,8 @@ grammar vSprogGrammar{
     SPAWN            -> 'spawn';
     VAR              -> 'var';
     WHILE            -> 'while';
+    DIE              -> 'die';
     FOR              -> 'for';
-    KILL             -> 'kill';
-    ME               -> 'me';
     IN               -> 'in';
     IF               -> 'if';
     ELSE             -> 'else';
@@ -31,7 +30,7 @@ grammar vSprogGrammar{
     RETURN           -> 'return';
     PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | KILL | ME);
+    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE);
 
     /*--------- Symbols ---------*/
     ASSIGN           -> ':=';
@@ -81,9 +80,9 @@ grammar vSprogGrammar{
     Expression       -> Declaration^
                       | Operation^
                       | Receive^
-                      | Kill^
                       | Spawn^
                       | Return^
+                      | Die^
                       | Send^
                       | If^
                       | IfElse^
@@ -100,11 +99,7 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
 
-    /*--------- Kill ---------*/
-    Kill             -> KILL! Operation;
-
-    /*--------- Me ---------*/
-    Me               -> ME;
+    Die              -> DIE;
 
     /*--------- For ---------*/
     ForIn            -> FOR! Ids IN! (List| Identifier ) Block;
@@ -142,7 +137,6 @@ grammar vSprogGrammar{
                       | Integer^
             	        | Real^
                       | Boolean^
-                      | Me^
                       | Identifier^
                       | Literals^
                       | Invocation^;
