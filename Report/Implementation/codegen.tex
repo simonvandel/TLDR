@@ -1,0 +1,43 @@
+\section{Code Generation}
+
+This section describes the code generation phase of the compiler developed in this project. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
+
+The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. 
+
+\subsection{Actors}
+
+Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}.
+
+Every actor in TLDR is generated into a LLVM function with the following behaviour outlined in pseudocode.
+
+\begin{verbatim}
+active = true
+msg = null
+<initialisation of fields in actor>
+start:
+while (active) do
+  msg = actor_receive()
+  switch (msg.type) do
+  case 101:
+    goto recv_kill
+  case 102:
+    goto recv_102
+  case 103:
+    goto recv_103
+
+return
+
+recv_102:
+<body of first receive>
+goto start 
+recv_103:
+<body of second receive>
+goto start 
+recv_kill:
+active = false
+goto start
+\end{verbatim}
+
+A actor simply checks for new messages, and performs the corresponding message, based on the type of the received message, by jumping to a label. This while loops ends when the actor receives a kill message.
+
+By having receive constructs simply be labels, all data of an actor can be contained in a single function.
