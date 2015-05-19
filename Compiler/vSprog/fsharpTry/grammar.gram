@@ -22,6 +22,7 @@ grammar vSprogGrammar{
     VAR              -> 'var';
     WHILE            -> 'while';
     DIE              -> 'die';
+    ME               -> 'me';
     FOR              -> 'for';
     IN               -> 'in';
     IF               -> 'if';
@@ -30,7 +31,7 @@ grammar vSprogGrammar{
     RETURN           -> 'return';
     PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE);
+    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
 
     /*--------- Symbols ---------*/
     ASSIGN           -> ':=';
@@ -64,7 +65,7 @@ grammar vSprogGrammar{
     BOOL             -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING           -> '"'[a-zA-Z_0-9 !%]*'"';
+    STRING           -> '"'[U+20 .. U+007E]*'"';
     CHAR             -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 
@@ -133,7 +134,7 @@ grammar vSprogGrammar{
     OP1              -> Operand^
                       | OP1 PZEROOPERATOR Operand
                       | LPARENS! Operation^ RPARENS!;
-    Operand	         -> Block^
+    Operand	     -> Block^
                       | Integer^
             	      | Real^
                       | Boolean^
@@ -144,7 +145,8 @@ grammar vSprogGrammar{
     Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
-    Identifier       -> IDENTIFIER
+    Identifier       -> ME
+                      | IDENTIFIER
                       | IDENTIFIER Accessor;
 
 
