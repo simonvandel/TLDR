@@ -135,7 +135,7 @@ module CodeGen =
         match type' with
         | SimplePrimitive p ->
             match p with
-            | Int -> "i32"
+            | Int -> "i64"
             | Bool -> "i1"
             | Real -> "double"
         | ListPrimitive (prim, len) ->
@@ -186,7 +186,7 @@ module CodeGen =
 
     let getReverseType (revType:string) : PrimitiveType =
         match revType with
-        | "i32" -> SimplePrimitive Int
+        | "i64" -> SimplePrimitive Int
 
     let getReceiveID (msgGenType:string) (actorName:string) : State<int, Environment> =
         state {
@@ -469,7 +469,7 @@ module CodeGen =
 
               // calculate a pointer to the element to assign to elem
               let! curElemReg = freshReg
-              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (sprintf "%s*" (genType elemType)) (sprintf "getelementptr %s %s, i32 0, %s %s" listType listName loadedCounterType loadedCounterName)
+              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (sprintf "%s*" (genType elemType)) (sprintf "getelementptr %s %s, i64 0, %s %s" listType listName loadedCounterType loadedCounterName)
 
               // load the pointer to the value
               let! loadedElemReg = freshReg
@@ -503,30 +503,28 @@ module CodeGen =
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
-              // TODO: OBS. lige nu er det altid af type i32 Typen for hele BinOperation skal bruges her. Indsæt det f.eks. i træet
-              // TODO: support for floats
               let! (sLhsName, sLhsType, lhsCode) = internalCodeGen lhs
               let! (sRhsName, sRhsType, rhsCode) = internalCodeGen rhs
               let! tempReg = freshReg
               let (code, targetType) = 
                   match op, sLhsType with
-                  | Multiply, "i32" -> 
+                  | Multiply, "i64" -> 
                     sprintf "mul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Multiply, "double" -> 
                     sprintf "fmul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Modulo, "i32" -> 
+                  | Modulo, "i64" -> 
                     sprintf "srem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Modulo, "double" -> 
                     sprintf "frem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Plus, "i32" ->
+                  | Plus, "i64" ->
                     sprintf "add %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Plus, "double" ->
                     sprintf "fadd %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Minus, "i32" ->
+                  | Minus, "i64" ->
                     sprintf "sub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Minus, "double" ->
                     sprintf "fsub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Divide, "i32" ->
+                  | Divide, "i64" ->
                     sprintf "sdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | Divide, "double" ->
                     sprintf "fdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
@@ -534,8 +532,8 @@ module CodeGen =
                     sprintf "or %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
                   | And, "i1" -> 
                     sprintf "and %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | GreaterThan, "i1" | GreaterThanOrEq, "i1" | LessThan, "i1" | LessThanOrEq, "i1" | Equals, "i1" | NotEquals, "i1" -> 
-                    (icmpString op sLhsType sLhsName sRhsName, sLhsType)
+                  | GreaterThan, "i64" | GreaterThanOrEq, "i64" | LessThan, "i64" | LessThanOrEq, "i64" | Equals, "i64" | Equals, "i1" | NotEquals, "i64" | NotEquals, "i1" -> 
+                    (icmpString op sLhsType sLhsName sRhsName, "i1")
                   | _,_ as err -> failwith (sprintf "%A not matched" err)
               let! (resName, resType, resCode) = newRegister tempReg targetType code
               let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode resCode
@@ -571,7 +569,6 @@ module CodeGen =
                 let! (strName, strType, strCode) as str = declareStringConstant stringToPrint
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
-                //do! append (sprintf "call i32 @puts(%s %s)\n" loadedStringType loadedStringName)
                 let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
                 let fullString = sprintf "%s\n%s" loadCode putsCode
                 return ("","", fullString)
