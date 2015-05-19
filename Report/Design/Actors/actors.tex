@@ -144,7 +144,7 @@ actor <nameOfActor> := {
 
 In this example the receive defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message, and this message is immutable no matter if it was mutable where it was sent from. This is done to discourage further use of old messages.
 
-It is also the intention to include a \enquote{wait on <typeOfMessage>} keyword, which will cause the actor to not evaluate the next message in the messagequeue, but instead traverse the queue, until a message matching \enqoute{<typeOfMessage} is found. Then that message is de-queued and evaluated. This has not been implemented in the current release of TLDR, but it will be a central part of supporting discrete simulations.
+It is also the intention to include a \enquote{wait on <typeOfMessage>} keyword, which will cause the actor to not evaluate the next message in the messagequeue, but instead traverse the queue, until a message matching \enquote{<typeOfMessage} is found. Then that message is de-queued and evaluated. This has not been implemented in the current release of TLDR, but it will be a central part of supporting discrete simulations.
 
 The semantics of \enquote{receive} is as follows:
 
