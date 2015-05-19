@@ -197,10 +197,9 @@ grammar vSprogGrammar{
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
-    List             -> STARTLIST! Lists ENDLIST!;
-    Lists            -> Lists COMMA! Lists
-	                  | Operation TO Operation
-					  | Operation;
+    List             -> STARTLIST! Lists (COMMA! Lists)* ENDLIST!;
+    Lists            -> Operation TO^ Operation
+					            | Operation^;
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Operation (COMMA! Operation)+ RPARENS!;

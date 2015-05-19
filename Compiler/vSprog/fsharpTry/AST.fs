@@ -263,25 +263,12 @@ module AST =
         | "List" ->
             match root.Children.Count with
             | 3 -> 
-                match (root.Children.Item 1).Symbol.Value with
-                | "Operation"  ->
-                    let item = toAST (root.Children.Item 0)
-                    let item1 = toAST (root.Children.Item 1)
-                    let item2 = toAST (root.Children.Item 2)
-                    List ([item; item1; item2], ListPrimitive(SimplePrimitive Int,3))
-                | ".." ->
                     let start = int (getChildByIndexes [0;0;0] root).Symbol.Value
-                    let end' = int (getChildByIndexes [0;1;0] root).Symbol.Value
+                    let end' = int (getChildByIndexes [2;0;0] root).Symbol.Value
                     List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
-                | err -> failwith (sprintf "This should never be reached: %A" err)
             | 1 -> 
                 toAST (root.Children.Item 0)
-            | n ->
-                seq { for c in root.Children do   
-                                   yield toAST c                  
-                               }
-                |> List.ofSeq
-                |> fun astList -> List (astList, HasNoType)
+            | err -> failwith (sprintf "This should never be reached: %A" err)
         | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
             match root.Children.Count with
             | 3 -> 
