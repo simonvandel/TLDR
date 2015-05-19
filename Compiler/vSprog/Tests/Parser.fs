@@ -221,12 +221,39 @@ module ParserTest =
         debugTestParseWith "[5 .. 1]"
         <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,5)))]])
 
+    [<Test>]
+    let ``When syntax for list from 5 to 1 to 5 is given, expect List AST`` () =
+        let list = [5;4;3;2;1;2;3;4;5] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[5 .. 1,2 .. 5]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,9)))]])
+
+
+    [<Test>]
+    let ``When syntax for list from 5 to 1, 5 to 1 is given, expect List AST`` () =
+        let list = [5;4;3;2;1;5;4;3;2;1] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[5 .. 1,5 .. 1]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,10)))]])
+
     (* --------------------------- Lists --------------------------- *)
     [<Test>]
     let ``When syntax for list consisting of [1,2,3], expect List AST`` () =
         let list = [1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[1,2,3]"
         <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,3)))]])
+
+    (* --------------------------- Lists mixed --------------------------- *)
+
+    [<Test>]
+    let ``When syntax for list consisting of [1,2,3,1 .. 3], expect List AST`` () =
+        let list = [1;2;3;1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[1,2,3,1 .. 3]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,6)))]])
+
+    [<Test>]
+    let ``When syntax for list consisting of [1,2,3,3 .. 1], expect List AST`` () =
+        let list = [1;2;3;3;2;1] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[1,2,3,3 .. 1]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,6)))]])
 
 
     (* --------------------------- Operation --------------------------- *)

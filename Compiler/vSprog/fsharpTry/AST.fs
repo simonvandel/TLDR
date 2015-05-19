@@ -265,8 +265,8 @@ module AST =
             let (fields:AST list) =  [ for c in root.Children do
                                         match c.Symbol.Value with
                                         | ".." -> 
-                                                let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
-                                                let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
+                                                let start = int (getChildByIndexes [0;0;0] c).Symbol.Value
+                                                let end' = int (getChildByIndexes [1;0;0] c).Symbol.Value
                                                 if start < end' then
                                                     yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
                                                 else
