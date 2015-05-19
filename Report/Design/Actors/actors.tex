@@ -1,2 +1,156 @@
 \section{Actors}
-\input{Design/Syntax/actors.tex}
+
+Here follows descriptions of the usage of actors in TLDR. This includes different principles, functionalities, syntactical and the semantics. But before we can discuss the use of actors in TLDR, we must first cover the semantics of the parallelism used.
+
+\subsubsection{Semantics of parallelism}
+
+\kanote{forklaring af parallisms semantic}
+
+\begin{align*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
+&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
+&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2,e_2,\Ta'}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\Ta} \Rightarrow_S \Braket{S_2',e_1',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\Ta'}}
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{align*}
+
+\subsubsection{Isolation and Independence}
+
+A central principle in the programming language described in this report is the use of actors, based on actor-modelling. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when other actors interact with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of separation of processes, which will allow for greater concurrency by letting processes operate on local data instead of global, shared data. Therefore TLDR tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions as no data is ever accessed by more than one process.
+
+\subsubsection{Main is an Actor}
+
+Main is always the first actor, and any program writtin in TLDR is started with main receiving the arguments message. This is done to force the programmer to start and end the program with an actor, which will better support the actor modelling perspective. This means that the main actors is started with a message for the arguments, and when the main actor is killed the program will stop executing, whether or not there are still working actors.
+
+Another way that this affects the programmer, is the idea of spawning actors and having them send messages to main, instead of calling functions and having them return. This also means that there must be a way to reference main, since it is not spawned by another actor. This is solved by the introduction of the \enquote{me} keyword, which will evaluate to a reference to the current actor. This is very useful, especially if an actor wishes to delegate work to other actors. The message that is sent with the work, must simply contain a reference back to the delegating actor, which was included through the use of the \enquote{me} keyword.
+
+Here are the semantics for the main actor.
+
+\begin{align*}
+&\inference[$\text{MAIN}$]{input \mapsto \Braket{S,\epsilon}}
+                          {\Braket{\Treceive \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
+\end{align*}
+
+\subsubsection{Construction of an Actor}
+\label{sub:constructionOfAnActor}
+
+The syntactical declaration of an actor is as follows:
+
+\begin{lstlisting}
+actor <identifier> := {
+  <functionality>
+}
+\end{lstlisting}
+
+And a concrete example could be:
+
+\begin{verbatim}
+  actor earth := {
+    var temperature:real := 0;
+    receive sunlight:light := {
+      temperature := temperature + 0.1;
+    }
+  }
+\end{verbatim}
+
+As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the declaration is needed, which will serve as the of type the actor. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on run-time, which would make little sense, and completely undermine the type safety.
+
+Some general semantics of actors:
+
+\begin{align*}
+&\inference[TYPEOF]{}
+                  {e \vdash m \Rightarrow_T t}
+                  {, \mathbb{T}(m) = t}
+\\\\
+&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e \times st]}
+                           {\Braket{\Tactor \Tact := \{S\}, a} \Rightarrow_S \Braket{S,e,at[\Tact \mapsto S],a'}}
+\\\\
+&\inference[$\text{ACTOR}$]{}
+                           {\Braket{\Tactor \Tact := 1S, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
+\end{align*}
+
+\subsubsection{Basic actor functionality}
+
+There are four basic functionalities: \enquote{spawn}, \enquote{die}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. Regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to these and more differences, which follows below, we decided to separate them syntactically.
+
+The \enquote{spawn} functionality is used to create new instances of actors. And example could be:
+
+\label{actorfuncSpawn}
+\begin{lstlisting}
+actor <identifier> := {
+ <functionality>
+}
+
+let MyActor:<identifier> := spawn <identifier> <message>;
+
+or alternatively:
+
+var MyActor:<identifier> := spawn <identifier> <message>;
+\end{lstlisting}
+
+As can be seen above, there are four parts of a spawn functionality: an identifier, the keyword, type of actor, and possibly a message. Firstly the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly. \kanote{reference til garbage collection afsnit}
+
+When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however including this would conflict with a central principle, since it would be a manipulation of an actor without a message.
+
+The semantics of \enquote{spawn} is as follows:
+
+\begin{align*}
+&\inference[$\text{SPAWN}$]{}
+                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Ta} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Ta[act \mapsto e \times st]}}
+\\
+&                       {, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
+\end{align*}
+
+After an actor has been spawned, it will be possible to send messages to it. This is done with the \enquote{send} keyword. This could be done as follows:
+
+\label{actorfuncSend}
+\begin{lstlisting}
+MyMsg:int := 42;
+
+Send MyActor MyMsg;
+\end{lstlisting}
+
+It is also possible for actors to send messages to themselves. Such messages will be treated as any other message.
+
+The semantics of \enquote{send} is as follows:
+
+\begin{align*}
+&\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
+                       {\Braket{\Tsend \Tact \Tm ; S,\Ta,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
+\end{align*}
+
+When an actor is sent a message, it must act according to a defined a way of handling that type of message. This definition is declared with the \enquote{receive} keyword, and can be seen below:
+
+\label{actorfuncReceive}
+\begin{lstlisting}
+actor <nameOfActor> := {
+ receive <nameOfMessage>:<typeOfMessage> := {
+  <functionality>
+ }
+}
+\end{lstlisting}
+
+In this example the receive defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message, and this message is immutable no matter if it was mutable where it was sent from. This is done to discourage further use of old messages.
+
+It is also the intention to include a \enquote{wait on <typeOfMessage>} keyword, which will cause the actor to not evaluate the next message in the messagequeue, but instead traverse the queue, until a message matching \enqoute{<typeOfMessage} is found. Then that message is de-queued and evaluated. This has not been implemented in the current release of TLDR, but it will be a central part of supporting discrete simulations.
+
+The semantics of \enquote{receive} is as follows:
+
+\begin{align*}
+&\inference[$\text{RECEIVE}$]{}
+                           {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
+\end{align*}
+
+When an actor is no longer needed, it is possible to discard it with the \enquote{die} keyword. As opposed to other languages where \enquote{die} is called by a parent, that is the actor that spawned the actor, \enquote{die} can only be called by the actor itself. This is done in order to keep the principle of only having actors react to messages. When an actor dies it stops immediately and does not compute further, and what ever messages might have been in the queue, will be lost.

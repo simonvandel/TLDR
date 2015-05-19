@@ -11,26 +11,3 @@
 &\inference[$\text{STATEMENTS}_2$]{\Braket{S_1,e} \Rightarrow_S e'}
                          {\Braket{S_1;S_2,e} \Rightarrow_S \Braket{S_2,e'}}
 \end{align*}
-
-
-\subsubsection{Misc - (alt her skal flyttes)}
- 
-\begin{align*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2,e_2,\Ta'}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\Ta} \Rightarrow_S \Braket{S_2',e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\Ta'}}
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\end{align*}
