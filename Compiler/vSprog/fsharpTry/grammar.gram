@@ -64,7 +64,7 @@ grammar vSprogGrammar{
     BOOL             -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING           -> '"'[a-zA-Z_0-9 !]*'"';
+    STRING           -> '"'[a-zA-Z_0-9 !%]*'"';
     CHAR             -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 
@@ -193,7 +193,7 @@ grammar vSprogGrammar{
                       | TupleType^;
 
     TupleType        -> LPARENS! Types RPARENS!;
-    ListType         -> STARTLIST! Types COMMA! INT ENDLIST!;
+    ListType         -> STARTLIST! Types ENDLIST!;
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/

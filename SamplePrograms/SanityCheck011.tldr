@@ -1,7 +1,7 @@
 actor main := {
   receive arguments:args := {
     let x:test := spawn test;
-    for x in [0 .. 100] {
+    for x in [0 .. 1000000000] {
       send test 2;
     };
     print("finished");

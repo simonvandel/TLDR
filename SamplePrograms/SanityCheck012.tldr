@@ -1,6 +1,6 @@
 actor main := {
   receive arguments:args := {
-    let x:real := 2.5;
+    let x:real := 1.3;
     let y:real := 2.5;
     x + y;
     x * y;

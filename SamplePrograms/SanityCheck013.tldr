@@ -1,0 +1,7 @@
+actor main := {
+  receive arguments:args := {
+    printint(5);
+    printreal(1.3);
+    die;
+  }
+}
