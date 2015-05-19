@@ -3,9 +3,25 @@
 This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language. 
 
 Firstly the type system will be covered. Afterwards the different constructs of the language will be explained. These explainations will mostly consist of an informal explaination of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
+\jenote{- eBNF men med focus på at holde det tæt på BNF (nogle gange er eBNF dog bare nemmest at læse)
+- Typesystem og small step semantik fra bogen}
 
-\input{Design/typeSystem.tex}
+\section{General Language Properties and Formal Models}
+\input{Design/generalLanguageProp.tex}
+\jenote{- General typesystem properties
+- The semantic model and general constructs}
 
-\input{Design/Syntax/syntax.tex}
+\input{Design/Expressions/expressions.tex}
+\input{Design/Statements/statements.tex}
+\input{Design/Actors/actors.tex}
+
+   - Parallelitet
+   - Hvorfor er main en actor (forklar også "me" her)
+   - Actor declration
+   - Actor operationer
+     - Spawn
+     - Kill/die
+     - Send
+     - Recieve
 
 \input{Design/Semantik/semantik.tex}

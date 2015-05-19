@@ -1,4 +1,4 @@
-\subsubsection{Primitive Mathematical Operators}
+\section{Expressions}
 \label{sec:mathOps}
 
 For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
@@ -304,3 +304,153 @@ The following operations only operate on bool types.
 \end{align*}
 
 \end{itemize}
+
+\subsubsection{Type Rules}
+
+\begin{align*}
+\intertext{The following sets will be used throughout this section}
+&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
+\\
+&\Tbaop = \left\{ {<, <=, >, >=} \right\}
+\\
+&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The following primitive types are defined}
+&\Tpt ::= \Tint \mid \Treal \mid \Tbool \mid \Tchar
+\\
+\intertext{A tuple is a finite set of ordered elements of arbitrary type $T$}
+&\text{TUPLE} ::= T_1 \times T_2 \times \ldots \times T_n
+\\            
+&\text{B} ::=  \left[ \Tt \right] \mid \Tpt \mid \text{TUPLE} \mid \text{struct<TUPLE>}
+\\            
+\intertext{All types defined in the type system is defined in $T$.}
+&\Tt ::= \text{B} \mid x : B \rightarrow ok
+\end{align*}
+
+\paragraph{Arithmetic Expressions}
+\begin{align*}
+&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tint},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Treal},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+\end{align*}
+\sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
+
+\paragraph{Boolean Expressions}
+\begin{align*}
+&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 = e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
+                       \Tenv e_2 : \Tbool}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
+                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
+\end{align*}
+\paragraph{Loop Expressions}
+\begin{align*}
+\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tt$}
+&\inference[WHILE]{\Tenv b : \Tbool &
+                  \Tenv e : \Tt}
+                 {\Tenv \mathbin{\text{while}} \; (b) \; {e}: ok}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
+&\inference[FOR]{\Tenv l : [\Tpt]}
+                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt
+\end{align*}
+
+
+\paragraph{Actor Expressions}
+\begin{align*}
+\intertext{}
+&\inference[SPAWN]{}
+                 {\Tenv \mathbin{\text{spawn}} \; \Tt: \Tt}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[SEND]{\Tenv m : \Tt & \Tenv a: \Tt'}
+                 {\Tenv \mathbin{\text{send}} \; \mathbin{\text{m}} \; \mathbin{\text{a}} : ok }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[RECEIVE]{\Tenv m : \Tt}
+                 {\Tenv \mathbin{\text{recieve}} \; \mathbin{\text{m}} :\Tt : ok }
+\end{align*}
+
+\paragraph{Comparison}
+\begin{align*}
+\intertext{}
+&\inference[ACTOR]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv e_1 = e_2: \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv e_1 = e_2: \Tbool}
+\end{align*}
+
+\paragraph{Misc constructs}
+\begin{align*}
+\intertext{}
+&\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
+                 {\Tenv \{s_1; s_2\} : \Tt'}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[LET]{}
+                 {\Tenv \mathbin{\text{let}} \; e:T: ok}
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[VAR]{}
+                 {\Tenv \mathbin{\text{var}} \; e:T: ok}
+                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[LET1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv \mathbin{\text{let}} \; e_1 := e_2: ok}
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[VAR1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv \mathbin{\text{var}} \; e_1 := e_2: ok}
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[NUM]{\Tenv n:\Tint}
+                 {\Tenv n: \Tint} 
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[NUM1]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
+                 {\Tenv n_1.n_2: \Treal}    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{}
+&\inference[INVOKE]{\Tenv n: \Tt}
+                 {\Tenv n: \Tt}
+\end{align*}
+
