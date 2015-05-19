@@ -379,6 +379,12 @@ module Analysis =
       | xs -> sumResults xs
 
     let analyse (ast:AST) : Result<AST> =
+//        let initialSymbolTableEntry = {
+//                                        symbol = {identity = SimpleIdentifier "printint"; isMutable = false; primitiveType = ArrowPrimitive [SimplePrimitive Primitive.Int]};
+//                                        statementType = Def;
+//                                        scope = {outer = None; level = []};
+//                                        value = Program []
+//                                      } 
         let (newAST, environment) = runState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
         checkReass environment.symbolList
         >>= checkUsedBeforeDecl

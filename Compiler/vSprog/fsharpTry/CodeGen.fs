@@ -202,10 +202,10 @@ module CodeGen =
     let rec applyAll (l:'a list) (p:'a->State<'b, Environment>) : State<'b, Environment> = 
         state {
             match l with
-            | [x] -> 
+            | [x] ->
                 let! res = p x
                 return res
-            | x::xs -> 
+            | x::xs ->
                 let! _ = p x
                 let! res = applyAll xs p
                 return res
@@ -572,6 +572,22 @@ module CodeGen =
                 let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
                 let fullString = sprintf "%s\n%s" loadCode putsCode
                 return ("","", fullString)
+              | "printint" ->
+                let intToPrint = parameters.Head
+                let! (strName, strType, strCode) as str = declareStringConstant "%d\n"
+                let! regName = freshReg
+                let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
+                let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, i32 %s)" loadedStringType loadedStringName intToPrint
+                let fullString = sprintf "%s\n%s" loadCode putsCode
+                return ("","", fullString)
+              | "printreal" ->
+                let realToPrint = parameters.Head
+                let! (strName, strType, strCode) as str = declareStringConstant "%lf\n"
+                let! regName = freshReg
+                let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
+                let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, double %s)" loadedStringType loadedStringName realToPrint
+                let fullString = sprintf "%s\n%s" loadCode putsCode
+                return ("","", fullString)
           }
         | UnaryOperation (op, rhs) -> 
           state {
@@ -663,6 +679,7 @@ module CodeGen =
                           sprintf "%s = constant %s c\"%s\00\"\n" varName varType initVal)
                       |> String.concat ""
         let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"
+                                                 ;"declare i32 @printf(i8*, ...)\n"
                                                  ;"declare void @actor_init(...)\n"
                                                  ;"declare void @actor_wait_finish(...)\n"
                                                  ;"declare void @actor_destroy_all(...)\n"

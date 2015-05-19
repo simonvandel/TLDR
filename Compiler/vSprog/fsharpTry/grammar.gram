@@ -64,7 +64,7 @@ grammar vSprogGrammar{
     BOOL             -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING           -> '"'[a-zA-Z_0-9 !]*'"';
+    STRING           -> '"'[a-zA-Z_0-9 !%]*'"';
     CHAR             -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 

@@ -342,7 +342,7 @@ module AST =
         | "Invocation" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value
             if root.Children.Count = 1 then // no parameters                
-                Invocation (funcName, [], HasNoType)
+                Invocation (funcName, [], ArrowPrimitive [])
             else // there are root.Children.Count - 1 parameters
                 let parameters = seq { for childNum in [1.. root.Children.Count - 1] do
                                        let rawParam = (getChildByIndexes [childNum;0;0] root).Symbol.Value
