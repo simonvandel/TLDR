@@ -267,7 +267,10 @@ module AST =
                                         | ".." -> 
                                                 let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
                                                 let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
-                                                yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
+                                                if start < end' then
+                                                    yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
+                                                else
+                                                    yield List ([start..(-1)..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
                                         | "Operation" -> 
                                                 yield toAST c
                                         | err -> failwith (sprintf "This should never be reached: %A" err)

@@ -215,6 +215,12 @@ module ParserTest =
         debugTestParseWith "[-5 .. 2]"
         <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,8)))]])
 
+    [<Test>]
+    let ``When syntax for list from 5 to 1 is given, expect List AST`` () =
+        let list = [5;4;3;2;1] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
+        debugTestParseWith "[5 .. 1]"
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,5)))]])
+
     (* --------------------------- Lists --------------------------- *)
     [<Test>]
     let ``When syntax for list consisting of [1,2,3], expect List AST`` () =
