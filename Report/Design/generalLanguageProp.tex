@@ -1,0 +1,193 @@
+\subsection{Type System}\label{typesys}
+
+This section first defines what a type system is and presents two categories of type systems. The two type system categories are described and its properties are outlined.
+
+Later in this section, the type system decisions made for TLDR are described, and formal type rules are given.
+
+%\subsection{General Type Systems}
+
+The goal of the type system is to minimise programming errors, while on the other hand not being too restrictive, such that the expressiveness of the language is not reduced. 
+
+\subsubsection{Strictness}
+Type systems are often described as \emph{strong} or \emph{weak}. No formal definitions of such categorisations of type systems exist, so this report will use the following understanding of \emph{weak} and \emph{strong} type systems. A type system goes from \emph{weak} to \emph{strong} as the amount of undefined behaviour, unpredictable behaviour or implicit conversions between types approach zero.
+
+\subsubsection{Static Versus Dynamic Type Systems}
+Languages can generally be categorised into dynamically typed and statically typed languages. The difference between static and dynamic typing is the time of type checking. In static typing, types are checked at compile time. In dynamic typing, types are checked at run-time.
+
+Statically typed languages have the following advantages over dynamically typed languages.
+
+\begin{itemize}
+  \item Type errors are presented at the soonest possible level; compile-time. This makes it impossible to have a program stop unexpectedly because of a type error at run-time
+  \item Because of the fact that types are checked at compile time, no overhead is imposed on the compiled program at run-time
+\end{itemize}
+
+Of course dynamically typed languages have their uses. One can argue that prototyping a program is done faster in a dynamically typed language because the programmer does not need to think of types when programming. The mental overhead is usually lower. The trade-off of dynamic typing versus static typing is often expressiveness for safety and performance.
+
+\subsubsection{Type Inference}
+Type checking solves the problem of determining if a program is well-typed i.e. does not have any type errors. Type inference can be seen as solving the opposite problem; determine types in a program, making the program well-typed.
+
+In order to reduce the mental overhead and the number of explicit type declarations to write in a language, type inference can be implemented in the compiler. Having types inferred by the compiler in a statically typed language makes the language as expressive as a dynamically typed language, whilst keeping the safety and performance of static typing.
+
+\subsubsection{Summary}
+Type systems are defined by the type rules it enforces. Because the strictness of the type rules can vary, type systems can range from being very strict to being very weak.
+
+Generally two different approaches exist to solve the goal of minimising errors in programs. Static typing checks types at compile-time and therefore is able to present type errors at a early stage. Because of this, static typing is often regarded as safer and more performant.
+
+Dynamic typing checks types at run-time and therefore allows the programmer to not have the same mental overhead of thinking about types when programming. This however comes at the price of safety and performance.
+
+Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
+
+\subsubsection{Type System Choice for TLDR}
+
+This section describes some design choices about the type system used for TLDR.
+
+\subsubsection{Strictness \& Statical Typing}
+The type system for TLDR is \emph{strong} statically typed. No implicit type conversions are made in the type system. This choice of static typing was made based on the domain in which TLDR is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures.
+
+\subsubsection{Primitive Data Types}
+\label{subsec:primitives}
+
+Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have psychical limits which makes it complicated or inefficient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason, namely the different charateristics numbers have.
+
+However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
+
+When initialising a variable, it being either mutable or immutable, the programmer must declare its type, as if the variable belonged to a set, where the set must be a type in our language.
+
+A primitive is a predefined value type that cannot be constructed using other value types.
+
+The following primitives exist in the language. All primitives are lower-cased.
+
+\begin{itemize}
+  \item int
+  \item real
+  \item bool
+  \item char
+  \item unit
+\end{itemize}
+
+\paragraph{Integer}
+\label{subsubsec:int}
+
+The int primitive can have values of 0 to \sinote{hvor mange bits?}. The int primitive's literal representation is as whole numbers e.g. \emph{2}.
+
+\paragraph{Real}
+\label{subsubsec:real}
+
+The real primitive can have values of \sinote{hvordan definerer vi det her?}. The real primitive's literal representation is as decimal numbers with fractions e.g. \emph{2.5} or \emph{2.0}.
+
+\paragraph{Bool}
+\label{subsubsec:bool}
+
+The bool primitive's value can be either \emph{true} or \emph{false}.
+
+\paragraph{Char}
+\label{sec:char}
+
+The char primitive can have values of the ASCII standard. It is written literally as a character defined in the ASCII standard, surrounded by single quotation marks. For example: \emph{ '0' } and \emph{ 'A' }.
+
+\paragraph{Unit}
+\label{sec:unit}
+\kanote{overvej om vi kan forklare unit type uden syntax}
+
+The unit primitive can have only one value: itself. The use of the primitive is to signal emptiness.
+
+From the start the project group aimed towards a language with type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the project. Although due to prioritisation and time span of the project, it was decided that the language should initially have an explicit type system.
+
+Types not being known an artifact in previously mentioned sciences mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen. In this signature the function can take any number of arguments and return either a single typed symbol or a new function. The input and output is differenciated by the amount of input parameters (arg1, arg1, ... ,argN) where N would be the amount of inputs and M - N would be the size of the output.
+
+\begin{verbatim}
+  functionName(arg1, arg1, ... ,argN) :: arg1Type -> arg2Type -> ... -> argMType
+\end{verbatim}
+\label{typesignature}
+
+If the user wants to use functions instead of single typed symbols he or she simply puts these in parentheses as seen in \cref{typesignatureexample0}. Here the function takes another function that maps an integer to an integer and maps this to a real.
+
+\begin{verbatim}
+  f(x) :: (int -> int) -> real
+\end{verbatim}
+\label{typesignatureexample0}
+
+This can of cause be nested in as many levels as the user decides as illustrated in \cref{typesignatureexample1}, where the function takes a function typed the same way as in \cref{typesignatureexample0} and maps this to a list of characters. Note that both \cref{typesignatureexample0} and \cref{typesignatureexample1} still only takes one argument (x) sinco this is a function and can be used as such in the body.
+
+\begin{verbatim}
+  f(x) :: ((int -> int) -> real) -> [char]
+\end{verbatim}
+\label{typesignatureexample1}
+
+This approach proposed a problem with the concept of \enquote{unit}. This represents the non-existing value, for the type system. It means that something does not have a value and using it in any context does not make sense. For instance when a function returns nothing ie unit, it cannot be assigned to anything. The need for explicitness resides in that The Language Described in This Report have functions as, what is called, \enquote{first class citisens}, meaning that functions can be used as arguments and essentially are treated in the same way as other symbols such as integers, structs ect. Here the language becomes umbigious with implicit unit, ie the user not needing to explicitly tell when a function takes or returns unit. For instance \cref{typesignatureexample0} we would not be able to tell wether the function takes a function that takes an int and returns an int or returns a function that goes from int to unit since the syntax is the same.
+Several of proposed solution will be described here after.
+
+First the type signature of this language looks as follows:
+\begin{verbatim}
+  printint(a): int -> int
+\end{verbatim}
+Where the first $int$ is the parameter $a$ of the function $printint$, and the second $int$ of the signature is the return type.
+
+So in the case that the function $printint$ should not return anything, the last type of the type signature will be decorated with a type of nothing, e.g. unit, as follows:
+\begin{verbatim}
+  printint(a): int -> unit
+\end{verbatim}
+
+First proposal of a solution is to denote unit as \enquote{nothing}, like this:
+\begin{verbatim}
+  printint(a): int ->
+\end{verbatim}
+but this is ambiguent, in that white space, \enquote{nothing}, if the type signature of a function is that it takes nothing as parameter but returns something, like this:
+\begin{verbatim}
+  printint(): -> int
+\end{verbatim}
+.... %Expand on this
+
+\kanote{var 'ugly' vores argument?}
+
+So solve this ambiguity, one can introduce a new symbol to indicate return types $=>$, this was considered ugly and unnecessary by the project group though. So in the end the project group chose to explicitly express unit to avoid confusion for users of the language. The explicit format ended up as follows:
+\begin{verbatim}
+  printint(a): int -> unit
+\end{verbatim}
+
+\subsection{Scoping}
+
+As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
+%impossible - but why?
+For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+
+\subsection{Semantics}\label{semantics}
+In this section, will present and discuss some considerations made regarding the syntax and semantics of this language. The aim of this section is to provide insight into the constructs of the language, why they have taken their form.
+
+The primitive data types and operators will be described in \cref{subsec:primitives,subsec:primitiveOps}. After this, functions and their declarations are explained in \cref{subsec:functions}. Next, comments will be briefly mentioned in \cref{subsec:comments}, followed by assignment, or binding, of values to symbols in \cref{subsec:value_assignment}. After this, more complex syntactical constructs, such as actors, structures, loops and selective control structures, will be explained in \cref{subsec:actors,subsec:structs,subsec:forLoopStatements,subsec:ifStatements}.
+
+This section describes the semantics of the constructs in TLDR both formally and informally. It is split into pieces each describing one construct both formally and informally.
+
+\subsubsection{Formal semantics in TLDR}
+To describe the semantics formally it was decided to use small-step semantics. The alternative was big-step semantics but since the language depends heavily on non-determinism and parallelism and this is not possible to represent in big-step semantics, small-step semantic was a better choice.
+
+The formal rules have three parts as illustrated in \cref{SS-semantics}
+
+\begin{figure}[H]
+\begin{align*}
+&\inference[$RULE-NAME$]{[PREMISE]}
+												{[CONCLUSSION]}
+												{,[SIDE-CONDITION]}
+\end{align*}
+\caption{A desription of formal small-step semantics}
+\label{SS-semantics}
+\end{figure}
+
+\subsubsection{Actor-Environment model}
+The formal semantics will also use an actor-environment model.
+
+$a = \text{Anames} \cup \{next\} \rightharpoonup e \times st$
+
+$e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+
+$st = \text{Structs} \rightharpoonup \text{Stm}$
+
+$at = \text{ActorTypes} \rightharpoonup \text{Stm}$
+
+\subsubsection{General Constructs}
+\begin{align*}
+&\inference[$\text{INVOKE}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_S \Braket{S_1',e'}}
+\\
+&									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\end{align*}

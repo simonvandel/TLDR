@@ -1,0 +1,9 @@
+Here are the semantics for the block statement:
+
+\begin{align*}
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
+                         {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
+\\\\
+&\inference[$\text{BLOCK}_1$]{\Braket{S,e} \Rightarrow_S e'}
+                         {\Braket{\{S\},e} \Rightarrow_S e'}
+\end{align*}

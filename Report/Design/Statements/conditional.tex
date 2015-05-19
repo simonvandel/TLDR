@@ -1,7 +1,19 @@
+\subsection{Conditional}
 \subsubsection{If-statements}
 \label{subsec:ifStatements}
-\newcommand{\Tif}{\text{if}}
-\newcommand{\Telse}{\text{else}}
+
+\begin{align*}
+\intertext{The conditional body of a if-statement must be of type bool. The body can be of any type defined in $\Tt$. The type of the if-statement is well-typed.}
+&\inference[$\text{IF}$]{\Tenv b : \Tbool &
+                  \Tenv e : \Tt}
+                 {\Tenv \mathbin{\text{if}} \; (b) \; \{e\}: ok}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The conditional body of a if-else-statement must be of type bool. The two bodies can be of any type defined in $\Tt$. The type of the if-else-statement is well-typed.}
+&\inference[$\text{IF-ELSE}$]{\Tenv b : \Tbool &
+                  \Tenv e_1 : \Tt &
+                  \Tenv e_2 : \Tt}
+                 {\Tenv \mathbin{\text{if}} \; (b) \; \{e_1\} \mathbin{\text{else}} \{e_2\}: ok}
+\end{align*}
 
 If-statements can be written either as a if-then-else statement or just as an if-statement. The following shows either way.
 
