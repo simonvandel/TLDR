@@ -1,10 +1,14 @@
 \chapter{Language}\label{part:design}
 
-This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language. 
+This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language.
 
-Firstly the type system will be covered. Afterwards the different constructs of the language will be explained. These explainations will mostly consist of an informal explaination of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
-\jenote{- eBNF men med focus på at holde det tæt på BNF (nogle gange er eBNF dog bare nemmest at læse)
-- Typesystem og small step semantik fra bogen}
+The chapter is split into four parts. The first part is the general properties and formal models. This includes the type system, general semantics and scope rules.
+
+After this three sections will cover the specifics of the language. The seperation is between expressions, statements, and actors. Even though actors are also statements, their importance for the characteristics of the language, deemed it worth of a seperate section.
+
+The different sections will contain explainations, which will mostly consist of an informal explaination of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
+
+The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where it is not deemed that EBNF will provide further clarification. For the semantics, the formal notation will follow the example set by \kanote{indsæt reference til semanticbogen} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and we did not wish to mix the use of semantics.
 
 \section{General Language Properties and Formal Models}
 \input{Design/generalLanguageProp.tex}
@@ -14,14 +18,5 @@ Firstly the type system will be covered. Afterwards the different constructs of 
 \input{Design/Expressions/expressions.tex}
 \input{Design/Statements/statements.tex}
 \input{Design/Actors/actors.tex}
-
-   - Parallelitet
-   - Hvorfor er main en actor (forklar også "me" her)
-   - Actor declration
-   - Actor operationer
-     - Spawn
-     - Kill/die
-     - Send
-     - Recieve
 
 \input{Design/Semantik/semantik.tex}
