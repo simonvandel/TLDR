@@ -1,11 +1,96 @@
 \section{Expressions}
-\label{sec:mathOps}
+\label{sec:Expressions}
+This part of the language describes expressions. Expressions are in The Language Described in This Report defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
+
+First we look at the mathematical operators that can combine expressions.
+\setlength{\grammarindent}{100pt}
+\begin{grammar}
+<Operation> ::= <Operation> <PSIXOPERATOR> <OP6>
+ \alt <OP6>
+
+<OP6> ::= <OP6> <PFIVEOPERATOR> <OP5>
+ \alt <OP5>
+
+<OP5> ::= <PFOUROPERATOR> <OP5>
+ \alt <OP4>
+
+<OP4> ::= <OP4> <PTHREEOPERATOR> <OP3>
+ \alt <OP3>
+
+<OP3> ::= <OP3> <PTWOOPERATOR> <OP2>
+ \alt <OP2>
+
+<OP2> ::= <OP2> <PONEOPERATOR> <OP1>
+ \alt <OP1>
+
+<OP1> ::= <Operand>
+ \alt <OP1> <PZEROOPERATOR> <Operand>
+ \alt '(' <Operation> ')'
+
+<PZEROOPERATOR> ::= '$\Twedge$' | '\#'
+
+<PONEOPERATOR> ::= '*' | '/' | '\%'
+
+<PTWOOPERATOR> ::= '+' | '-'
+
+<PTHREEOPERATOR> ::= '=' | '!=' | '$\textless$' | '$\textless$=' | '$\textgreater$' | '$\textgreater$='
+
+<PFOUROPERATOR> ::= 'NOT'
+
+<PFIVEOPERATOR> ::= 'AND' | 'NAND'
+
+<PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
+\end{grammar}
+The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero being the closest. This precedence can be overwritten by  All operators have left associativity. An example can be seen in \cref{precidenceExamples} this shows how the parse tree
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{Design/Expressions/precidenceExamples.png}
+\caption{The parse tree for \textnormal{\enquote{$\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$}}} %[XOR [AND [NOT [Bool a]][Bool b]] [< [Integer 2] [+ [* [Integer 3] [+ [Integer 2] [Integer 2]]] [Integer 4]]]]
+\label{precidenceExamples}
+\end{figure}
+
+\begin{grammar}
+<Operand>	::= <Block>
+ \alt <Integer>
+ \alt <Real>
+ \alt <Boolean>
+ \alt <Identifier>
+ \alt <Literals>
+ \alt <Invocation>
+
+<Identifier> ::= 'me'
+ \alt <Identifier>
+ \alt <Identifier> <Accessor>
+											
+<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
+
+<Accessor> ::= '.' <Identifier>
+ \alt '.' '[' <Operation> ']'
+
+<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+
+<Literals> ::= <String>
+ \alt <ListRange>
+ \alt <StructLiteral>
+ \alt <Tuple>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+
+<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
+
+<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
+\end{grammar}
 
 For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
 
 \kanote{moar text needed plz}
 
-The following mathematical operations are built into the language. They follow these sematic base rules:
+The following mathematical operations are built into the language. They follow these semantic base rules:
 
 \begin{align*}
 &\inference[NUM]{}

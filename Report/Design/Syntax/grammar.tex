@@ -40,70 +40,6 @@
 <Block> ::= '\{' Body '\}'
  \alt '\{' '\}'
 \end{grammar}
-\subsection{Operation}
-This part of the grammar is used
-\begin{grammar}
-<Operation> ::= <Operation> <PSIXOPERATOR> <OP6>
- \alt <OP6>
-
-<OP6> ::= <OP6> <PFIVEOPERATOR> <OP5>
- \alt <OP5>
-
-<OP5> ::= <PFOUROPERATOR> <OP5>
- \alt <OP4>
-
-<OP4> ::= <OP4> <PTHREEOPERATOR> <OP3>
- \alt <OP3>
-
-<OP3> ::= <OP3> <PTWOOPERATOR> <OP2>
- \alt <OP2>
-
-<OP2> ::= <OP2> <PONEOPERATOR> <OP1>
- \alt <OP1>
-
-<OP1> ::= <Operand>
- \alt <OP1> <PZEROOPERATOR> <Operand>
- \alt '(' <Operation> ')'
-
-<Operand>	::= <Block>
- \alt <Integer>
- \alt <Real>
- \alt <Boolean>
- \alt <Identifier>
- \alt <Literals>
- \alt <Invocation>
-
-<PZEROOPERATOR> ::= '$\Twedge$' | '\#'
-
-<PONEOPERATOR> ::= '*' | '/' | '\%'
-
-<PTWOOPERATOR> ::= '+' | '-'
-
-<PTHREEOPERATOR> ::= '=' | '!=' | '$\textless$' | '$\textless$=' | '$\textgreater$' | '$\textgreater$='
-
-<PFOUROPERATOR> ::= 'NOT'
-
-<PFIVEOPERATOR> ::= 'AND' | 'NAND'
-
-<PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
-\end{grammar}
-\subsection{Literals}
-\begin{grammar}
-<Literals> ::= <String>
- \alt <ListRange>
- \alt <StructLiteral>
- \alt <Tuple>
-
-<Boolean> ::= 'true' | 'false'
-
-<Integer> ::= '-'?[1-9][0-9]* | '0'
-
-<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
-
-<String> ::= '\textquotedbl'[a-zA-Z\_0-9 !]*'\textquotedbl';
-
-<Char> ::= '\textquotesingle''[a-zA-Z\_0-9 ]|' ''\textquotesingle';
-\end{grammar}
 \subsection{Initialisations}
 \begin{grammar}
 <Identifier> ::= <Identifier>
@@ -152,8 +88,6 @@ This part of the grammar is used
 
 <ListType> ::= '\{' <Types> ',' <Integer> '\}'
 
-<PrimitiveType> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
-
 <ListRange> ::= '[' <ListParams> ']'
 
 <ListParams> ::= <ListParams> ',' <Operation>
@@ -164,7 +98,4 @@ This part of the grammar is used
 
 <Operations> ::= <Operations> ',' <Operation>
  \alt <Operation>
-
-<Accessor> ::= '.' <Identifier>
- \alt '.' '[' <Operation> ']'
 \end{grammar}
