@@ -65,7 +65,7 @@ grammar vSprogGrammar{
     BOOL             -> 'true' | 'false';
 
     /*--------- Chars ---------*/
-    STRING           -> '"'[U+20 .. U+007E]*'"';
+    STRING           -> U+22 (((U+0020 .. U+007E) - U+22) | '\\"')* U+22;
     CHAR             -> '\''[a-zA-Z_0-9 ]|' ''\'';
   }
 
