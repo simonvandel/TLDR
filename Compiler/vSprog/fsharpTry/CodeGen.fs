@@ -188,6 +188,8 @@ module CodeGen =
     let getReverseType (revType:string) : PrimitiveType =
         match revType with
         | "i64" -> SimplePrimitive Int
+        | "double" -> SimplePrimitive Real
+        | "i1" -> SimplePrimitive Bool
 
     let getReceiveID (msgGenType:string) (actorName:string) : State<int, Environment> =
         state {
@@ -404,9 +406,22 @@ module CodeGen =
           state {
               let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
               let! msgId = getReceiveID msgGenType actorName
-              let msgSize = "0"
-              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* null, i64 %s)" actorName msgId msgSize 
-              return ("","", code)
+              let msgSize = "8"
+
+              // allocate a pointer to store the msg
+              let! allocMsgReg = freshReg
+              let! (allocMsgName,allocMsgType,allocMsgCode) = genAlloca allocMsgReg msgGenType 
+
+              // store msg in pointer
+              let! (_,_,storeMsgCode) = genStore msgGenName msgGenType allocMsgName allocMsgType
+
+              // bitcast
+              let! bitcastedPtrReg = freshReg
+              let! (bitcastedPtrName, bitcastedPtrType, bitcastedPtrCode) = newRegister bitcastedPtrReg "i8*" (sprintf "bitcast %s %s to %s" allocMsgType allocMsgName "i8*")
+
+              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorName msgId bitcastedPtrName msgSize 
+              let fullstring = sprintf "%s\n%s\n%s\n%s\n%s" msgGenCode allocMsgCode storeMsgCode bitcastedPtrCode code
+              return ("","", fullstring)
           }
         | Spawn (lvalue, actorName, initMsg) -> 
           state {
@@ -440,15 +455,19 @@ module CodeGen =
                 let! msgDataLoadedReg = freshReg
                 let! (msgDataLoadedName,msgDataLoadedType,msgDataLoadedCode) = genLoad msgDataLoadedReg msgDataPtrType msgDataPtrName
 
-                // convert ptr to int
+                // bitcast void pointer to correct pointer 
                 let! msgConvIntReg = freshReg
-                let! (msgConvIntName,msgConvIntType,msgConvIntCode) = newRegister msgConvIntReg "i64" (sprintf "ptrtoint %s %s to i64" msgDataLoadedType msgDataLoadedName)
+                let! (msgConvIntName,msgConvIntType,msgConvIntCode) = newRegister msgConvIntReg allocatedMsgType (sprintf "bitcast %s %s to %s" msgDataLoadedType msgDataLoadedName allocatedMsgType)
+
+                // load converted void pointer
+                let! msgLoadedConvReg = freshReg
+                let! (msgLoadedConvName, msgLoadedConvType, msgLoadedConvCode) = genLoad msgLoadedConvReg msgConvIntType msgConvIntName
 
                 // store int in msg
-                let! (_,_,storeDataInMsgCode) = genStore msgConvIntName msgConvIntType (sprintf "%%%s" msgName) "i64*"
+                let! (_,_,storeDataInMsgCode) = genStore msgLoadedConvName msgLoadedConvType (sprintf "%%%s" msgName) allocatedMsgType
 
                 let jumpBackToStart = "br label %start"
-                let bodyString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" allocatedMsgCode loadedMsgCode msgDataPtrCode msgDataLoadedCode msgConvIntCode storeDataInMsgCode genBody jumpBackToStart
+                let bodyString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" allocatedMsgCode loadedMsgCode msgDataPtrCode msgDataLoadedCode msgConvIntCode msgLoadedConvCode storeDataInMsgCode genBody jumpBackToStart
                 let! label = genLabel labelName ("","",bodyString)
                 return ("","",label)
           }
