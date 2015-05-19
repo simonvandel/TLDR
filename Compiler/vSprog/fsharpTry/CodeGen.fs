@@ -664,7 +664,15 @@ module CodeGen =
           }
         | UnaryOperation (op, rhs) -> 
           state {
-              return ("","", "")
+              let! (rhsName, rhsType, rhsCode) = internalCodeGen rhs
+              let (code, targetType) = 
+                match op with
+                | Not -> (icmpString NotEquals rhsType rhsName "true", "i1") // rhsValue != true == NOT rhsValue
+              
+              let! tempReg = freshReg
+              let! (resName, resType, resCode) = newRegister tempReg targetType code
+              let fullString = sprintf "%s\n%s" rhsCode resCode
+              return (resName,resType, fullString)
           }
         | While (condition, body) ->
           state {

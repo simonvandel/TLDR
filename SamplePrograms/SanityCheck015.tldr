@@ -1,0 +1,12 @@
+actor main := {
+  receive arguments:args := {
+    let res:bool := 2 > 1 AND 1 > -2;
+    if(res) {
+      print("Expected");
+    }
+    else {
+      print("Not expected");
+    };
+    die;
+  };
+};
