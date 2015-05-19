@@ -406,7 +406,9 @@ module CodeGen =
           state {
               let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
               let! msgId = getReceiveID msgGenType actorName
-              let msgSize = "8"
+              let msgSize = match msgGenType with
+                            | "i64" -> "8"
+                            | "double" -> "8"
 
               // allocate a pointer to store the msg
               let! allocMsgReg = freshReg
