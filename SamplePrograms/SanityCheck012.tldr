@@ -5,7 +5,8 @@ actor main := {
     x + y;
     x * y;
     x / y;
-    x - y;
+    let minus:real := x - y;
+    printreal(minus);
     die;
   }
 }

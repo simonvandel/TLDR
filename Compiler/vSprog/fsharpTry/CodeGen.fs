@@ -424,8 +424,31 @@ module CodeGen =
               | _ ->
                 let labelName = receiveLabelName msgType
                 let! (_,_,genBody) = internalCodeGen body
+
+                // allocate pointer to receive argument
+                let! (allocatedMsgName,allocatedMsgType,allocatedMsgCode) = genAlloca msgName (genType msgType)
+
+                // load msg struct
+                let! loadedMsg = freshReg
+                let! (loadedMsgName, loadedMsgType, loadedMsgCode) = genLoad loadedMsg "%struct.actor_message_struct**" "%_msg"
+
+                // calculate address to data in msg struct
+                let! msgDataReg = freshReg
+                let! (msgDataPtrName,msgDataPtrType,msgDataPtrCode) = newRegister msgDataReg "i8**" (sprintf "getelementptr %%struct.actor_message_struct* %s, i32 0, i32 4" loadedMsgName)
+
+                // load data in msg.data
+                let! msgDataLoadedReg = freshReg
+                let! (msgDataLoadedName,msgDataLoadedType,msgDataLoadedCode) = genLoad msgDataLoadedReg msgDataPtrType msgDataPtrName
+
+                // convert ptr to int
+                let! msgConvIntReg = freshReg
+                let! (msgConvIntName,msgConvIntType,msgConvIntCode) = newRegister msgConvIntReg "i64" (sprintf "ptrtoint %s %s to i64" msgDataLoadedType msgDataLoadedName)
+
+                // store int in msg
+                let! (_,_,storeDataInMsgCode) = genStore msgConvIntName msgConvIntType (sprintf "%%%s" msgName) "i64*"
+
                 let jumpBackToStart = "br label %start"
-                let bodyString = sprintf "%s\n%s" genBody jumpBackToStart
+                let bodyString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s" allocatedMsgCode loadedMsgCode msgDataPtrCode msgDataLoadedCode msgConvIntCode storeDataInMsgCode genBody jumpBackToStart
                 let! label = genLabel labelName ("","",bodyString)
                 return ("","",label)
           }
@@ -703,6 +726,7 @@ module CodeGen =
         let filledActors = findAllActorLabels ast
         let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []; actors = filledActors})
         let globals = env.globalVars
+                      |> List.map (fun (name,type',str) -> (name, type', str.Replace("\"", "\22")))
                       |> List.map
                         (fun (varName, varType, initVal) -> 
                           sprintf "%s = constant %s c\"%s\00\"\n" varName varType initVal)

@@ -11,7 +11,8 @@ actor main := {
     }
     else{
       print("Not expected");
-    }
+    };
+    die;
   }
 }
 

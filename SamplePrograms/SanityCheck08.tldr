@@ -7,5 +7,6 @@ actor main := {
     if (x < 4) {
       print("x is less than 4");
     };
+    die;
   };
 };

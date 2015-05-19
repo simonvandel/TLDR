@@ -5,7 +5,8 @@ actor main := {
       print("x is greater than 0");
     } else {
       print("hej");
-    }
+    };
+    die;
   };
 };
 

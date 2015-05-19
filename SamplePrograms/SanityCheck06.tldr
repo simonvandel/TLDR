@@ -1,6 +1,7 @@
 actor main := {
   receive arguments:args := {
     print("can print!");
+    die;
   };
 };
 

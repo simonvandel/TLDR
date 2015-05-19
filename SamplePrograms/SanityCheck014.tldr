@@ -1,0 +1,16 @@
+actor main := {
+  receive arguments:args := {
+    let x:test := spawn test;
+    send test 2;
+    die;
+  };
+};
+
+actor test := {
+  receive msg:int := {
+    //let x:int := msg + 1;
+    //printint(msg);
+    print("a"");
+    die;
+  };
+};
