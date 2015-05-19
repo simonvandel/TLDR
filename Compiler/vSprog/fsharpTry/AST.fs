@@ -162,6 +162,7 @@ module AST =
     let getChildByIndexes (childIds:int list) (startNode:ASTNode) : ASTNode = // Access a specific child in a tree with index[n,m,..,z]
         List.fold (fun node n -> node.Children.Item n) startNode childIds
 
+    let flatten listlist = [for lst in listlist do yield! lst]
     let rec toAST (root:ASTNode) : AST =
         match root.Symbol.Value with
         | "Program" ->
@@ -261,18 +262,28 @@ module AST =
             let body = toAST (root.Children.Item 2)
             ForIn (counterName, list, body)
         | "List" ->
-            let fields = seq { for c in root.Children do
-                                match c.Symbol.Value with
-                                | ".." -> 
-                                        let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
-                                        let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
-                                        yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
-                                | "Operation" -> 
-                                        yield toAST c
-                                | err -> failwith (sprintf "This should never be reached: %A" err)
-                            }
-                            |> List.ofSeq
-            List(fields,ListPrimitive(HasNoType,List.length fields))
+            let (fields:AST list) =  [ for c in root.Children do
+                                        match c.Symbol.Value with
+                                        | ".." -> 
+                                                let start = int (getChildByIndexes [0;0;0;0] root).Symbol.Value
+                                                let end' = int (getChildByIndexes [0;1;0;0] root).Symbol.Value
+                                                yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
+                                        | "Operation" -> 
+                                                yield toAST c
+                                        | err -> failwith (sprintf "This should never be reached: %A" err)
+                                    ]
+            let mutable res = []
+            for i in fields do
+                match i with
+                | List(x::xs, _) as lst -> res <- res @ x::xs
+                | List([], _) -> [] |> ignore
+                | other -> res <- res @ [other]
+
+            let mutable typeoflst = HasNoType
+            match res.[0] with
+            | Constant (ptype, _) -> typeoflst <- ptype
+            | _ -> [] |> ignore
+            List(res,ListPrimitive(typeoflst,List.length res))
         | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
             match root.Children.Count with
             | 3 -> 

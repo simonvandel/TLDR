@@ -213,14 +213,14 @@ module ParserTest =
     let ``When syntax for list from -5 to 2 is given, expect List AST`` () =
         let list = [-5;-4;-3;-2;-1;0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[-5 .. 2]"
-        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,9)))]])
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,8)))]])
 
     (* --------------------------- Lists --------------------------- *)
     [<Test>]
     let ``When syntax for list consisting of [1,2,3], expect List AST`` () =
         let list = [1;2;3] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n))
         debugTestParseWith "[1,2,3]"
-        <| should equal (Program [Body [(List (list,ListPrimitive (HasNoType,3)))]])
+        <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,3)))]])
 
 
     (* --------------------------- Operation --------------------------- *)
