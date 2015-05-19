@@ -76,16 +76,20 @@ module Analysis =
           state
             {
               let! newRhs = buildSymbolTable rhs
+              let newLValPrimType = match newRhs with
+                                    | List(_,prim) -> prim
+                                    | _ -> lvalue.primitiveType
+              let newLValue = {lvalue with primitiveType = newLValPrimType}
               let! curScope = getScope
               let entry =
                   {
-                    symbol = lvalue
+                    symbol = newLValue
                     statementType = Init
                     scope = curScope
                     value = newRhs
                   }
               do! addEntry entry
-              return Initialisation (lvalue, newRhs)
+              return Initialisation (newLValue, newRhs)
             }
       
         | Actor (name, body) -> 

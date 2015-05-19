@@ -113,7 +113,7 @@ module AST =
                     |> List.ofSeq
                     |> ArrowPrimitive
                 
-            //| "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0), 0) // TODO: lige nu bliver det bare gemt at listen er 0 lang
+            | "ListType" -> ListPrimitive (toPrimitiveType (input.Children.Item 0), 0) // TODO: lige nu bliver det bare gemt at listen er 0 lang
             | "PrimitiveType" -> toPrimitiveType (input.Children.Item 0)
             | "Identifier" -> UserType (input.Children.Item 0).Symbol.Value
             | str -> UserType str

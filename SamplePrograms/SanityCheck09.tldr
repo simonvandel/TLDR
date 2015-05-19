@@ -1,9 +1,10 @@
 actor main := {
   receive arguments:args := {
 
-    let xs:[int] := [0 .. 10];
+    let xs:[int] := [3 .. 100];
     for x in xs {
       printint(x);
-    }
+    };
+    die;
   }
 }

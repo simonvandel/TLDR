@@ -63,7 +63,7 @@ module ParserTest =
     [<Test>]
     let ``When initialisation syntax is given with constant binding, expect initialisation AST with constant value``() =
         let ident = SimpleIdentifier "x"
-        let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char, 1);}
+        let lValue = {identity = ident; isMutable = false; primitiveType = ListPrimitive (SimplePrimitive Primitive.Char, 0);}
         let rhs = Constant (ListPrimitive (SimplePrimitive Primitive.Char, 1),PrimitiveValue.List [PrimitiveValue.Char 'T'])
         debugTestParseWith "let x:[char] := \"T\""
         <| should equal (Program [Body [(Initialisation (lValue, rhs))]])

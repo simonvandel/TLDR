@@ -3,6 +3,7 @@
 open vSprog.AST
 open vSprog.CommonTypes
 open AnalysisUtils
+open System
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
@@ -443,6 +444,13 @@ module CodeGen =
               // generate the code for the list
               let! (listName, listType, listCode) = internalCodeGen list'
 
+              // allocate pointer to list
+              let! listPtrReg = freshReg
+              let! (listPtrName, listPtrType, listPtrCode) = genAlloca listPtrReg listType
+
+              // store list in newly allocated pointer to list
+              let! (_,_,listPtrStoreCode) = genStore listName listType listPtrName listPtrType
+
               // generate the code for the while conditional. while (counter != length of list)
               let! conditionCode = internalCodeGen ( BinOperation (
                                                        Identifier (SimpleIdentifier idxCounterRegName, SimplePrimitive Int), 
@@ -469,7 +477,7 @@ module CodeGen =
 
               // calculate a pointer to the element to assign to elem
               let! curElemReg = freshReg
-              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (sprintf "%s*" (genType elemType)) (sprintf "getelementptr %s %s, i64 0, %s %s" listType listName loadedCounterType loadedCounterName)
+              let! (curElemName, curElemType, curElemCode) = newRegister curElemReg (sprintf "%s*" (genType elemType)) (sprintf "getelementptr %s %s, i64 0, %s %s" listPtrType listPtrName loadedCounterType loadedCounterName)
 
               // load the pointer to the value
               let! loadedElemReg = freshReg
@@ -478,7 +486,7 @@ module CodeGen =
               let! (_,_,elemReass) = genStore loadedElemName loadedElemType allocatedTempElemAssignName allocatedTempElemAssignType
 
               let! (_,_,bodyCode) = internalCodeGen (Body [ body; reassCounter])
-              let fullBodyCode = sprintf "%s\n%s\n%s\n%s\n%s" loadedCounterCode curElemCode loadedElemCode elemReass bodyCode
+              let fullBodyCode = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" loadedCounterCode listPtrCode listPtrStoreCode curElemCode loadedElemCode elemReass bodyCode
 
               let! (_,_,whileCode) = genWhile conditionCode ("","",fullBodyCode)
               let fullString = sprintf "%s\n%s\n%s\n%s\n" idxCounterCode listCode allocatedTempElemAssignCode whileCode
@@ -498,8 +506,12 @@ module CodeGen =
               // store the list content in the pointer allocated earlier
               let! (_,_,storeListCode) = genStore name targetType ptrToListName ptrToListType
 
-              let fullString = sprintf "%s\n%s" ptrToListCode storeListCode
-              return (ptrToListName , ptrToListType, fullString)
+              //load the value of the pointer
+              let! loadedListReg = freshReg
+              let! (loadedListName, loadedListType, loadedListCode) = genLoad loadedListReg ptrToListType ptrToListName
+
+              let fullString = sprintf "%s\n%s\n%s" ptrToListCode storeListCode loadedListCode
+              return (loadedListName , loadedListType, fullString)
           }
         | BinOperation (lhs, op, rhs) -> 
           state {
@@ -577,17 +589,34 @@ module CodeGen =
                 let! (strName, strType, strCode) as str = declareStringConstant "%d\n"
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
-                let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, i32 %s)" loadedStringType loadedStringName intToPrint
-                let fullString = sprintf "%s\n%s" loadCode putsCode
-                return ("","", fullString)
+                let (test, _) = Double.TryParse(intToPrint)
+                if (test) then // just print out the int
+                  let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, i64 %s)" loadedStringType loadedStringName intToPrint
+                  let fullString = sprintf "%s\n%s" loadCode putsCode
+                  return ("","", fullString)
+                else // load the int and print it
+                  let! loadReg = freshReg
+                  let! (loadedInt, _, loadedIntCode) = genLoad loadReg "i64*" (sprintf "%%%s" intToPrint)
+                  let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, i64 %s)" loadedStringType loadedStringName loadedInt
+                  let fullString = sprintf "%s\n%s\n%s" loadedIntCode loadCode putsCode
+                  return ("","", fullString)
+                
               | "printreal" ->
                 let realToPrint = parameters.Head
                 let! (strName, strType, strCode) as str = declareStringConstant "%lf\n"
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
-                let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, double %s)" loadedStringType loadedStringName realToPrint
-                let fullString = sprintf "%s\n%s" loadCode putsCode
-                return ("","", fullString)
+                let (test, _) = Double.TryParse(realToPrint)
+                if (test) then // just print out the real
+                  let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, double %s)" loadedStringType loadedStringName realToPrint
+                  let fullString = sprintf "%s\n%s" loadCode putsCode
+                  return ("","", fullString)
+                else // load the int and print it
+                  let! loadReg = freshReg
+                  let! (loadedInt, _, loadedIntCode) = genLoad loadReg "double*" (sprintf "%%%s" realToPrint)
+                  let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, double %s)" loadedStringType loadedStringName loadedInt
+                  let fullString = sprintf "%s\n%s\n%s" loadedIntCode loadCode putsCode
+                  return ("","", fullString)
           }
         | UnaryOperation (op, rhs) -> 
           state {
