@@ -131,12 +131,13 @@ grammar vSprogGrammar{
                       | OP2^;
     OP2              -> OP2 PONEOPERATOR OP1
                       | OP1^;
-    OP1              -> Operand^
-                      | OP1 PZEROOPERATOR Operand
+    OP1              -> OP1 PZEROOPERATOR OP0
+                      | OP0^;
+    OP0              -> Operand^
                       | LPARENS! Operation^ RPARENS!;
     Operand	     -> Block^
                       | Integer^
-            	      | Real^
+            	        | Real^
                       | Boolean^
                       | Identifier^
                       | Literals^
