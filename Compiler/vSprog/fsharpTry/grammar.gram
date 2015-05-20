@@ -90,7 +90,7 @@ grammar vSprogGrammar{
                       | While^
                       | ForIn^;
 
-    Spawn            -> (LET | VAR) Identifier COLON! Types ASSIGN! SPAWN! Identifier Expression?;
+    Spawn            -> (LET | VAR) SymDecl ASSIGN! SPAWN! Identifier Expression?;
 
     Send	         -> SEND! Identifier Expression;
 
@@ -98,7 +98,7 @@ grammar vSprogGrammar{
     Return           -> RETURN! Expression?;
 
     /*--------- Receive ---------*/
-    Receive          -> RECEIVE! Identifier COLON! Types ASSIGN! Block;
+    Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
     Die              -> DIE;
 
@@ -177,8 +177,12 @@ grammar vSprogGrammar{
 
     Initialisation   -> (LET | VAR) TypeDecl ASSIGN! Expression;
 
+	TypeDecl         -> FuncDecl
+	                  | SymDecl;
+
     Ids              -> Identifier (COMMA! Identifier)*;
-    TypeDecl         -> Identifier (LPARENS! Ids? RPARENS!)? COLON! Types;
+    FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
+	SymDecl          -> Identifier COLON! Types;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
