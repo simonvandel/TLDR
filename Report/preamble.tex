@@ -81,7 +81,45 @@
   tabsize=2,
 }
 
-\lstset{language=[Sharp]C}
+\lstdefinelanguage{fsharp}%
+{morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, % 
+and, for, while, true, false, in, do, begin, end, fun, function, return, yield, try, %
+mutable, if, then, else, cloud, async, static, use, abstract, interface, inherit, finally },
+  otherkeywords={ let!, return!, do!, yield!, use!, var, from, select, where, order, by },
+  keywordstyle=\color{bluekeywords},
+  sensitive=true,
+  basicstyle=\ttfamily,
+	breaklines=true,
+  xleftmargin=\parindent,
+  aboveskip=\bigskipamount,
+	tabsize=4,
+  morecomment=[l][\color{dkgreen}]{///},
+  morecomment=[l][\color{dkgreen}]{//},
+  morecomment=[s][\color{dkgreen}]{{(*}{*)}},
+  morestring=[b]",
+  showstringspaces=false,
+  literate={`}{\`}1,
+  stringstyle=\color{redstrings},
+}
+
+\lstdefinestyle{fsharp}{
+  language=fsharp,
+  aboveskip=2mm,
+  belowskip=2mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+}
+
+%\lstset{language=[Sharp]C}
 %Use the typeface Source Code Pro for listings
 \usepackage[nottdefault]{sourcecodepro}
 \lstset{basicstyle=\fontfamily{SourceCodePro-TLF}\footnotesize,breaklines=true,commentstyle=}

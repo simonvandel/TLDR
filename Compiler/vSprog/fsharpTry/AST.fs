@@ -38,7 +38,7 @@ module AST =
         | Initialisation of LValue * AST // lvalue, rhs
         | Constant of PrimitiveType * PrimitiveValue // type, value
         | Actor of string * AST // name, body FIXME: Add more fields?
-        | Struct of string * TypeDeclaration list // name, fields FIXME: Add more fields?
+        | Struct of string * TypeDeclaration list // name, fields
         | If of AST * AST // conditional, body
         | IfElse of AST * AST * AST // conditional, trueBody, falseBody
         | Send of string * AST // actorName, msg
