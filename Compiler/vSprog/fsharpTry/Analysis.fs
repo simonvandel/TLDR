@@ -46,9 +46,12 @@ module Analysis =
             {
               let! curScope = getScope
               let! curState = getState
+              let idToCheck = match varId with
+                              | SimpleIdentifier _ as simpleId -> simpleId
+                              | IdentifierAccessor xs -> SimpleIdentifier xs.Head
               let sDecl = 
                 curState.symbolList |>
-                  List.tryFind (fun e -> e.symbol.identity = varId && e.statementType = Init && isInScope  e.scope curScope)
+                  List.tryFind (fun e -> e.symbol.identity = idToCheck && e.statementType = Init && isInScope  e.scope curScope)
               let! newRhs = buildSymbolTable rhs
               let entry = 
                   {
