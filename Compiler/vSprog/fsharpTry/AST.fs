@@ -271,7 +271,7 @@ module AST =
                                                     yield List ([start..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
                                                 else
                                                     yield List ([start..(-1)..end'] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, end' - start + 1))
-                                        | "Operation" -> 
+                                        | "Expression" -> 
                                                 yield toAST c
                                         | err -> failwith (sprintf "This should never be reached: %A" err)
                                     ]
@@ -287,7 +287,7 @@ module AST =
             | Constant (ptype, _) -> typeoflst <- ptype
             | _ -> [] |> ignore
             List(res,ListPrimitive(typeoflst,List.length res))
-        | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Operation") ->
+        | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Expression") ->
             match root.Children.Count with
             | 3 -> 
                 let operation = toAST (root.Children.Item 0)
@@ -369,10 +369,11 @@ module AST =
 
             let (chars:PrimitiveValue list) = (root.Children.Item 0).Symbol.Value
                                               |> fun str -> 
+                                                // remove quotation marks from string
                                                 str.Substring (1, (str.Length - 2))
                                               |> Seq.map PrimitiveValue.Char
                                               |> List.ofSeq
-            Constant (ListPrimitive (SimplePrimitive Primitive.Char, (root.Children.Item 0).Symbol.Value.Length), PrimitiveValue.List chars)
+            Constant (ListPrimitive (SimplePrimitive Primitive.Char, chars.Length), PrimitiveValue.List chars)
         | "Return" ->
             if root.Children.Count = 1 then
               let expr = toAST (root.Children.Item 0)

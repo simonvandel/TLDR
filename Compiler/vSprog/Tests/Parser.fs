@@ -154,7 +154,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for send is given, expect Send AST`` () =
         debugTestParseWith "send actorHandle msg"
-        <| should equal (Program [Body [(Send ("actorHandle", Identifier(SimpleIdentifier "msg",SimplePrimitive Int)))]])
+        <| should equal (Program [Body [(Send ("actorHandle", Identifier(SimpleIdentifier "msg",HasNoType)))]])
 
     (* --------------------------- Spawn --------------------------- *)
 
@@ -324,7 +324,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for function invocation with 0 parameters, expect Function invocation AST`` () =
         debugTestParseWith "f()"
-        <| should equal (Program [Body [ Invocation ("f",[], HasNoType) ]])
+        <| should equal (Program [Body [ Invocation ("f",[], ArrowPrimitive []) ]])
 
 
     [<Test>]
@@ -370,7 +370,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for string literal with spaces, expect string literal AST`` () =
         debugTestParseWith "\"T ub\""
-        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char, 3), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char ' '; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
+        <| should equal (Program [Body [ Constant (ListPrimitive (SimplePrimitive Primitive.Char, 4), PrimitiveValue.List [PrimitiveValue.Char 'T'; PrimitiveValue.Char ' '; PrimitiveValue.Char 'u'; PrimitiveValue.Char 'b'])  ]])
 
 
     (* --------------------------- NOT --------------------------- *)
