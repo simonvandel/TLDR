@@ -885,6 +885,7 @@ module CodeGen =
             findAllReceives body
             |> calcReceiveJumps
             |> fun xs -> Map.ofList [(name,xs)]
+        | _ -> Map.empty
   
 
     let codeGen (ast:AST) : string =
