@@ -119,7 +119,7 @@ grammar vSprogGrammar{
                       | BLOCKSTART! BLOCKEND!;
 
     /*--------- Expression ---------*/
-    Expression        -> Expression PSIXOPERATOR OP6
+    Expression       -> Expression PSIXOPERATOR OP6
                       | OP6;
     OP6              -> OP6 PFIVEOPERATOR OP5
                       | OP5^;
@@ -135,9 +135,9 @@ grammar vSprogGrammar{
                       | OP0^;
     OP0              -> Operand^
                       | LPARENS! Expression^ RPARENS!;
-    Operand	     -> Block^
+    Operand	         -> Block^
                       | Integer^
-            	        | Real^
+            	      | Real^
                       | Boolean^
                       | Identifier^
                       | Literals^
@@ -167,8 +167,6 @@ grammar vSprogGrammar{
     Declaration      -> Struct^
                       | Actor^
                       | Initialisation^
-                      | Assignment^
-                      | Function^
                       | Reassignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
@@ -177,10 +175,7 @@ grammar vSprogGrammar{
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
-    Assignment       -> (LET | VAR) Identifier ASSIGN! Expression;
-    Initialisation   -> (LET | VAR) TypeDecl ASSIGN! Expression;
-
-    Function         -> LET! Identifier LPARENS! Ids? RPARENS! COLON! Types ASSIGN! Expression;
+    Initialisation   -> (LET | VAR) Identifier (LPARENS! Ids? RPARENS!)? COLON! Types ASSIGN! Expression;
 
     Ids              -> Identifier (COMMA! Identifier)*;
     TypeDecl         -> Identifier COLON! Types;

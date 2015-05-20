@@ -180,7 +180,7 @@ $\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}$
 
 Due to the semantics of all \enquote{AOP} operators these can not evaluate to a real if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real. The operators cannot take a combination of real and iteger. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer all errors as early as possible, preferably on compile-time, see \cref{typesys}. With no implicit type casts the programmer is always aware when type casts are performed and will therefore not be as prone to make runtime type errors.
 
-The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $$
+The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $\sqrt[2]{2} = $
 
 This is formally
 
