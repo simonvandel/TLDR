@@ -170,15 +170,12 @@ grammar vSprogGrammar{
                       | Reassignment^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    TypeDecls        -> TypeDecl SEMICOLON! TypeDecls
-                      | TypeDecl^ SEMICOLON!;
+    TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
+                      | (FuncDecl | SymDecl)^ SEMICOLON!;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
-    Initialisation   -> (LET | VAR) TypeDecl ASSIGN! Expression;
-
-	TypeDecl         -> FuncDecl
-	                  | SymDecl;
+    Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
     Ids              -> Identifier (COMMA! Identifier)*;
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
@@ -201,7 +198,7 @@ grammar vSprogGrammar{
     /*--------- List ---------*/
     List             -> STARTLIST! Lists (COMMA! Lists)* ENDLIST!;
     Lists            -> Expression TO^ Expression
-					            | Expression^;
+					  | Expression^;
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
