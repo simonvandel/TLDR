@@ -720,12 +720,12 @@ module CodeGen =
                   | GreaterThan, "i64" | GreaterThanOrEq, "i64" | LessThan, "i64" | LessThanOrEq, "i64" | Equals, "i64" | Equals, "i1" | NotEquals, "i64" | NotEquals, "i1" -> 
                     let! tempReg = freshReg
                     let code = icmpString op sLhsType sLhsName sRhsName
-                    let! res = newRegister tempReg sLhsType code
+                    let! res = newRegister tempReg "i1" code
                     return res
                   | GreaterThan, "double" | GreaterThanOrEq, "double" | LessThan, "double" | LessThanOrEq, "double" | Equals, "double" | NotEquals, "double" ->
                     let! tempReg = freshReg
                     let code = fcmpString op sLhsType sLhsName sRhsName
-                    let! res = newRegister tempReg sLhsType code
+                    let! res = newRegister tempReg "i1" code
                     return res
                   | _,_ as err -> return failwith (sprintf "%A not matched" err)
                   }

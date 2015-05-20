@@ -1,3 +1,4 @@
+%mainfile: ../master.tex
 \chapter{Language}\label{part:design}
 
 This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language.
@@ -8,13 +9,23 @@ After this three sections will cover the specifics of the language. The seperati
 
 The different sections will contain explainations, which will mostly consist of an informal explaination of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
 
-The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where it is not deemed that EBNF will provide further clarification. For the semantics, the formal notation will follow the example set by \kanote{indsæt reference til semanticbogen} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and we did not wish to mix the use of semantics.
+The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where it is not deemed that EBNF will provide further clarification. 
 
-\section{General Language Properties and Formal Models}
+To describe the semantics, the formal notation will follow the example set by \kanote{indsæt reference til semanticbogen} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and we did not wish to mix the use of semantics.
+
+The formal rules have three parts as illustrated in \cref{SS-semantics}
+
+\begin{figure}[H]
+\begin{align*}
+&\inference[$RULE-NAME$]{[PREMISE]}
+                        {[CONCLUSSION]}
+                        {,[SIDE-CONDITION]}
+\end{align*}
+\caption{A desription of formal small-step semantics}
+\label{SS-semantics}
+\end{figure}
+
 \input{Design/generalLanguageProp.tex}
-\jenote{- General typesystem properties
-- The semantic model and general constructs}
-
 \input{Design/Expressions/expressions.tex}
 \input{Design/Statements/statements.tex}
 \input{Design/Actors/actors.tex}

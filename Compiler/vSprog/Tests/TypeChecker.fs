@@ -35,10 +35,9 @@ module TypeCheckerTest =
         |> should equal (Success HasNoType)
 
     [<Test>]
-    let ``Initialisation where lhs is real and rhs is int, expects to NOT typecheck``() = 
+    let ``Initialisation where lhs is real and rhs is int, expects to have HasNoType``() = 
         typecheckWith "let x:real := 2;" checkTypes
-        |> expectFailure
-        |> run
+        |> should equal (Success HasNoType)
 
 
     (* -------------------- If statement ---------------- *)

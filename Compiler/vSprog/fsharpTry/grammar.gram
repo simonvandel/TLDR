@@ -73,13 +73,13 @@ grammar vSprogGrammar{
     /*--------- Program ---------*/
     Program          -> Body;
 
-    Body             -> Body^ SEMICOLON! Expression
+    Body             -> Body^ SEMICOLON! Statement
                       | Body^ SEMICOLON!
-                      | Expression;
+                      | Statement;
 
-    /*--------- Expression ---------*/
-    Expression       -> Declaration^
-                      | Operation^
+    /*--------- Statement ---------*/
+    Statement       -> Declaration^
+                      | Expression^
                       | Receive^
                       | Spawn^
                       | Return^
@@ -90,12 +90,12 @@ grammar vSprogGrammar{
                       | While^
                       | ForIn^;
 
-    Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Operation?;
+    Spawn            -> (LET | VAR) TypeDecl ASSIGN! SPAWN! Identifier Expression?;
 
-    Send	           -> SEND! Identifier Operation;
+    Send	           -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
-    Return           -> RETURN! Operation?;
+    Return           -> RETURN! Expression?;
 
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! TypeDecl ASSIGN! Block;
@@ -106,20 +106,20 @@ grammar vSprogGrammar{
     ForIn            -> FOR! Ids IN! (List| Identifier ) Block;
 
     /*--------- While ------*/
-    While            -> WHILE! Operation Block;
+    While            -> WHILE! Expression Block;
 
     /*--------- If ---------*/
-    If               -> IF! Operation Block;
+    If               -> IF! Expression Block;
 
     /*--------- IfElse ---------*/
-    IfElse           -> IF! Operation Block ELSE! Block;
+    IfElse           -> IF! Expression Block ELSE! Block;
 
     /*--------- Block ---------*/
     Block            -> BLOCKSTART! Body BLOCKEND!
                       | BLOCKSTART! BLOCKEND!;
 
-    /*--------- Operation ---------*/
-    Operation        -> Operation PSIXOPERATOR OP6
+    /*--------- Expression ---------*/
+    Expression        -> Expression PSIXOPERATOR OP6
                       | OP6;
     OP6              -> OP6 PFIVEOPERATOR OP5
                       | OP5^;
@@ -134,7 +134,7 @@ grammar vSprogGrammar{
     OP1              -> OP1 PZEROOPERATOR OP0
                       | OP0^;
     OP0              -> Operand^
-                      | LPARENS! Operation^ RPARENS!;
+                      | LPARENS! Expression^ RPARENS!;
     Operand	     -> Block^
                       | Integer^
             	        | Real^
@@ -159,9 +159,9 @@ grammar vSprogGrammar{
     String           -> STRING;
 
     StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
-    Field            -> Identifier ASSIGN! Operation; 
+    Field            -> Identifier ASSIGN! Expression; 
 
-    Invocation       -> Identifier LPARENS! (Operation (COMMA! Operation)*)? RPARENS!;
+    Invocation       -> Identifier LPARENS! (Expression (COMMA! Expression)*)? RPARENS!;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -177,16 +177,16 @@ grammar vSprogGrammar{
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
-    Assignment       -> (LET | VAR) Identifier ASSIGN! Operation;
-    Initialisation   -> (LET | VAR) TypeDecl ASSIGN! Operation;
+    Assignment       -> (LET | VAR) Identifier ASSIGN! Expression;
+    Initialisation   -> (LET | VAR) TypeDecl ASSIGN! Expression;
 
-    Function         -> LET! Identifier LPARENS! Ids? RPARENS! COLON! Types ASSIGN! Operation;
+    Function         -> LET! Identifier LPARENS! Ids? RPARENS! COLON! Types ASSIGN! Expression;
 
     Ids              -> Identifier (COMMA! Identifier)*;
     TypeDecl         -> Identifier COLON! Types;
 
     /*--------- Reassignment ---------*/
-    Reassignment     -> Identifier ASSIGN! Operation;
+    Reassignment     -> Identifier ASSIGN! Expression;
 
     /*-------- Type ---------*/
     Types            -> Type (LEADSTO! Type)*;
@@ -201,14 +201,14 @@ grammar vSprogGrammar{
 
     /*--------- List ---------*/
     List             -> STARTLIST! Lists (COMMA! Lists)* ENDLIST!;
-    Lists            -> Operation TO^ Operation
-					            | Operation^;
+    Lists            -> Expression TO^ Expression
+					            | Expression^;
                                  
     /*--------- Tuple ---------*/
-    Tuple            -> LPARENS! Operation (COMMA! Operation)+ RPARENS!;
+    Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
 
     /*--------- Accessor ---------*/
     Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST! Operation ENDLIST!;
+                      | DOT! STARTLIST! Expression ENDLIST!;
   }
 }

@@ -1,8 +1,9 @@
+%mainfile: ../master.tex
 \section{Code Generation}
 
 This section describes the code generation phase of the compiler developed in this project. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
 
-The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. 
+The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. This generated LLVM IR is then compiled into native code by using the clang compiler.
 
 \subsection{Data Sizes}
 
@@ -10,7 +11,7 @@ Even though the language design of TLDR requires integers and reals to be of arb
 
 \subsection{Actors}
 
-Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}.
+Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}, hence the project group not having any knowledge about the implementation of library.
 
 Every actor in TLDR is generated into a LLVM function with the following behaviour outlined in pseudo code.
 
@@ -68,7 +69,7 @@ actor main := {
 
 The code generation generates the following LLVM IR.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = llvm, breaklines]
 declare double @llvm.pow.f64(double, double)
 declare double @llvm.powi.f64(double, i64)
 declare i32 @puts(i8*)
@@ -136,7 +137,7 @@ ret i8* null
 
 After running a LLVM IR optimiser on the above LLVM IR, the result is as following.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = llvm, breaklines]
 @g1 = constant [4 x i8] c"%d\0A\00"
 ; Function Attrs: nounwind
 declare i32 @printf(i8* nocapture readonly, ...) #0
@@ -163,11 +164,11 @@ attributes #0 = { nounwind }
 attributes #1 = { noreturn }
 \end{lstlisting}
 
-The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removed all unnecessary operations. While this seems simple, no extra work had to be done on our side, and significant optimizations were achieved.
+The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removed all unnecessary operations. \chnote{expand on this, what is unnecessary} While this seems simple, no extra work had to be done on our side, and significant optimizations were achieved.
 
 Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = nasm, breaklines]
 	.section	__TEXT,__text,regular,pure_instructions
 	.macosx_version_min 10, 10
 	.globl	_main

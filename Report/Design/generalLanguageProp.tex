@@ -1,3 +1,8 @@
+\section{General Language Properties and Formal Models}
+
+\jenote{- General typesystem properties
+- The semantic model and general constructs}
+
 \subsection{Type System}\label{typesys}
 
 This section first defines what a type system is and presents two categories of type systems. The two type system categories are described and its properties are outlined.
@@ -39,9 +44,6 @@ Type inference removes the need to explicitly annotate programs with type annota
 
 \subsubsection{Type System Choice for TLDR}
 
-This section describes some design choices about the type system used for TLDR.
-
-\subsubsection{Strictness \& Statical Typing}
 The type system for TLDR is \emph{strong} statically typed. No implicit type conversions are made in the type system. This choice of static typing was made based on the domain in which TLDR is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures.
 
 \subsubsection{Primitive Data Types}
@@ -87,7 +89,6 @@ The char primitive can have values of the ASCII standard. It is written literall
 
 \paragraph{Unit}
 \label{sec:unit}
-\kanote{overvej om vi kan forklare unit type uden syntax}
 
 The unit primitive can have only one value: itself. The use of the primitive is to signal emptiness.
 
@@ -145,33 +146,36 @@ So solve this ambiguity, one can introduce a new symbol to indicate return types
   printint(a): int -> unit
 \end{verbatim}
 
+\subsubsection{Formal Type Rules}
+
+\begin{align*}
+\intertext{The following sets will be used throughout this section}
+&\Tbaop = \left\{ {<, <=, >, >=} \right\}
+\\
+&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The following primitive types are defined}
+&\Tpt ::= \Tint \mid \Treal \mid \Tbool \mid \Tchar
+\\
+\intertext{A tuple is a finite set of ordered elements of arbitrary type $T$}
+&\text{TUPLE} ::= T_1 \times T_2 \times \ldots \times T_n
+\\            
+&\text{B} ::=  \left[ \Tt \right] \mid \Tpt \mid \text{TUPLE} \mid \text{struct<TUPLE>}
+\\            
+\intertext{All types defined in the type system is defined in $T$.}
+&\Tt ::= \text{B} \mid x : B \rightarrow ok
+\end{align*}
+
 \subsection{Scoping}
 
 As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
 %impossible - but why?
 For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
 
-\subsection{Semantics}\label{semantics}
-In this section, will present and discuss some considerations made regarding the syntax and semantics of this language. The aim of this section is to provide insight into the constructs of the language, why they have taken their form.
 
-The primitive data types and operators will be described in \cref{subsec:primitives,subsec:primitiveOps}. After this, functions and their declarations are explained in \cref{subsec:functions}. Next, comments will be briefly mentioned in \cref{subsec:comments}, followed by assignment, or binding, of values to symbols in \cref{subsec:value_assignment}. After this, more complex syntactical constructs, such as actors, structures, loops and selective control structures, will be explained in \cref{subsec:actors,subsec:structs,subsec:forLoopStatements,subsec:ifStatements}.
+\subsection{Semantics}
 
-This section describes the semantics of the constructs in TLDR both formally and informally. It is split into pieces each describing one construct both formally and informally.
-
-\subsubsection{Formal semantics in TLDR}
-To describe the semantics formally it was decided to use small-step semantics. The alternative was big-step semantics but since the language depends heavily on non-determinism and parallelism and this is not possible to represent in big-step semantics, small-step semantic was a better choice.
-
-The formal rules have three parts as illustrated in \cref{SS-semantics}
-
-\begin{figure}[H]
-\begin{align*}
-&\inference[$RULE-NAME$]{[PREMISE]}
-												{[CONCLUSSION]}
-												{,[SIDE-CONDITION]}
-\end{align*}
-\caption{A desription of formal small-step semantics}
-\label{SS-semantics}
-\end{figure}
+\kanote{jeeeeens - halp here plz}
 
 \subsubsection{Actor-Environment model}
 The formal semantics will also use an actor-environment model.

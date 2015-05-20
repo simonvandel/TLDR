@@ -41,71 +41,27 @@ First we look at the mathematical operators that can combine expressions.
 
 <PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
-The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero being the closest. This precedence can be overwritten by  All operators have left associativity. An example can be seen in \cref{precidenceExamples} this shows how the parse tree
+The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
+\begin{center}
+$\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
+\end{center}
 
-\begin{figure}[htbp]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{Design/Expressions/precidenceExamples.png}
 \caption{The parse tree for \textnormal{\enquote{$\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$}}} %[XOR [AND [NOT [Bool a]][Bool b]] [< [Integer 2] [+ [* [Integer 3] [+ [Integer 2] [Integer 2]]] [Integer 4]]]]
-\label{precidenceExamples}
+\label{precedenceExamples}
 \end{figure}
 
-\begin{grammar}
-<Operand>	::= <Block>
- \alt <Integer>
- \alt <Real>
- \alt <Boolean>
- \alt <Identifier>
- \alt <Literals>
- \alt <Invocation>
+We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a lower precedence. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
+\begin{center}
+$((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
+\end{center}
+In \cref{precedenceExamples} we can see that the \enquote{XOR} operator is placed highest in the tree meaning that it has the lowest precedence. We can also see from the tree that this operator takes the result from \enquote{AND} and \enquote{<} as arguments where \enquote{<} again takes the result from \enquote{+} and the integer 2 as arguments and so on. We can see that the arguments changes type as we traverse the tree. We now look at the semantics and what impact this has on the formal type rules.
 
-<Identifier> ::= 'me'
- \alt <Identifier>
- \alt <Identifier> <Accessor>
-											
-<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
+\subsection{Arithmetic Expressions}
 
-<Accessor> ::= '.' <Identifier>
- \alt '.' '[' <Operation> ']'
-
-<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
-
-<Literals> ::= <String>
- \alt <ListRange>
- \alt <StructLiteral>
- \alt <Tuple>
-
-<Boolean> ::= 'true' | 'false'
-
-<Integer> ::= '-'?[1-9][0-9]* | '0'
-
-<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
-
-<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
-
-<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
-\end{grammar}
-
-For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
-
-\kanote{moar text needed plz}
-
-The following mathematical operations are built into the language. They follow these semantic base rules:
-
-\begin{align*}
-&\inference[NUM]{}
-                  {e \vdash n \Rightarrow_A v}
-                  {, \mathcal{N}(n) = v}
-\\\\
-&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
-                  {\Braket{p,e} \Rightarrow_A v}
-                  {,e(p) = \Braket{S,\epsilon}}
-\\\\
-&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
-                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
-                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\\\\
-\end{align*}
+First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluates to a number, either a real or integer. The operators that creates the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. 
 
 \begin{itemize}
 \item "+" is a binary operator that adds two numbers of the same type
@@ -216,7 +172,123 @@ The following mathematical operations are built into the language. They follow t
 \end{align*}
 \end{itemize}
 
-\sinote{Vi skal nok forklare hvilke nummer typer der kan plusses sammen osv.}
+For simplicity we create the following set since all type rules for these are the same.
+
+\begin{center}
+$\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}$
+\end{center}
+
+Due to the semantics of all \enquote{AOP} operators these can not evaluate to a real if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real. The operators cannot take a combination of real and iteger. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer all errors as early as possible, preferably on compile-time, see \cref{typesys}. With no implicit type casts the programmer is always aware when type casts are performed and will therefore not be as prone to make runtime type errors.
+
+The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $$
+
+This is formally
+
+\begin{align*}
+&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tint},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Treal},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+\end{align*}
+
+\subsection{Boolean Expressions}
+\begin{align*}
+&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 = e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
+                       \Tenv e_2 : \Tbool}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
+                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
+\end{align*}
+
+\begin{grammar}
+<Operand>	::= <Block>
+ \alt <Integer>
+ \alt <Real>
+ \alt <Boolean>
+ \alt <Identifier>
+ \alt <Literals>
+ \alt <Invocation>
+
+<Identifier> ::= 'me'
+ \alt <Identifier>
+ \alt <Identifier> <Accessor>
+											
+<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
+
+<Accessor> ::= '.' <Identifier>
+ \alt '.' '[' <Operation> ']'
+
+<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+
+<Literals> ::= <String>
+ \alt <ListRange>
+ \alt <StructLiteral>
+ \alt <Tuple>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+
+<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
+
+<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
+\end{grammar}
+
+The following mathematical operations are built into the language. They follow these semantic base rules:
+
+\begin{align*}
+&\inference[NUM]{}
+                  {e \vdash n \Rightarrow_A v}
+                  {, \mathcal{N}(n) = v}
+\\\\
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
+                  {\Braket{p,e} \Rightarrow_A v}
+                  {,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
+                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+\end{align*}
+
 
 \paragraph{Logical Operations}
 \label{sec:logicOps}
@@ -390,81 +462,7 @@ The following operations only operate on bool types.
 
 \end{itemize}
 
-\subsubsection{Type Rules}
 
-\begin{align*}
-\intertext{The following sets will be used throughout this section}
-&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
-\\
-&\Tbaop = \left\{ {<, <=, >, >=} \right\}
-\\
-&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The following primitive types are defined}
-&\Tpt ::= \Tint \mid \Treal \mid \Tbool \mid \Tchar
-\\
-\intertext{A tuple is a finite set of ordered elements of arbitrary type $T$}
-&\text{TUPLE} ::= T_1 \times T_2 \times \ldots \times T_n
-\\            
-&\text{B} ::=  \left[ \Tt \right] \mid \Tpt \mid \text{TUPLE} \mid \text{struct<TUPLE>}
-\\            
-\intertext{All types defined in the type system is defined in $T$.}
-&\Tt ::= \text{B} \mid x : B \rightarrow ok
-\end{align*}
-
-\paragraph{Arithmetic Expressions}
-\begin{align*}
-&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tint},  \text{op} \in \Taop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Treal},  \text{op} \in \Taop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-\end{align*}
-\sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
-
-\paragraph{Boolean Expressions}
-\begin{align*}
-&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 = e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
-                       \Tenv e_2 : \Tbool}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
-                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
-\end{align*}
 \paragraph{Loop Expressions}
 \begin{align*}
 \intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tt$}
@@ -477,27 +475,8 @@ The following operations only operate on bool types.
                  {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt
 \end{align*}
 
-
-\paragraph{Actor Expressions}
+\paragraph{Comparison of structs}
 \begin{align*}
-\intertext{}
-&\inference[SPAWN]{}
-                 {\Tenv \mathbin{\text{spawn}} \; \Tt: \Tt}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[SEND]{\Tenv m : \Tt & \Tenv a: \Tt'}
-                 {\Tenv \mathbin{\text{send}} \; \mathbin{\text{m}} \; \mathbin{\text{a}} : ok }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[RECEIVE]{\Tenv m : \Tt}
-                 {\Tenv \mathbin{\text{recieve}} \; \mathbin{\text{m}} :\Tt : ok }
-\end{align*}
-
-\paragraph{Comparison}
-\begin{align*}
-\intertext{}
-&\inference[ACTOR]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
-                 {\Tenv e_1 = e_2: \Tbool}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{}
 &\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
@@ -538,4 +517,3 @@ The following operations only operate on bool types.
 &\inference[INVOKE]{\Tenv n: \Tt}
                  {\Tenv n: \Tt}
 \end{align*}
-
