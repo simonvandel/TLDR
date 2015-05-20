@@ -4,6 +4,10 @@ This section describes the code generation phase of the compiler developed in th
 
 The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. 
 
+\subsection{Data Sizes}
+
+Even though the language design of TLDR requires integers and reals to be of arbitrary precision as seen in \cref{lang_design} \sinote{indsæt reference til afsnit om arbritrary precision}, the code generation phase generates integers and reals of 64-bit size. However, one way of adding arbitrary precision arithmetic to the compiler would be to use a library such as GMP \cite{gmp}.
+
 \subsection{Actors}
 
 Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}.
