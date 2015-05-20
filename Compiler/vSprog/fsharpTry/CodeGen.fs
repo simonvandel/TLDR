@@ -111,6 +111,16 @@ module CodeGen =
                  | NotEquals -> "ne"
         sprintf "icmp %s %s %s, %s" op sLhsType sLhsName sRhsName
 
+    let fcmpString binOp sLhsType sLhsName sRhsName : string =
+        let op = match binOp with
+                 | LessThan -> "olt"
+                 | LessThanOrEq -> "ole"
+                 | GreaterThan -> "ogt"
+                 | GreaterThanOrEq -> "oge"
+                 | Equals -> "oeq"
+                 | NotEquals -> "one"
+        sprintf "fcmp %s %s %s, %s" op sLhsType sLhsName sRhsName
+
     let declareStringConstant (str:string) : State<Value, Environment> =
         state {
             let! st = getState
@@ -356,7 +366,7 @@ module CodeGen =
                 let type' = genType ptype
                 return (name, type', "")
               | PrimitiveValue.Real n -> 
-                let name = string n
+                let name = sprintf "%f" n
                 let type' = genType ptype
                 return (name, type', "")
           }
@@ -561,39 +571,106 @@ module CodeGen =
           state {
               let! (sLhsName, sLhsType, lhsCode) = internalCodeGen lhs
               let! (sRhsName, sRhsType, rhsCode) = internalCodeGen rhs
-              let! tempReg = freshReg
-              let (code, targetType) = 
+
+              let! (codeName, codeType, codeCode) = state {
                   match op, sLhsType with
                   | Multiply, "i64" -> 
-                    sprintf "mul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
-                  | Multiply, "double" -> 
-                    sprintf "fmul %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "mul %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
+                  | Multiply, "double" ->
+                    let! tempReg = freshReg
+                    let code = sprintf "fmul %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Modulo, "i64" -> 
-                    sprintf "srem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "srem %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Modulo, "double" -> 
-                    sprintf "frem %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "frem %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
+                  | Power, "double" ->
+                    let! tempReg = freshReg
+                    let code = sprintf "call double @llvm.pow.f64( %s %s, %s %s)" sLhsType sLhsName sRhsType sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
+                  | Power, "i64" ->
+                    // cast the lhs int to double
+                    let! convToDoubleReg = freshReg
+                    let convToDoubleStr = sprintf "sitofp %s %s to double" sLhsType sLhsName
+                    let! (convToDoubleName, convToDoubleType, convToDoubleCode) = newRegister convToDoubleReg "double" convToDoubleStr
+
+                    // call the pow function
+                    let! tempReg = freshReg
+                    let code = sprintf "call double @llvm.powi.f64( double %s, %s %s)" convToDoubleReg sRhsType sRhsName
+                    let! (resName, resType, resCode) = newRegister tempReg "double" code
+
+                    // convert the result of pow to int
+                    let! convResToIntReg = freshReg
+                    let convResToIntStr = sprintf "fptoui %s %s to i64" resType resName
+                    let! (convResToIntName, convResToIntType, convResToIntCode) = newRegister convResToIntReg "i64" convResToIntStr
+
+                    let fullCode = sprintf "%s\n%s\n%s" convToDoubleCode resCode convResToIntCode
+                    return (convResToIntName, convResToIntType, fullCode)
                   | Plus, "i64" ->
-                    sprintf "add %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "add %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Plus, "double" ->
-                    sprintf "fadd %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "fadd %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Minus, "i64" ->
-                    sprintf "sub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "sub %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Minus, "double" ->
-                    sprintf "fsub %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "fsub %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Divide, "i64" ->
-                    sprintf "sdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "sdiv %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Divide, "double" ->
-                    sprintf "fdiv %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "fdiv %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | Or, "i1" -> 
-                    sprintf "or %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "or %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | And, "i1" -> 
-                    sprintf "and %s %s, %s" sLhsType sLhsName sRhsName, sLhsType
+                    let! tempReg = freshReg
+                    let code = sprintf "and %s %s, %s" sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
                   | GreaterThan, "i64" | GreaterThanOrEq, "i64" | LessThan, "i64" | LessThanOrEq, "i64" | Equals, "i64" | Equals, "i1" | NotEquals, "i64" | NotEquals, "i1" -> 
-                    (icmpString op sLhsType sLhsName sRhsName, "i1")
-                  | _,_ as err -> failwith (sprintf "%A not matched" err)
-              let! (resName, resType, resCode) = newRegister tempReg targetType code
-              let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode resCode
-              return (resName, resType, fullString)
+                    let! tempReg = freshReg
+                    let code = icmpString op sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
+                  | GreaterThan, "double" | GreaterThanOrEq, "double" | LessThan, "double" | LessThanOrEq, "double" | Equals, "double" | NotEquals, "double" ->
+                    let! tempReg = freshReg
+                    let code = fcmpString op sLhsType sLhsName sRhsName
+                    let! res = newRegister tempReg sLhsType code
+                    return res
+                  | _,_ as err -> return failwith (sprintf "%A not matched" err)
+                  }
+              let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode codeCode
+              return (codeName, codeType, fullString)
           }
 
           
@@ -760,7 +837,9 @@ module CodeGen =
                         (fun (varName, varType, initVal) -> 
                           sprintf "%s = constant %s c\"%s\00\"\n" varName varType initVal)
                       |> String.concat ""
-        let externalFunctions = String.concat "" ["declare i32 @puts(i8*)\n"
+        let externalFunctions = String.concat "" ["declare double @llvm.pow.f64(double, double)\n"
+                                                 ;"declare double @llvm.powi.f64(double, i64)\n"
+                                                 ;"declare i32 @puts(i8*)\n"
                                                  ;"declare i32 @printf(i8*, ...)\n"
                                                  ;"declare void @actor_init(...)\n"
                                                  ;"declare void @actor_wait_finish(...)\n"
