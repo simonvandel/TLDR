@@ -1,9 +1,7 @@
 \subsubsection{Functions}
 \label{subsec:functions}
 
-For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, such as \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
-
-\kanote{moar text needed plz}
+For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, such as \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to delimit ourselves from type inherence it must be declared. This is done in the same style as any type declaration, with a kolon. Functions in TLDR are treated like values, being reassignable and potentially having a function take another function as a parameter or give it as a return value.
 
 Functions are declared syntactically as follows.
 
@@ -17,11 +15,18 @@ A concrete example:
   let plus(x, y) : Int -> Int -> Int := {x + y};
 \end{verbatim}
 
-The syntax for invoking a function is the following.
+and for invoking a function with another function as parameter:
 
 \begin{verbatim}
-  <funcName>( <parameter1>, <parameterN> )
+  let bar(x): Int -> Int := { x + 1 };
+  var foo(x,y) : Int -> ( Int -> Int ) -> Int := { y(x) + 1 };
+
+  let x:int := 1;
+
+  foo(x,bar); // would return 3, since (x + 1) + 1 = 3;
 \end{verbatim}
+
+There was an initial push towards allowing signature declarations to occur completely seperated from the function declarations, in order to make it even further resemble mathematical notation. This was not included, since the long term goal is type inherency, by which this signature would become obsolete. Furthermore, the arguement of moving the signature away to resemble mathematics, becomes invalid since any move that actually achieves this, would greatly decrease readability, and if the signature is kept close to the function, it might as well have been tied directly to the function. In the case of the function having an intuitive signature, the inclusion would not decrease readability by any significance, since it is not intertwined with the function declaration.
 
 The semantics for declaring a function is as follows:
 
