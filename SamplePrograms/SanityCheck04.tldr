@@ -1,11 +1,12 @@
 actor main := {
   receive arguments:args := {
-
-    if( 3#{5^3} != 5.0){
-      print("Not expected");
+    let res:real := 3 # (5 ^ 3);
+    printreal(res);
+    if( res = 5.0){
+      print("Expected");
     }
     else{
-      print("Expected");
+      print("Not expected");
     };
     die;
   }

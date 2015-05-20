@@ -108,7 +108,7 @@ module TypeChecker =
                     Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]
             | Success lhsRes , Root, Success rhsRes ->
                 match lhsRes, rhsRes with
-                | (SimplePrimitive Int | SimplePrimitive Real), (SimplePrimitive Int | SimplePrimitive Real) ->
+                | (SimplePrimitive Int | SimplePrimitive Real), (SimplePrimitive Int | SimplePrimitive Real) when lhsRes = rhsRes ->
                     Success (SimplePrimitive Real)
                 | _ -> 
                     Failure [sprintf "Mismatch in immediate constituents types of binary operation %A, found %A and %A" op lhsRes rhsRes]

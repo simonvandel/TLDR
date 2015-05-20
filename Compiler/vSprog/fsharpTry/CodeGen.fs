@@ -594,6 +594,40 @@ module CodeGen =
                     let code = sprintf "frem %s %s, %s" sLhsType sLhsName sRhsName
                     let! res = newRegister tempReg sLhsType code
                     return res
+                  | Root, "i64" ->
+                    // cast the lhs of root from int to double
+                    let! convToDoubleLhsReg = freshReg
+                    let convToDoubleLhsStr = sprintf "sitofp %s %s to double" sLhsType sLhsName
+                    let! (convToDoubleLhsName, convToDoubleLhsType, convToDoubleLhsCode) = newRegister convToDoubleLhsReg "double" convToDoubleLhsStr
+
+                    // Divide 1.0 by the exponent converted to double
+                    let! divideExponentReg = freshReg
+                    let! (divideExponentName, divideExponentType, divideExponentCode) = newRegister divideExponentReg "double" (sprintf "fdiv double 1.0, %s" convToDoubleLhsName)
+
+                    // cast the rhs int to double
+                    let! convToDoubleRhsReg = freshReg
+                    let convToDoubleRhsStr = sprintf "sitofp %s %s to double" sRhsType sRhsName
+                    let! (convToDoubleRhsName, convToDoubleRhsType, convToDoubleRhsCode) = newRegister convToDoubleRhsReg "double" convToDoubleRhsStr
+
+                    // do lhs ^ dividedExponent
+                    let! tempReg = freshReg
+                    let code = sprintf "call double @llvm.pow.f64( %s %s, %s %s)" convToDoubleRhsType convToDoubleRhsName divideExponentType divideExponentName
+                    let! (resName,resType, resCode) = newRegister tempReg convToDoubleRhsType code
+
+                    let fullCode = sprintf "%s\n%s\n%s\n%s" convToDoubleLhsCode divideExponentCode convToDoubleRhsCode resCode
+                    return (resName, resType, fullCode)
+                  | Root, "double" ->
+                    // Divide 1.0 by the exponent
+                    let! divideExponentReg = freshReg
+                    let! (divideExponentName, divideExponentType, divideExponentCode) = newRegister divideExponentReg "double" (sprintf "fdiv double 1.0, %s" sLhsName)
+
+                    // do lhs ^ dividedExponent
+                    let! tempReg = freshReg
+                    let code = sprintf "call double @llvm.pow.f64( %s %s, %s %s)" sRhsType sRhsName divideExponentType divideExponentName
+                    let! (resName,resType, resCode) = newRegister tempReg sLhsType code
+
+                    let fullCode = sprintf "%s\n%s" divideExponentCode resCode
+                    return (resName, resType, fullCode)
                   | Power, "double" ->
                     let! tempReg = freshReg
                     let code = sprintf "call double @llvm.pow.f64( %s %s, %s %s)" sLhsType sLhsName sRhsType sRhsName
@@ -724,7 +758,7 @@ module CodeGen =
                 
               | "printreal" ->
                 let realToPrint = parameters.Head
-                let! (strName, strType, strCode) as str = declareStringConstant "%lf\n"
+                let! (strName, strType, strCode) as str = declareStringConstant "%.20lf\n"
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
                 let (test, _) = Double.TryParse(realToPrint)
