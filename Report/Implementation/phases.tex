@@ -1,0 +1,23 @@
+\section{Phases}
+
+The compiler described in this report, is divided into three grand phases: parser, analysis, code generation. This section aims to give an outline of how the different phases interact. Each of these phases will be described in greater detail in the following sections.
+
+If a phase fails, the compilation stops and reports the errors to the user. If a phase succeeds, the next phase is started.
+
+\subsection{Parser}
+
+Upon compilation start of a program written in TLDR, the source program is read from a file. Then, this source file is parsed by the parser phase as described in \cref{sec:lexing/parsing}. The parser constructs an abstract syntax tree containing the language constructions used in the TLDR source program, by forming tokens based on the grammatical rules described in \cref{part:design}. 
+
+The parsing phase is now done, and the abstract syntax tree can be processed by the analysis phase.
+
+\subsection{Analysis}
+
+The analysis phase checks for a number of categories of errors that are defined as being invalid in TLDR. These errors can not be checked syntactically in the grammar, and therefore must be checked in the analysis phase. The analysis phase uses the abstract syntax tree given from the parser to do these checks. This includes modifying the abstract syntax tree to include additional information, or by simply traversing the tree for information.
+
+Once the analysis phase accepts the TLDR program, the code generation phase is run.
+
+\subsection{Code Generation}
+
+The code generation phase transforms the abstract syntax tree, produced by the parser and later checked for invalid operations, into LLVM IR. The phase traverses the abstract syntax tree, and for each language construction, constructs LLVM IR code that reflects the semantics of the language as described in \cref{part:design}.
+
+Once the code generation has succeeded, the clang compiler is invoked to transform the LLVM IR code into an executable file.
