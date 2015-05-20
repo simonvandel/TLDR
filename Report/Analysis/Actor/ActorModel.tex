@@ -121,7 +121,7 @@ n & \textit{Wait for message} & \textbf{Read n\textsuperscript{th} element in co
 
 As can be seen in \cref{table:exActorPhantom}, using actors to model this system ensures that there are no phantom reads. This is ensured, by the fact that actors never share data; therefore, an arbitrary actor can never corrupt, or delete, the data of another.
 
-\subsubsection{Supervisors}
+\subsubsection{Supervisors} \label{actSupervisors}
 Most implementations of the actor model implement a form of a supervisor-worker relationship. This means that every actor has a supervisor, typically their parent, to whom they report failures. The supervisor then has to deal with the failure, by for example restarting the failed actor.
 Supervisors in the actor model works very well with the \enquote{fail fast}-principle of programming, meaning, in the actor model, that an actor will not try to continue operation or correct an error when encountering a failure. An actor that has failed will, as soon as the failure is detected, report the failure to its supervisor and halt operation, moving the responsibility of handling the failure up the supervision tree.
 
