@@ -1,3 +1,4 @@
+%mainfile: ../master.tex
 \section{Code Generation}
 
 This section describes the code generation phase of the compiler developed in this project. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
@@ -10,7 +11,7 @@ Even though the language design of TLDR requires integers and reals to be of arb
 
 \subsection{Actors}
 
-Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}.
+Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}, hence the project group not having any knowledge about the implementation of library.
 
 Every actor in TLDR is generated into a LLVM function with the following behaviour outlined in pseudo code.
 
