@@ -2,7 +2,7 @@
 
 This section describes the code generation phase of the compiler developed in this project. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
 
-The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. 
+The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. This generated LLVM IR is then compiled into native code by using the clang compiler.
 
 \subsection{Data Sizes}
 
