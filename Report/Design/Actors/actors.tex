@@ -113,6 +113,14 @@ The semantics of \enquote{spawn} is as follows:
 &                       {, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
 \end{align*}
 
+Type rules for \enquote{spawn}:
+
+\begin{align*}
+\intertext{}
+&\inference[SPAWN]{}
+                 {\Tenv \mathbin{\text{spawn}} \; \Tt: \Tt}
+\end{align*}
+
 After an actor has been spawned, it will be possible to send messages to it. This is done with the \enquote{send}-keyword. This can be done as follows:
 
 \label{actorfuncSend}
@@ -129,6 +137,14 @@ The semantics of \enquote{send} is as follows:
 \begin{align*}
 &\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
                        {\Braket{\Tsend \Tact \Tm ; S,\Ta,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
+\end{align*}
+
+and the type rules for \enquote{send}:
+
+\begin{align*}
+\intertext{}
+&\inference[SEND]{\Tenv m : \Tt & \Tenv a: \Tt'}
+                 {\Tenv \mathbin{\text{send}} \; \mathbin{\text{m}} \; \mathbin{\text{a}} : ok }
 \end{align*}
 
 When an actor is sent a message, it must act according to a defined a way of handling that type of message. This definition is declared with the \enquote{receive}-keyword, which creates a method within the actor that is called when the actor receives a corresponding message. The syntax can be seen below:
@@ -153,6 +169,26 @@ The semantics of \enquote{receive} is as follows:
                            {\Braket{\Treceive r:t := \{S\};,e} \Rightarrow_S \Braket{e[\_t \mapsto \Braket{S,r}]}}
 \end{align*}
 
+The type rules for \enquote{receive} are:
+
+\begin{align*}
+\intertext{}
+&\inference[RECEIVE]{\Tenv m : \Tt}
+                 {\Tenv \mathbin{\text{recieve}} \; \mathbin{\text{m}} :\Tt : ok }
+\end{align*}
+
 When an actor is no longer needed, it is possible to discard it with the \enquote{die}-keyword. In other languages, using the actor model, \enquote{die}, or similar functionality, is usually called by the parent of the actor, that is, the actor that spawned the actor. In TLDR however, \enquote{die} can only be called by the actor itself. This is done in order to keep the principle of only interacting with actors through messages, which is a simpler way of handling actors in TLDR, since the language does not have a built-in supervisor functionality as described in \cref{actSupervisors}. 
 
 When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost.
+
+\subsubsection{Comparison}
+
+When comparing actors, they are considered equal if they are reference equals.
+
+Here are the type rules for comparison:
+
+\begin{align*}
+\intertext{}
+&\inference[ACTOR]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv e_1 = e_2: \Tbool}                 
+\end{align*}

@@ -473,27 +473,8 @@ The following operations only operate on bool types.
                  {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt
 \end{align*}
 
-
-\paragraph{Actor Expressions}
+\paragraph{Comparison of structs}
 \begin{align*}
-\intertext{}
-&\inference[SPAWN]{}
-                 {\Tenv \mathbin{\text{spawn}} \; \Tt: \Tt}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[SEND]{\Tenv m : \Tt & \Tenv a: \Tt'}
-                 {\Tenv \mathbin{\text{send}} \; \mathbin{\text{m}} \; \mathbin{\text{a}} : ok }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[RECEIVE]{\Tenv m : \Tt}
-                 {\Tenv \mathbin{\text{recieve}} \; \mathbin{\text{m}} :\Tt : ok }
-\end{align*}
-
-\paragraph{Comparison}
-\begin{align*}
-\intertext{}
-&\inference[ACTOR]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
-                 {\Tenv e_1 = e_2: \Tbool}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{}
 &\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
