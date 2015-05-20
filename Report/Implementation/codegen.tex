@@ -69,7 +69,7 @@ actor main := {
 
 The code generation generates the following LLVM IR.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = llvm, breaklines]
 declare double @llvm.pow.f64(double, double)
 declare double @llvm.powi.f64(double, i64)
 declare i32 @puts(i8*)
@@ -137,7 +137,7 @@ ret i8* null
 
 After running a LLVM IR optimiser on the above LLVM IR, the result is as following.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = llvm, breaklines]
 @g1 = constant [4 x i8] c"%d\0A\00"
 ; Function Attrs: nounwind
 declare i32 @printf(i8* nocapture readonly, ...) #0
@@ -168,7 +168,7 @@ The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 
 
 Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 
-\begin{lstlisting}[breaklines]
+\begin{lstlisting}[style = nasm, breaklines]
 	.section	__TEXT,__text,regular,pure_instructions
 	.macosx_version_min 10, 10
 	.globl	_main
