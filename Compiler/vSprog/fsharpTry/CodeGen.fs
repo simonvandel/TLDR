@@ -7,11 +7,15 @@ open System
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
+    type CTypeDeclaration = (string * int * PrimitiveType)
+    type CStruct = (string * CTypeDeclaration list)
+
     type Environment = {
         regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition
         genString:string // the code generated
         registers:Map<string,string> // key is regName, value is regType
         globalVars:(string * string * string) list // name, type, initialValue
+        structs:CStruct list //structs
         actors:Map<string, (int * string) list> // key is actorName, value is receiveLabels
         }
 
@@ -184,7 +188,7 @@ module CodeGen =
         | k -> [k]
 
     let receiveLabelName (types:PrimitiveType) : string =
-        (sprintf "rec_%A" types).Replace(' ', '_').Replace('"', '_')
+        (sprintf "rec_%A" types).Replace(' ', '_').Replace('"', '_')//"
 
     let rec calcReceiveJumps (asts:AST list) : (int * string) list =
         Seq.zip (Seq.unfold (fun x -> Some(x, x + 1)) 102) asts // start from 102. must be above 100. 101 is reserved for die message
@@ -234,6 +238,23 @@ module CodeGen =
                 let! xs1 = collectAll p xs
                 return x1 :: xs1
               }
+
+    let declareStruct (str:CStruct) : State<Value, Environment> = 
+        state {
+            let! st = getState
+            let structs = st.structs
+            let newEnv = {st with structs = str :: st.structs}
+            return ("", "", "")
+        }
+
+    let toCstruct (name:string) (types:TypeDeclaration list) : CStruct = 
+        let mutable i = 0;
+        let mutable list:CTypeDeclaration list = []
+        for (x,y) in types do 
+            let z = (x, i, y)
+            list <- list |> List.append [z]
+            i <- i + 1
+        (name, list)
 
     let rec internalCodeGen (ast:AST) : State<Value, Environment> =
         match ast with
@@ -351,8 +372,11 @@ module CodeGen =
           }
 
         | Struct (name, fields) ->
-          state {
-              return ("","", "")
+          state {           
+              //let st = getState
+              //let x = toCstruct name fields
+              //let! (_,_,_) = declareStruct x
+              return ("", "", "");                  
           }
         | Constant (ptype, value)-> 
           state {
@@ -726,6 +750,7 @@ module CodeGen =
           }
         | StructLiteral fieldNamesAndVals -> 
           state {
+
               return ("","", "")
           }
         | Invocation (functionName, parameters, functionType) -> 
@@ -864,7 +889,7 @@ module CodeGen =
 
     let codeGen (ast:AST) : string =
         let filledActors = findAllActorLabels ast
-        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; globalVars = []; actors = filledActors})
+        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors})
         let globals = env.globalVars
                       |> List.map (fun (name,type',str) -> (name, type', str.Replace("\"", "\22")))
                       |> List.map

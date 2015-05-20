@@ -5,4 +5,7 @@ actor main := {
   };
 };
 
-// prints "can print!"
+struct iterationStep := {
+  step:int;
+};
+
