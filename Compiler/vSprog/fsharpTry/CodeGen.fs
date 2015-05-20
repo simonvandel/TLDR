@@ -924,20 +924,20 @@ module CodeGen =
                                                  ;"declare %struct.actor_message_struct* @actor_receive(...)\n"]
           
         let main = """define i32 @main(i32 %argc, i8** %argv) {
-  %1 = alloca i32
-  %2 = alloca i32
-  %3 = alloca i8**
-  store i32 0, i32* %1
-  store i32 %argc, i32* %2
-  store i8** %argv, i8*** %3
-  call void (...)* @actor_init()
-  %4 = call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_main to i8* (i8*)*), i8* null)
-  call void (...)* @actor_wait_finish()
-  call void (...)* @actor_destroy_all()
-  call void @exit(i32 0)
-  unreachable
-  %6 = load i32* %1
-  ret i32 %6
-}"""
+                      %1 = alloca i32
+                      %2 = alloca i32
+                      %3 = alloca i8**
+                      store i32 0, i32* %1
+                      store i32 %argc, i32* %2
+                      store i8** %argv, i8*** %3
+                      call void (...)* @actor_init()
+                      %4 = call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_main to i8* (i8*)*), i8* null)
+                      call void (...)* @actor_wait_finish()
+                      call void (...)* @actor_destroy_all()
+                      call void @exit(i32 0)
+                      unreachable
+                      %6 = load i32* %1
+                      ret i32 %6
+                    }"""
                                                                        
         externalFunctions + structs +  globals + main + fullString
