@@ -7,7 +7,7 @@ open System
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
-    type CTypeDeclaration = (string * int * PrimitiveType)
+    type CTypeDeclaration = (string * int * PrimitiveType * string) // name, index, type, llvm type
     type CStruct = (string * CTypeDeclaration list)
 
     type Environment = {
@@ -244,6 +244,7 @@ module CodeGen =
             let! st = getState
             let structs = st.structs
             let newEnv = {st with structs = str :: st.structs}
+            do! putState newEnv
             return ("", "", "")
         }
 
@@ -251,7 +252,7 @@ module CodeGen =
         let mutable i = 0;
         let mutable list:CTypeDeclaration list = []
         for (x,y) in types do 
-            let z = (x, i, y)
+            let z = (x, i, y, genType(y))
             list <- list |> List.append [z]
             i <- i + 1
         (name, list)
@@ -373,9 +374,10 @@ module CodeGen =
 
         | Struct (name, fields) ->
           state {           
-              //let st = getState
-              //let x = toCstruct name fields
-              //let! (_,_,_) = declareStruct x
+              let st = getState
+              let x = toCstruct name fields
+              let! (_,_,_) = declareStruct x
+             
               return ("", "", "");                  
           }
         | Constant (ptype, value)-> 
@@ -886,11 +888,21 @@ module CodeGen =
             |> calcReceiveJumps
             |> fun xs -> Map.ofList [(name,xs)]
         | _ -> Map.empty
+
+    let structToStr (stru:CStruct) : string =
+        let (name, types) = stru
+        let structStr = sprintf "%%struct.%s = type { " name
+        let typeStr = types |> List.map (fun (name, index, t, llvmtype) -> llvmtype) |> String.concat ", "
+        structStr + typeStr + " }"
   
+    let StructsToStr (structs:CStruct list) : string = 
+        structs |> List.map(fun x -> structToStr(x)) |> String.concat "\n"
+
 
     let codeGen (ast:AST) : string =
         let filledActors = findAllActorLabels ast
         let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors})
+        let structs = (env.structs |> StructsToStr) + "\n"
         let globals = env.globalVars
                       |> List.map (fun (name,type',str) -> (name, type', str.Replace("\"", "\22")))
                       |> List.map
@@ -928,4 +940,4 @@ module CodeGen =
   ret i32 %6
 }"""
                                                                        
-        externalFunctions + globals + main + fullString
+        externalFunctions + structs +  globals + main + fullString
