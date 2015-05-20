@@ -864,7 +864,6 @@ module CodeGen =
   call void (...)* @actor_destroy_all()
   call void @exit(i32 0)
   unreachable
-                                                  ; No predecessors!
   %6 = load i32* %1
   ret i32 %6
 }"""

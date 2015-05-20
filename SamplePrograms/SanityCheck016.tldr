@@ -1,0 +1,12 @@
+actor main := {
+  receive arguments:args := {
+    let res:int := 100 ^ 2;
+    if(res = 10000) {
+      print("Expected");
+    }
+    else {
+      print("Not expected");
+    };
+    die;
+  };
+};

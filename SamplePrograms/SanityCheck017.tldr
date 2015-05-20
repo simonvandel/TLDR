@@ -1,0 +1,7 @@
+actor main := {
+  receive arguments:args := {
+    let res:int := (2 + 3) * 4 / 2;
+    printint(res);
+    die;
+  };
+};

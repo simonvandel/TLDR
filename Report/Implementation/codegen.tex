@@ -14,7 +14,7 @@ Actors are implemented using the C library \enquote{libactor} \cite{libactor}. U
 
 Every actor in TLDR is generated into a LLVM function with the following behaviour outlined in pseudo code.
 
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 active = true
 msg = null
 <initialisation of fields in actor>
@@ -40,7 +40,7 @@ goto start
 recv_kill:
 active = false
 goto start
-\end{verbatim}
+\end{lstlisting}
 
 A actor simply checks for new messages, and performs the corresponding message, based on the type of the received message, by jumping to a label. This while loops ends when the actor receives a kill message.
 
@@ -56,21 +56,23 @@ Even though speed has not been a primary goal of this implementation of TLDR, ma
 
 As an example, let's try and compile the following TLDR code to LLVM IR.
 
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
 actor main := {
   receive arguments:args := {
-    let x:int := 5;
-    let y:int := 5;
-    let res:int := x + y;
+    let res:int := (2 + 3) * 4 / 2;
+    printint(res);
     die;
   };
 };
-\end{verbatim}
+\end{lstlisting}
 
 The code generation generates the following LLVM IR.
 
-\begin{verbatim}
+\begin{lstlisting}[breaklines]
+declare double @llvm.pow.f64(double, double)
+declare double @llvm.powi.f64(double, i64)
 declare i32 @puts(i8*)
+declare i32 @printf(i8*, ...)
 declare void @actor_init(...)
 declare void @actor_wait_finish(...)
 declare void @actor_destroy_all(...)
@@ -80,7 +82,8 @@ declare void @exit(i32)
 declare i64 @spawn_actor(i8* (i8*)*, i8*)
 declare void @actor_send_msg(i64, i64, i8*, i64)
 declare %struct.actor_message_struct* @actor_receive(...)
-@g1 = constant [22 x i8] c"x still bigger than 1\00"
+@g1 = constant [4 x i8] c"%d
+\00"
 define i32 @main(i32 %argc, i8** %argv) {
   %1 = alloca i32
   %2 = alloca i32
@@ -101,28 +104,21 @@ define i8* @_actor_main() {
 %_active = alloca i1
 store i1 true, i1* %_active
 %_msg = alloca %struct.actor_message_struct*
-%x = alloca i32
-store i32 10, i32* %x
-br label %switch_2
-switch_2: 
- %_1 = load i32* %x
-%_2 = icmp sgt i32 %_1, 1
-br i1 %_2, label %body_2, label %cont_2
-body_2: 
-%_3 = getelementptr [22 x i8]* @g1, i64 0, i64 0
-call i32 @puts(i8* %_3)
-%_4 = load i32* %x
-%_5 = sub i32 %_4, 1
-store i32 %_5, i32* %x
- br label %switch_2
-cont_2:
+%res = alloca i64
+%_1 = add i64 2, 3
+%_2 = mul i64 %_1, 4
+%_3 = sdiv i64 %_2, 2
+store i64 %_3, i64* %res
+%_5 = load i64* %res
+%_4 = getelementptr [4 x i8]* @g1, i64 0, i64 0
+call i32 (i8*, ...)* @printf(i8* %_4, i64 %_5)
 store i1 false, i1* %_active
 br label %start
 br label %start
 start:
 br label %switch_6
 switch_6: 
- %_6 = load i1* %_active
+%_6 = load i1* %_active
 br i1 %_6, label %body_6, label %cont_6
 body_6: 
 %_7 = call %struct.actor_message_struct* (...)* @actor_receive()
@@ -131,18 +127,19 @@ store %struct.actor_message_struct* %_7, %struct.actor_message_struct** %_msg
 %_9 = getelementptr %struct.actor_message_struct* %_8, i32 0, i32 3
 %_10 = load i64* %_9
 switch i64 %_10, label %start [  ]
- br label %switch_6
+br label %switch_6
 cont_6:
 ret i8* null
 ret i8* null
 }
-\end{verbatim}
+\end{lstlisting}
 
 After running a LLVM IR optimiser on the above LLVM IR, the result is as following.
 
-\begin{verbatim}
-@g1 = constant [22 x i8] c"x still bigger than 1\00"
-declare i32 @puts(i8* nocapture readonly) #0
+\begin{lstlisting}[breaklines]
+@g1 = constant [4 x i8] c"%d\0A\00"
+; Function Attrs: nounwind
+declare i32 @printf(i8* nocapture readonly, ...) #0
 declare void @actor_init(...)
 declare void @actor_wait_finish(...)
 declare void @actor_destroy_all(...)
@@ -158,23 +155,15 @@ define i32 @main(i32 %argc, i8** nocapture readnone %argv) #1 {
   unreachable
 }
 define noalias i8* @_actor_main() {
-body_2:
-  %0 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %1 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %2 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %3 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %4 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %5 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %6 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %7 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
-  %8 = tail call i32 @puts(i8* getelementptr inbounds ([22 x i8]* @g1, i64 0, i64 0))
+cont_6.critedge:
+  %0 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @g1, i64 0, i64 0), i64 10)
   ret i8* null
 }
 attributes #0 = { nounwind }
 attributes #1 = { noreturn }
 \end{verbatim}
 
-The optimiser (run with \enquote{opt -O3}) inlined the body of the while loop, and removed all unnecessary operations. While this seems simple, no extra work had to be done on our side. 
+The optimiser (run with \enquote{opt -O3 -S}) inlined the body of the while loop, and removed all unnecessary operations. While this seems simple, no extra work had to be done on our side. 
 
 Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 
@@ -210,41 +199,21 @@ Ltmp2:
 	.globl	__actor_main
 	.align	4, 0x90
 __actor_main:                           ## @_actor_main
-## BB#0:                                ## %body_2
+## BB#0:                                ## %switch_6
 	pushq	%rbp
 	movq	%rsp, %rbp
-	pushq	%rbx
-	pushq	%rax
-	leaq	_g1(%rip), %rbx
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
-	movq	%rbx, %rdi
-	callq	_puts
+	leaq	_g1(%rip), %rdi
+	movl	$10, %esi
 	xorl	%eax, %eax
-	addq	$8, %rsp
-	popq	%rbx
+	callq	_printf
+	xorl	%eax, %eax
 	popq	%rbp
 	retq
 
 	.section	__TEXT,__const
 	.globl	_g1                     ## @g1
-	.align	4
 _g1:
-	.asciz	"x still bigger than 1"
+	.asciz	"%d\n"
 
 .subsections_via_symbols
-\end{verbatim}
+\end{lstlisting}
