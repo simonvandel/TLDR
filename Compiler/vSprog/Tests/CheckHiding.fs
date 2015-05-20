@@ -80,3 +80,13 @@ module CheckHidingTest =
         checkHiding symTable
         |> expectFailure
         |> run
+
+    [<Test>]
+    let ``CheckHiding. hiding in 3 layer block, expect Failure``() = 
+        let program = """let x:int := 2;
+                         { let x:int := 1;
+                         { let x:int := 4;}}"""
+        let symTable = genSymTable program
+        checkHiding symTable
+        |> expectFailure
+        |> run
