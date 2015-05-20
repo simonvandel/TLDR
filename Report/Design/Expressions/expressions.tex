@@ -41,14 +41,88 @@ First we look at the mathematical operators that can combine expressions.
 
 <PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
-The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero being the closest. This precedence can be overwritten by  All operators have left associativity. An example can be seen in \cref{precidenceExamples} this shows how the parse tree
+The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
+\begin{center}
+$\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
+\end{center}
 
-\begin{figure}[htbp]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{Design/Expressions/precidenceExamples.png}
 \caption{The parse tree for \textnormal{\enquote{$\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$}}} %[XOR [AND [NOT [Bool a]][Bool b]] [< [Integer 2] [+ [* [Integer 3] [+ [Integer 2] [Integer 2]]] [Integer 4]]]]
-\label{precidenceExamples}
+\label{precedenceExamples}
 \end{figure}
+
+We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a lower precedence. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrates the implicit precedence in the expression it would look like this:
+\begin{center}
+$((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
+\end{center}
+In \cref{precedenceExamples} we can see that the \enquote{XOR} operator is placed highest in the tree meaning that it has the lowest precedence. We can also see from the tree that this operator takes the result from \enquote{AND} and \enquote{<} as arguments where \enquote{<} again takes the result from \enquote{+} and the integer 2 as arguments and so on. We can see that the arguments changes type as we traverse the tree. We now look at the formal type rules.
+
+\subsection{Arithmetic Expressions}
+
+First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluates to a number, either a real or integer. The operators that creates the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. For simplicity we create the following set since all type rules for these are the same.
+
+\begin{center}
+$\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}$
+\end{center}
+
+All operators on the set AOP can take either two integers and evaluate to an integer or two reals and return a real. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer  This is formally
+
+\begin{align*}
+&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tint},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Treal},  \text{op} \in \Taop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
+\end{align*}
+
+
+\sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
+
+\subsection{Boolean Expressions}
+\begin{align*}
+&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 = e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
+                       \Tenv e_2 : \Tt}
+                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
+                       \Tenv e_2 : \Tbool}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\\\\
+&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
+                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
+\end{align*}
 
 \begin{grammar}
 <Operand>	::= <Block>
@@ -85,10 +159,6 @@ The precedence of the operators are created already in the grammar. Here the par
 
 <Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
 \end{grammar}
-
-For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, denoted as, \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to 
-
-\kanote{moar text needed plz}
 
 The following mathematical operations are built into the language. They follow these semantic base rules:
 
@@ -390,81 +460,7 @@ The following operations only operate on bool types.
 
 \end{itemize}
 
-\subsubsection{Type Rules}
 
-\begin{align*}
-\intertext{The following sets will be used throughout this section}
-&\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}
-\\
-&\Tbaop = \left\{ {<, <=, >, >=} \right\}
-\\
-&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The following primitive types are defined}
-&\Tpt ::= \Tint \mid \Treal \mid \Tbool \mid \Tchar
-\\
-\intertext{A tuple is a finite set of ordered elements of arbitrary type $T$}
-&\text{TUPLE} ::= T_1 \times T_2 \times \ldots \times T_n
-\\            
-&\text{B} ::=  \left[ \Tt \right] \mid \Tpt \mid \text{TUPLE} \mid \text{struct<TUPLE>}
-\\            
-\intertext{All types defined in the type system is defined in $T$.}
-&\Tt ::= \text{B} \mid x : B \rightarrow ok
-\end{align*}
-
-\paragraph{Arithmetic Expressions}
-\begin{align*}
-&\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tint},  \text{op} \in \Taop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{EXPR}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal & 
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Treal},  \text{op} \in \Taop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint &
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{ROOT}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
-\end{align*}
-\sinote{root med ints -> int er endnu ikke komplet. Skal det altid give en real?}
-
-\paragraph{Boolean Expressions}
-\begin{align*}
-&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 = e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
-                       \Tenv e_2 : \Tbool}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
-                    {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
-\end{align*}
 \paragraph{Loop Expressions}
 \begin{align*}
 \intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tt$}

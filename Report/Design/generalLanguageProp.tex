@@ -145,6 +145,26 @@ So solve this ambiguity, one can introduce a new symbol to indicate return types
   printint(a): int -> unit
 \end{verbatim}
 
+\subsubsection{Formal Type Rules}
+
+\begin{align*}
+\intertext{The following sets will be used throughout this section}
+&\Tbaop = \left\{ {<, <=, >, >=} \right\}
+\\
+&\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\intertext{The following primitive types are defined}
+&\Tpt ::= \Tint \mid \Treal \mid \Tbool \mid \Tchar
+\\
+\intertext{A tuple is a finite set of ordered elements of arbitrary type $T$}
+&\text{TUPLE} ::= T_1 \times T_2 \times \ldots \times T_n
+\\            
+&\text{B} ::=  \left[ \Tt \right] \mid \Tpt \mid \text{TUPLE} \mid \text{struct<TUPLE>}
+\\            
+\intertext{All types defined in the type system is defined in $T$.}
+&\Tt ::= \text{B} \mid x : B \rightarrow ok
+\end{align*}
+
 \subsection{Scoping}
 
 As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
