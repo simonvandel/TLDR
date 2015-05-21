@@ -165,7 +165,7 @@ grammar vSprogGrammar{
 
     String           -> STRING;
 
-    StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
+    StructLiteral    -> LPARENS! (Field (SEMICOLON! Field)*)? RPARENS!;
     Field            -> Identifier ASSIGN! Expression; 
 
     Invocation       -> Identifier LPARENS! (Expression (COMMA! Expression)*)? RPARENS!;
