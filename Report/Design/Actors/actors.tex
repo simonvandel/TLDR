@@ -34,6 +34,8 @@ A central principle in TLDR is the use of actors, based on actor modeling. Actor
 
 Main is always the first actor, and any program writtin in TLDR is started with main receiving the arguments message. This is done to force the programmer to start and end the program with an actor, which will better support the actor modeling perspective. This means that the main actor is started with a message for the arguments, and when the main actor is killed the program will stop executing, whether or not there are still working actors.
 
+The argument message called args, is a struct which consists of a argument counter called argv, and a lists of char lists called argv.
+
 Another way that this affects the programmer, is the idea of spawning actors and having them send messages to main, instead of calling functions and having them return. This also means that there must be a way to reference main, since it is not spawned by another actor. This is solved by the introduction of the \enquote{me} keyword, which will evaluate to a reference to the current actor. This is very useful, especially if an actor wishes to delegate work to other actors. The message that is sent with the work, must simply contain a reference back to the delegating actor, which was included through the use of the \enquote{me} keyword.
 
 Here are the semantics for the main actor.
