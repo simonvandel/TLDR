@@ -41,7 +41,7 @@ First we look at the mathematical operators that can combine expressions.
 
 <PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
-The precedence of the operators are created already in the grammar. Here the parse tree will be created such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
+The precedence of the operators are created in the grammar. Here the parse tree will be created, such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
 \begin{center}
 $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \end{center}
@@ -53,7 +53,7 @@ $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \label{precedenceExamples}
 \end{figure}
 
-We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a lower precedence. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
+We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a higher precedence, and should therefor be lower in the tree. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
 \begin{center}
 $((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
 \end{center}
