@@ -8,10 +8,10 @@ open System
 module CodeGen =
     type Value = (string * string * string) // name, type, code
     type CTypeDeclaration = (string * int * PrimitiveType * string) // name, index, type, llvm type
-    type CStruct = (string * CTypeDeclaration list) // structName, structTypes
+    type CStruct = (string * CTypeDeclaration list)
 
     type Environment = {
-        regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition
+        regCounter:int // starts at 0, and increments every time a new register is used. Resets on new function
         genString:string // the code generated
         registers:Map<string,string> // key is regName, value is regType
         globalVars:(string * string * string) list // name, type, initialValue
@@ -19,7 +19,7 @@ module CodeGen =
         actors:Map<string, (int * string) list> // key is actorName, value is receiveLabels
         }
 
-    let freshReg : State<string, Environment> =
+    let freshReg : State<string, Environment> = // Gives us a new register, with unique name given by regCounter+1
         state {
             let! st = getState
             let newEnv = {st with regCounter = st.regCounter + 1}
@@ -734,8 +734,6 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode codeCode
               return (codeName, codeType, fullString)
           }
-
-          
         | Identifier (id, pType) ->
           state {
               match id with
@@ -769,8 +767,8 @@ module CodeGen =
               match functionName with
               | "print" ->
                 let stringToPrint = parameters.Head
-                let! (strName, strType, strCode) as str = declareStringConstant stringToPrint
-                let! regName = freshReg
+                let! (strName, strType, strCode) as str = declareStringConstant stringToPrint // make a global definition and assign a name to it in strName
+                let! regName = freshReg // Get new imediate register
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
                 let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
                 let fullString = sprintf "%s\n%s" loadCode putsCode
@@ -950,5 +948,16 @@ module CodeGen =
                       %6 = load i32* %1
                       ret i32 %6
                     }"""
+
+        let appendTargetTriple = 
+            let os = Environment.OSVersion
+            let pid = os.Platform  
+            match pid with
+            | PlatformID.Unix ->
+                "x86_64-pc-linux-gnu \n"
+            | PlatformID.MacOSX -> ""
+            | PlatformID.Win32NT -> ""
+            | _ -> ""
+
                                                                        
-        externalFunctions + structs +  globals + main + fullString
+        appendTargetTriple + externalFunctions + structs +  globals + main + fullString
