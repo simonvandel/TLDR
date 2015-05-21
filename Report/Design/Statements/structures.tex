@@ -1,10 +1,10 @@
 \subsection{Structures}
 \label{subsec:structs}
 
-\paragraph{Defining Structures}
-\label{sec:defStructures}
-
 In TLDR there are three ways to do incapsulation. Actors, Tuples and structs. Structs are unique by being fully accessable within the scope, and having named fields. Structs are especially useful in TLDR for creating messages.
+
+\subsubsection{Defining Structures}
+\label{sec:defStructures}
 
 Structures are defined by using the \enquote{struct} keyword. The grammar for declaring structs are as follows:
 
@@ -37,7 +37,7 @@ having these semantics:
                             {\Braket{x:T, e} \Rightarrow_S e[x]}
 \end{align*}
 
-\paragraph{Initialising Structures}
+\subsubsection{Initialising Structures}
 \label{sec:initStructures}
 
 Structs can be initialised and assigned to symbols using either a constant assignment or a variable assignment. Structs initialised as a constant assignment cannot change any of the fields of the structs; the struct is immutable. Structs initialised as a variable assignment can change all of its fields at any time; the struct is mutable.
@@ -58,7 +58,7 @@ And for mutable struct is as follow.
   var Alice:Person := (Name := "Alice"; Age := 20);
 \end{verbatim}
 
-\paragraph{Access to Structure Fields}
+\subsubsection{Access to Structure Fields}
 \label{sec:accessStructFields}
 
 Fields can be access using the following syntax.
