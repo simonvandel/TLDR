@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
 	/*--------- Send ---------*/
-    Send	         -> SEND! Identifier Identifier Expression;
+    Send	         -> SEND! Identifier Identifier? Expression; /*Maybe reciever*/
 
     /*--------- Return ---------*/
     Return           -> RETURN! Expression?;
