@@ -1,5 +1,5 @@
 \subsection{Conditional}
-\subsubsection{If-statements}
+\subsubsection{If statements}
 \label{subsec:ifStatements}
 
 \begin{align*}
@@ -56,3 +56,31 @@ Below follows the semantics for the If-statements:
                       {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_2\},e}}
                       {,b \Rightarrow_B \bot}
 \end{align*}
+
+\subsubsection{Match statements}
+\label{subsec:matchStatements}
+
+Match statements can be seen as syntactical sugar for multiple chained if-statements. The syntax is as follows.
+
+\begin{verbatim}
+  match <whatToMatchOn> {
+    <case1> -> <actionOnCase1>
+    <case2> -> <actionOnCase2>
+    ...
+    <caseN> -> <actionOnCaseN>
+  }
+\end{verbatim}
+
+A concrete example:
+
+\begin{verbatim}
+  match (1, 2) {
+    (0, n) -> // this case will never be reached
+    (1, n) -> print("Case reached!");
+    _ -> // default case that matches everything
+  }
+\end{verbatim}
+
+\paragraph{Delimitation}
+
+Due to other work being deemed more importantly, match statements will not be further developed. A future improvement to TLDR could possibly include match statements.

@@ -4,11 +4,25 @@
 \paragraph{Defining Structures}
 \label{sec:defStructures}
 
-Structures are defined by using the \enquote{struct} keyword. 
+In TLDR there are three ways to do incapsulation. Actors, Tuples and structs. Structs are unique by being fully accessable within the scope, and having named fields. Structs are especially useful in TLDR for creating messages.
+
+Structures are defined by using the \enquote{struct} keyword. The grammar for declaring structs are as follows:
+
+\kanote{grammatik for structs skal stå her}
+
+which informally would look as such:
 
 \begin{verbatim}
   struct <structName> := {<structFields>}
 \end{verbatim}
+
+And a concrete example:
+
+\begin{verbatim}
+  struct Person := {Name:[char]; Age:int}
+\end{verbatim}
+
+having these semantics:
 
 \begin{align*}
 &\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S \Braket{S', e'}}
@@ -23,24 +37,22 @@ Structures are defined by using the \enquote{struct} keyword.
                             {\Braket{x:T, e} \Rightarrow_S e[x]}
 \end{align*}
 
-A concrete example:
-
-\begin{verbatim}
-  struct Person := {Name:[char]; Age:int}
-\end{verbatim}
-
 \paragraph{Initialising Structures}
 \label{sec:initStructures}
 
 Structs can be initialised and assigned to symbols using either a constant assignment or a variable assignment. Structs initialised as a constant assignment cannot change any of the fields of the structs; the struct is immutable. Structs initialised as a variable assignment can change all of its fields at any time; the struct is mutable.
 
-The syntax for initialising an immutable struct is as follow.
+The syntax for initialising a struct is as follow.
+
+\kanote{grammatik for initialisering af structs sættes her}
+
+With concrete examples for immutables:
 
 \begin{verbatim}
   let Alice:Person := (Name := "Alice"; Age := 20);
 \end{verbatim}
 
-The syntax for initialising a mutable struct is as follow.
+And for mutable struct is as follow.
 
 \begin{verbatim}
   var Alice:Person := (Name := "Alice"; Age := 20);
