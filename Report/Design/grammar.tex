@@ -1,0 +1,203 @@
+\section{Grammar}
+\setlength{\grammarindent}{100pt}
+/*--------- Program ---------*/
+\begin{grammar}
+<Program> ::= <Body>
+
+<Body> ::= <Body> ';' <Statement>
+ \alt <Body> ';'
+ \alt <Statement>
+
+\end{grammar}
+/*--------- Statement ---------*/
+\begin{grammar}
+<Statement> ::= <Declaration>
+ \alt <Reassignment>
+ \alt <Expression>
+ \alt <Receive>
+ \alt <Spawn>
+ \alt <Return>
+ \alt <Die>
+ \alt <Send>
+ \alt <If>
+ \alt <IfElse>
+ \alt <While>
+ \alt <ForIn>
+
+\end{grammar}
+/*--------- Spawn ---------*/
+\begin{grammar}
+<Spawn> ::= ('let' | 'var') <SymDecl> := 'spawn' <Identifier> <Expression>
+
+\end{grammar}
+/*--------- Send ---------*/
+\begin{grammar}
+<Send> ::= 'send' <Identifier> <Expression>
+
+\end{grammar}
+/*--------- Return ---------*/
+\begin{grammar}
+<Return> ::= 'return' <Expression>
+
+\end{grammar}
+/*--------- Receive ---------*/
+\begin{grammar}
+<Receive> ::= 'receive' <SymDecl> := <Block>
+
+\end{grammar}
+/*--------- Die ---------*/
+\begin{grammar}
+<Die> ::= 'die'
+
+\end{grammar}
+/*--------- For ---------*/
+\begin{grammar}
+<ForIn> ::= 'for' <Ids> 'in' (<List> | <Identifier>) <Block>
+
+\end{grammar}
+/*--------- While ---------*/
+\begin{grammar}
+<While> ::= 'while' <Expression> <Block>
+
+\end{grammar}
+/*--------- If ---------*/
+\begin{grammar}
+<If> ::= 'if' <Expression> <Block>
+
+<IfElse> ::= 'if' <Expression> <Block> 'else' <Block>
+
+\end{grammar}
+/*--------- Block ---------*/
+\begin{grammar}
+<Block> ::= '\{' <Body> '\}'
+ \alt '\{' '\}'
+
+\end{grammar}
+/*--------- Expression ---------*/
+\begin{grammar}
+<Expression> ::= <Expression> <Psixoperator> <OP6>
+ \alt <OP6>
+
+<OP6> ::= <OP6> <Pfiveoperator> <OP5>
+ \alt <OP5>
+
+<OP5> ::= <Pfouroperator> <OP5>
+ \alt <OP4>
+
+<OP4> ::= <OP4> <Pthreeoperator> <OP3>
+ \alt <OP3>
+
+<OP3> ::= <OP3> <Ptwooperator> <OP2>
+ \alt <OP2>
+
+<OP2> ::= <OP2> <Poneoperator> <OP1>
+ \alt <OP1>
+
+<OP1> ::= <OP1> <Pzerooperator> <OP0>
+ \alt <OP0>
+
+<OP0> ::= <Operand>
+ \alt '(' <Expression> ')'
+
+<Operand> ::= <Block>
+ \alt <Integer>
+ \alt <Real>
+ \alt <Boolean>
+ \alt <Identifier>
+ \alt <Literals>
+ \alt <Invocation>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+
+<Identifier> ::= 'me'
+ \alt <Id>
+ \alt <Id> <Accessor>
+
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'primitive' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
+
+<Accessor> ::= '.' <Identifier>
+ \alt '.' '[' <Expression> ']'
+
+<Literals> ::= <String>
+ \alt <Char>
+ \alt <List>
+ \alt <StructLiteral>
+ \alt <Tuple>
+
+<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
+
+<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
+
+<StructLiteral> ::= '(' <Field> (';' <Field>)* ')'
+<Field> ::= <Identifier> ':=' <Expression>
+
+<Invocation> ::= <Identifier> '(' (<Expression> (',' <Expression>)*)? ')'
+
+<Pzerooperator> ::= '$\Tpot$' | '\#'
+
+<Poneoperator> ::= '*' | '/' | '\%'
+
+<Ptwooperator> ::= '+' | '-'
+
+<Pthreeoperator> ::= '=' | '!=' | '<' | '<=' | '>' | '>='
+
+<Pfouroperator> ::= 'NOT'
+
+<Pfiveoperator> ::= 'AND' | 'NAND'
+
+<Psixoperator> ::= 'OR' | 'XOR' | 'NOR'
+\end{grammar}
+/*--------- Declaration ---------*/
+\begin{grammar}
+<Declaration> ::= <Struct>
+ \alt <Actor>
+ \alt <Initialisation>
+
+<Struct> ::= 'struct' <Identifier> := '\{' <TypeDecls>? '\}'
+
+<TypeDecls> ::= (<FuncDecl> | <SymDecl>) ';' <TypeDecls>
+ \alt (<FuncDecl> | <SymDecl>) ';'
+ \alt <FuncDecl> | <SymDecl>
+
+<Actor> ::= 'actor' <Identifier> := <Block>
+
+<Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) := <Expression>
+
+<Ids> ::= <Identifier> (',' <Identifier>)*
+
+<FuncDecl> -> <Identifier> '(' <Ids>? ')' ';' <Types>
+
+<SymDecl> -> <Identifier> ';' <Types>
+\end{grammar}
+/*--------- Reassignment ---------*/
+\begin{grammar}
+<Reassignment> ::= <Identifier> := <Expression>
+\end{grammar}
+/*--------- Types ---------*/
+\begin{grammar}
+<Types> ::= <Type> ('->' <Type>)*
+
+<Type> ::= <PrimitiveType>
+ \alt <Identifier>
+ \alt <ListType>
+ \alt <TupleType>
+
+<TupleType> ::= '(' <Types> ')'
+
+<ListType> ::= '\{' <Types> ',' <Integer> '\}'
+\end{grammar}
+/*--------- List ---------*/
+\begin{grammar}
+<List> ::= '[' <ListElem> (',' <ListElem>)* ']'
+
+<ListElem> ::= <Expression> '..' <Expression>
+ \alt <Expression>
+\end{grammar}
+/*--------- Tuple ---------*/
+\begin{grammar}
+<Tuple> ::= '(' <Expression> (',' <Expression>)+ ')'
+\end{grammar}

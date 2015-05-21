@@ -107,7 +107,7 @@ grammar vSprogGrammar{
     Die              -> DIE;
 
     /*--------- For ---------*/
-    ForIn            -> FOR! Ids IN! (List| Identifier ) Block;
+    ForIn            -> FOR! Ids IN! (List | Identifier) Block;
 
     /*--------- While ------*/
     While            -> WHILE! Expression Block;
@@ -152,6 +152,8 @@ grammar vSprogGrammar{
                       | IDENTIFIER
                       | IDENTIFIER Accessor;
 
+    Accessor         -> DOT! Identifier^
+                      | DOT! STARTLIST! Expression^ ENDLIST!;
 
     Literals         -> String^
 	                  | Char^
@@ -182,9 +184,10 @@ grammar vSprogGrammar{
 
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
-    Ids              -> Identifier (COMMA! Identifier)*;
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
 	SymDecl          -> Identifier COLON! Types;
+
+	Ids              -> Identifier (COMMA! Identifier)*;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
@@ -207,9 +210,5 @@ grammar vSprogGrammar{
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
-
-    /*--------- Accessor ---------*/
-    Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST! Expression^ ENDLIST!;
   }
 }

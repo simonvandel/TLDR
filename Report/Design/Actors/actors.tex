@@ -17,12 +17,12 @@ Here follows descriptions of the usage of actors in TLDR. This includes differen
                            {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2,e_2,\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_3$]{\Braket{S_2,e_1,\Ta} \Rightarrow_S \Braket{S_2',e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2',e_2',\Ta'}} 
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1,e_1,\Ta'}|\Braket{S_2',e_2',\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_4$]{\Braket{S_2,e_1} \Rightarrow_S \Braket{e_1',\Ta'}}
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}}
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{e_2',\Ta'}}
+                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1,e_1,\Ta'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{align*}
 
@@ -40,7 +40,7 @@ Here are the semantics for the main actor.
 
 \begin{align*}
 &\inference[$\text{MAIN}$]{input \mapsto \Braket{S,\epsilon}}
-                          {\Braket{\Treceive \Tr:args := \{S\};,e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
+                          {\Braket{\Treceive \Tr:args := \{S\},e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}
 
 \subsubsection{Construction of an Actor}
