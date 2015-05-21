@@ -150,7 +150,11 @@ module TypeChecker =
             | Not, rhsRes ->
                 Failure [sprintf "Cannot apply (Not) to anything else than Bools, found %A" rhsRes ]
         | Identifier (name, pType) ->
-            Success pType
+            match name with
+            | SimpleIdentifier str ->
+              Success pType
+            | IdentifierAccessor (baseId, nextElem) ->
+               checkTypesAST nextElem
         | Function (funcName, arguments, types, body) ->
             match checkTypesAST body, types with
             | Success bodyType, ((ListPrimitive _ | SimplePrimitive _) as Arg) when bodyType = Arg ->
