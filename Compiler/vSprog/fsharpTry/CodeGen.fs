@@ -241,7 +241,7 @@ module CodeGen =
                 let! xs1 = collectAll p xs
                 return x1 :: xs1
               }
-
+    
     let declareStruct (str:CStruct) : State<Value, Environment> = 
         state {
             let! st = getState
@@ -756,9 +756,28 @@ module CodeGen =
                 let str = startId
                 let toLoadName = if str.StartsWith("%") then sprintf "%s" str 
                                  else sprintf "%%%s" str
-                let! toLoadType = findRegister toLoadName
-                let! loadedValue = genLoad regName toLoadType toLoadName
-                return loadedValue
+                let! toLoadType = findRegister toLoadName // find the list/struct/tuple we want to load its content from
+                //let! loadedValue = genLoad regName toLoadType toLoadName
+                //return loadedValue
+
+                let! res = state {
+                          match nextElem with
+                          | Constant ( SimplePrimitive Int, PrimitiveValue.Int idx) -> // it must be a list/tuple
+                            // get the address in the list
+                            let! addrReg = freshReg
+                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+                            let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toLoadType toLoadName idx
+                            let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
+
+                            // load the value at the address
+                            let! loadedValueReg = freshReg
+                            let! (loadedValueName, loadedValueType, loadedValueCode) = genLoad loadedValueReg addrType addrName
+
+                            let fullString = sprintf "%s\n%s" addrCode loadedValueCode
+                            return (loadedValueName,loadedValueType,fullString)
+                          | _ -> return failwith "struct indexing not implemented" // must be struct
+                          }
+                return res
           }
         | Function (funcName, arguments, types, body) -> 
           state {

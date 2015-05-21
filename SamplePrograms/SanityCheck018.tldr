@@ -1,8 +1,13 @@
 actor main := {
   receive arguments:args := {
-    let xs:[int] := [0 .. 10];
+    let xs:[int] := [10 .. 20];
     let head:int := xs.[0];
-    //printint(res);
+    if(head = 10) {
+      print("Expected");
+    }
+    else {
+      print("Not expected");
+    };
     die;
   };
 };
