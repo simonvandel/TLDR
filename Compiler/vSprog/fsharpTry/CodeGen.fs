@@ -464,12 +464,16 @@ module CodeGen =
               let fullstring = sprintf "%s\n%s\n%s\n%s\n%s" msgGenCode allocMsgCode storeMsgCode bitcastedPtrCode code
               return ("","", fullstring)
           }
-        | Spawn (lvalue, actorName, initMsg) -> 
+        | Spawn (lvalue, rhs) -> 
           state {
-              let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
-              let tempReg = sprintf "%%_spawned_%s" actorName
-              let! reg = newRegister tempReg "i64" code
-              return reg
+              match rhs with
+                  | Some (actorName, initMsg) ->
+                      let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
+                      let tempReg = sprintf "%%_spawned_%s" actorName
+                      let! reg = newRegister tempReg "i64" code
+                      return reg
+                  | None ->
+                      return failwith "This should be reached"
           }
         | Receive (msgName, msgType, body) -> 
           state {

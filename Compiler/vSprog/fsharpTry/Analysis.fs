@@ -153,14 +153,18 @@ module Analysis =
           state {
               return Send (actorName, msgName)
           }
-        | Spawn (lvalue, actorName, initMsg) -> 
+        | Spawn (lvalue, RHS) -> 
           state {
-              match initMsg with
-              | Some msg -> 
-                  let! newInitMsg = buildSymbolTable msg
-                  return Spawn (lvalue, actorName, Some newInitMsg)
+              match RHS with
+              | Some (actorName, initMsg) ->
+                  match initMsg with
+                  | Some msg -> 
+                      let! newInitMsg = buildSymbolTable msg
+                      return Spawn (lvalue, Some (actorName, Some newInitMsg))
+                  | None ->
+                      return Spawn (lvalue, Some (actorName, initMsg))
               | None ->
-                  return Spawn (lvalue, actorName, initMsg)
+                  return Spawn (lvalue, RHS)
           }
         | Receive (msgName, msgType, body) -> 
           state 

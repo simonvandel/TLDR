@@ -42,7 +42,7 @@ module AST =
         | If of AST * AST // conditional, body
         | IfElse of AST * AST * AST // conditional, trueBody, falseBody
         | Send of string * AST // actorName, msg
-        | Spawn of LValue * string * AST option // lvalue, actorName, initMsg
+        | Spawn of LValue * (string * AST option) option // lvalue, (actorName, initMsg) or uninit spawn
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
         | While of AST * AST // condition, body
@@ -259,12 +259,17 @@ module AST =
             let name = toAST (getChildByIndexes [1;0] root)
             let typeName = (getChildByIndexes [1;1;0;0] root)
             let lhs = toLValue mutability name typeName
-            let actorName = (getChildByIndexes [2;0] root).Symbol.Value
-            if root.Children.Count = 4 then // msg was supplied
-                let initMsg = toAST (getChildByIndexes [3;0] root)
-                Spawn (lhs, actorName, Some initMsg)
-            else // no msg was supplied
-                Spawn (lhs, actorName, None)
+            match (root.Children.Count) with
+            | 2 ->
+                Spawn (lhs, None)
+            | _ ->
+                let actorName = (getChildByIndexes [2;0] root).Symbol.Value
+                if root.Children.Count = 4 then // msg was supplied
+                    let initMsg = toAST (getChildByIndexes [3;0] root)
+                    Spawn (lhs, Some (actorName, Some initMsg))
+                else // no msg was supplied
+                    Spawn (lhs, Some (actorName, None))
+                
         | "Receive" ->
             let msgName = (getChildByIndexes [0;0;0] root).Symbol.Value
             let msgType = toPrimitiveType (getChildByIndexes [0;1;0;0] root)

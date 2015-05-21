@@ -92,7 +92,7 @@ grammar vSprogGrammar{
                       | ForIn^;
 
     /*--------- Spawn ---------*/
-    Spawn            -> (LET | VAR) SymDecl ASSIGN! SPAWN! Identifier Expression?;
+    Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
 	/*--------- Send ---------*/
     Send	         -> SEND! Identifier Expression;
