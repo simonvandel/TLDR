@@ -780,7 +780,7 @@ module CodeGen =
                 let! (strName, strType, strCode) as str = declareStringConstant "%d\n"
                 let! regName = freshReg
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
-                let (test, _) = Double.TryParse(intToPrint)
+                let (test, _) = Int64.TryParse(intToPrint)
                 if (test) then // just print out the int
                   let putsCode = sprintf "call i32 (i8*, ...)* @printf(%s %s, i64 %s)" loadedStringType loadedStringName intToPrint
                   let fullString = sprintf "%s\n%s" loadCode putsCode
