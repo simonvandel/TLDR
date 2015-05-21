@@ -57,7 +57,7 @@ module TypeChecker =
                 >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if-else statement should be bool, found %A" illegalType]
-        | Send (actorName, msgName ) ->
+        | Send (actorHandle, actorToSendTo, msgName ) ->
             Success HasNoType
         | Spawn (lvalue, rhs) ->
             match rhs with

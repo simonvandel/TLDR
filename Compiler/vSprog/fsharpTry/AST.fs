@@ -41,7 +41,7 @@ module AST =
         | Struct of string * (TypeDeclaration list) // name, fields
         | If of AST * AST // conditional, body
         | IfElse of AST * AST * AST // conditional, trueBody, falseBody
-        | Send of string * AST // actorName, msg
+        | Send of string * string * AST // actorHandle, actorToSendTo, msg
         | Spawn of LValue * (string * AST option) option // lvalue, (actorName, initMsg) or uninit spawn
         | Receive of string * PrimitiveType * AST // msgName, msgType, body
         | ForIn of string * AST * AST // counterName, list, body
@@ -253,7 +253,7 @@ module AST =
         | "Send" ->
             let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
             let msg = toAST (getChildByIndexes [1;0] root)
-            Send (actorHandle, msg)
+            Send (actorHandle, "", msg) // we do not know the name of the actor to send to yet
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
             let name = toAST (getChildByIndexes [1;0] root)

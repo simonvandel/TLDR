@@ -441,10 +441,12 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" condCode brStr trueBodyCode contCode falseBodyCode contCode contLabel
               return ("","", fullString)
           }
-        | Send (actorName, msg) -> 
+        | Send (actorHandle, actorToSendTo, msg) -> 
           state {
+              printf "%s" actorHandle
+              printf "%s" actorToSendTo
               let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
-              let! msgId = getReceiveID msgGenType actorName
+              let! msgId = getReceiveID msgGenType actorToSendTo
               let msgSize = match msgGenType with
                             | "i64" -> "8"
                             | "double" -> "8"
@@ -460,7 +462,7 @@ module CodeGen =
               let! bitcastedPtrReg = freshReg
               let! (bitcastedPtrName, bitcastedPtrType, bitcastedPtrCode) = newRegister bitcastedPtrReg "i8*" (sprintf "bitcast %s %s to %s" allocMsgType allocMsgName "i8*")
 
-              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorName msgId bitcastedPtrName msgSize 
+              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorToSendTo msgId bitcastedPtrName msgSize 
               let fullstring = sprintf "%s\n%s\n%s\n%s\n%s" msgGenCode allocMsgCode storeMsgCode bitcastedPtrCode code
               return ("","", fullstring)
           }

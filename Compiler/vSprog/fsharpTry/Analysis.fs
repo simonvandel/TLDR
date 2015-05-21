@@ -149,14 +149,35 @@ module Analysis =
               do! closeScope
               return If (newCondition, newBody)
             }
-        | Send (actorName, msgName) -> 
+        | Send (actorHandle, actorToSendTo, msgName) -> 
           state {
-              return Send (actorName, msgName)
+              let! curState = getState
+              let! curScope = getScope
+              let sDecl = 
+                curState.symbolList |>
+                  List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier actorHandle && e.statementType = Init && isInScope e.scope curScope)
+              match sDecl with
+              | Some entry ->
+                let newActorToSendTo = match entry.symbol.primitiveType with
+                                       | UserType actorName -> actorName
+                                       | _ -> failwith "it should only be a simpleidentifier"
+                return Send (actorHandle, newActorToSendTo, msgName)
+              | None -> return failwith (sprintf "could not find actor initialisation of %A" actorHandle)
           }
-        | Spawn (lvalue, RHS) -> 
+        | Spawn (lvalue, rhs) -> 
           state {
-              match RHS with
+              let! curScope = getScope
+              let entry =
+                      {
+                        symbol = lvalue
+                        statementType = Init
+                        scope = curScope
+                        value = Spawn (lvalue, rhs)
+                      }
+              do! addEntry entry
+              match rhs with
               | Some (actorName, initMsg) ->
+
                   match initMsg with
                   | Some msg -> 
                       let! newInitMsg = buildSymbolTable msg
@@ -164,7 +185,7 @@ module Analysis =
                   | None ->
                       return Spawn (lvalue, Some (actorName, initMsg))
               | None ->
-                  return Spawn (lvalue, RHS)
+                  return Spawn (lvalue, rhs)
           }
         | Receive (msgName, msgType, body) -> 
           state 
