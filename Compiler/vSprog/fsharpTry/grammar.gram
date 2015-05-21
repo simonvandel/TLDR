@@ -184,10 +184,9 @@ grammar vSprogGrammar{
 
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
+    Ids              -> Identifier (COMMA! Identifier)*;
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
 	SymDecl          -> Identifier COLON! Types;
-
-	Ids              -> Identifier (COMMA! Identifier)*;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
