@@ -2,6 +2,7 @@
 \label{sec:Expressions}
 This part of the language describes expressions. Expressions are in The Language Described in This Report defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
 
+\subsection{Operators}
 First we look at the mathematical operators that can combine expressions.
 \setlength{\grammarindent}{100pt}
 \begin{grammar}
@@ -59,9 +60,9 @@ $((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
 \end{center}
 In \cref{precedenceExamples} we can see that the \enquote{XOR} operator is placed highest in the tree meaning that it has the lowest precedence. We can also see from the tree that this operator takes the result from \enquote{AND} and \enquote{<} as arguments where \enquote{<} again takes the result from \enquote{+} and the integer 2 as arguments and so on. We can see that the arguments changes type as we traverse the tree. We now look at the semantics and what impact this has on the formal type rules.
 
-\subsection{Arithmetic Expressions}
+\subsubsection{Arithmetic Expressions}
 
-First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluates to a number, either a real or integer. The operators that creates the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. 
+First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluates to a number, either a real or integer. The operators that creates the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. The semantics for these operators are as follows:
 
 \begin{itemize}
 \item "+" is a binary operator that adds two numbers of the same type
@@ -178,11 +179,11 @@ For simplicity we create the following set since all type rules for these are th
 $\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}$
 \end{center}
 
-Due to the semantics of all \enquote{AOP} operators these can not evaluate to a real if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real. The operators cannot take a combination of real and iteger. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer all errors as early as possible, preferably on compile-time, see \cref{typesys}. With no implicit type casts the programmer is always aware when type casts are performed and will therefore not be as prone to make runtime type errors.
+Due to the semantics of all \enquote{AOP} operators these can not evaluate to a real if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real.
 
-The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $\sqrt[2]{2} = $
+The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $\sqrt[2]{2}$ evaluates to $1.4142\dots$ Therefore both rules for \enquote{\#} evaluates to a real.
 
-This is formally
+No operator can take a combination of real and integer. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer all errors as early as possible, preferably on compile-time, see \cref{typesys}. With no implicit type casts the programmer is always aware when type casts are performed and will therefore not be as prone to make runtime type errors.
 
 \begin{align*}
 &\inference[$\text{EXPR}_{\Tint,\Tint}$]{\Tenv e_1  : \Tint & 
@@ -205,7 +206,147 @@ This is formally
                     {\Tenv e_1 \mathbin{\#} e_2 : \Treal}
 \end{align*}
 
-\subsection{Boolean Expressions}
+\subsubsection{Boolean Expressions}
+Boolean expressions are in TLDR defined as expressions that takes boolean types as arguments and returns a boolean type. The boolean expressions can be constructed from the operators AND, NAND, OR, NOR, XOR. We create the following set for simplicity:
+
+\begin{center}
+$\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}$
+\end{center}
+
+The following are the semantics for all boolean operators and their truth table.
+
+\begin{itemize}
+\item "AND" is a binary operator that returns true if both values are true. False otherwise
+\begin{figure}[H]
+\centering
+  \begin{minipage}[c]{0.45\linewidth}
+	  \centering
+    \begin{align*}
+    &\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
+                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+    \\\\
+    &\inference[$\text{AND}_2$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+    \\\\
+    &\inference[$\text{AND}_3$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \top}
+    \end{align*}
+  \end{minipage}
+	\quad
+	\begin{minipage}[c]{0.45\linewidth}
+	  \centering
+    \begin{tabular}{ | c | c | c | }
+      \hline
+      $e_1$ & $e_2$ & $e_1 \Tand e_2$ \\\hline
+      $\bot$ & $\bot$ & $\bot$ \\\hline
+      $\bot$ & $\top$ & $\bot$ \\\hline
+      $\top$ & $\bot$ & $\bot$ \\\hline
+      $\top$ & $\top$ & $\top$ \\\hline
+    \end{tabular}
+  \end{minipage}
+\end{figure}
+
+\item "OR" is a binary operator that returns true if at least one value is true. False otherwise
+
+\begin{align*}
+&\inference[OR]{}
+                 {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
+\end{align*}
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+\hline
+$e_1$ & $e_2$ & $e_1 \Tor e_2$ \\\hline
+$\bot$ & $\bot$ & $\bot$ \\\hline
+$\bot$ & $\top$ & $\top$ \\\hline
+$\top$ & $\bot$ & $\top$ \\\hline
+$\top$ & $\top$ & $\top$ \\\hline
+\end{tabular}
+\end{center}
+
+\item "XOR" is a binary operator that returns true if only one operand is true. False otherwise
+
+\begin{align*}
+&\inference[XOR]{}
+                  {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+\end{align*}
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+\hline
+$e_1$ & $e_2$ & $e_1 \Txor e_2$ \\\hline
+$\bot$ & $\bot$ & $\bot$ \\\hline
+$\bot$ & $\top$ & $\top$ \\\hline
+$\top$ & $\bot$ & $\top$ \\\hline
+$\top$ & $\top$ & $\bot$ \\\hline
+\end{tabular}
+\end{center}
+
+\item "NOR" is OR negated.
+
+\begin{align*}
+&\inference[NOR]{}
+                   {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
+\end{align*}
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+\hline
+$e_1$ & $e_2$ & $e_1 \Tnor e_2$ \\\hline
+$\bot$ & $\bot$ & $\top$ \\\hline
+$\bot$ & $\top$ & $\bot$ \\\hline
+$\top$ & $\bot$ & $\bot$ \\\hline
+$\top$ & $\top$ & $\bot$ \\\hline
+\end{tabular}
+\end{center}
+
+\item "NOT" is a unary operator that returns the opposite value of the operand.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[c]{0.45\linewidth}
+\centering
+\begin{align*}
+&\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
+                       {e \vdash \Tnot b_1 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{NOT}_\bot$]{e \vdash b_1 \Rightarrow_B \bot}
+                       {e \vdash \Tnot b_1 \Rightarrow_B \top}
+\end{align*}
+\end{minipage}
+\quad
+\begin{minipage}[c]{0.45\linewidth}
+\centering
+\begin{tabular}{ | c | c | }
+\hline
+$e_1$ & $ \Tnot e_1$ \\\hline
+$\bot$ & $\top$ \\\hline
+$\top$ & $\bot$ \\\hline
+\end{tabular}
+\end{minipage}
+\end{figure}
+
+\item "NAND" is a binary operator that returns true if none or a single operand is true. False otherwise.
+
+\begin{align*}
+&\inference[NAND]{}
+                   {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
+\end{align*}
+
+\begin{center}
+\begin{tabular}{ | c | c | c | }
+\hline
+$e_1$ & $e_2$ & $e_1 \Tnand e_2$ \\\hline
+$\bot$ & $\bot$ & $\bot$ \\\hline
+$\bot$ & $\top$ & $\bot$ \\\hline
+$\top$ & $\bot$ & $\bot$ \\\hline
+$\top$ & $\top$ & $\top$ \\\hline
+\end{tabular}
+\end{center}
+
+\end{itemize}
+
+
 \begin{align*}
 &\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
                        \Tenv e_2 : \Tint}
@@ -290,7 +431,7 @@ The following mathematical operations are built into the language. They follow t
 \end{align*}
 
 
-\paragraph{Logical Operations}
+\subsubsection{Logical Operations}
 \label{sec:logicOps}
 
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison. The same arguments exist for other types of logical operations.
@@ -406,62 +547,6 @@ The following operations only operate on bool types.
 &\inference[$\text{PARENS}_\text{B}$]{e \vdash b_1 \Rightarrow_B b_1'}
                        {e \vdash (b_1) \Rightarrow_B (b_1')}
 \end{align*}
-
-\begin{itemize}
-\item "AND" is a binary operator that returns true if both values are true. False otherwise
-
-\begin{align*}
-&\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
-                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
-\\\\
-&\inference[$\text{AND}_2$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
-                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
-\\\\
-&\inference[$\text{AND}_3$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
-                    {e \vdash b_1 \Tand b_2 \Rightarrow_B \top}
-\end{align*}
-
-
-\item "OR" is a binary operator that returns true if at least one value is true. False otherwise
-
-\begin{align*}
-&\inference[OR]{}
-                 {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
-\end{align*}
-
-\item "XOR" is a binary operator that returns true if only one operand is true. False otherwise
-
-\begin{align*}
-&\inference[XOR]{}
-                  {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
-\end{align*}
-
-\item "NOR" is OR negated.
-
-\begin{align*}
-&\inference[NOR]{}
-                   {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
-\end{align*}
-
-\item "NOT" is a unary operator that returns the opposite value of the operand.
-
-\begin{align*}
-&\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
-                       {e \vdash \Tnot b_1 \Rightarrow_B \bot}
-\\\\
-&\inference[$\text{NOT}_\bot$]{e \vdash b_1 \Rightarrow_B \bot}
-                       {e \vdash \Tnot b_1 \Rightarrow_B \top}
-\end{align*}
-
-\item "NAND" is a binary operator that returns true if none or a single operand is true. False otherwise.
-
-\begin{align*}
-&\inference[NAND]{}
-                   {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
-\end{align*}
-
-\end{itemize}
-
 
 \paragraph{Loop Expressions}
 \begin{align*}
