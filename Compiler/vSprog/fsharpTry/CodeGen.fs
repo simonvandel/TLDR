@@ -293,7 +293,7 @@ module CodeGen =
               return (idPtrName, idPtrType, fullString)
           }
 
-        | Actor (name, body) -> // TODO: non-main actors, argumenter til main receive
+        | Actor (name, body) -> // TODO: argumenter til main receive
           state {
               let activeLValue = {identity = SimpleIdentifier "%_active"; isMutable = true; primitiveType = SimplePrimitive Bool}
               let activeInitial = Initialisation (activeLValue , Constant (SimplePrimitive Bool, PrimitiveValue.Bool true))
@@ -734,12 +734,19 @@ module CodeGen =
           }
 
           
-        | Identifier (id, pType) -> 
-            // TODO: vi skal bruge typen på identifier her..
+        | Identifier (id, pType) ->
           state {
               match id with
               | SimpleIdentifier str -> 
                 let! regName = freshReg
+                let toLoadName = if str.StartsWith("%") then sprintf "%s" str 
+                                 else sprintf "%%%s" str
+                let! toLoadType = findRegister toLoadName
+                let! loadedValue = genLoad regName toLoadType toLoadName
+                return loadedValue
+              | IdentifierAccessor (startId, nextElem) ->
+                let! regName = freshReg
+                let str = startId
                 let toLoadName = if str.StartsWith("%") then sprintf "%s" str 
                                  else sprintf "%%%s" str
                 let! toLoadType = findRegister toLoadName

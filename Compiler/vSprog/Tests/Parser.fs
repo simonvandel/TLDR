@@ -89,19 +89,24 @@ module ParserTest =
     let ``When reassignment syntax with accessor is given with constant binding, expect reassignment AST with constant value``() =
         let rhs = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10000)
         debugTestParseWith "x.y := 10000;"
-        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
+        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ("x", Identifier (SimpleIdentifier "y", HasNoType)), rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor, expect reassignment AST with constant value``() =
-        let rhs = Identifier ( IdentifierAccessor ["a"; "b"], HasNoType )
+        let rhs = Identifier ( IdentifierAccessor ("a", Identifier (SimpleIdentifier "b", HasNoType)), HasNoType )
         debugTestParseWith "x.y := a.b;"
-        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
+        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ("x", Identifier (SimpleIdentifier "y", HasNoType)), rhs))]])
 
     [<Test>]
     let ``When reassignment syntax with accessor is given with identifer.accessor.accessor, expect reassignment AST with constant value``() =
-        let rhs = Identifier ( IdentifierAccessor ["a"; "b"; "c"], HasNoType )
+        let lhs = IdentifierAccessor ("x", (Identifier (SimpleIdentifier "y", HasNoType)))
+        let cId = Identifier ( SimpleIdentifier "c", HasNoType )   
+        let bc = IdentifierAccessor ("b", cId)
+        let bcId = Identifier (bc, HasNoType)
+        let abc = IdentifierAccessor ("a", bcId)
+        let rhs = Identifier (abc, HasNoType)
         debugTestParseWith "x.y := a.b.c;"
-        <| should equal (Program [Body [(Reassignment (IdentifierAccessor ["x"; "y"], rhs))]])
+        <| should equal (Program [Body [(Reassignment (lhs, rhs))]])
 
     (* -------------------- If statements ---------------------- *)
 
@@ -390,3 +395,10 @@ module ParserTest =
     let ``When syntax for kill/me, expect kill + me AST`` () =
         debugTestParseWith "die;"
         <| should equal (Program [Body [ Die ]])
+
+    (* --------------------------- List access --------------------------- *)
+    [<Test>]
+    let ``When syntax for list access, expect `` () =
+        let ast = Identifier (IdentifierAccessor ("xs", Constant (SimplePrimitive Int, PrimitiveValue.Int 0)), HasNoType)
+        debugTestParseWith "xs.[0];"
+        <| should equal (Program [Body [ ast ]])

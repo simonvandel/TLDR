@@ -57,8 +57,9 @@ module AST =
         | Die
 
     and Identifier =
-        | SimpleIdentifier of string // x
-        | IdentifierAccessor of string list // x.y == ["x"; "y"]
+        | SimpleIdentifier of string // x == "x"
+        | IdentifierAccessor of string * AST // x.y == ("x", Identifier (SimpleIdentifier "y")))
+                                             // x.[5] == ("x", Constant 5)
 
     and BinOperator =
         | Plus
@@ -306,14 +307,21 @@ module AST =
             match root.Children.Count with // Identifier can only can only take 2 forms, IDENTIFIER or IDENTIFIER Accessor 
             | 1 -> Identifier (SimpleIdentifier (root.Children.Item 0).Symbol.Value, HasNoType)
             | 2 -> 
-                let ids = Seq.unfold (fun (node:ASTNode) -> 
-                                        match node.Children.Count with
-                                        | 0 -> None
-                                        | _ -> Some ((node.Children.Item 0).Symbol.Value, (node.Children.Item 1))
-                                     ) 
-                                        root
-                          |> List.ofSeq
-                Identifier (IdentifierAccessor ids, HasNoType) // Subject to change....
+//                let ids = Seq.unfold (fun (node:ASTNode) -> 
+//                                        match node.Children.Count with
+//                                        | 0 -> None
+//                                        | _ ->
+//                                          let nodeRes = if node.Children.Count = 0 then
+//                                                          (node.Children.Item 0).Symbol.Value
+//                                                        else
+//                                                          
+//                                          Some (nodeRes, (node.Children.Item 1))
+//                                     ) 
+//                                        root
+//                          |> List.ofSeq
+                let baseAccessor = (root.Children.Item 0).Symbol.Value
+                let nextElem = toAST (root.Children.Item 1)
+                Identifier (IdentifierAccessor (baseAccessor, nextElem), HasNoType) // Subject to change....
             | err -> failwith (sprintf "This should never be reached (\"Identifier\" in toAST): %A" err)
         | "Function" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value // [0;0] is a list of 0 and 0, for accessing child 0,0 which is the identifier, the name of the function

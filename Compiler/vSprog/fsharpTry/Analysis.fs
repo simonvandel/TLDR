@@ -48,7 +48,7 @@ module Analysis =
               let! curState = getState
               let idToCheck = match varId with
                               | SimpleIdentifier _ as simpleId -> simpleId
-                              | IdentifierAccessor xs -> SimpleIdentifier xs.Head
+                              | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
               let sDecl = 
                 curState.symbolList |>
                   List.tryFind (fun e -> e.symbol.identity = idToCheck && e.statementType = Init && isInScope  e.scope curScope)
@@ -209,9 +209,12 @@ module Analysis =
             {
               let! curScope = getScope
               let! curState = getState
+              let idToCheck = match id with
+                              | SimpleIdentifier _ as simpleId -> simpleId
+                              | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
               let sDecl = 
                 curState.symbolList |>
-                  List.tryFind (fun e -> e.symbol.identity = id && e.statementType = Init && isInScope e.scope curScope)
+                  List.tryFind (fun e -> e.symbol.identity = idToCheck && e.statementType = Init && isInScope e.scope curScope)
               let newPType = match sDecl with
                              | Some decl -> decl.symbol.primitiveType
                              | None -> HasNoType

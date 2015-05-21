@@ -208,6 +208,6 @@ grammar vSprogGrammar{
 
     /*--------- Accessor ---------*/
     Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST! Expression ENDLIST!;
+                      | DOT! STARTLIST! Expression^ ENDLIST!;
   }
 }
