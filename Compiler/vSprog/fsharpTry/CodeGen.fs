@@ -272,16 +272,40 @@ module CodeGen =
 
         | Reassignment (varId, rhs) as reass ->
           state {
-              let sId = match varId with
-                        | SimpleIdentifier id -> id
-                        | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
-              let! (toStoreName, toStoreType, code) = internalCodeGen rhs
-              let toUpdateName = if sId.StartsWith("%") then sprintf "%s" sId 
-                                 else sprintf "%%%s" sId
-              let! toUpdateType = findRegister toUpdateName
-              let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
-              let fullString = sprintf "%s\n%s" code storeCode
-              return ("","", fullString)
+
+              match varId with
+              | SimpleIdentifier sId -> 
+                let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+                let toUpdateName = if sId.StartsWith("%") then sprintf "%s" sId 
+                                     else sprintf "%%%s" sId
+                let! toUpdateType = findRegister toUpdateName                
+
+                let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
+                let fullString = sprintf "%s\n%s" code storeCode
+                return ("","", fullString)
+               | IdentifierAccessor (baseId, nextElem) ->
+                 let! res = state {
+                          match nextElem with
+                          | Constant ( SimplePrimitive Int, PrimitiveValue.Int idx) -> // it must be a list/tuple
+                            let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+                            let toUpdateName = if baseId.StartsWith("%") then sprintf "%s" baseId
+                                               else sprintf "%%%s" baseId
+                            let! toUpdateType = findRegister toUpdateName
+
+                            // get the address in the list
+                            let! addrReg = freshReg
+                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+                            let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName idx
+                            let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
+                              
+                            // store the rhs at the address
+                            let! (_,_, storeCode) = genStore toStoreName toStoreType addrName addrType
+
+                            let fullString = sprintf "%s\n%s\n%s" code addrCode storeCode
+                            return ("","",fullString)
+                          | _ -> return failwith "struct indexing not implemented" // must be struct
+                          }
+                 return res
           }
         | Initialisation (lvalue, rhs) -> // TODO: vi kan bruge 'contant' attribut til 'let' bindings
           state {

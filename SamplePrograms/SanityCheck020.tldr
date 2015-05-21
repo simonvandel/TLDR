@@ -1,0 +1,14 @@
+actor main := {
+  receive arguments:args := {
+    var xs:[int] := [10 .. 20];
+    xs.[0] := 1;
+    let head:int := xs.[0];
+    if(head = 1) {
+      print("Expected");
+    }
+    else {
+      print("Not expected");
+    };
+    die;
+  };
+};
