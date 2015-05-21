@@ -38,7 +38,7 @@ module AST =
         | Initialisation of LValue * AST // lvalue, rhs
         | Constant of PrimitiveType * PrimitiveValue // type, value
         | Actor of string * AST // name, body FIXME: Add more fields?
-        | Struct of string * TypeDeclaration list // name, fields
+        | Struct of string * (TypeDeclaration list) // name, fields
         | If of AST * AST // conditional, body
         | IfElse of AST * AST * AST // conditional, trueBody, falseBody
         | Send of string * AST // actorName, msg
@@ -53,6 +53,7 @@ module AST =
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of AST * (string * AST) list // struct, (fieldName, fieldValue) list
         | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
+        | Tuple // TODO
         | Return of AST option // body
         | Die
 
@@ -384,7 +385,7 @@ module AST =
                                 yield (fieldName1, fieldValue1)               
                              }
                          |> List.ofSeq
-            StructLiteral fields
+            StructLiteral (Program [], fields) // we do not know which struct we are creating yet
         | "String" ->
 
             let (chars:PrimitiveValue list) = (root.Children.Item 0).Symbol.Value

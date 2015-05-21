@@ -759,7 +759,7 @@ module CodeGen =
           state {
               return ("","", "")
           }
-        | StructLiteral fieldNamesAndVals -> 
+        | StructLiteral (structToInit, fieldNamesAndVals) -> 
           state {
               let index = ""
               return ("","", "")

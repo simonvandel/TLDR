@@ -351,7 +351,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for struct literal with 1 field, expect Struct literal AST`` () =
         let fieldName1 = "field1"
-        let struct1 = StructLiteral [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))]
+        let struct1 = StructLiteral (Program [], [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))])
         debugTestParseWith "(field1 := 5)"
         <| should equal (Program [Body [ struct1  ]])
 
@@ -359,10 +359,10 @@ module ParserTest =
     let ``When syntax for struct literal with 2 fields, expect Struct literal AST`` () =
         let fieldName1 = "field1"
         let fieldName2 = "field2"
-        let struct1 = StructLiteral [
+        let struct1 = StructLiteral (Program [],  [
                                         (fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5));
                                         (fieldName2, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10));
-                                    ]
+                                    ])
         debugTestParseWith "(field1 := 5; field2 := 10)"
         <| should equal (Program [Body [ struct1  ]])
 

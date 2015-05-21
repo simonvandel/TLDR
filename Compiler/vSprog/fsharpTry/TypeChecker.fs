@@ -159,11 +159,13 @@ module TypeChecker =
                 Success HasNoType
             | Failure errMsgs, _ -> 
                 Failure errMsgs
-        | StructLiteral fields ->
+        | StructLiteral (structToInit, fields) ->
             let fieldBodies = fields |> List.map snd
             let fieldNames = fields |> List.map fst
             // TODO: hvordan tjekker vi det her??
-            Success HasNoType
+            match structToInit with
+            | Struct (stName, typeDecls) -> Success (SimplePrimitive (Primitive.Struct (stName, typeDecls)))
+            //Success HasNoType
         | Invocation (functionName, parameters, functionType) ->
             match functionType with
             | SimplePrimitive pType when parameters.Length = 0 -> 

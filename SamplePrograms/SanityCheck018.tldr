@@ -2,7 +2,7 @@ actor main := {
   receive arguments:args := {
     let xs:[int] := [0 .. 10];
     let head:int := xs.[0];
-    printint(res);
+    //printint(res);
     die;
   };
 };

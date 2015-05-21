@@ -282,13 +282,13 @@ module Analysis =
               do! closeScope
               return Function (funcName, arguments, types, newBody)
             }
-        | StructLiteral fieldNamesAndVals -> 
+        | StructLiteral (structToInit, fieldNamesAndVals) -> 
           state
             {
               let fields = fieldNamesAndVals |> List.map (fun e -> snd e)
               let fieldNames = fieldNamesAndVals |> List.map (fun e -> fst e)
               let! newFields = applyAll buildSymbolTable fields
-              return StructLiteral (List.zip fieldNames newFields)
+              return StructLiteral (structToInit, List.zip fieldNames newFields)
             }
         | Invocation (functionName, parameters, functionType) -> 
           state {
