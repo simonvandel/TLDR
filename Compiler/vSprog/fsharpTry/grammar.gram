@@ -29,7 +29,7 @@ grammar vSprogGrammar{
     ELSE             -> 'else';
     STRUCT           -> 'struct';
     RETURN           -> 'return';
-    PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
+    PRIMITIVE        -> 'unit' | 'int' | 'real' | 'char' | 'bool';
 
     IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
 
