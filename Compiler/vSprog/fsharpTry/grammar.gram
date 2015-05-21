@@ -114,8 +114,6 @@ grammar vSprogGrammar{
 
     /*--------- If ---------*/
     If               -> IF! Expression Block;
-
-    /*--------- IfElse ---------*/
     IfElse           -> IF! Expression Block ELSE! Block;
 
     /*--------- Block ---------*/
@@ -156,9 +154,12 @@ grammar vSprogGrammar{
 
 
     Literals         -> String^
+	                  | Char^
                       | List^
                       | StructLiteral^
                       | Tuple^;
+
+	Char             -> CHAR;
 
     String           -> STRING;
 
