@@ -3,7 +3,10 @@
 
 A for-loop iterates through a list of elements.
 
-The for loop statement has the following syntax.
+The for loop statement follows this grammar:
+
+
+Which can informally be viewed as:
 
 \begin{verbatim}
   for <element> in <collection> {<loopBody>}
@@ -24,3 +27,5 @@ Here follows the semantics for the for-loop statement:
 &\inference[$\text{FOR}_{2}$]{}
                        {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{x := n_m;\{S\},e}}
 \end{align*}
+
+Initially a parallel for-loop was included in the language, and this is still potentially a wanted feature. It was removed however, since the languages focuses on parallelism through actors, and so it was deemed too time consuming to focus on also parallelising statements and expressions.
