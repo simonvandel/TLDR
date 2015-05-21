@@ -776,7 +776,7 @@ module CodeGen =
                 let! regName = freshReg // Get new imediate register
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
                 let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
-                let fullString = sprintf "%s\n%s" loadCode putsCode
+                let fullString = sprintf "%s\n%s" loadCode putsCode // Concatenate loadCode string and putsCode string in to fullstring, this is the whole mechanism for loading and printing(puts) a string in the program
                 return ("","", fullString)
               | "printint" ->
                 let intToPrint = parameters.Head
