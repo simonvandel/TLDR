@@ -53,7 +53,7 @@ module AST =
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of AST * (string * AST) list // struct, (fieldName, fieldValue) list
         | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
-        | Tuple // TODO
+        | Tuple of AST list // TODO
         | Return of AST option // body
         | Die
 
@@ -252,8 +252,9 @@ module AST =
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
             let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
-            let msg = toAST (getChildByIndexes [1;0] root)
-            Send (actorHandle, "", msg) // we do not know the name of the actor to send to yet
+            let receiverHandle = (getChildByIndexes [1;0] root).Symbol.Value // Fix If null handle
+            let msg = toAST (getChildByIndexes [2;0] root)
+            Send (actorHandle, receiverHandle, msg) // we do not know the name of the actor to send to yet
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
             let name = toAST (getChildByIndexes [1;0] root)
@@ -384,13 +385,17 @@ module AST =
                                  |> List.ofSeq
                 Invocation (funcName, parameters, HasNoType)
         | "StructLiteral" ->
-            let fields = seq { for c in root.Children do
-                                let fieldName1 = (getChildByIndexes [0;0] c).Symbol.Value
-                                let fieldValue1 = toAST (c.Children.Item 1)
-                                yield (fieldName1, fieldValue1)               
-                             }
-                         |> List.ofSeq
+            let fields = [for c in root.Children do
+                                let fieldName = (getChildByIndexes [0;0] c).Symbol.Value
+                                let fieldValue = toAST (c.Children.Item 1)
+                                yield (fieldName, fieldValue)               
+                          ]
             StructLiteral (Program [], fields) // we do not know which struct we are creating yet
+        | "Tuple" ->
+            let fields = [ for c in root.Children do
+                                yield toAST c               
+                         ]
+            Tuple (fields)
         | "String" ->
 
             let (chars:PrimitiveValue list) = (root.Children.Item 0).Symbol.Value

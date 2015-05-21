@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
 	/*--------- Send ---------*/
-    Send	         -> SEND! Identifier Expression;
+    Send	         -> SEND! Identifier Identifier Expression;
 
     /*--------- Return ---------*/
     Return           -> RETURN! Expression?;
@@ -206,7 +206,7 @@ grammar vSprogGrammar{
     /*--------- List ---------*/
     List             -> STARTLIST! ListElem (COMMA! ListElem)* ENDLIST!;
     ListElem         -> Expression TO^ Expression
-					  | Expression^;
+					            | Expression^;
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;

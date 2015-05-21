@@ -157,9 +157,9 @@ module ParserTest =
     (* ---------------------------- Send -------------------------- *)
 
     [<Test>]
-    let ``When syntax for send is given, expect Send AST`` () =
-        debugTestParseWith "send actorHandle msg"
-        <| should equal (Program [Body [(Send ("actorHandle", Identifier(SimpleIdentifier "msg",HasNoType)))]])
+    let ``When syntax for send is given, expect Send AST`` () = //Fix This
+        debugTestParseWith "send actorHandle recieverHandle msg"
+        <| should equal (Program [Body [(Send ("actorHandle","recieverHandle", Identifier(SimpleIdentifier "msg",HasNoType)))]])
 
     (* --------------------------- Spawn --------------------------- *)
 
@@ -170,7 +170,7 @@ module ParserTest =
         let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg", HasNoType)
         debugTestParseWith "let actorHandle:actorName := spawn actorName initMsg"
-        <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
+        <| should equal (Program [Body [(Spawn (lhs,Some(actorType, Some initMsg)))]])
 
     [<Test>]
     let ``When syntax for spawn is given with mutable actor, expect Spawn AST`` () =
@@ -179,7 +179,7 @@ module ParserTest =
         let actorType = "actorName"
         let initMsg = Identifier (SimpleIdentifier "initMsg", HasNoType)
         debugTestParseWith "var actorHandle:actorName := spawn actorName initMsg"
-        <| should equal (Program [Body [(Spawn (lhs, actorType, Some initMsg))]])
+        <| should equal (Program [Body [(Spawn (lhs, Some(actorType, Some initMsg)))]])
 
     (* --------------------------- Receive --------------------------- *)
 
@@ -260,6 +260,25 @@ module ParserTest =
         debugTestParseWith "[1,2,3,3 .. 1]"
         <| should equal (Program [Body [(List (list,ListPrimitive (SimplePrimitive Int,6)))]])
 
+    (* --------------------------- Tuple --------------------------- *)
+    [<Test>]
+    let ``When syntax for tuple consisting of [1,"String",3.2], expect Tuple AST`` () =
+        debugTestParseWith "(1,\"string\",3.2)"
+        <| should equal (Program [Body [
+                                    (Tuple [(   Constant(SimplePrimitive Primitive.Int, PrimitiveValue.Int 1));
+                                                Constant(ListPrimitive (SimplePrimitive Primitive.Char,6),
+                                                    PrimitiveValue.List [
+                                                                            PrimitiveValue.Char 's';
+                                                                            PrimitiveValue.Char 't';
+                                                                            PrimitiveValue.Char 'r';
+                                                                            PrimitiveValue.Char 'i';
+                                                                            PrimitiveValue.Char 'n';
+                                                                            PrimitiveValue.Char 'g';
+                                                                    ]);
+                                                Constant(SimplePrimitive Primitive.Real, PrimitiveValue.Real 3.2)
+                                           ])
+                                    ]]
+                                )
 
     (* --------------------------- Operation --------------------------- *)
 
