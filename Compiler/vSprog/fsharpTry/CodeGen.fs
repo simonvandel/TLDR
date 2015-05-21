@@ -8,7 +8,7 @@ open System
 module CodeGen =
     type Value = (string * string * string) // name, type, code
     type CTypeDeclaration = (string * int * PrimitiveType * string) // name, index, type, llvm type
-    type CStruct = (string * CTypeDeclaration list)
+    type CStruct = (string * CTypeDeclaration list) // structName, structTypes
 
     type Environment = {
         regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition

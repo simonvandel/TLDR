@@ -78,17 +78,35 @@ module Analysis =
         | Initialisation (lvalue, rhs) as init ->
           state
             {
+              let! curState = getState
+              let! curScope = getScope
               let! newRhs = buildSymbolTable rhs
               let newLValPrimType = match newRhs with
                                     | List(_,prim) -> prim
-                                    | _ -> lvalue.primitiveType
+                                    | other -> lvalue.primitiveType
               let newLValue = {lvalue with primitiveType = newLValPrimType}
-              let! curScope = getScope
+              let newRhs = match newRhs with
+                           | StructLiteral (structToInit, fieldNamesAndValues) ->
+                             let structToInitName = match lvalue.primitiveType with
+                                                    | UserType name -> name
+                             let findStructDef (e:SymbolTableEntry) : bool = // find the entry where the name is the struct we wish to find
+                                 match e.symbol.identity with
+                                 | SimpleIdentifier structName -> structName = structToInitName
+                                 | _ -> false
+                             let entry = curState.symbolList
+                                                   |> List.tryFind (fun e -> findStructDef e && e.statementType = Def && isInScope e.scope curScope)
+                             let newStructToInit = match entry with
+                                                   | Some a -> a.value
+                                                   | None -> failwith "could not find struct declaration"
+                             StructLiteral (newStructToInit, fieldNamesAndValues)
+                           | other -> other
+              
+              let! curScopeAfter = getScope
               let entry =
                   {
                     symbol = newLValue
                     statementType = Init
-                    scope = curScope
+                    scope = curScopeAfter
                     value = newRhs
                   }
               do! addEntry entry
@@ -120,20 +138,6 @@ module Analysis =
         | Struct (name, fields) ->
           state
             {
-              let! curScope = getScope
-              let entry =
-                  {
-                    symbol = 
-                      {
-                        identity = SimpleIdentifier name
-                        isMutable = false
-                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
-                      }
-                    statementType = Def
-                    scope = curScope
-                    value = Struct (name, fields)
-                  }
-              do! addEntry entry
               return Struct (name, fields)
             }
         | If (condition, body) -> 
@@ -388,14 +392,32 @@ module Analysis =
       | [] -> Success symTable
       | xs -> sumResults xs
 
+    let flatten listlist = [for lst in listlist do yield! lst]
+    let rec findAllStructs (ast:AST) : SymbolTable =
+        match ast with
+        | Program stms | Body stms | Block stms ->
+          stms
+          |> List.map findAllStructs
+          |> flatten
+        | Struct (name, fields) ->
+          let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier name
+                        isMutable = false
+                        primitiveType = SimplePrimitive (Primitive.Struct (name, fields))
+                      }
+                    statementType = Def
+                    scope = {outer = None; level = []} // outermost scope
+                    value = Struct (name, fields)
+                  }
+          [entry]
+        | _ -> []
+
     let analyse (ast:AST) : Result<AST> =
-//        let initialSymbolTableEntry = {
-//                                        symbol = {identity = SimpleIdentifier "printint"; isMutable = false; primitiveType = ArrowPrimitive [SimplePrimitive Primitive.Int]};
-//                                        statementType = Def;
-//                                        scope = {outer = None; level = []};
-//                                        value = Program []
-//                                      } 
-        let (newAST, environment) = runState (buildSymbolTable ast) {symbolList = []; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
+        let structEntries = findAllStructs ast
+        let (newAST, environment) = runState (buildSymbolTable ast) {symbolList = structEntries; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
         checkReass environment.symbolList
         >>= checkUsedBeforeDecl
         >>= checkHiding

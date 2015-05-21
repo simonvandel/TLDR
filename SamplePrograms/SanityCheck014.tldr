@@ -2,7 +2,7 @@ actor main := {
   receive arguments:args := {
     let x:test := spawn test;
     let res:real := 0.33 + 0.33 + 0.33;
-    send test res;
+    send x res;
     die;
   };
 };
