@@ -51,7 +51,7 @@ module AST =
         | UnaryOperation of UnaryOperator * AST // op, rhs
         | Identifier of Identifier * PrimitiveType // id, typeOfId
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
-        | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
+        | StructLiteral of AST * (string * AST) list // struct, (fieldName, fieldValue) list
         | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
         | Return of AST option // body
         | Die

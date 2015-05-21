@@ -1,7 +1,6 @@
 actor main := {
   receive arguments:args := {
     var iStep:iterationStep := (step := 0);
-    iStep.step := 0;
     print("can print!");
     die;
   };

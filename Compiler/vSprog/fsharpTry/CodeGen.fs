@@ -155,6 +155,8 @@ module CodeGen =
             | Real -> "double"
         | ListPrimitive (prim, len) ->
             sprintf "[%d x %s]" len (genType prim)
+        | UserType p -> sprintf "%%struct.%s" p
+
         
     let rec findMainReceive (ast:AST) : AST option =
         match ast with
@@ -759,7 +761,7 @@ module CodeGen =
           }
         | StructLiteral fieldNamesAndVals -> 
           state {
-
+              let index = ""
               return ("","", "")
           }
         | Invocation (functionName, parameters, functionType) -> 
@@ -908,8 +910,10 @@ module CodeGen =
 
     let codeGen (ast:AST) : string =
         let filledActors = findAllActorLabels ast
-        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors})
-        let structs = (env.structs |> StructsToStr) + "\n"
+        let ((_,_,_), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors})
+        let struct1 = env.structs
+        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = env.structs; globalVars = []; actors = filledActors})
+        let structs = (struct1 |> StructsToStr) + "\n"
         let globals = env.globalVars
                       |> List.map (fun (name,type',str) -> (name, type', str.Replace("\"", "\22")))
                       |> List.map
