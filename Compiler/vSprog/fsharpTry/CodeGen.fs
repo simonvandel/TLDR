@@ -4,6 +4,7 @@ open vSprog.AST
 open vSprog.CommonTypes
 open AnalysisUtils
 open System
+open System.IO
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
@@ -952,12 +953,21 @@ module CodeGen =
         let appendTargetTriple = 
             let os = Environment.OSVersion
             let pid = os.Platform  
-            match pid with
-            | PlatformID.Unix ->
-                "x86_64-pc-linux-gnu \n"
-            | PlatformID.MacOSX -> ""
-            | PlatformID.Win32NT -> ""
-            | _ -> ""
+            let targetTriple = match pid with
+                              | PlatformID.Unix ->
+                                  if (Directory.Exists("/Applications")
+                                      && Directory.Exists("/System")
+                                      && Directory.Exists("/Users")
+                                      && Directory.Exists("/Volumes")) then
+                                      None
+                                  else  Some "x86_64-pc-linux-gnu"
+                              | PlatformID.MacOSX -> None
+                              | PlatformID.Win32NT -> None
+                              | _ -> None
+            match targetTriple with
+            | Some str -> 
+              sprintf "target triple = \"%s\"\n" str
+            | None -> ""
 
                                                                        
         appendTargetTriple + externalFunctions + structs +  globals + main + fullString

@@ -19,7 +19,7 @@ module Main =
 
         // --------------- llc -------------
         proc.StartInfo.FileName <- "clang"
-        proc.StartInfo.Arguments <- "out.ll -O2 -Wall -lactor -"
+        proc.StartInfo.Arguments <- "out.ll -O2 -Wall -lactor"
         let llcRes = proc.Start()
         proc.WaitForExit()
         if llcRes && proc.ExitCode = 0 then // only run clang when llc succeeded
