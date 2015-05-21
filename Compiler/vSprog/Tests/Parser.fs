@@ -11,7 +11,7 @@ open vSprog.ParserUtils
 module ParserTest =
 
     let debugTestParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../../fsharpTry/grammar.gram"
+        parse input "../../../TLDR/grammar.gram"
         >>= fun tree -> 
             printTree tree 0
             Success (toAST tree)
@@ -22,7 +22,7 @@ module ParserTest =
                       | Failure msg  -> failwith (String.concat "" msg)
 
     let testParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../../fsharpTry/grammar.gram"
+        parse input "../../../TLDR/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun ast -> match ast with
                       | Success ast' -> test ast'
@@ -157,7 +157,7 @@ module ParserTest =
     (* ---------------------------- Send -------------------------- *)
 
     [<Test>]
-    let ``When syntax for send is given, expect Send AST`` () = //Fix This
+    let ``When syntax for send is given, expect Send AST`` () =
         debugTestParseWith "send actorHandle recieverHandle msg"
         <| should equal (Program [Body [(Send ("actorHandle","recieverHandle", Identifier(SimpleIdentifier "msg",HasNoType)))]])
 

@@ -57,9 +57,11 @@
     <Reference Include="Hime.Redist">
       <HintPath>..\packages\Hime.Redist.1.3.2.0\lib\net20\Hime.Redist.dll</HintPath>
     </Reference>
-    <ProjectReference Include="..\fsharpTry\fsharpTry.fsproj">
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TLDR\TLDR.fsproj">
       <Project>{5B4D7374-E266-4482-8919-6AAFE88C7DE2}</Project>
-      <Name>fsharpTry</Name>
+      <Name>TLDR</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

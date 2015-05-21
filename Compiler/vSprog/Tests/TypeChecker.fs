@@ -12,7 +12,7 @@ open vSprog.Tests.TestUtils
 
 module TypeCheckerTest =
     let typecheckWith (input:string) (typecheckFun:AST -> SymbolTable -> Result<PrimitiveType>) : Result<PrimitiveType> =
-        parse input "../../../fsharpTry/grammar.gram"
+        parse input "../../../TLDR/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun ast -> match ast with
                       | Success ast' -> 

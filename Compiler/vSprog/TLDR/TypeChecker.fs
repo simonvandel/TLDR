@@ -5,19 +5,15 @@ open vSprog.CommonTypes
 open vSprog.AST
 open AnalysisUtils
 
-
 module TypeChecker = 
-
 
     let Last (input:'a list) : 'a =
         List.rev input |>
         List.head
 
-
-
     let rec checkTypesAST (root:AST) : Result<PrimitiveType> =
         match root with
-        | Program stms | Block stms | Body stms ->
+        | Program stms | Block stms | Body stms | Tuple stms ->
             stms 
             |> List.map (fun stm -> checkTypesAST stm)
             |> fun xs -> if xs.Length = 0 then

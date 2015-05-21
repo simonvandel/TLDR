@@ -11,7 +11,7 @@ open NUnit.Framework
 
 module TestUtils = 
     let genSymTable (prog:string) : SymbolTable =
-        parse prog "../../../fsharpTry/grammar.gram"
+        parse prog "../../../TLDR/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun res -> match res with
                       | Success ast ->
