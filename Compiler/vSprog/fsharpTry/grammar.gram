@@ -78,7 +78,8 @@ grammar vSprogGrammar{
                       | Statement;
 
     /*--------- Statement ---------*/
-    Statement       -> Declaration^
+    Statement        -> Declaration^
+                      | Reassignment^
                       | Expression^
                       | Receive^
                       | Spawn^
@@ -90,8 +91,10 @@ grammar vSprogGrammar{
                       | While^
                       | ForIn^;
 
+    /*--------- Spawn ---------*/
     Spawn            -> (LET | VAR) SymDecl ASSIGN! SPAWN! Identifier Expression?;
 
+	/*--------- Send ---------*/
     Send	         -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
@@ -100,6 +103,7 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
+	/*--------- Die ---------*/
     Die              -> DIE;
 
     /*--------- For ---------*/
@@ -110,8 +114,6 @@ grammar vSprogGrammar{
 
     /*--------- If ---------*/
     If               -> IF! Expression Block;
-
-    /*--------- IfElse ---------*/
     IfElse           -> IF! Expression Block ELSE! Block;
 
     /*--------- Block ---------*/
@@ -150,11 +152,16 @@ grammar vSprogGrammar{
                       | IDENTIFIER
                       | IDENTIFIER Accessor;
 
+    Accessor         -> DOT! Identifier^
+                      | DOT! STARTLIST! Expression^ ENDLIST!;
 
     Literals         -> String^
+	                  | Char^
                       | List^
                       | StructLiteral^
                       | Tuple^;
+
+	Char             -> CHAR;
 
     String           -> STRING;
 
@@ -166,20 +173,21 @@ grammar vSprogGrammar{
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
                       | Actor^
-                      | Initialisation^
-                      | Reassignment^;
+                      | Initialisation^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
-                      | (FuncDecl | SymDecl)^ SEMICOLON!;
+                      | (FuncDecl | SymDecl)^ SEMICOLON!
+				          	  | (FuncDecl | SymDecl)^;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
-    Ids              -> Identifier (COMMA! Identifier)*;
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
 	SymDecl          -> Identifier COLON! Types;
+
+	Ids              -> Identifier (COMMA! Identifier)*;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
@@ -202,9 +210,5 @@ grammar vSprogGrammar{
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
-
-    /*--------- Accessor ---------*/
-    Accessor         -> DOT! Identifier^
-                      | DOT! STARTLIST! Expression ENDLIST!;
   }
 }
