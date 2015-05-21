@@ -199,8 +199,8 @@ grammar vSprogGrammar{
     PrimitiveType    -> PRIMITIVE;
 
     /*--------- List ---------*/
-    List             -> STARTLIST! Lists (COMMA! Lists)* ENDLIST!;
-    Lists            -> Expression TO^ Expression
+    List             -> STARTLIST! ListElem (COMMA! ListElem)* ENDLIST!;
+    ListElem         -> Expression TO^ Expression
 					  | Expression^;
                                  
     /*--------- Tuple ---------*/
