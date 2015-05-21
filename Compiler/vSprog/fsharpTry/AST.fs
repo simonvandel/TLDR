@@ -133,6 +133,8 @@ module AST =
         isMutable = isMutable;
         primitiveType = toPrimitiveType typeName}
 
+
+
     let toUnaryOperator (operator:string) : UnaryOperator =
         match operator with
         | "NOT" -> Not
@@ -176,11 +178,16 @@ module AST =
             let t = traverseChildren root
             Block t
         | "Initialisation" ->
-            let name = toAST (getChildByIndexes [1;0] root)
-            let typeName = (getChildByIndexes [1;1] root)
-            let lhs = toLValue (root.Children.Item 0) name typeName
-            let rhs = toAST (root.Children.Item 2)
-            Initialisation (lhs, rhs)
+            let mutability = (root.Children.Item 0)
+            match (root.Children.Item 1).Symbol.Value with
+            | "FuncDecl" ->
+              let funcDecl = toAST (root.Children.Item 1)
+              funcDecl
+            | "SymDecl" ->  
+              let (name, typeName) = symDeclParse (root.Children.Item 1)
+              let lhs = toLValue mutability name typeName
+              let rhs = toAST (root.Children.Item 2)
+              Initialisation (lhs, rhs)
         | "Reassignment" ->
             let assignables = 
                 match toAST (root.Children.Item 0) with
@@ -224,18 +231,23 @@ module AST =
                 Struct (name, []) // there might only be a name available for the struct; empty block
             else
                 match (root.Children.Item 1).Symbol.Value with
-                | "TypeDecl" -> 
-                    let fieldName = (getChildByIndexes [1;0;0] root).Symbol.Value
-                    let typeName = getChildByIndexes [1;1;0;0] root
-                    Struct (name, [(fieldName, toPrimitiveType typeName)])
+                | "SymDecl" ->
+                  let (fieldName, typeNode) = symDeclParse (root.Children.Item 1)
+                  let primType = toPrimitiveType typeNode
+                  match fieldName with
+                  | Identifier (SimpleIdentifier id, _) ->
+                    Struct (name, [(id, primType)])
                 | "TypeDecls" ->
-                    let blocks = 
-                        [for c in (root.Children.Item 1).Children do
-                            let fieldName = (getChildByIndexes [0;0] c).Symbol.Value
-                            let typeName = getChildByIndexes [1;0;0] c
-                            yield (fieldName, toPrimitiveType typeName)
-                        ]                        
-                    Struct (name, blocks)
+                  let blocks = 
+                      [
+                        for c in (root.Children.Item 1).Children do
+                            let (fieldName, typeNode) = symDeclParse c
+                            let primType = toPrimitiveType typeNode
+                            match fieldName with
+                            | Identifier (SimpleIdentifier id, _) ->
+                              yield (id, primType)
+                      ]
+                  Struct (name, blocks)
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
             let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
@@ -323,9 +335,9 @@ module AST =
                 let nextElem = toAST (root.Children.Item 1)
                 Identifier (IdentifierAccessor (baseAccessor, nextElem), HasNoType) // Subject to change....
             | err -> failwith (sprintf "This should never be reached (\"Identifier\" in toAST): %A" err)
-        | "Function" ->
+        | "FuncDecl" ->
             let funcName = (getChildByIndexes [0;0] root).Symbol.Value // [0;0] is a list of 0 and 0, for accessing child 0,0 which is the identifier, the name of the function
-            if root.Children.Count = 3 then // count is 3 when there is no arguments. fx f()
+            if root.Children.Count = 2 then // count is 2 when there is no arguments. fx f()
                 let args = []
                 let types = seq { for c in (root.Children.Item 1).Children do   
                                     yield (c.Children.Item 0)                    
@@ -397,3 +409,8 @@ module AST =
     and traverseChildren (root:ASTNode) : AST list =
         [for i in root.Children -> i]
             |> List.map toAST // Call toAST for all children and return the list of all children
+
+    and symDeclParse (node:ASTNode) : (AST * ASTNode) =
+        let name = toAST (node.Children.Item 0)
+        let typeName = (node.Children.Item 1)
+        (name, typeName)

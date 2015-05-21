@@ -79,7 +79,7 @@ grammar vSprogGrammar{
 
     /*--------- Statement ---------*/
     Statement        -> Declaration^
-                      | Reassignment
+                      | Reassignment^
                       | Expression^
                       | Receive^
                       | Spawn^
@@ -176,7 +176,7 @@ grammar vSprogGrammar{
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
                       | (FuncDecl | SymDecl)^ SEMICOLON!
-					  | (FuncDecl | SymDecl)^;
+				          	  | (FuncDecl | SymDecl)^;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
