@@ -2,7 +2,27 @@
 \section{Lexing \& Parsing}
 \label{sec:lexing/parsing}
 
-The lexing and parsing part of the compiler is written using the Hime parser generator, as described in \cref{sec:compiler_compiler_choice}. This chapter describes the features supported by Hime and its uses in the compiler.
+Lexing is the process of transforming a string of characters to a set of tokens. A token is a character or a sequence of characters. The tokens are in this report defined as a context-free-grammar. This grammar defines how a valid program is allowed to be written syntactically. For example in the program \enquote{if(true)}, the tokens are \emph{if}, \emph{(}, \emph{true}, \emph{)}.
+
+Parsing is the process of transforming the sequence of tokens, read in the lexing process, into a data structure to be used by later stages of the compiler.
+
+\subsection{Compiler-Compiler}
+\label{sec:compiler_compiler_choice}
+
+A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the belief that it is easier to maintain the grammar specification rather than the code for a hand written parser.
+
+The choice of a compiler-compiler is based on a series of criteria, listed below with the corresponding reason for the criteria.
+
+\begin{enumerate}
+\item \textbf{Output language - C\# or F\#} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the language developers had previous experience with languages running on this. This makes C\# and F\# preferred target languages for the compiler-compiler.
+
+\item \textbf{Type of parser - LR or derivatives} The compiler-compiler should support LR parsing since the authors of this project value left recursion in a grammar specification.\\ \kanote{bør muligvis udbybes hvorfor vi kan lide det?}
+
+\end{enumerate}
+
+Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out as being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind.
+
+Using Hime, the amount of work of developing the lexing and parsing phase is greatly reduced, as the lexing and parsing phase is done by Hime.
 
 \subsection{Tree Transformations}
 \label{sec:tree_transformations}
