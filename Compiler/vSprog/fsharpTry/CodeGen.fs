@@ -259,6 +259,8 @@ module CodeGen =
             i <- i + 1
         (name, list)
 
+    
+
     let rec internalCodeGen (ast:AST) : State<Value, Environment> =
         match ast with
         | Program stms | Block stms | Body stms ->
@@ -761,8 +763,14 @@ module CodeGen =
           }
         | StructLiteral (structToInit, fieldNamesAndVals) -> 
           state {
-              let index = ""
-              return ("","", "")
+              match structToInit with
+              | Struct (str, types) -> 
+                  let cstruct = toCstruct str types
+                  let! tempReg = freshReg
+                  let beginStructLieteral = sprintf "%s = alloca %%struct.%s\n" tempReg str
+                  let! ids = fieldNamesAndVals |> collectAll (fun _ -> freshReg)
+
+                  return ("", "", "")
           }
         | Invocation (functionName, parameters, functionType) -> 
           state {
