@@ -39,7 +39,7 @@ actor Predator := {
       );
       send dyingMsg controller;
       die;
-    }
+    };
     
     if (age > 7) {
       child := false;
@@ -51,7 +51,7 @@ actor Predator := {
   };
   receive msg:FoodMsg := {
     daysSinceMeal := 0;
-  }
+  };
   receive msg:InitMsg := {
     controller := msg.sender;
   };
@@ -75,7 +75,7 @@ actor Prey := {
       );
       send dyingMsg controller;
       die;
-    }
+    };
     if (age > 4) {
       child := false;
       let dingMsg:PreyDingMsg := (sender := me;);
@@ -110,27 +110,27 @@ actor PredatorController := {
     let adultShare:int := (int) 2/3 * (real)msg.kills;
     let childrenShare:int := msg.kills - adultShare;
     
-    for i in [0..adultShare - 1] {
+    for i in [0 .. adultShare - 1] {
       let foodMsg:FoodMsg := ();
       send foodMsg predatorList.[i];
-    }
+    };
     for i in [0 .. childrenShare - 1] {
       let foodMsg:FoodMsg := ();
       send foodMsg childPredatorList.[i];
-    }
+    };
     for i in predatorList {
       let newDayMsg:NewDayMsg := ();
       send newDayMsg predatorList.[i];
-    }
+    };
     for i in childPredatorList {
       let newDayMsg:NewDayMsg := ();
       send newDayMsg childPredatorList.[i];
-    }
+    };
     
     daysSinceBirth := daysSinceBirth + 1;
     if (daysSinceBirth > 14) {
       for i in predatorList {
-        let initMsg:PredatorInitMsg := (sender := me);
+        let initMsg:PredatorInitMsg := (sender := me;);
         let newChild:Predator := spawn Predator initMsg;
         childPredatorList := concat(childPredatorList, [newChild]);
       };
@@ -145,16 +145,15 @@ actor PredatorController := {
   receive msg:DyingMsg := {
     if (msg.isChild) {
       childPredatorList := remove(childPredatorList, msg.sender);
-    }
-    else {
+    } else {
       predatorList := remove(predatorList, msg.sender);
-    }
-  }
+    };
+  };
   receive msg:PreyContMsg := {
     preyController := msg.controller;
     for i in [1 .. msg.count] {
       let initMsg:InitMsg := (sender := me;);
-      let newPredator := spawn Predator initMsg;
+      let newPredator:Predator := spawn Predator initMsg;
       childPredatorList := concat(childPredatorList, [newPredator]);
     };
   };
@@ -173,9 +172,9 @@ actor PreyController := {
     noOfChildren := noOfChildren - 1;
     childPreyList := remove(childPreyList, msg.sender);                //TODO! kan remove tage element istedet for index?
     preyList := concat(preyList, [msg.sender]);
-  }
+  };
   receive msg:PackHuntMsg := {
-    let baseProbability:real := 1- ((0.75)^(real)noOfAdults * (0.5)^(real)noOfChildren;
+    let baseProbability:real := 1 - ((0.75)^(real)noOfAdults * (0.5)^(real)noOfChildren;
     let probabilityToKill:real := baseProbability^msg.adults;
     let childProbabilityToKill:real := (baseProbability * 0.5)^msg.children;
     let adultKills:int := (int) (noOfAdults + noOfChildren)*probabilityToKill;
@@ -184,16 +183,16 @@ actor PreyController := {
     let huntResMsg:HuntResMsg := (kills := adultKills + childKills;);
     send huntResMsg predatorController;
     
-    for i in [0 .. adultKills-1] {
+    for i in [0 .. adultKills - 1] {
       let killMsg:KillMsg := ();
       send killMsg preyList.[i];
       preyList := remove(preyList, preyList.[i]);                  //TODO! lav listRemove
     };
-    for i in [0 .. childKills-1] {
+    for i in [0 .. childKills - 1] {
       let killMsg:KillMsg := ();
       send killMsg childPreyList.[i];
       preyList := remove(childPreyList, childPreyList.[i]);
-    }
+    };
     for i in preyList {
       let newDayMsg:NewDayMsg := ();
       send newDayMsg preyList.[i]; 
@@ -215,16 +214,15 @@ actor PreyController := {
   receive msg:PreyDyingMsg := {
     if (msg.isChild) {
       childPreyList := remove(childPreyList, msg.sender);
-    }
-    else {
+    } else {
       preyList := remove(preyList, msg.sender);
-    }
+    };
   };
-  receive msg:PredContMsg := {
+  receive msg:PreyContMsg := {
     predatorController := msg.controller;
     for i in [1 .. msg.count] {
-      let initMsg:InitMsg := (sender = me;);
-      let newPrey := spawn Prey initMsg;
+      let initMsg:PreyInitMsg := (sender := me;);
+      let newPrey:Prey := spawn Prey initMsg;
       childPreyList := concat(childPreyList, [newPrey]);
     };
   };
@@ -248,7 +246,7 @@ struct PackHuntMsg := {
   children:int;
 };
 struct PredatorDingMsg := {sender:Predator;};
-struct PreyDingMsg := {sender:Prey;}
+struct PreyDingMsg := {sender:Prey;};
 struct PreyContMsg := {
   controller:PreyController;
   count:int;
@@ -257,5 +255,5 @@ struct PredContMsg := {
   controller:PredatorController;
   count:int;
 };
-struct HuntResMsg := {kills:int;}
+struct HuntResMsg := {kills:int;};
 struct FoodMsg := {};
