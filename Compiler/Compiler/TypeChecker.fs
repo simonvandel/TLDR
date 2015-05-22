@@ -13,7 +13,7 @@ module TypeChecker =
 
     let rec checkTypesAST (root:AST) : Result<PrimitiveType> =
         match root with
-        | Program stms | Block stms | Body stms | Tuple stms ->
+        | Program stms | Block stms | Body stms ->
             stms 
             |> List.map (fun stm -> checkTypesAST stm)
             |> fun xs -> if xs.Length = 0 then
@@ -170,6 +170,14 @@ module TypeChecker =
             match structToInit with
             | Struct (stName, typeDecls) -> Success (SimplePrimitive (Primitive.Struct (stName, typeDecls)))
             //Success HasNoType
+        | Tuple (elems, ptype) ->
+            let mutable res = []
+            for elem in elems do
+                match elem with
+                | Constant (ptype, _) -> res <- res @ [ptype]
+                | Identifier (_, ptype) -> res <- res @ [ptype]
+                | _ -> failwith "Tuples can only contain constants and identifiers"
+            Success (TupleType res)
         | Invocation (functionName, parameters, functionType) ->
             match functionType with
             | SimplePrimitive pType when parameters.Length = 0 -> 

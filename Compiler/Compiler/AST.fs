@@ -25,6 +25,7 @@ module AST =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType * int // typeOfElements, length
         | ArrowPrimitive of PrimitiveType list
+        | TupleType of PrimitiveType list
         | UserType of string
         | HasNoType
 
@@ -53,7 +54,7 @@ module AST =
         | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
         | StructLiteral of AST * (string * AST) list // struct, (fieldName, fieldValue) list
         | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
-        | Tuple of AST list // TODO
+        | Tuple of AST list * PrimitiveType // Entries
         | Return of AST option // body
         | Die
 
@@ -392,10 +393,15 @@ module AST =
                           ]
             StructLiteral (Program [], fields) // we do not know which struct we are creating yet
         | "Tuple" ->
-            let fields = [ for c in root.Children do
-                                yield toAST c               
-                         ]
-            Tuple (fields)
+            let fields = traverseChildren root
+            let mutable (types:PrimitiveType list) = []
+            for f in fields do
+                match f with
+                | Constant (ptype, _) -> types <- types @ [ptype]
+                | Identifier (_, ptype) -> types <- types @ [ptype]
+                | _ -> failwith "Tuples can only contain constants and identifiers"
+            let tupleType = ArrowPrimitive types
+            Tuple (fields, tupleType)
         | "String" ->
 
             let (chars:PrimitiveValue list) = (root.Children.Item 0).Symbol.Value

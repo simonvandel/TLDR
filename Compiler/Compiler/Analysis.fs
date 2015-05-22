@@ -85,7 +85,7 @@ module Analysis =
                                     | List(_,prim) -> prim
                                     | other -> lvalue.primitiveType
               let newLValue = {lvalue with primitiveType = newLValPrimType}
-              let newRhs = match newRhs with
+              let newnewRhs = match newRhs with
                            | StructLiteral (structToInit, fieldNamesAndValues) ->
                              let structToInitName = match lvalue.primitiveType with
                                                     | UserType name -> name
@@ -107,10 +107,10 @@ module Analysis =
                     symbol = newLValue
                     statementType = Init
                     scope = curScopeAfter
-                    value = newRhs
+                    value = newnewRhs
                   }
               do! addEntry entry
-              return Initialisation (newLValue, newRhs)
+              return Initialisation (newLValue, newnewRhs)
             }
       
         | Actor (name, body) -> 
@@ -319,6 +319,12 @@ module Analysis =
               let! newFields = applyAll buildSymbolTable fields
               return StructLiteral (structToInit, List.zip fieldNames newFields)
             }
+        | Tuple (elems, ptype) ->
+          state 
+            {
+                let! fields = applyAll buildSymbolTable elems
+                return Tuple (fields, ptype)
+            }
         | Invocation (functionName, parameters, functionType) -> 
           state {
               let! curScope = getScope
@@ -380,9 +386,9 @@ module Analysis =
               return IfElse(newCondition, newTBody, newFBody)
             }
         | Constant (ptype, value) -> 
-          state {
+            state {
               return Constant (ptype, value)
-          }
+            }
 
     let checkHiding (symbolTable:SymbolTable) : Result<SymbolTable> =
         // find alle dupliketter
