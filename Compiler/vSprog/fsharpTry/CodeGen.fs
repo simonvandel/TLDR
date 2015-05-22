@@ -770,6 +770,7 @@ module CodeGen =
                   let beginStructLieteral = sprintf "%s = alloca %%struct.%s\n" tempReg str
                   let! ids = fieldNamesAndVals |> collectAll (fun _ -> freshReg)
 
+
                   return ("", "", "")
           }
         | Invocation (functionName, parameters, functionType) -> 
