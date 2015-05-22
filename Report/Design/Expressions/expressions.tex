@@ -517,7 +517,9 @@ An invocation in TLDR is defined as a series of characters, from here on referre
 
 We differentiate between direct and indirect arguments. Direct arguments are put inside parentheses after the symbol. These arguments can be any value as long as the types follows the type rules. A symbol can be dependent on a value that is not given as a direct input but outside its body, as long as it is in scope. We call these indirect arguments. If a function is dependent on indirect arguments we call it impure. Note that this property will be important in \cref{subsubsec:BasicActorFunctionality}. 
 
-A symbol's dependence on arguments, both direct and indirect, are illustrated with parentheses. Inside the parentheses are the direct arguments. Note that these parentheses can be empty if the symbol is only dependent on indirect or no arguments.
+A symbol's dependence on arguments, both direct and indirect, are illustrated with parentheses. Inside the parentheses are the direct arguments. Note that these parentheses can be empty if the symbol is only dependent on indirect or no arguments. For instance if x is declared as a symbol that takes an integer and returns an integer, see \cref{subsubsec:BasicActorFunctionality} for declarations, writing \enquote{y := x} would mean that y also has to be a function that takes an integer and returns an integer, but writing \enquote{z := x(2)} means that z is an integer. Any symbol, both invoked and uninvoked, can be considered expressions, i.e. having a value.
+
+This syntax was decided since it is very close to mathematics, where functions take arguments in parentheses.
 \begin{grammar}
 <Invocation> ::= <Identifier> ('(' (<Expression> (',' <Expression>)*)? ')')?;
 
