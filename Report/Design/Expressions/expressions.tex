@@ -207,11 +207,7 @@ No operator can take a combination of real and integer. This is done since all i
 \end{align*}
 
 \subsubsection{Boolean Expressions}
-Boolean expressions are in TLDR defined as expressions that takes boolean types as arguments and returns a boolean type. The boolean expressions can be constructed from the operators AND, NAND, OR, NOR, XOR. We create the following set for simplicity:
-
-\begin{center}
-$\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}$
-\end{center}
+Boolean expressions are in TLDR defined as expressions that takes boolean types as arguments and returns a boolean type. The boolean expressions can be constructed from the operators AND, NAND, OR, NOR, XOR, NOT.
 
 The following are the semantics for all boolean operators and their truth table.
 
@@ -337,102 +333,36 @@ $\top$ & $\bot$ \\\hline
 \begin{tabular}{ | c | c | c | }
 \hline
 $e_1$ & $e_2$ & $e_1 \Tnand e_2$ \\\hline
-$\bot$ & $\bot$ & $\bot$ \\\hline
-$\bot$ & $\top$ & $\bot$ \\\hline
-$\top$ & $\bot$ & $\bot$ \\\hline
-$\top$ & $\top$ & $\top$ \\\hline
+$\bot$ & $\bot$ & $\top$ \\\hline
+$\bot$ & $\top$ & $\top$ \\\hline
+$\top$ & $\bot$ & $\top$ \\\hline
+$\top$ & $\top$ & $\bot$ \\\hline
 \end{tabular}
 \end{center}
-
 \end{itemize}
 
+All boolean operators, except NOT, takes two booleans and returns a boolean. For the simplicity of the type rules we create the Boolean Operator (BOP):
+
+\begin{center}
+$\Tbop = \left\{ {\text{AND, NAND, OR, NOR, XOR}} \right\}$
+\end{center}
+
+Note that \enquote{NOT} is not included in the set since it only takes one boolean as input and return a boolean.
 
 \begin{align*}
-&\inference[$\text{BOOL}_{\Tbaop-\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
-                       \Tenv e_2 : \Tint}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{\Tbaop-\Treal,\Treal}$]{\Tenv e_1 : \Treal &
-                       \Tenv e_2 : \Treal}
-                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbaop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{EQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 = e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{NEQUALS}$]{\Tenv e_1 : \Tt &
-                       \Tenv e_2 : \Tt}
-                    {\Tenv e_1 \mathbin{\text{!=}} e_2 : \Tbool}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\\\\
-&\inference[$\text{BOOL}_{BBOP}$]{\Tenv e_1 : \Tbool &
+&\inference[$\text{BOOL}_{BOP}$]{\Tenv e_1 : \Tbool &
                        \Tenv e_2 : \Tbool}
                     {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tbop
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \\\\
 &\inference[$\text{BOOL}_{NOT}$]{\Tenv e : \Tbool}
                     {\Tenv \mathbin{\text{NOT}} \; e : \Tbool}
 \end{align*}
 
-\begin{grammar}
-<Operand>	::= <Block>
- \alt <Integer>
- \alt <Real>
- \alt <Boolean>
- \alt <Identifier>
- \alt <Literals>
- \alt <Invocation>
-
-<Identifier> ::= 'me'
- \alt <Identifier>
- \alt <Identifier> <Accessor>
-											
-<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
-
-<Accessor> ::= '.' <Identifier>
- \alt '.' '[' <Operation> ']'
-
-<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
-
-<Literals> ::= <String>
- \alt <ListRange>
- \alt <StructLiteral>
- \alt <Tuple>
-
-<Boolean> ::= 'true' | 'false'
-
-<Integer> ::= '-'?[1-9][0-9]* | '0'
-
-<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
-
-<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
-
-<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
-\end{grammar}
-
-The following mathematical operations are built into the language. They follow these semantic base rules:
-
-\begin{align*}
-&\inference[NUM]{}
-                  {e \vdash n \Rightarrow_A v}
-                  {, \mathcal{N}(n) = v}
-\\\\
-&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
-                  {\Braket{p,e} \Rightarrow_A v}
-                  {,e(p) = \Braket{S,\epsilon}}
-\\\\
-&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
-                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
-                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\\\\
-\end{align*}
-
 
 \subsubsection{Logical Operations}
 \label{sec:logicOps}
+
+Logical operators are in TLDR defined as operators that takes numbers, ie integers and reals, and evaluates to boolean types.
 
 For logical comparisons we chose \enquote{=}. This was done in accordance with the goal of keeping a natural mathematical language. In mathematics \enquote{=} is read as \enquote{is equal to} or simply \enquote{equals}, and is used for stating that two parts are equivalent to each other. Sometimes mathematicians use this statement in a contradicting manner, where they expect to prove the statement to be false. It is from this perspective of being a statement, either true or false, that we chose \enquote{=} to be a logical comparison. The same arguments exist for other types of logical operations.
 
@@ -520,10 +450,80 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 \end{align*}
 \end{itemize}
 
-\paragraph{Boolean Operations}
-\label{sec:boolOps}
+Since all logical operators take a number and returns a boolean we create the set Logical Operators (LOP):
+\begin{center}
+$\Tlop = \left\{ {=, !=, <, <=, >, >=} \right\}$	
+\end{center}
 
-The following operations only operate on bool types.
+\begin{align*}
+&\inference[$\text{BOOL}_{\Tint,\Tint}$]{\Tenv e_1 : \Tint & 
+                       \Tenv e_2 : \Tint}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tlop
+\\\\
+&\inference[$\text{BOOL}_{\Treal,\Treal}$]{\Tenv e_1 : \Treal &
+                       \Tenv e_2 : \Treal}
+                    {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tlop
+\end{align*}
+
+\subsection{Operands}
+When creating expressions one also needs operands to use in the operators. The operators are as follows in formal syntax:
+\begin{grammar}
+<Operand>	::= <Block>
+ \alt <Integer>
+ \alt <Real>
+ \alt <Boolean>
+ \alt <Identifier>
+ \alt <Literals>
+ \alt <Invocation>
+\end{grammar}
+Some of these operands can evaluate something that is not either an Integer,
+\subsubsection{Block}
+
+\begin{grammar}
+<Identifier> ::= 'me'
+ \alt <Identifier>
+ \alt <Identifier> <Accessor>
+											
+<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
+
+<Accessor> ::= '.' <Identifier>
+ \alt '.' '[' <Operation> ']'
+
+<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+
+<Literals> ::= <String>
+ \alt <ListRange>
+ \alt <StructLiteral>
+ \alt <Tuple>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+
+<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
+
+<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
+\end{grammar}
+
+The following mathematical operations are built into the language. They follow these semantic base rules:
+
+\begin{align*}
+&\inference[NUM]{}
+                  {e \vdash n \Rightarrow_A v}
+                  {, \mathcal{N}(n) = v}
+\\\\
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
+                  {\Braket{p,e} \Rightarrow_A v}
+                  {,e(p) = \Braket{S,\epsilon}}
+\\\\
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
+                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
+                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\\\\
+\end{align*}
+
 
 \begin{align*}
 &\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,e} \Rightarrow_B \top}

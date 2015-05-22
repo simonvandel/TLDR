@@ -1,0 +1,59 @@
+actor main := {
+  receive msg:args := {
+    let noOfArguments:int := msg.argc;
+    let workloadMsg:WorkloadMsg := {
+      argumentCount := noOfArguments;
+      arguments := msg.argv
+    }
+    let rootMaster := spawn RootMaster workloadMsg;
+  }
+}
+
+actor RootMaster := {
+  var noOfArguments:int := 0;
+  var results:[real];
+  
+  receive msg:WorkloadMsg {
+    noOfArguments := msg.argumentCount;
+    var i:int := 0;
+    while (i < noOfProblems) {
+      let rootMsg:RootMsg := {
+        degree := msg.arguments.[i];
+        radicant := msg.arguments.[i+1];
+        sender := me;
+      }
+      let worker:RootWorker := spawn RootWorker rootMsg;
+      i := i+2;
+    }
+  }
+  
+  receive result:real {
+    noOfArguments := noOfArguments - 1;
+    results := results :: [result];
+    if (noOfArguments = 0) {
+      for i in results {
+        printreal (i);
+      }
+      die;
+    }
+  }
+}
+
+actor RootWorker := {
+  receive msg:RootMsg := {
+    let result:real := msg.degree # msg.radicant;
+    send result msg.sender
+    die;
+  }
+}
+
+struct RootMsg := {
+  degree:int;
+  radicant:int;
+  sender:RootMaster;
+}
+
+struct WorkloadMsg := {
+  argumentCount:int;
+  arguments:[int];
+}

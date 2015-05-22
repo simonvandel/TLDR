@@ -29,7 +29,7 @@ grammar vSprogGrammar{
     ELSE             -> 'else';
     STRUCT           -> 'struct';
     RETURN           -> 'return';
-    PRIMITIVE        -> 'void' | 'int' | 'real' | 'char' | 'bool';
+    PRIMITIVE        -> 'unit' | 'int' | 'real' | 'char' | 'bool';
 
     IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
 
@@ -92,10 +92,10 @@ grammar vSprogGrammar{
                       | ForIn^;
 
     /*--------- Spawn ---------*/
-    Spawn            -> (LET | VAR) SymDecl ASSIGN! SPAWN! Identifier Expression?;
+    Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
-	/*--------- Send ---------*/
-    Send	         -> SEND! Identifier Expression;
+	  /*--------- Send ---------*/
+    Send             -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
     Return           -> RETURN! Expression?;
@@ -103,7 +103,7 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
-	/*--------- Die ---------*/
+	  /*--------- Die ---------*/
     Die              -> DIE;
 
     /*--------- For ---------*/
@@ -139,36 +139,35 @@ grammar vSprogGrammar{
                       | LPARENS! Expression^ RPARENS!;
     Operand	         -> Block^
                       | Integer^
-            	      | Real^
+                      | Real^
                       | Boolean^
-                      | Identifier^
                       | Literals^
                       | Invocation^;
 
     Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
-    Identifier       -> ME
-                      | IDENTIFIER
-                      | IDENTIFIER Accessor;
 
     Accessor         -> DOT! Identifier^
                       | DOT! STARTLIST! Expression^ ENDLIST!;
 
     Literals         -> String^
-	                  | Char^
+                      | Char^
                       | List^
                       | StructLiteral^
                       | Tuple^;
 
-	Char             -> CHAR;
+    Char             -> CHAR;
 
     String           -> STRING;
 
-    StructLiteral    -> LPARENS! Field (SEMICOLON! Field)* RPARENS!;
-    Field            -> Identifier ASSIGN! Expression; 
+    StructLiteral    -> LPARENS! (Reassignment (SEMICOLON! Reassignment)*)? RPARENS!;
 
-    Invocation       -> Identifier LPARENS! (Expression (COMMA! Expression)*)? RPARENS!;
+    Invocation       -> Identifier (LPARENS! (Expression (COMMA! Expression)*)? RPARENS!)?;
+
+	Identifier       -> ME
+                      | IDENTIFIER
+                      | IDENTIFIER Accessor;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
@@ -178,16 +177,16 @@ grammar vSprogGrammar{
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
                       | (FuncDecl | SymDecl)^ SEMICOLON!
-				          	  | (FuncDecl | SymDecl)^;
+                      | (FuncDecl | SymDecl)^;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
-	SymDecl          -> Identifier COLON! Types;
+    SymDecl          -> Identifier COLON! Types;
 
-	Ids              -> Identifier (COMMA! Identifier)*;
+    Ids              -> Identifier (COMMA! Identifier)*;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
@@ -206,7 +205,7 @@ grammar vSprogGrammar{
     /*--------- List ---------*/
     List             -> STARTLIST! ListElem (COMMA! ListElem)* ENDLIST!;
     ListElem         -> Expression TO^ Expression
-					  | Expression^;
+                      | Expression^;
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;

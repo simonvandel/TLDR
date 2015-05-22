@@ -4,14 +4,15 @@ open vSprog.AST
 open vSprog.CommonTypes
 open AnalysisUtils
 open System
+open System.IO
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
     type CTypeDeclaration = (string * int * PrimitiveType * string) // name, index, type, llvm type
-    type CStruct = (string * CTypeDeclaration list) // structName, structTypes
+    type CStruct = (string * CTypeDeclaration list)
 
     type Environment = {
-        regCounter:int // starts at 0, and increments every time a new register is used. Resets on new funcition
+        regCounter:int // starts at 0, and increments every time a new register is used. Resets on new function
         genString:string // the code generated
         registers:Map<string,string> // key is regName, value is regType
         globalVars:(string * string * string) list // name, type, initialValue
@@ -19,7 +20,7 @@ module CodeGen =
         actors:Map<string, (int * string) list> // key is actorName, value is receiveLabels
         }
 
-    let freshReg : State<string, Environment> =
+    let freshReg : State<string, Environment> = // Gives us a new register, with unique name given by regCounter+1
         state {
             let! st = getState
             let newEnv = {st with regCounter = st.regCounter + 1}
@@ -240,7 +241,7 @@ module CodeGen =
                 let! xs1 = collectAll p xs
                 return x1 :: xs1
               }
-
+    
     let declareStruct (str:CStruct) : State<Value, Environment> = 
         state {
             let! st = getState
@@ -273,16 +274,40 @@ module CodeGen =
 
         | Reassignment (varId, rhs) as reass ->
           state {
-              let sId = match varId with
-                        | SimpleIdentifier id -> id
-                        | _ -> failwith "Initialisation should only contain a simpleIdentifier as name"
-              let! (toStoreName, toStoreType, code) = internalCodeGen rhs
-              let toUpdateName = if sId.StartsWith("%") then sprintf "%s" sId 
-                                 else sprintf "%%%s" sId
-              let! toUpdateType = findRegister toUpdateName
-              let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
-              let fullString = sprintf "%s\n%s" code storeCode
-              return ("","", fullString)
+
+              match varId with
+              | SimpleIdentifier sId -> 
+                let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+                let toUpdateName = if sId.StartsWith("%") then sprintf "%s" sId 
+                                     else sprintf "%%%s" sId
+                let! toUpdateType = findRegister toUpdateName                
+
+                let! (_,_,storeCode) = genStore toStoreName toStoreType toUpdateName toUpdateType
+                let fullString = sprintf "%s\n%s" code storeCode
+                return ("","", fullString)
+               | IdentifierAccessor (baseId, nextElem) ->
+                 let! res = state {
+                          match nextElem with
+                          | Constant ( SimplePrimitive Int, PrimitiveValue.Int idx) -> // it must be a list/tuple
+                            let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+                            let toUpdateName = if baseId.StartsWith("%") then sprintf "%s" baseId
+                                               else sprintf "%%%s" baseId
+                            let! toUpdateType = findRegister toUpdateName
+
+                            // get the address in the list
+                            let! addrReg = freshReg
+                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+                            let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName idx
+                            let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
+                              
+                            // store the rhs at the address
+                            let! (_,_, storeCode) = genStore toStoreName toStoreType addrName addrType
+
+                            let fullString = sprintf "%s\n%s\n%s" code addrCode storeCode
+                            return ("","",fullString)
+                          | _ -> return failwith "struct indexing not implemented" // must be struct
+                          }
+                 return res
           }
         | Initialisation (lvalue, rhs) -> // TODO: vi kan bruge 'contant' attribut til 'let' bindings
           state {
@@ -442,10 +467,12 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n%s\n%s\n%s\n%s" condCode brStr trueBodyCode contCode falseBodyCode contCode contLabel
               return ("","", fullString)
           }
-        | Send (actorName, msg) -> 
+        | Send (actorHandle, actorToSendTo, msg) -> 
           state {
+              printf "%s" actorHandle
+              printf "%s" actorToSendTo
               let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
-              let! msgId = getReceiveID msgGenType actorName
+              let! msgId = getReceiveID msgGenType actorToSendTo
               let msgSize = match msgGenType with
                             | "i64" -> "8"
                             | "double" -> "8"
@@ -461,16 +488,20 @@ module CodeGen =
               let! bitcastedPtrReg = freshReg
               let! (bitcastedPtrName, bitcastedPtrType, bitcastedPtrCode) = newRegister bitcastedPtrReg "i8*" (sprintf "bitcast %s %s to %s" allocMsgType allocMsgName "i8*")
 
-              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorName msgId bitcastedPtrName msgSize 
+              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorToSendTo msgId bitcastedPtrName msgSize 
               let fullstring = sprintf "%s\n%s\n%s\n%s\n%s" msgGenCode allocMsgCode storeMsgCode bitcastedPtrCode code
               return ("","", fullstring)
           }
-        | Spawn (lvalue, actorName, initMsg) -> 
+        | Spawn (lvalue, rhs) -> 
           state {
-              let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
-              let tempReg = sprintf "%%_spawned_%s" actorName
-              let! reg = newRegister tempReg "i64" code
-              return reg
+              match rhs with
+                  | Some (actorName, initMsg) ->
+                      let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
+                      let tempReg = sprintf "%%_spawned_%s" actorName
+                      let! reg = newRegister tempReg "i64" code
+                      return reg
+                  | None ->
+                      return failwith "This should be reached"
           }
         | Receive (msgName, msgType, body) -> 
           state {
@@ -736,8 +767,6 @@ module CodeGen =
               let fullString = sprintf "%s\n%s\n%s\n" lhsCode rhsCode codeCode
               return (codeName, codeType, fullString)
           }
-
-          
         | Identifier (id, pType) ->
           state {
               match id with
@@ -753,9 +782,28 @@ module CodeGen =
                 let str = startId
                 let toLoadName = if str.StartsWith("%") then sprintf "%s" str 
                                  else sprintf "%%%s" str
-                let! toLoadType = findRegister toLoadName
-                let! loadedValue = genLoad regName toLoadType toLoadName
-                return loadedValue
+                let! toLoadType = findRegister toLoadName // find the list/struct/tuple we want to load its content from
+                //let! loadedValue = genLoad regName toLoadType toLoadName
+                //return loadedValue
+
+                let! res = state {
+                          match nextElem with
+                          | Constant ( SimplePrimitive Int, PrimitiveValue.Int idx) -> // it must be a list/tuple
+                            // get the address in the list
+                            let! addrReg = freshReg
+                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+                            let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toLoadType toLoadName idx
+                            let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
+
+                            // load the value at the address
+                            let! loadedValueReg = freshReg
+                            let! (loadedValueName, loadedValueType, loadedValueCode) = genLoad loadedValueReg addrType addrName
+
+                            let fullString = sprintf "%s\n%s" addrCode loadedValueCode
+                            return (loadedValueName,loadedValueType,fullString)
+                          | _ -> return failwith "struct indexing not implemented" // must be struct
+                          }
+                return res
           }
         | Function (funcName, arguments, types, body) -> 
           state {
@@ -778,11 +826,11 @@ module CodeGen =
               match functionName with
               | "print" ->
                 let stringToPrint = parameters.Head
-                let! (strName, strType, strCode) as str = declareStringConstant stringToPrint
-                let! regName = freshReg
+                let! (strName, strType, strCode) as str = declareStringConstant stringToPrint // make a global definition and assign a name to it in strName
+                let! regName = freshReg // Get new imediate register
                 let! (loadedStringName, loadedStringType, loadCode) = genLoadString regName str
                 let putsCode = sprintf "call i32 @puts(%s %s)" loadedStringType loadedStringName
-                let fullString = sprintf "%s\n%s" loadCode putsCode
+                let fullString = sprintf "%s\n%s" loadCode putsCode // Concatenate loadCode string and putsCode string in to fullstring, this is the whole mechanism for loading and printing(puts) a string in the program
                 return ("","", fullString)
               | "printint" ->
                 let intToPrint = parameters.Head
@@ -959,5 +1007,25 @@ module CodeGen =
                       %6 = load i32* %1
                       ret i32 %6
                     }"""
+
+        let appendTargetTriple = 
+            let os = Environment.OSVersion
+            let pid = os.Platform  
+            let targetTriple = match pid with
+                              | PlatformID.Unix ->
+                                  if (Directory.Exists("/Applications")
+                                      && Directory.Exists("/System")
+                                      && Directory.Exists("/Users")
+                                      && Directory.Exists("/Volumes")) then
+                                      None
+                                  else  Some "x86_64-pc-linux-gnu"
+                              | PlatformID.MacOSX -> None
+                              | PlatformID.Win32NT -> None
+                              | _ -> None
+            match targetTriple with
+            | Some str -> 
+              sprintf "target triple = \"%s\"\n" str
+            | None -> ""
+
                                                                        
-        externalFunctions + structs +  globals + main + fullString
+        appendTargetTriple + externalFunctions + structs +  globals + main + fullString

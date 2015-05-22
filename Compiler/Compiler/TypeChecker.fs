@@ -5,19 +5,15 @@ open vSprog.CommonTypes
 open vSprog.AST
 open AnalysisUtils
 
-
 module TypeChecker = 
-
 
     let Last (input:'a list) : 'a =
         List.rev input |>
         List.head
 
-
-
     let rec checkTypesAST (root:AST) : Result<PrimitiveType> =
         match root with
-        | Program stms | Block stms | Body stms ->
+        | Program stms | Block stms | Body stms | Tuple stms ->
             stms 
             |> List.map (fun stm -> checkTypesAST stm)
             |> fun xs -> if xs.Length = 0 then
@@ -57,15 +53,19 @@ module TypeChecker =
                 >-> Success HasNoType
             | Success illegalType ->
                 Failure [sprintf "Conditional statement in if-else statement should be bool, found %A" illegalType]
-        | Send (actorName, msgName ) ->
+        | Send (actorHandle, actorToSendTo, msgName ) ->
             Success HasNoType
-        | Spawn (lvalue, actorName, initMsg) ->
-            match initMsg with
-            | Some msg -> 
-              checkTypesAST msg
-              >-> Success HasNoType
+        | Spawn (lvalue, rhs) ->
+            match rhs with
+            | Some (actorName, initMsg) ->
+                match initMsg with
+                | Some msg -> 
+                    checkTypesAST msg
+                    >-> Success HasNoType
+                | None ->
+                    Success HasNoType
             | None ->
-              Success HasNoType
+                Success HasNoType
         | Receive (msgName, msgType, body) -> 
             checkTypesAST body >->
             Success HasNoType
@@ -146,7 +146,11 @@ module TypeChecker =
             | Not, rhsRes ->
                 Failure [sprintf "Cannot apply (Not) to anything else than Bools, found %A" rhsRes ]
         | Identifier (name, pType) ->
-            Success pType
+            match name with
+            | SimpleIdentifier str ->
+              Success pType
+            | IdentifierAccessor (baseId, nextElem) ->
+               checkTypesAST nextElem
         | Function (funcName, arguments, types, body) ->
             match checkTypesAST body, types with
             | Success bodyType, ((ListPrimitive _ | SimplePrimitive _) as Arg) when bodyType = Arg ->
