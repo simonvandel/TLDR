@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
 	  /*--------- Send ---------*/
-    Send	           -> SEND! Identifier Expression;
+    Send             -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
     Return           -> RETURN! Expression?;
@@ -139,7 +139,7 @@ grammar vSprogGrammar{
                       | LPARENS! Expression^ RPARENS!;
     Operand	         -> Block^
                       | Integer^
-            	        | Real^
+                      | Real^
                       | Boolean^
                       | Identifier^
                       | Literals^
@@ -156,12 +156,12 @@ grammar vSprogGrammar{
                       | DOT! STARTLIST! Expression^ ENDLIST!;
 
     Literals         -> String^
-	                  | Char^
+                      | Char^
                       | List^
                       | StructLiteral^
                       | Tuple^;
 
-	  Char             -> CHAR;
+    Char             -> CHAR;
 
     String           -> STRING;
 
@@ -177,14 +177,14 @@ grammar vSprogGrammar{
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
     TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
                       | (FuncDecl | SymDecl)^ SEMICOLON!
-				          	  | (FuncDecl | SymDecl)^;
+                      | (FuncDecl | SymDecl)^;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
-	  SymDecl          -> Identifier COLON! Types;
+    SymDecl          -> Identifier COLON! Types;
 
 	  Ids              -> Identifier (COMMA! Identifier)*;
 
