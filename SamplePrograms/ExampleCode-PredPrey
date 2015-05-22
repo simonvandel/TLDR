@@ -1,0 +1,261 @@
+actor main := {
+  let noOfPredators:int := 50;
+  let noOfPrey:int := 50;
+  var predatorList:[Predator];
+  var preyList:[Prey];
+  
+  
+  receive msg:args := {
+    let predController:PredatorController := spawn PredatorController;
+    let preyController:PreyController := spawn PreyController;
+    let predContMsg:PredContMsg := (
+      controller := predController;
+      count := noOfPredators;
+    );
+    let preyContMsg:PreyContMsg := (
+      controller := preyController;
+      count := noOfPrey;
+    );
+    send predContMsg preyController;
+    send preyContMsg predController;
+  };
+};
+
+
+actor Predator := {
+  var child:bool := true;
+  var age:int := 0;
+  var daysSinceMeal:int := 0;
+  var controller:PredatorController;
+
+  receive msg:NewDayMsg := {
+    age := age + 1;
+    daysSinceMeal := daysSinceMeal + 1;
+    
+    if (age > 60 OR daysSinceMeal > 4) {
+      let dyingMsg:DyingMsg := (
+        sender := me;
+        isChild := child;
+      );
+      send dyingMsg controller;
+      die;
+    }
+    
+    if (age > 7) {
+      child := false;
+      let dingMsg:PredatorDingMsg := (sender := me;);
+      send dingMsg controller;
+    };
+    let huntMsg:HuntMsg := ();
+    send huntMsg controller;
+  };
+  receive msg:FoodMsg := {
+    daysSinceMeal := 0;
+  }
+  receive msg:InitMsg := {
+    controller := msg.sender;
+  };
+};
+
+actor Prey := {
+  var child:bool := true;
+  var orphan:bool := false;
+  var age:int := 0;
+  var controller:PreyController;
+  
+  receive msg:KillMsg := {
+    die;
+  };
+  receive msg:NewDayMsg := {
+    age := age + 1;
+    if (age > 30) {
+      let dyingMsg:DyingMsg := (
+        sender := me;
+        isChild := child;
+      );
+      send dyingMsg controller;
+      die;
+    }
+    if (age > 4) {
+      child := false;
+      let dingMsg:PreyDingMsg := (sender := me;);
+      send dingMsg controller;
+    };
+  };
+  receive msg:InitMsg := {
+    controller := msg.sender;
+  };
+};
+
+actor PredatorController := {
+  var noOfAdults:int := 0;
+  var noOfChildren:int := 0;
+  var huntMsgsReceived:int := 0;
+  var daysSinceBirth:int := 0;
+  var preyController:PreyController;
+  var predatorList:[Predator];
+  var childPredatorList:[Predator];
+  
+  receive msg:HuntMsg := {
+    huntMsgsReceived := huntMsgsReceived + 1;
+    if (adults + children <= huntMsgsReceived) {
+      let packHuntMsg:PackHuntMsg := (
+        adults := noOfAdults;
+        children := noOfChildren;
+      );
+      send packHuntMsg controller;
+    };
+  };
+  receive msg:HuntResMsg := {
+    let adultShare:int := (int) 2/3 * (real)msg.kills;
+    let childrenShare:int := msg.kills - adultShare;
+    
+    for i in [0..adultShare - 1] {
+      let foodMsg:FoodMsg := ();
+      send foodMsg predatorList.[i];
+    }
+    for i in [0 .. childrenShare - 1] {
+      let foodMsg:FoodMsg := ();
+      send foodMsg childPredatorList.[i];
+    }
+    for i in predatorList {
+      let newDayMsg:NewDayMsg := ();
+      send newDayMsg predatorList.[i];
+    }
+    for i in childPredatorList {
+      let newDayMsg:NewDayMsg := ();
+      send newDayMsg childPredatorList.[i];
+    }
+    
+    daysSinceBirth := daysSinceBirth + 1;
+    if (daysSinceBirth > 14) {
+      for i in predatorList {
+        let initMsg:PredatorInitMsg := (sender := me);
+        let newChild:Predator := spawn Predator initMsg;
+        childPredatorList := concat(childPredatorList, [newChild]);
+      };
+    };
+  };
+  receive msg:PredatorDingMsg := {
+    noOfAdults := noOfAdults + 1;
+    noOfChildren := noOfChildren - 1;
+    childPredatorList := remove(childPredatorList, msg.sender);
+    predatorList := concat(predatorList, msg.sender);
+  };
+  receive msg:DyingMsg := {
+    if (msg.isChild) {
+      childPredatorList := remove(childPredatorList, msg.sender);
+    }
+    else {
+      predatorList := remove(predatorList, msg.sender);
+    }
+  }
+  receive msg:PreyContMsg := {
+    preyController := msg.controller;
+    for i in [1 .. msg.count] {
+      let initMsg:InitMsg := (sender := me;);
+      let newPredator := spawn Predator initMsg;
+      childPredatorList := concat(childPredatorList, [newPredator]);
+    };
+  };
+};
+
+actor PreyController := {
+  var noOfAdults:int := 0;
+  var noOfChildren:int := 0;
+  var daysSinceBirth:int := 0;
+  var predatorController:PredatorController;
+  var preyList:[Prey];
+  var childPreyList:[Prey];
+  
+  receive msg:PreyDingMsg := {
+    noOfAdults := noOfAdults + 1;
+    noOfChildren := noOfChildren - 1;
+    childPreyList := remove(childPreyList, msg.sender);                //TODO! kan remove tage element istedet for index?
+    preyList := concat(preyList, [msg.sender]);
+  }
+  receive msg:PackHuntMsg := {
+    let baseProbability:real := 1- ((0.75)^(real)noOfAdults * (0.5)^(real)noOfChildren;
+    let probabilityToKill:real := baseProbability^msg.adults;
+    let childProbabilityToKill:real := (baseProbability * 0.5)^msg.children;
+    let adultKills:int := (int) (noOfAdults + noOfChildren)*probabilityToKill;
+    let childKills:int := (int) (noOfAdults + noOfChildren)*childProbabilityToKill;
+    
+    let huntResMsg:HuntResMsg := (kills := adultKills + childKills;);
+    send huntResMsg predatorController;
+    
+    for i in [0 .. adultKills-1] {
+      let killMsg:KillMsg := ();
+      send killMsg preyList.[i];
+      preyList := remove(preyList, preyList.[i]);                  //TODO! lav listRemove
+    };
+    for i in [0 .. childKills-1] {
+      let killMsg:KillMsg := ();
+      send killMsg childPreyList.[i];
+      preyList := remove(childPreyList, childPreyList.[i]);
+    }
+    for i in preyList {
+      let newDayMsg:NewDayMsg := ();
+      send newDayMsg preyList.[i]; 
+    };
+    for i in childPreyList {
+      let newDayMsg:NewDayMsg := ();
+      send newDayMsg childPreyList.[i]; 
+    };
+    
+    daysSinceBirth := daysSinceBirth + 1;
+    if (daysSinceBirth > 7) {
+      for i in preyList {
+        let initMsg:PreyInitMsg := (sender := me;);
+        let newChild:Prey := spawn Prey initMsg;
+        childPreyList := concat(childPreyList, newChild);
+      };
+    };
+  };
+  receive msg:PreyDyingMsg := {
+    if (msg.isChild) {
+      childPreyList := remove(childPreyList, msg.sender);
+    }
+    else {
+      preyList := remove(preyList, msg.sender);
+    }
+  };
+  receive msg:PredContMsg := {
+    predatorController := msg.controller;
+    for i in [1 .. msg.count] {
+      let initMsg:InitMsg := (sender = me;);
+      let newPrey := spawn Prey initMsg;
+      childPreyList := concat(childPreyList, [newPrey]);
+    };
+  };
+};
+
+struct PredatorDyingMsg := {
+  sender:Predator;
+  isChild:bool;
+};
+struct PreyDyingMsg := {
+  sender:Prey;
+  isChild:bool;
+};
+struct NewDayMsg := {};
+struct KillMsg := {};
+struct PredatorInitMsg := {sender:PredatorController};
+struct PreyInitMsg := {sender:PreyController};
+struct HuntMsg := {};
+struct PackHuntMsg := {
+  adults:int;
+  children:int;
+};
+struct PredatorDingMsg := {sender:Predator;};
+struct PreyDingMsg := {sender:Prey;}
+struct PreyContMsg := {
+  controller:PreyController;
+  count:int;
+};
+struct PredContMsg := {
+  controller:PredatorController;
+  count:int;
+};
+struct HuntResMsg := {kills:int;}
+struct FoodMsg := {};
