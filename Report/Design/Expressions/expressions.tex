@@ -466,8 +466,7 @@ $\Tlop = \left\{ {=, !=, <, <=, >, >=} \right\}$
 \end{align*}
 
 \subsection{Operands}
-
-
+When creating expressions one also needs operands to use in the operators. The operators are as follows in formal syntax:
 \begin{grammar}
 <Operand>	::= <Block>
  \alt <Integer>
@@ -476,7 +475,11 @@ $\Tlop = \left\{ {=, !=, <, <=, >, >=} \right\}$
  \alt <Identifier>
  \alt <Literals>
  \alt <Invocation>
+\end{grammar}
+Some of these operands can evaluate something that is not either an Integer,
+\subsubsection{Block}
 
+\begin{grammar}
 <Identifier> ::= 'me'
  \alt <Identifier>
  \alt <Identifier> <Accessor>
