@@ -141,16 +141,12 @@ grammar vSprogGrammar{
                       | Integer^
                       | Real^
                       | Boolean^
-                      | Identifier^
                       | Literals^
                       | Invocation^;
 
     Boolean          -> BOOL;
     Integer          -> INT;
     Real             -> REAL;
-    Identifier       -> ME
-                      | IDENTIFIER
-                      | IDENTIFIER Accessor;
 
     Accessor         -> DOT! Identifier^
                       | DOT! STARTLIST! Expression^ ENDLIST!;
@@ -167,7 +163,11 @@ grammar vSprogGrammar{
 
     StructLiteral    -> LPARENS! (Reassignment (SEMICOLON! Reassignment)*)? RPARENS!;
 
-    Invocation       -> Identifier LPARENS! (Expression (COMMA! Expression)*)? RPARENS!;
+    Invocation       -> Identifier (LPARENS! (Expression (COMMA! Expression)*)? RPARENS!)?;
+
+	Identifier       -> ME
+                      | IDENTIFIER
+                      | IDENTIFIER Accessor;
 
     /*--------- Declaration ---------*/
     Declaration      -> Struct^
