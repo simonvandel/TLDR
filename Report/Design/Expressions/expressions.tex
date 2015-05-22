@@ -2,11 +2,14 @@
 \label{sec:Expressions}
 This part of the language describes expressions. Expressions are in The Language Described in This Report defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
 
-\subsection{Operators}
+\subsection{Operators}\label{subsec:operators}
 First we look at the mathematical operators that can combine expressions.
 \setlength{\grammarindent}{100pt}
 \begin{grammar}
-<Operation> ::= <Operation> <PSIXOPERATOR> <OP6>
+<Expression> ::= <Expression> <PSEVENOPERATOR> <OP7>
+ \alt <OP7>
+
+<OP7> ::= <OP7> <PSIXOPERATOR> <OP6>
  \alt <OP6>
 
 <OP6> ::= <OP6> <PFIVEOPERATOR> <OP5>
@@ -24,25 +27,29 @@ First we look at the mathematical operators that can combine expressions.
 <OP2> ::= <OP2> <PONEOPERATOR> <OP1>
  \alt <OP1>
 
-<OP1> ::= <Operand>
- \alt <OP1> <PZEROOPERATOR> <Operand>
+<OP1> ::= <PZEROOPERATOR> <OP1>
+ \alt <OP0>
+
+<OP0> ::= <Operand>
  \alt '(' <Operation> ')'
 
-<PZEROOPERATOR> ::= '$\Twedge$' | '\#'
+<PZEROOPERATOR> ::= '(''int' | 'real' | 'char' | 'bool'')'
 
-<PONEOPERATOR> ::= '*' | '/' | '\%'
+<PONEOPERATOR> ::= '$\Twedge$' | '\#'
 
-<PTWOOPERATOR> ::= '+' | '-'
+<PTWOOPERATOR> ::= '*' | '/' | '\%'
 
-<PTHREEOPERATOR> ::= '=' | '!=' | '$\textless$' | '$\textless$=' | '$\textgreater$' | '$\textgreater$='
+<PTHREEOPERATOR> ::= '+' | '-'
 
-<PFOUROPERATOR> ::= 'NOT'
+<PFOUROPERATOR> ::= '=' | '!=' | '$\textless$' | '$\textless$=' | '$\textgreater$' | '$\textgreater$='
 
-<PFIVEOPERATOR> ::= 'AND' | 'NAND'
+<PFIVEOPERATOR> ::= 'NOT'
+
+<PSIXOPERATOR> ::= 'AND' | 'NAND'
 
 <PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
-The precedence of the operators are created in the grammar. Here the parse tree will be created, such that the $\braket{PSIXOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSIXOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
+The precedence of the operators are created in the grammar. Here the parse tree will be created, such that the $\braket{PSEVENOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSEVENOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
 \begin{center}
 $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \end{center}
@@ -54,7 +61,7 @@ $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \label{precedenceExamples}
 \end{figure}
 
-We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a higher precedence, and should therefor be lower in the tree. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
+We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a higher precedence, and should there for be lower in the tree. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
 \begin{center}
 $((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
 \end{center}
@@ -472,41 +479,74 @@ When creating expressions one also needs operands to use in the operators. The o
  \alt <Integer>
  \alt <Real>
  \alt <Boolean>
- \alt <Identifier>
  \alt <Literals>
  \alt <Invocation>
 \end{grammar}
-Some of these operands can evaluate something that is not either an Integer,
-\subsubsection{Block}
+Some of these operands can evaluate something that is not either an Integer, Real or Boolean, for instance lists, actors, structures. This means that, due to the type system seen in \cref{subsec:operators}, the operand cannot be an argument to any operand. This however does not mean that it cannot be an expression, they can because all operands by themselves also have value and are an expression.
 
+\subsubsection{Integer}
+The integer is a literal integer that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 2;$}, \enquote{2} is an integer literal. All integers are interpreted as decimal numbers and can be any combination of the symbols 0-9 in any length. They can be either positive or negative, illustrated with the symbol \enquote{-}, but may not start with a 0 unless it is only the number \enquote{0}. This is done since readability is weighted higher than writeability, see \cref{analsum}, and it was assessed for instance \enquote{00023} is not very readable compared to \enquote{23}. The formal syntax is described as:
 \begin{grammar}
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+\end{grammar}
+
+\begin{align*}
+&\inference[NUM]{\Tenv n:\Tint}
+                 {\Tenv n: \Tint} 
+\end{align*}
+
+\subsubsection{Real}
+The real is a literal real that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 4.3;$}, \enquote{4.3} is an real literal. All real are interpreted as decimal numbers and are an integer with the same rule as integers followed by a \enquote{.} and then any combination of the symbols 0-9. They can like integers be either positive or negative, illustrated with the symbol \enquote{-}. There must be at least one number both before and after the \enquote{.}. This means that neither \enquote{.1} and \enquote{1.} are allowed. This is done since it was assessed that for instance \enquote{-0.1} is more readable than \enquote{-.1}. Formally described as:
+\begin{grammar}
+<Real> ::= ('-'?[1-9][0-9]* | '0')'.'[0-9]+
+\end{grammar}
+
+\begin{align*}
+&\inference[REAL]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
+                 {\Tenv n_1.n_2: \Treal}
+\end{align*}
+
+\subsubsection{Boolean}
+Booleans are the symbols that holds the value whether something is true or false, for instance we can write in mathematics write \enquote{2 > 3}. This is a contradiction and therefore false. Booleans can therefore have two values, true or false. These are often used in mathematical proofs.
+\begin{grammar}
+<Boolean> ::= 'true' | 'false'
+\end{grammar}
+
+\subsubsection{Invocation}
+An invocation in TLDR is defined as a series of characters, from here on referred to as the symbol, which is associated with a value. The value can either depend on arguments, a function, or be independent from any input, a constant or variable. If the value depends on arguments the language evaluation is done lazy, meaning that the output value are only associated with the symbol when the symbol is invoked. Otherwise the symbol is associated with the functionality, i.e. its statements and how to evaluate the function. 
+
+We differentiate between direct and indirect arguments. Direct arguments are put inside parentheses after the symbol. These arguments can be any value as long as the types follows the type rules. A symbol can be dependent on a value that is not given as a direct input but outside its body, as long as it is in scope. We call these indirect arguments. If a function is dependent on indirect arguments we call it impure. Note that this property will be important in \cref{subsubsec:BasicActorFunctionality}. 
+
+A symbol's dependence on arguments, both direct and indirect, are illustrated with parentheses. Inside the parentheses are the direct arguments. Note that these parentheses can be empty if the symbol is only dependent on indirect or no arguments.
+\begin{grammar}
+<Invocation> ::= <Identifier> ('(' (<Expression> (',' <Expression>)*)? ')')?;
+
 <Identifier> ::= 'me'
- \alt <Identifier>
- \alt <Identifier> <Accessor>
-											
-<Identifier> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me')
+ \alt <Id>
+ \alt <Id> <Accessor>
+
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
 
 <Accessor> ::= '.' <Identifier>
  \alt '.' '[' <Operation> ']'
 
 <Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+\end{grammar}
 
+\subsubsection{Literals}
+
+\begin{grammar}
 <Literals> ::= <String>
  \alt <ListRange>
  \alt <StructLiteral>
  \alt <Tuple>
-
-<Boolean> ::= 'true' | 'false'
-
-<Integer> ::= '-'?[1-9][0-9]* | '0'
-
-<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
 
 <String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
 
 <Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
 \end{grammar}
 
+\subsubsection{Block}
 The following mathematical operations are built into the language. They follow these semantic base rules:
 
 \begin{align*}
@@ -562,7 +602,6 @@ The following mathematical operations are built into the language. They follow t
 
 \paragraph{Comparison of structs}
 \begin{align*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{}
 &\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv e_1 = e_2: \Tbool}
@@ -573,32 +612,14 @@ The following mathematical operations are built into the language. They follow t
 \intertext{}
 &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
                  {\Tenv \{s_1; s_2\} : \Tt'}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
 &\inference[LET]{}
                  {\Tenv \mathbin{\text{let}} \; e:T: ok}
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
 &\inference[VAR]{}
                  {\Tenv \mathbin{\text{var}} \; e:T: ok}
-                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
 &\inference[LET1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv \mathbin{\text{let}} \; e_1 := e_2: ok}
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
 &\inference[VAR1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv \mathbin{\text{var}} \; e_1 := e_2: ok}
-                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[NUM]{\Tenv n:\Tint}
-                 {\Tenv n: \Tint} 
-                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
-&\inference[NUM1]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
-                 {\Tenv n_1.n_2: \Treal}    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{}
 &\inference[INVOKE]{\Tenv n: \Tt}
                  {\Tenv n: \Tt}
 \end{align*}
