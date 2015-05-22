@@ -29,7 +29,7 @@ grammar vSprogGrammar{
     ELSE             -> 'else';
     STRUCT           -> 'struct';
     RETURN           -> 'return';
-    PRIMITIVE        -> 'unit' | 'int' | 'real' | 'char' | 'bool';
+    PRIMITIVE        -> 'int' | 'real' | 'char' | 'bool';
 
     IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
 
@@ -50,13 +50,14 @@ grammar vSprogGrammar{
     ENDLIST          -> ']';
     COMMA            -> ',';
 
-    PZEROOPERATOR    -> '^' | '#';
-    PONEOPERATOR     -> '*' | '/' | '%';
-    PTWOOPERATOR     -> '+' | '-';
-    PTHREEOPERATOR   -> '=' | '!=' | '<' | '<=' | '>' | '>=';
-    PFOUROPERATOR    -> 'NOT';
-    PFIVEOPERATOR    -> 'AND' | 'NAND';
-    PSIXOPERATOR     -> 'OR' | 'XOR' | 'NOR' ;
+    PZEROOPERATOR    -> '('PRIMITIVE')';
+    PONEOPERATOR     -> '^' | '#';
+    PTWOOPERATOR     -> '*' | '/' | '%';
+    PTHREEOPERATOR   -> '+' | '-';
+    PFOUROPERATOR    -> '=' | '!=' | '<' | '<=' | '>' | '>=';
+    PFIVEOPERATOR    -> 'NOT';
+    PSIXOPERATOR     -> 'AND' | 'NAND';
+	PSEVENOPERATOR   -> 'OR' | 'XOR' | 'NOR';
 
     /*--------- Numbers ---------*/
     INT              -> '-'?[1-9][0-9]* | '0'; 
@@ -121,8 +122,10 @@ grammar vSprogGrammar{
                       | BLOCKSTART! BLOCKEND!;
 
     /*--------- Expression ---------*/
-    Expression       -> Expression PSIXOPERATOR OP6
-                      | OP6;
+    Expression       -> Expression PSEVENOPERATOR OP6
+                      | OP7;
+	OP7              -> OP7 PSIXOPERATOR OP6
+                      | OP6^;
     OP6              -> OP6 PFIVEOPERATOR OP5
                       | OP5^;
     OP5              -> PFOUROPERATOR OP5
@@ -133,7 +136,7 @@ grammar vSprogGrammar{
                       | OP2^;
     OP2              -> OP2 PONEOPERATOR OP1
                       | OP1^;
-    OP1              -> OP1 PZEROOPERATOR OP0
+    OP1              -> PZEROOPERATOR OP1
                       | OP0^;
     OP0              -> Operand^
                       | LPARENS! Expression^ RPARENS!;
@@ -161,7 +164,7 @@ grammar vSprogGrammar{
 
     String           -> STRING;
 
-    StructLiteral    -> LPARENS! (Reassignment (SEMICOLON! Reassignment)*)? RPARENS!;
+    StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS!;
 
     Invocation       -> Identifier (LPARENS! (Expression (COMMA! Expression)*)? RPARENS!)?;
 
