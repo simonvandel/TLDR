@@ -59,9 +59,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TLDR\TLDR.fsproj">
+    <ProjectReference Include="..\Compiler\Compiler.fsproj">
       <Project>{5B4D7374-E266-4482-8919-6AAFE88C7DE2}</Project>
-      <Name>TLDR</Name>
+      <Name>Compiler</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -94,8 +94,8 @@ grammar vSprogGrammar{
     /*--------- Spawn ---------*/
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
-	  /*--------- Send ---------*/
-    Send	         -> SEND! Identifier Identifier? Expression; 
+	/*--------- Send ---------*/
+    Send	         -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
     Return           -> RETURN! Expression?;
@@ -103,7 +103,7 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
-	  /*--------- Die ---------*/
+	/*--------- Die ---------*/
     Die              -> DIE;
 
     /*--------- For ---------*/
@@ -136,10 +136,10 @@ grammar vSprogGrammar{
     OP1              -> OP1 PZEROOPERATOR OP0
                       | OP0^;
     OP0              -> Operand^
-                      %| LPARENS! Operand^ RPARENS!;
+                      | LPARENS! Expression^ RPARENS!;
     Operand	         -> Block^
                       | Integer^
-            	        | Real^
+            	      | Real^
                       | Boolean^
                       | Identifier^
                       | Literals^
@@ -161,11 +161,11 @@ grammar vSprogGrammar{
                       | StructLiteral^
                       | Tuple^;
 
-	  Char             -> CHAR;
+	Char             -> CHAR;
 
     String           -> STRING;
 
-    StructLiteral    -> LPARENS! Reassignment (SEMICOLON! Reassignment)* RPARENS!;
+    StructLiteral    -> LPARENS! (Reassignment (SEMICOLON! Reassignment)*)? RPARENS!;
 
     Invocation       -> Identifier LPARENS! (Expression (COMMA! Expression)*)? RPARENS!;
 
@@ -184,9 +184,9 @@ grammar vSprogGrammar{
     Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
 
     FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
-	  SymDecl          -> Identifier COLON! Types;
+	SymDecl          -> Identifier COLON! Types;
 
-	  Ids              -> Identifier (COMMA! Identifier)*;
+	Ids              -> Identifier (COMMA! Identifier)*;
 
     /*--------- Reassignment ---------*/
     Reassignment     -> Identifier ASSIGN! Expression;
@@ -205,7 +205,7 @@ grammar vSprogGrammar{
     /*--------- List ---------*/
     List             -> STARTLIST! ListElem (COMMA! ListElem)* ENDLIST!;
     ListElem         -> Expression TO^ Expression
-					            | Expression^;
+					  | Expression^;
                                  
     /*--------- Tuple ---------*/
     Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
