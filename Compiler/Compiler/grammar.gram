@@ -50,7 +50,7 @@ grammar vSprogGrammar{
     ENDLIST          -> ']';
     COMMA            -> ',';
 
-    PZEROOPERATOR    -> '('PRIMITIVE')';
+    PZEROOPERATOR    -> '(' PRIMITIVE ')';
     PONEOPERATOR     -> '^' | '#';
     PTWOOPERATOR     -> '*' | '/' | '%';
     PTHREEOPERATOR   -> '+' | '-';
@@ -126,9 +126,9 @@ grammar vSprogGrammar{
                       | OP7;
 	OP7              -> OP7 PSIXOPERATOR OP6
                       | OP6^;
-    OP6              -> OP6 PFIVEOPERATOR OP5
+    OP6              -> PFIVEOPERATOR OP6
                       | OP5^;
-    OP5              -> PFOUROPERATOR OP5
+    OP5              -> OP5 PFOUROPERATOR OP4
                       | OP4^;
     OP4              -> OP4 PTHREEOPERATOR OP3
                       | OP3^;

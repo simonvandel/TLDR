@@ -308,7 +308,7 @@ module AST =
             | Constant (ptype, _) -> typeoflst <- ptype
             | _ -> [] |> ignore
             List(res,ListPrimitive(typeoflst,List.length res))
-        | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "Expression") ->
+        | ("OP1" | "OP2" | "OP3" | "OP4" | "OP5" | "OP6" | "OP7" | "Expression") ->
             match root.Children.Count with
             | 3 -> 
                 let operation = toAST (root.Children.Item 0)
