@@ -11,7 +11,7 @@ open vSprog.ParserUtils
 module ParserTest =
 
     let debugTestParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../../TLDR/grammar.gram"
+        parse input "../../Compiler/grammar.gram"
         >>= fun tree -> 
             printTree tree 0
             Success (toAST tree)
@@ -22,7 +22,7 @@ module ParserTest =
                       | Failure msg  -> failwith (String.concat "" msg)
 
     let testParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../../TLDR/grammar.gram"
+        parse input "../../Compiler/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun ast -> match ast with
                       | Success ast' -> test ast'
@@ -264,8 +264,7 @@ module ParserTest =
     [<Test>]
     let ``When syntax for tuple consisting of [1,"String",3.2], expect Tuple AST`` () =
         debugTestParseWith "(1,\"string\",3.2)"
-        <| should equal (Program [Body [
-                                    (Tuple [(   Constant(SimplePrimitive Primitive.Int, PrimitiveValue.Int 1));
+        <| should equal (Program [Body [Tuple ([   Constant(SimplePrimitive Primitive.Int, PrimitiveValue.Int 1);
                                                 Constant(ListPrimitive (SimplePrimitive Primitive.Char,6),
                                                     PrimitiveValue.List [
                                                                             PrimitiveValue.Char 's';
@@ -276,7 +275,7 @@ module ParserTest =
                                                                             PrimitiveValue.Char 'g';
                                                                     ]);
                                                 Constant(SimplePrimitive Primitive.Real, PrimitiveValue.Real 3.2)
-                                           ])
+                                           ],PrimitiveType.TupleType([SimplePrimitive Primitive.Int;SimplePrimitive Primitive.Char; SimplePrimitive Primitive.Real]))
                                     ]]
                                 )
 

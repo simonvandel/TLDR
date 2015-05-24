@@ -1,0 +1,31 @@
+\subsubsection{Static sematics}
+
+Restrictions of the language that is hard or impossible to express in formal syntax, is analysed by formal sematics at compile time. This includes checking whether a identifier is used before its declaration, rendering it an illegal action by the formal sematics. 
+
+The static sematic analysis phase includes following checking by the given sematics of TLDR:
+\begin{itemize}
+\item Type checking 
+\item Function calls
+\item Used before declared
+\item H%iding checking
+\item Scope checking
+\end{itemize}
+
+\emph{Type checking}
+  Whether types of ide%ntifier makes sense to be operands in operation
+  
+\emph{Function calls}
+  Right type of identifier and correct numbe%r of parameters being applied to functions calls 
+
+\emph{Used before declared}
+  %When is identifier declared according to use
+  
+  
+  
+\emph{Hiding checking}
+  %If similar named identifiers are used in illegal manor, whithin same scopes
+  
+  This is done by looping thru every entry of the systemtable. For every identifier, check if theres is another identifier with a matching name. If such case exist check if either one of them is visible in scopes to the other
+
+\subsubsubsection{Scope checking}
+  Is identifier visible in this scope
