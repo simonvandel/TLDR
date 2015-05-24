@@ -1,5 +1,5 @@
-\subsection{Value Assignment}
-\label{subsec:value_assignment}
+\subsection{Initialisations}
+\label{subsec:initialisations}
 
 A value can be assigned to a symbol in either a constant binding or a variable binding.
 
@@ -7,11 +7,40 @@ In traditional mathematical notation, the \enquote{=} symbol is also sometimes u
 
 But since we wanted assignments, be it mutable or immutable, to have a similarities, we chose \enquote{:=} for all assignments. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{:=} was chosen, since it is a known symbol from other languages. The asymmetry of the \enquote{:=} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
 
-The grammar for value assignments ended up following this grammar:
 
-\kanote{here goes grandmar}
 
-as can be seen, values can either be an immutable constant, or a muteable variable.
+\begin{grammar}
+<Reassignment> ::= <Identifier> ':=' <Expression>
+
+<Identifier> ::= 'me'
+ \alt <Id>
+ \alt <Id> <Accessor>
+
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'int' | 'real' | 'char' | 'bool' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
+
+<Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) := <Expression>
+
+<Ids> ::= <Identifier> (',' <Identifier>)*
+
+<FuncDecl> -> <Identifier> '(' <Ids>? ')' ':' <Types>
+
+<SymDecl> -> <Identifier> ':' <Types>
+
+<Types> ::= <Type> ('->' <Type>)*
+
+<Type> ::= <PrimitiveType>
+ \alt <Identifier>
+ \alt <ListType>
+ \alt <TupleType>
+
+<TupleType> ::= '(' <Types> ')'
+
+<ListType> ::= '\{' <Types> '\}'
+
+<PrimitiveType> ::= 'int' | 'real' | 'char' | 'bool'
+\end{grammar}
+
+As can be seen, values can either be an immutable constant, or a muteable variable.
 
 A constant binding can never have its value changed. For example, if \enquote{a} is bound to \enquote{5}, \enquote{a} can never refer to another value than \enquote{5} in the same lexical scope. 
 

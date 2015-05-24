@@ -512,7 +512,7 @@ Booleans are the symbols that holds the value whether something is true or false
 <Boolean> ::= 'true' | 'false'
 \end{grammar}
 
-\subsubsection{Invocation}
+\subsubsection{Invocation}\label{subsubsec:invocation}
 An invocation in TLDR is defined as a series of characters, from here on referred to as the symbol, which is associated with a value. The value can either depend on arguments, a function, or be independent from any input, a constant or variable. If the value depends on arguments the language evaluation is done lazy, meaning that the output value are only associated with the symbol when the symbol is invoked. Otherwise the symbol is associated with the functionality, i.e. its statements and how to evaluate the function. 
 
 We differentiate between direct and indirect arguments. Direct arguments are put inside parentheses after the symbol. These arguments can be any value as long as the types follows the type rules. A symbol can be dependent on a value that is not given as a direct input but outside its body, as long as it is in scope. We call these indirect arguments. If a function is dependent on indirect arguments we call it impure. Note that this property will be important in \cref{subsubsec:BasicActorFunctionality}. 
@@ -527,7 +527,7 @@ This syntax was decided since it is very close to mathematics, where functions t
  \alt <Id>
  \alt <Id> <Accessor>
 
-<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | <Primitive> | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'int' | 'real' | 'char' | 'bool' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
 
 <Accessor> ::= '.' <Identifier>
  \alt '.' '[' <Operation> ']'
@@ -549,7 +549,7 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{grammar}
 
 \subsubsection{Block}
-Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. In principle an expression followed by a semicolon is a statement since this cannot be used in another expression, for instance \enquote{2+3;+5} is \emph{not} allowed. A block in TLDR takes the value of the expression that makes out the last statement that is run inside it. So for instance the block \enquote{\{let a:int := 5; a * 2;\}} will have the value 10 (5+5) when evaluated. The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. Note that any statement that is not an expression with a semicolon, except return, cannot give the block any value. If this is the case the block returns noting and we say in TLDR that it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit. Note that all statements by themselves have the type unit.
+Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. In principle an expression followed by a semicolon is a statement since it could be used in an assignment or alike. Note that this, like any other statement cannot be used in another expression, for instance \enquote{2+3;+5} is \emph{not} allowed. A block in TLDR takes the value of the expression that makes out the last statement that is run inside it. So for instance the block \enquote{\{let a:int := 5; a * 2;\}} will have the value 10 (5 * 2) when evaluated. The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. Note that any statement that is not an expression with a semicolon, except return with an expression, cannot give the block any value. In this way a block is bit different than other constructs we have looked at earlier since it is statement but can at the same time be an expression too. Since the block is made from statements it has the possibility update the state but if the last statement that is run inside is either an expression with a semicolon or a return with an expression the block will evaluate to that value, making it an expression too. If the block is not an expression, i.e. the last statement is not comprised from an expression or evaluates an empty \enquote{return} noting, i.e. it is only a statement and we say in TLDR that it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit. Note that all statements by themselves have the type unit.
 \begin{grammar}
 <Block> ::= '\{' <Body> '\}'
  \alt '\{' '\}'
@@ -623,14 +623,19 @@ The following mathematical operations are built into the language. They follow t
 \intertext{}
 &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
                  {\Tenv \{s_1; s_2\} : \Tt'}
+\\\\
 &\inference[LET]{}
                  {\Tenv \mathbin{\text{let}} \; e:T: ok}
+\\\\
 &\inference[VAR]{}
                  {\Tenv \mathbin{\text{var}} \; e:T: ok}
+\\\\
 &\inference[LET1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv \mathbin{\text{let}} \; e_1 := e_2: ok}
+\\\\
 &\inference[VAR1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv \mathbin{\text{var}} \; e_1 := e_2: ok}
+\\\\
 &\inference[INVOKE]{\Tenv n: \Tt}
                  {\Tenv n: \Tt}
 \end{align*}

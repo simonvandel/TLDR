@@ -31,7 +31,7 @@ grammar vSprogGrammar{
     RETURN           -> 'return';
     PRIMITIVE        -> 'int' | 'real' | 'char' | 'bool';
 
-    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | WAIT | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
+    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
 
     /*--------- Symbols ---------*/
     ASSIGN           -> ':=';
