@@ -549,8 +549,17 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{grammar}
 
 \subsubsection{Block}
-The following mathematical operations are built into the language. They follow these semantic base rules:
+Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. In principle an expression followed by a semicolon is a statement since this cannot be used in another expression, for instance \enquote{2+3;+5} is \emph{not} allowed. A block in TLDR takes the value of the expression that makes out the last statement that is run inside it. So for instance the block \enquote{\{let a:int := 5; a * 2;\}} will have the value 10 (5+5) when evaluated. The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. Note that any statement that is not an expression with a semicolon, except return, cannot give the block any value. If this is the case the block returns noting and we say in TLDR that it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit. Note that all statements by themselves have the type unit.
+\begin{grammar}
+<Block> ::= '\{' <Body> '\}'
+ \alt '\{' '\}'
 
+<Body> ::= <Body> ';' <Statement>
+ \alt <Body> ';'
+ \alt <Statement>
+\end{grammar}
+
+The following mathematical operations are built into the language. They follow these semantic base rules:
 \begin{align*}
 &\inference[NUM]{}
                   {e \vdash n \Rightarrow_A v}
