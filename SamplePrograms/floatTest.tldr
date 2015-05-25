@@ -1,10 +1,10 @@
 actor main := {
   receive arguments:args := {
-    let res:real := 2 / 3;
+    let res:real := 1.0 / 3.0 + 2.0 / 3.0;
     if(res = 1.0) {
-      print("Not expected");
-    } else {
       print("Expected");
+    } else {
+      print("Not expected");
    };  
    die;
   }
