@@ -1,5 +1,5 @@
 \subsection{Initialisations}\label{subsec:initialisations}
-A new symbol in TLDR can be created via an initialisation. It was decided that a symbol should not have the possibility to map no statements and expressions meaning that the environment can never map a symbol to the empty set $\epsilon$. For that reason the initialisation always include an assignment with statements and/or expressions. Statements and/or expressions can be assigned to a symbol in either a constant binding or a variable binding.
+A new symbol in TLDR can be created via an initialisation. It was decided that a symbol should not have the possibility to map to no statements and expressions. This means that the environment can never map a symbol to the empty set $\epsilon$. For that reason the initialisation always include an assignment with statements and/or expressions
 
 In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We wanted to follow this construct as well letting immutable assignment be denoted in this fashion, since they are comparable to definitions. 
 
@@ -76,13 +76,8 @@ A concrete example:
 \end{verbatim}
 
 The semantics for declaring, initializing and assigning variables is as follows:
-\kanote{semantik: decls er udkommmenteret. Hvorfor? er det ikke korrekt?}
 
 \begin{align*}
-%&\inference[$\text{DECL}$]{}
-%                         {\Braket{\Tlet x := a,e,st} \Rightarrow_S \Braket{x := a, e',st}}
-%												{, l = e(next), e' = e[x\mapsto l, next\mapsto new(l)]}
-%\\\\
 &\inference[$\text{INIT}_{SYM}$]{}
                          {\Braket{\Tlet \Tx := \{S\};,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
@@ -94,7 +89,7 @@ The semantics for declaring, initializing and assigning variables is as follows:
 &\inference[ASS]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
                  {\Braket{\Tx := S,e} \Rightarrow_S \Braket{\Tx := S',e'}}
 \\\\
-&\inference[ASS]{\Braket{S,e} \Rightarrow_S \Braket{v}}
-                 {\Braket{\Tx() := S,e} \Rightarrow_S e'}
-								 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
+&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
+                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
+								 {, e' = e[\Tx \mapsto \Braket{v,\epsilon}]}
 \end{align*}
