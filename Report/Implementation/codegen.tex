@@ -166,7 +166,7 @@ attributes #0 = { nounwind }
 attributes #1 = { noreturn }
 \end{lstlisting}
 
-The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removes all unnecessary operations. For example, all the actor specific code, such as the active flag, is not present in the optimised LLVM IR code. While this seems simple, no extra work had to be done on our side, and significant optimizations were achieved.
+The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removes all unnecessary operations. For example, all the actor specific code, such as the active flag, is not present in the optimised LLVM IR code. While this seems simple, no extra work had to be done on our side, and significant optimisations were achieved.
 
 Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 
