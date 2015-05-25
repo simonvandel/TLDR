@@ -179,16 +179,25 @@ As with most of the choices made during the design of this language, we wanted t
 For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
 
 
-\subsection{Semantics}
-The formal semantics of TLDR uses four different partial functions 
-
-$a = \text{Anames} \cup \{next\} \rightharpoonup e \times st$
-
-$e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
-
-$st = \text{Structs} \rightharpoonup \text{Stm}$
-
+\subsection{Transition System for Formal Semantics}
+The transition system used in the formal semantics of TLDR uses four different partial functions. These will be introduced at they are needed but here follows an explanation of each function in succession.
+The first transition rule, \enquote{at}, is used to keep track of all actor types. The actor type is a form of prototype used to initialise actors. When created all it statements are run inside a new environment consisting of aEnv, sEnv. This transition rule is the throughout the whole program meaning that all actor types can be initialised everywhere.
+\begin{center}
 $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
+\end{center}
+To describe a complete environment in TLDR one needs both the actor environment and the symbol environment. The actor environment is used to keep track of which handles inside an actor that maps to what actor.
+\begin{center}
+$aEnv = \text{Anames} \rightharpoonup sEnv$
+\end{center}
+The symbol environment is used to keep track of the which statements and other symbols any symbol maps to. The statements a symbols maps to are the statements are run in an invocation of that symbol, note that all symbols in TLDR are invoked even variables and constants but they will always return the value of which they are assigned, no matter the state af their environment. The symbols that a symbol maps to are used to keep track of what formal parameters an invocation needs, note that this set can be empty.
+\begin{center}
+$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+\end{center}
+The last transition rule is used to map to keep track of user structures. These are like actor types in that they maps to the statements that are run to initialise the structure, like a recipe.
+\begin{center}
+$st = \text{Structs} \rightharpoonup \text{Stm}$
+\end{center}
+The \enquote{a} function holds which environment and user created structures that exists inside an instantiated actor. There is only one function for this since all actors can see all actors and there can only 
 
 \subsubsection{General Constructs}
 \begin{align*}
