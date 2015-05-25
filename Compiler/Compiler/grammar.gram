@@ -177,9 +177,7 @@ grammar vSprogGrammar{
                       | Initialisation^;
 
     Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
-    TypeDecls        -> (FuncDecl | SymDecl) SEMICOLON! TypeDecls
-                      | (FuncDecl | SymDecl)^ SEMICOLON!
-                      | (FuncDecl | SymDecl)^;
+    TypeDecls        -> ((FuncDecl | SymDecl) SEMICOLON!)+;
 
     Actor            -> ACTOR! Identifier ASSIGN! Block;
 

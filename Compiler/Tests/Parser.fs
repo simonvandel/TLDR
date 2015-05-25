@@ -21,33 +21,26 @@ module ParserTest =
                             test ast'
                       | Failure msg  -> failwith (String.concat "" msg)
 
-    let testParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../../Compiler/grammar.gram"
-        >>= fun tree -> Success (toAST tree)
-        |> fun ast -> match ast with
-                      | Success ast' -> test ast'
-                      | Failure msg  -> failwith (String.concat "" msg)
-
     (* -------------------- Constants --------------------------- *)
     
     [<Test>]
     let ``When int constant is given expect Int constant AST``() = 
-        testParseWith "2;"
+        debugTestParseWith "2;"
         <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2))]])
 
     [<Test>]
     let ``When zero constant is given expect Int constant AST``() = 
-        testParseWith "0;"
+        debugTestParseWith "0;"
         <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 0)) ]] )
 
     [<Test>]
     let ``When real constant is given, expect Real constant AST``() =
-        testParseWith "2.5;"
+        debugTestParseWith "2.5;"
         <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, PrimitiveValue.Real 2.5)) ]])
 
     [<Test>]
     let ``When real constant is given starting with dot, expect Real constant AST``() =
-        testParseWith ".5;"
+        debugTestParseWith ".5;"
         <| should equal (Program [Body [ (Constant (SimplePrimitive Primitive.Real, PrimitiveValue.Real 0.5)) ]])
 
 
@@ -55,8 +48,9 @@ module ParserTest =
 
     [<Test>]
     let ``When actor syntax is given with empty body, expect actor AST``() =
-        debugTestParseWith "actor main := {};"
-        <| should equal (Program [Body [Actor ("main", Block [])]])
+        let ast = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2)
+        debugTestParseWith "actor main := {2};"
+        <| should equal (Program [Body [Actor ("main", Block [ Body [ast]])]])
 
     (* -------------------- Initialisation ---------------------- *)
 
@@ -113,8 +107,9 @@ module ParserTest =
     [<Test>]
     let ``When syntax for if statement is given with empty body, expect 'if' AST``() =
         let conditional = Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)
-        let body = Block []
-        testParseWith "if ( true ) {}"
+        let ast = Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 2)
+        let body = Block [Body [ast]]
+        debugTestParseWith "if ( true ) {2}"
         <| should equal (Program [Body [(If (conditional, body))]])
 
     [<Test>]
@@ -136,7 +131,7 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for struct is given with 0 fields, expect struct AST``() =
-        testParseWith "struct structName := {}"
+        debugTestParseWith "struct structName := {}"
         <| should equal (Program [Body [(Struct ("structName", []))]])
 
     [<Test>]
@@ -151,6 +146,14 @@ module ParserTest =
         let field2InBlock = ("field2", SimplePrimitive Primitive.Real)
         debugTestParseWith "struct structName := {field1:int; field2:real;}"
         <| should equal (Program [Body [(Struct ("structName", [ field1InBlock; field2InBlock ]))]])
+
+    [<Test>]
+    let ``When syntax for struct is given with 3 fields, expect struct AST``() =
+        let field1InBlock = ("field1", SimplePrimitive Primitive.Int)
+        let field2InBlock = ("field2", SimplePrimitive Primitive.Real)
+        let field3InBlock = ("field3", SimplePrimitive Primitive.Bool)
+        debugTestParseWith "struct structName := {field1:int; field2:real; field3:bool;}"
+        <| should equal (Program [Body [(Struct ("structName", [ field1InBlock; field2InBlock; field3InBlock ]))]])
 
 
 
@@ -186,15 +189,15 @@ module ParserTest =
     [<Test>]
     let ``When syntax for receive is given with empty body, expect Receive AST`` () =
         let msgType = SimplePrimitive Primitive.Int
-        let body = Block []
-        debugTestParseWith "receive msg:int := {}"
+        let body = Block [Body[ Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)]]
+        debugTestParseWith "receive msg:int := {true}"
         <| should equal (Program [Body [(Receive ("msg", msgType, body))]])
 
     [<Test>]
     let ``When syntax for receive is given with msg of usertype and empty body, expect Receive AST`` () =
         let msgType = UserType "msgType"
-        let body = Block []
-        debugTestParseWith "receive msg:msgType := {}"
+        let body = Block [Body[ Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)]]
+        debugTestParseWith "receive msg:msgType := {true}"
         <| should equal (Program [Body [(Receive ("msg", msgType, body))]])
 
     (* --------------------------- ForIn --------------------------- *)
@@ -202,8 +205,8 @@ module ParserTest =
     [<Test>]
     let ``When syntax for for-in-loop is given with empty body, expect ForIn AST`` () =
         let list = List ([0;1;2] |> List.map (fun n -> Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int n)), ListPrimitive (SimplePrimitive Int, 3))
-        let body = Block []
-        debugTestParseWith "for i in [0 .. 2] {}"
+        let body = Block [Body[ Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)]]
+        debugTestParseWith "for i in [0 .. 2] {true}"
         <| should equal (Program [Body [(ForIn ("i", list, body))]])
 
     (* --------------------------- ListRange --------------------------- *)
@@ -339,6 +342,19 @@ module ParserTest =
                                         "func2", 
                                         ["x"; "y"], 
                                         ArrowPrimitive [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], 
+                                        body
+                                        )
+                                 ]])
+
+    [<Test>]
+    let ``When syntax for function with 3 arguments, expect Function AST`` () =
+        let body = Block [ Body [ Identifier (SimpleIdentifier "x", HasNoType) ] ]
+        debugTestParseWith "let func2(x, y, z) : int -> int -> int -> int := {x}"
+        <| should equal (Program [Body [
+                                    Function (
+                                        "func2", 
+                                        ["x"; "y"; "z"], 
+                                        ArrowPrimitive [SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int; SimplePrimitive Primitive.Int], 
                                         body
                                         )
                                  ]])

@@ -22,7 +22,7 @@ module CheckUsedBeforeDeclTest =
     [<Test>]
     let ``Declared before use (if-statement), expect Success``() = 
         let program = """let x:int := 2;
-                         if(x = 2) {}"""
+                         if(x = 2) {2}"""
         let symTable = genSymTable program
         checkUsedBeforeDecl symTable
         |> expectSuccess
@@ -40,7 +40,7 @@ module CheckUsedBeforeDeclTest =
 
     [<Test>]
     let ``Used before declared if, expect Failure``() = 
-        let program = """if(x = 2) {};"""
+        let program = """if(x = 2) {2};"""
         let symTable = genSymTable program
         checkUsedBeforeDecl symTable
         |> expectFailure
