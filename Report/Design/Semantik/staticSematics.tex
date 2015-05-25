@@ -1,3 +1,4 @@
+%mainfile: ../master.tex
 \subsubsection{Static sematics}
 
 Restrictions of the language that is hard or impossible to express in formal syntax, is analysed by formal sematics at compile time. This includes checking whether a identifier is used before its declaration, rendering it an illegal action by the formal sematics. 
@@ -27,5 +28,5 @@ The static sematic analysis phase includes following checking by the given semat
   
   This is done by looping thru every entry of the systemtable. For every identifier, check if theres is another identifier with a matching name. If such case exist check if either one of them is visible in scopes to the other
 
-\subsubsection{Scope checking}
+\emph{Scope checking}
   Is identifier visible in this scope

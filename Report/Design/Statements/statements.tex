@@ -1,9 +1,9 @@
 \section{Statements}\label{sec:statements}
-Statements are in TLDR defined as constructs that have the possibility to change the state of the program. The state of the program is defined as the symbol by which values are associated. We call this the environment and they are formally described as:
-
+Statements are in TLDR defined as constructs that have the possibility to change the state of the program. The state of the program is defined as the symbol by which values are associated. We call this the environment and it is formally described as:
+\begin{center}
 $e = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
-
-This is a partial function that maps symbols to statements. These statements are the statements that are run when the symbol is invoked. If the symbol maps to an expression an invocation takes the value of that invocation in the current environment, see \cref{subsubsec:invocation}. If the statements maps only to a statement the symbol is of type \enquote{unit} and it has no value. Note that the statements can still update the state of the program during the invokation. This can be any expression and as explained the symbol evaluates to whatever the expression maps to. Note that a block is also an expression.
+\end{center}
+This is a partial function that maps symbols to statements and other statements. These statements are the statements that are run when the symbol is invoked. If these maps to an expression the invocation takes the value of that invocation in the current environment. This can be any expression and as explained the symbol evaluates to whatever the expression maps to. Note that a block is also an expression, see \cref{subsubsec:invocation}. If the statements evaluates only to a statement the symbol is of type \enquote{unit} and it has no value. Note that the statements can still update the state of the program during the invocation. 
 
 If the symbol takes input arguments these are placed inside the \enquote{Symbols} on the right hand side of the arrow. In an invocation these symbols will be mapped to the values given as input parameters.
 
@@ -13,4 +13,3 @@ If the symbol takes input arguments these are placed inside the \enquote{Symbols
 \input{Design/Statements/forLoopStatements.tex}
 \input{Design/Statements/whileStatements.tex}
 \input{Design/Statements/conditional.tex}
-\input{Design/Statements/block.tex}

@@ -11,7 +11,7 @@ open vSprog.ParserUtils
 module ParserTest =
 
     let debugTestParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../Compiler/grammar.gram"
+        parse input "../../../Compiler/grammar.gram"
         >>= fun tree -> 
             printTree tree 0
             Success (toAST tree)
@@ -22,7 +22,7 @@ module ParserTest =
                       | Failure msg  -> failwith (String.concat "" msg)
 
     let testParseWith (input:string) (test:AST -> unit) : unit =
-        parse input "../../Compiler/grammar.gram"
+        parse input "../../../Compiler/grammar.gram"
         >>= fun tree -> Success (toAST tree)
         |> fun ast -> match ast with
                       | Success ast' -> test ast'
@@ -158,8 +158,8 @@ module ParserTest =
 
     [<Test>]
     let ``When syntax for send is given, expect Send AST`` () =
-        debugTestParseWith "send actorHandle recieverHandle msg"
-        <| should equal (Program [Body [(Send ("actorHandle","recieverHandle", Identifier(SimpleIdentifier "msg",HasNoType)))]])
+        debugTestParseWith "send actorHandle msg"
+        <| should equal (Program [Body [(Send ("actorHandle", "", Identifier(SimpleIdentifier "msg",HasNoType)))]])
 
     (* --------------------------- Spawn --------------------------- *)
 
@@ -275,7 +275,7 @@ module ParserTest =
                                                                             PrimitiveValue.Char 'g';
                                                                     ]);
                                                 Constant(SimplePrimitive Primitive.Real, PrimitiveValue.Real 3.2)
-                                           ],PrimitiveType.TupleType([SimplePrimitive Primitive.Int;SimplePrimitive Primitive.Char; SimplePrimitive Primitive.Real]))
+                                           ],PrimitiveType.TupleType([SimplePrimitive Primitive.Int;ListPrimitive (SimplePrimitive Char,6); SimplePrimitive Primitive.Real]))
                                     ]]
                                 )
 
@@ -356,6 +356,11 @@ module ParserTest =
         <| should equal (Program [Body [ Invocation ("f",["x"], HasNoType) ]])
 
     [<Test>]
+    let ``When syntax for function invocation with 1 string parameter, expect Function invocation AST`` () =
+        debugTestParseWith "f(\"x\")"
+        <| should equal (Program [Body [ Invocation ("f",["x"], HasNoType) ]])
+
+    [<Test>]
     let ``When syntax for function invocation with 2 userdefined parameters, expect Function invocation AST`` () =
         debugTestParseWith "f(x,y)"
         <| should equal (Program [Body [ Invocation ("f",["x"; "y"], HasNoType) ]])
@@ -370,7 +375,7 @@ module ParserTest =
     let ``When syntax for struct literal with 1 field, expect Struct literal AST`` () =
         let fieldName1 = "field1"
         let struct1 = StructLiteral (Program [], [(fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5))])
-        debugTestParseWith "(field1 := 5)"
+        debugTestParseWith "(field1 := 5;)"
         <| should equal (Program [Body [ struct1  ]])
 
     [<Test>]
@@ -381,7 +386,7 @@ module ParserTest =
                                         (fieldName1, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 5));
                                         (fieldName2, Constant (SimplePrimitive Primitive.Int, PrimitiveValue.Int 10));
                                     ])
-        debugTestParseWith "(field1 := 5; field2 := 10)"
+        debugTestParseWith "(field1 := 5; field2 := 10;)"
         <| should equal (Program [Body [ struct1  ]])
 
     (* --------------------------- String literal --------------------------- *)
@@ -419,4 +424,11 @@ module ParserTest =
     let ``When syntax for list access, expect `` () =
         let ast = Identifier (IdentifierAccessor ("xs", Constant (SimplePrimitive Int, PrimitiveValue.Int 0)), HasNoType)
         debugTestParseWith "xs.[0];"
+        <| should equal (Program [Body [ ast ]])
+
+    (* --------------------------- Struct access --------------------------- *)
+    [<Test>]
+    let ``struct Access`` () =
+        let ast = Identifier (IdentifierAccessor ("xs", Identifier (SimpleIdentifier "x", HasNoType)), HasNoType)
+        debugTestParseWith "xs.x;"
         <| should equal (Program [Body [ ast ]])

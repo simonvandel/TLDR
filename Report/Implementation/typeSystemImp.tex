@@ -1,6 +1,0 @@
-%mainfile: ../master.tex
-\section{Type System Implementation}\label{TypSysImp}
-
-This section will briefly describe the implementaion of the type system. From the sematics defined in \cref{semantics}, every rule of arithmetic, boolean and logical operations is enforced by extruding type information about each node in AST from the root and then cascading down to the literals, then checking if the AST is legal according to sematic rules.
-
-For all the entries in the symbol table, previously constructed in the parsing phase, the typechecker checks if the lefthand and righthand side of e.g. an assignment matches the actual type of the entry in the symbol table.

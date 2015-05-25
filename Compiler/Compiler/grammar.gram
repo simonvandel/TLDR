@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     /*--------- Spawn ---------*/
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
-	  /*--------- Send ---------*/
+	/*--------- Send ---------*/
     Send             -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
@@ -104,7 +104,7 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
-	  /*--------- Die ---------*/
+	/*--------- Die ---------*/
     Die              -> DIE;
 
     /*--------- For ---------*/
@@ -118,8 +118,7 @@ grammar vSprogGrammar{
     IfElse           -> IF! Expression Block ELSE! Block;
 
     /*--------- Block ---------*/
-    Block            -> BLOCKSTART! Body BLOCKEND!
-                      | BLOCKSTART! BLOCKEND!;
+    Block            -> BLOCKSTART! Body BLOCKEND!;
 
     /*--------- Expression ---------*/
     Expression       -> Expression PSEVENOPERATOR OP6
@@ -166,7 +165,7 @@ grammar vSprogGrammar{
 
     StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS!;
 
-    Invocation       -> Identifier (LPARENS! (Expression (COMMA! Expression)*)? RPARENS!)?;
+    Invocation       -> Identifier (LPARENS (Expression (COMMA! Expression)*)? RPARENS)?;
 
 	Identifier       -> ME
                       | IDENTIFIER

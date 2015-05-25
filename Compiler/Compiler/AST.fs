@@ -253,9 +253,8 @@ module AST =
                 | err -> failwith (sprintf "This should never be reached: %s" err)
         | "Send" ->
             let actorHandle = (getChildByIndexes [0;0] root).Symbol.Value
-            let receiverHandle = (getChildByIndexes [1;0] root).Symbol.Value // Fix If null handle
-            let msg = toAST (getChildByIndexes [2;0] root)
-            Send (actorHandle, receiverHandle, msg) // we do not know the name of the actor to send to yet
+            let msg = toAST (getChildByIndexes [1;0] root)
+            Send (actorHandle, "", msg) // we do not know the name of the actor to send to at parse t
         | "Spawn" ->
             let mutability = (root.Children.Item 0)
             let name = toAST (getChildByIndexes [1;0] root)
@@ -371,20 +370,32 @@ module AST =
                 let body = toAST (root.Children.Item 3)
                 Function (funcName, args, types, body)
         | "Invocation" ->
-            let funcName = (getChildByIndexes [0;0] root).Symbol.Value
-            if root.Children.Count = 1 then // no parameters                
-                Invocation (funcName, [], ArrowPrimitive [])
-            else // there are root.Children.Count - 1 parameters
-                let parameters = seq { for childNum in [1.. root.Children.Count - 1] do
-                                       let rawParam = (getChildByIndexes [childNum;0;0] root).Symbol.Value
-                                       // trim quotation marks at start and end if string
-                                       if rawParam.StartsWith "\"" && rawParam.EndsWith "\"" then 
-                                         yield rawParam.Substring(1,rawParam.Length-2)
-                                       else
-                                         yield rawParam
-                                     }
-                                 |> List.ofSeq
-                Invocation (funcName, parameters, HasNoType)
+            let symName = (getChildByIndexes [0;0] root).Symbol.Value
+            match root.Children.Count with
+            | 1 -> // identifier
+              toAST (root.Children.Item 0)
+            | _ -> // function
+                if root.Children.Count = 3 then // no parameters                
+                    Invocation (symName, [], ArrowPrimitive [])
+                else // there are root.Children.Count - 3 parameters
+                    let parameters = seq { for childNum in [2.. root.Children.Count - 2] do
+                                           // we do not know if the parameter is a variable or a string. Try the deepest level (variable) first
+                                           // if it fails, it must be a string parameter
+
+                                           let rawParam =
+                                               try (getChildByIndexes [childNum;0;0;0] root).Symbol.Value
+                                               with
+                                               | :? System.IndexOutOfRangeException -> 
+                                                 (getChildByIndexes [childNum;0;0] root).Symbol.Value
+
+                                           // trim quotation marks at start and end if string
+                                           if rawParam.StartsWith "\"" && rawParam.EndsWith "\"" then 
+                                             yield rawParam.Substring(1,rawParam.Length-2)
+                                           else
+                                             yield rawParam
+                                         }
+                                     |> List.ofSeq
+                    Invocation (symName, parameters, HasNoType)
         | "StructLiteral" ->
             let fields = [for c in root.Children do
                                 let fieldName = (getChildByIndexes [0;0] c).Symbol.Value
@@ -400,7 +411,7 @@ module AST =
                 | Constant (ptype, _) -> types <- types @ [ptype]
                 | Identifier (_, ptype) -> types <- types @ [ptype]
                 | _ -> failwith "Tuples can only contain constants and identifiers"
-            let tupleType = ArrowPrimitive types
+            let tupleType = TupleType types
             Tuple (fields, tupleType)
         | "String" ->
 

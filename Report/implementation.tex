@@ -1,9 +1,10 @@
 %mainfile: ../master.tex
-\chapter{Compiler}{Intro}\label{part:implementation}
+\chapter{Compiler}{In this chapter, the implementation of the TLDR compiler will be described. Firstly, a general overview of the phases of the compiler will be depicted. Next, the method for traversing the abstract syntax tree will be described and the choice of target language is presented. Lastly, specifics and inner workings of each phase of the compiler will be specified.}
+\label{part:implementation}
 
 \input{Implementation/phases.tex}
 \input{Implementation/generalImplementationMethods.tex}
-\input{Implementation/lexingParsing.tex}
-\input{Implementation/typeSystemImp.tex}
 \input{Implementation/targetLanguage.tex}
+\input{Implementation/lexingParsing.tex}
+\input{Implementation/StaticAnalysis.tex}
 \input{Implementation/codegen.tex}

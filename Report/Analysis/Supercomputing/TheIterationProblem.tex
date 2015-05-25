@@ -3,9 +3,7 @@
 
 The actor model makes it possible to create continuous simulations in the language, with a good abstraction for simulations and models in general. Unfortunately, the actor model does not support discrete simulations as well. When trying to implement a discrete simulation solely with actors, a problem arises that needs to be addressed.
 
-The problem is, that there is no way to tell whether a group of actors has completed their work or not. This is important since the programmer must to be able to implement iteration steps if he or she is to create discrete simulations. The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the concurrent nature of the actor model, an unfortunate variant of race conditions arise.
-
-The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the user must to be able to implement iteration steps if the programmer is to create discrete simulations.\jenote{Øhh ekko? Merge med overstående afsnit} The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
+The problem is that there is no way for the programmer in the language to tell whether a group of actors has stopped working or not. This is important since the programmer must to be able to implement iteration steps if he or she is to create discrete simulations. The programmer has to be able to find out when one step has ended to update the state of the whole system and start a new iteration. Due to the parallel nature of the actor model an unfortunate variant of race conditions arise.
 
 For an actor to have stopped, the programmer needs to know that three following conditions are fulfilled:
 \begin{itemize}

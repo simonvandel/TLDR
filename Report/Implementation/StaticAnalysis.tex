@@ -1,0 +1,94 @@
+\section{Static Analysis}
+This section will describe what the purpose of the different parts of the static analysis is and how it is performed in the TLDR compiler.
+The static analysis part of the compiler has the following phases:
+\begin{itemize}
+\item Build symbol table
+\item Checking illegal reassignment
+\item Checking use before declaration
+\item Checking hiding
+\item Checking types
+\end{itemize}
+Each of these will be explained in the following sections.
+\subsection{Symbol Table}
+An important aspect of the static analysis in the TLDR compiler is the construction of a symbol table, a table which contains relevant information about the symbols, that are used in the program that is analysed.
+In \cref{lst:symtableEntry}, the definition of an entry in the symbol table can be seen.
+\begin{lstlisting}[style = fsharp, label = lst:symtableEntry, caption = {The definition of an entry in the symbol table.}]
+[<ReferenceEquality>]
+type SymbolTableEntry = {
+  symbol: LValue
+  statementType:StatementType
+  scope:Scope
+  value:AST
+}
+\end{lstlisting}
+In the entry, \enquote{symbol} is a type which contains the relevant information regarding the identity of the symbol, that is, the identifier, the declared type and whether or not the symbol is mutable.
+
+\enquote{statementType} in the entry defines whether the specific use of the symbol is a usage, an initialisation or a reassignment.
+
+\enquote{scope} specifies the unique scope of the symbol usage.
+
+\enquote{value} is the actual value of the symbol usage. In an assignment, this would be set to the right hand side of the assignment operator.
+
+\subsection{Checking Illegal Reassignment}
+Checking illegal reassignment, that is, reassignment of an immutable symbol, is fairly trivial. As can be seen in \cref{lst:checkReass}, the function simply takes the symbol table as an argument and reports a failure whenever an entry in the table is both a reassignment and immutable.
+The pattern matching at the end of the function is performed to summarise any failures that were reported during execution.
+
+\begin{lstlisting}[style = fsharp, label = lst:checkReass, caption = {The function responsible for checking illegal reassignments.}]
+let checkReass symTable = 
+  let res = symTable |> 
+    List.filter (fun entry -> entry.statementType = Reass && entry.symbol.isMutable = false) |>
+      List.map (fun e -> Failure [sprintf "Invalid reassignment, %A is not mutable" e.symbol.identity])
+  match res with
+  | [] -> Success symTable
+  | xs -> sumResults xs
+\end{lstlisting}
+
+\subsection{Checking Use Before Declaration}
+Checking usage of a symbol before its declaration is similarly trivial. This function takes advantage of the fact that in the function that builds the symbol table, only symbol usages, without prior initialisation or declaration, and definitions are given the type \enquote{HasNoType}. 
+As seen in \cref{lst:checkUsedBeforeDecl} this function simply sorts out entries which are definitions and reports a failure for every entry with the type \enquote{HasNoType}.
+\begin{lstlisting}[style = fsharp, label = lst:checkUsedBeforeDecl, caption = {The function responsible for checking usage before declaration.}]
+let checkUsedBeforeDecl symTable =
+  let res = symTable |>
+    List.filter (fun e -> e.statementType <> Def && e.symbol.primitiveType = PrimitiveType.HasNoType ) |>
+      List.map (fun e -> Failure [sprintf "Symbol \"%A\" is used before its declaration." e.symbol.identity])
+  match res with
+  | [] -> Success symTable
+  | xs -> sumResults xs
+\end{lstlisting}
+
+\subsection{Checking Hiding}
+In order to check if any symbol hides another, the function seen in \cref{lst:checkHiding} is used. Hiding can never be done by a reassignment or usage of a symbol, so these are filtered out at first. We then iterate through the remaining entries in the symbol table and for each entry, report a failure if we can find another symbol with the same identifier in its scope.
+
+\begin{lstlisting}[style = fsharp, label = lst:checkHiding, caption = {The function responsible for checking hiding.}]
+let checkHiding symTable =
+  let mutable res:Result<SymbolTable> list = []
+  let NoReass = symTable |> List.filter (fun e -> e.statementType <> Reass && e.statementType <> Use)
+  for i in NoReass do
+    let seq = List.filter (fun e -> e <> i && isVisible i e && i.symbol.identity = e.symbol.identity && i <> e) NoReass
+    if seq.Length > 0 then 
+      res <- Failure [sprintf "Element %A hides %A" i.symbol.identity seq] :: res
+
+  match res with
+  | [] -> Success symTable
+  | xs -> sumResults xs
+\end{lstlisting}
+
+\subsection{Checking Types}
+In order to check that the type of the value of every symbol matches the declared types, the function shown in \cref{lst:checkTypes} is used. This function calls another function, \enquote{checkTypesAST} which takes an AST node and returns the type of that node. As seen in \cref{lst:symtableEntry} the value of a symbol table entry is an AST node. The type checker can therefore get the type of every symbol inferred from their value and see if that matches the declared type, which is also stored in the symbol table, and report a failure if the two types do not match.
+
+\begin{lstlisting}[style = fsharp, label = lst:checkTypes, caption = {The main function responsible for checking types.}]
+let checkTypesSymTable symTable =
+  let results = List.map (fun entry -> 
+                   match checkTypesAST entry.value with
+                   | Success pType ->
+                     if entry.symbol.primitiveType = pType then
+                       Success ()
+                     else 
+                       Failure [sprintf "symbol %A expected to have type %A, but has type %A" entry.symbol.identity entry.symbol.primitiveType pType]
+                   | Failure err -> Failure err) symTable
+  if results.Length = 0 then
+    Success ()
+  else
+    sumResults results
+\end{lstlisting}
+

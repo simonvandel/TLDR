@@ -47,9 +47,11 @@ A actor simply checks for new messages, and performs the corresponding message, 
 
 By having receive constructs simply be labels, all data of an actor can be contained in a single function.
 
-\subsection{Lists}
+\subsection{Lists}\label{codegen:lists}
 
 Lists in TLDR are simply generated as static LLVM arrays. This mean that their size is known at compile time, and that no elements can be added at run-time. This is currently a limitation in the current compiler, but is something that is doable if the project group had prioritised this.
+
+One way of improving the current implementation is to allow for arrays with sizes determined at run-time. This can be done by allocating a pointer to the elements with the size of the array known at runtime.
 
 \subsection{Optimisations For Free}
 
@@ -164,7 +166,7 @@ attributes #0 = { nounwind }
 attributes #1 = { noreturn }
 \end{lstlisting}
 
-The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removed all unnecessary operations. \chnote{expand on this, what is unnecessary} While this seems simple, no extra work had to be done on our side, and significant optimizations were achieved.
+The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removes all unnecessary operations. For example, all the actor specific code, such as the active flag, is not present in the optimised LLVM IR code. While this seems simple, no extra work had to be done on our side, and significant optimisations were achieved.
 
 Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 

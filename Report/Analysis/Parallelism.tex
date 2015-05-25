@@ -1,5 +1,5 @@
 %mainfile: ../master.tex
-\section{Parallelism}
+\section{Parallelism}\label{sec:parallelism}
 
 In the continued effort of trying to squeeze as much power out of computers as possible, the computer scientific community is at a point where increasing the clock speed of processors is no longer as viable a solution as it used to be. This has spawned an increased interest in increasing computational power in other ways, one being parallelism.
 
@@ -12,18 +12,13 @@ But even without a supercomputer a distributed network of multiple computers can
 \subsection{Speed Up}\label{sup}
 
 For parallel computing, Gene Amdahl, an american computer scientist, defined a law for describing the theoretical maximum speedup using multiple processors. The maximum speedup a system can achieve by parallelisation is limited to at most 20×.
-The law can be used to describe the speed up achievable by a giving system, by the percentage of parallelisable code, in this equation.
+The law can be used to describe the speed up achievable by a giving system, by the percentage of parallelisable code, in this equation \cite{wiki_amdahl}.
 
 By this law maximising the percentage of parallelisable, the highest possible speed up achievable is increased, thereby improving the scaling of the solution on multiple processor.
 
-
-\kanote{er de her kilder? de hang sammen med nedenstående}
-\url{http://gribblelab.org/CBootcamp/A2_Parallel_Programming_in_C.html#sec-2-1}
-\url{https://computing.llnl.gov/tutorials/parallel_comp/}
-
 \subsection{Types of Tasks}\label{top}
 
-Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task. This section will describe two types of problems relevant when doing parallel computations.
+Tasks within a problem can be depended on each other, in the sense that one task needs the output of a computation done by another task. This section will describe two types of problems relevant when doing parallel computations \cite{gribblelab,compLLNL}.
 
 \subsubsection{Embarrassingly Parallel Problems}
 A problem can be describe as being \emph{embarrassingly parallel} when the tasks within the problem is independent of each other, and can therefore be parallelised without any concern of the order in which the task can to be executed. They are trivially parallel in nature because of the independency. An example of this type of problem is incrementation of a large matrix, the individual cells in the matrix are completely independent from each other and can therefore be incremented without regard of other cells in the matrix.

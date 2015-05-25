@@ -472,7 +472,8 @@ $\Tlop = \left\{ {=, !=, <, <=, >, >=} \right\}$
                     {\Tenv e_1 \mathbin{\text{op}} e_2 : \Tbool}, \text{op} \in \Tlop
 \end{align*}
 
-\subsection{Operands}
+\subsection{Operands}\label{operands}
+
 When creating expressions one also needs operands to use in the operators. The operators are as follows in formal syntax:
 \begin{grammar}
 <Operand>	::= <Block>
@@ -549,15 +550,69 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{grammar}
 
 \subsubsection{Block}
-Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. In principle an expression followed by a semicolon is a statement since it could be used in an assignment or alike. Note that this, like any other statement cannot be used in another expression, for instance \enquote{2+3;+5} is \emph{not} allowed. A block in TLDR takes the value of the expression that makes out the last statement that is run inside it. So for instance the block \enquote{\{let a:int := 5; a * 2;\}} will have the value 10 (5 * 2) when evaluated. The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. Note that any statement that is not an expression with a semicolon, except return with an expression, cannot give the block any value. In this way a block is bit different than other constructs we have looked at earlier since it is statement but can at the same time be an expression too. Since the block is made from statements it has the possibility update the state but if the last statement that is run inside is either an expression with a semicolon or a return with an expression the block will evaluate to that value, making it an expression too. If the block is not an expression, i.e. the last statement is not comprised from an expression or evaluates an empty \enquote{return} noting, i.e. it is only a statement and we say in TLDR that it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit. Note that all statements by themselves have the type unit.
+Blocks are in TLDR are a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it, formally:
 \begin{grammar}
 <Block> ::= '\{' <Body> '\}'
- \alt '\{' '\}'
 
 <Body> ::= <Body> ';' <Statement>
  \alt <Body> ';'
  \alt <Statement>
 \end{grammar}
+Note the that the last semicolon in a block is optional.
+
+Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it is run. Formally described as:
+\begin{align*}
+&\inference[$\text{BLOCK}_{S1}$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
+                                {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
+\end{align*}
+A block is bit different than most other constructs in TLDR in that it is a statement but can at the same time be an expression too. If the last that is run inside the block is a statement the block is too only a statement:
+\begin{align*}
+&\inference[$\text{BLOCK}_{S2}$]{\Braket{S,e} \Rightarrow_S e'}
+                                {\Braket{\{S\},e} \Rightarrow_S e'}
+\end{align*}
+An expression is not allowed by itself in TLDR, for instance \enquote{2 + 2;} is not allowed, unless it is the last thing that is evaluated in a block. If it is, the block takes the value of this expression thereby making the block an expression. So for instance the block:
+\begin{lstlisting}
+{
+  let a:int := 5;
+  a * 2
+}
+\end{lstlisting}
+will have the value 10 (5 * 2) when evaluated. This is formally, for aritmetic expressions, described as:
+\begin{align*}
+&\inference[$\text{BLOCK}_{A3}$]{\Braket{x,e} \Rightarrow_A \Braket{x',e}}
+                         {\Braket{\{x\},e} \Rightarrow_A \Braket{\{x'\},e}}
+&
+&\inference[$\text{BLOCK}_{A4}$]{\Braket{x,e} \Rightarrow_A v}
+                         {\Braket{\{x\},e} \Rightarrow_A v}
+\end{align*}
+And for boolean and logical expressions:
+\begin{align*}
+&\inference[$\text{BLOCK}_{B1}$]{\Braket{x,e} \Rightarrow_B \Braket{x',e}}
+                         {\Braket{\{x\},e} \Rightarrow_B \Braket{\{x'\},e}}
+\\\\
+&\inference[$\text{BLOCK}_{B2}$]{\Braket{x,e} \Rightarrow_B \top}
+                         {\Braket{\{x\},e} \Rightarrow_B \top}
+&
+&\inference[$\text{BLOCK}_{B3}$]{\Braket{x,e} \Rightarrow_B \bot}
+                         {\Braket{\{x\},e} \Rightarrow_B \bot}
+\end{align*}
+The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. This is done simply by inserting the expression and removing any further statements.
+\begin{align*}
+&\inference[$\text{RETURN}_{1}$]{}
+                   {\Braket{\{\Treturn \Tx;S\},e} \Rightarrow_S \Braket{\{x\},e}}
+\\\\
+&\inference[$\text{RETURN}_{2}$]{}
+                   {\Braket{\{\Treturn \Tx\},e} \Rightarrow_S \Braket{\{x\},e}}
+\\\\
+&\inference[$\text{RETURN}_{3}$]{}
+                   {\Braket{\{\Treturn;S\},e} \Rightarrow_S \Braket{e}}
+\\\\
+&\inference[$\text{RETURN}_{3}$]{}
+                   {\Braket{\{\Treturn\},e} \Rightarrow_S \Braket{e}}
+\end{align*}
+If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
+\\\\
+-------------------- RESTEN HØRER IKKE TIL HER --------------------
 
 The following mathematical operations are built into the language. They follow these semantic base rules:
 \begin{align*}

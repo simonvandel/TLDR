@@ -10,15 +10,16 @@ In order to accommodate a user group with programming as secondary skill sets, T
 
 \subsection{Data Types}
 
-Since the users of TLDR are will typically have a background in mathematics, or require to include some mathematics in order to asses the value of any given result of a simulation, the language should strive towards having data types which allow for representation of traditional mathematical numbers.
+Since the users of TLDR will typically have a background in mathematics, or require  the use of some mathematics in order to asses the value of any given result of a simulation, the language should strive towards having data types which allow for representation of traditional mathematical numbers.
 
 
 \subsection{Type Checking and Exception Handling}
 
 Due to the language targeting high performance computation, the language should try to avoid run-time errors, and catch problems as early as possible. This suggests a strongly typed language, but we will elaborate further on this matter in \cref{typesys}. For the same reasons, the language will not value exception handling, since edge cases should be fully encompassed in a simulation. However it is worth noticing that the actor model could require exception handling, if communication problems, caused by either race conditions or network conditions, should prove frequent.
 
+\subsection{Readability over Writability}
 
-\kanote{overvej om der skal skrives flere krav - se udkommenterede ting}
+TLDR values readability over writability, since the problems which the languages aims to support are usually big complex mathematical problems, which quickly can confuse the programmers, if they are not able to quickly understand the code. The size of the problems will also likely popularise the use of external libraries, which will also benefit from readability, since an understanding of the functionalities supplied by a given library is useful when exploring which library best solves the problem.
 
 %\subsection{Support for abstraction}
 
@@ -26,4 +27,4 @@ Due to the language targeting high performance computation, the language should 
 %\subsection{Aliasing}
 
 
-%\subsection{Readability and Writeability}
+%
