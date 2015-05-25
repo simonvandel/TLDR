@@ -166,7 +166,7 @@ grammar vSprogGrammar{
 
     StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS!;
 
-    Invocation       -> Identifier (LPARENS! (Expression (COMMA! Expression)*)? RPARENS!)?;
+    Invocation       -> Identifier (LPARENS (Expression (COMMA! Expression)*)? RPARENS)?;
 
 	Identifier       -> ME
                       | IDENTIFIER

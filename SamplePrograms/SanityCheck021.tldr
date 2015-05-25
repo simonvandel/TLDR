@@ -1,0 +1,11 @@
+actor main := {
+  receive arguments:args := {
+    let xs:[int] := [1, 2];
+    let head:int := xs.[0];
+    printint(head);
+    //for x in [1 .. 2] {
+    //  printint(x);
+    //};
+    die;
+  }
+}
