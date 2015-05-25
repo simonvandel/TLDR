@@ -425,3 +425,10 @@ module ParserTest =
         let ast = Identifier (IdentifierAccessor ("xs", Constant (SimplePrimitive Int, PrimitiveValue.Int 0)), HasNoType)
         debugTestParseWith "xs.[0];"
         <| should equal (Program [Body [ ast ]])
+
+    (* --------------------------- Struct access --------------------------- *)
+    [<Test>]
+    let ``struct Access`` () =
+        let ast = Identifier (IdentifierAccessor ("xs", Identifier (SimpleIdentifier "x", HasNoType)), HasNoType)
+        debugTestParseWith "xs.x;"
+        <| should equal (Program [Body [ ast ]])
