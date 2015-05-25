@@ -6,6 +6,24 @@ TLDR, being a language focused on allowing easy modelling shares a lot of princi
 
 Another matter is the support for discrete simulations, as described in \cref{iterprob}. The solutions suggested are based around grouping actors into units, which work isolated from the rest of the actors. This idea of grouping actors, could potentially be used for other purposes, such has highly modular programs and functionalities, and promote purity when writing code in TLDR. But what is more interesting, is the possibility of a change of focus, from having the programmer think in terms of how actors mimic real things, to focusing on having environments mimic the conditions reality sets for things. Examples could be chemistry or physics, where one could want to find the optimal conditions for a chain reaction to occur. This problem could be approached by creating a single version of the actor, and then have the environments implement the changes in values, temperatures, pressure or what it might be. Such an apporach might be useful for problems where certain objects behavior can be discribed through know matematical structures, but where the conditions can change immensely and by extension, the results of a given simulation.
 
+\section{Language}
+The Language Described in this report is a domain specific programming language, borrowing ideas and constructs from other languages. This section will discuss some of these ideas and constructs, and describe TLDRs rationale and usefulness in the domain of programming languages.
+
+\subsection{Distinguishing Features}
+One of the main features, and the pièce de résistance of TLDR, is the central role of actors. Actors allow the programmer to model concurrent entities using a fairly simple construct. As opposed to other languages which incorporate actors, actors in TLDR is an independent construct, where in Erlang an actor is a function and Scala (Akka) where actors are just objects. Having actors as a unique construct in TLDR gives the programmer a clue as to the power which actors bring to the language. 
+
+Another difference between TLDR and other languages with actors is that TLDR enforces the use of actors. Every program has at least one actor, main, where the execution of the program starts. This enforces the principle of a central controller in a network of concurrent processes. This means that any TLDR program can be considered, and reasoned about, as a graph-like structure rooted in the main actor, with vertices representing actors and edges representing messages between them.
+
+Andre features?
+
+\subsection{Paradigms}
+TLDR focuses a lot on the "swarm of bees"-style of programming, that is, having large amounts of simple logic rather than having a unified complex algorithm for all the logic in the program. This can be thought of as a characteristic of modular programming languages.
+
+Another focus of TLDR is that of functions as first class citizens. This means that the language does not distinguish between functions and other symbols declared by the programmer. Any place a symbol can be used in a program, a function can be used as well, e.g. as a parameter for a function, a return value of a function or a message to an actor. This, combined with the use of expressions and the avoidance of state and mutable data gives the language a very functional, or declarative, feel, similar to that of F\# or Scala.
+
+\subsection{Abstraction}
+TLDR is a rather high level language. TLDR provides a high level of abstraction over data, with arbitrary precision integer and floating point data types, control flow, with mathematical operations built into the language as well as message passing and loop-structures, and concurrency, with actors and message passing.
+
 \section{Compiler}
 
 The compiler developed for TLDR does not fully implement TLDR. This section will list which parts of TLDR is implemented in the compiler, and which parts are not.
