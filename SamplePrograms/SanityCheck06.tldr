@@ -1,6 +1,6 @@
 actor main := {
   receive arguments:args := {
-    var iStep:iterationStep := (step := 10; st := 3.0; br := true;);
+    var iStep:iterationStep := (step := 10; st := 3.0;);
     let x:real := iStep.st;
     printreal(x);
     iStep.step := 5;
@@ -14,6 +14,5 @@ actor main := {
 struct iterationStep := {
   step:int;
   st:real;
-  br:bool;
 };
 

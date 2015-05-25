@@ -271,7 +271,8 @@ module CodeGen =
             let z = (x, i, y, genType(y))
             list <- list |> List.append [z]
             i <- i + 1
-        (name, list)
+        let ll = list |> List.rev
+        (name, ll)
 
     
 
