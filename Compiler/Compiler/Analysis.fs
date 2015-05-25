@@ -437,7 +437,7 @@ module Analysis =
                       {
                         identity = SimpleIdentifier name
                         isMutable = false
-                        primitiveType = SimplePrimitive (Primitive.Struct (name, fields))
+                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
                       }
                     statementType = Def
                     scope = {outer = None; level = []} // outermost scope
