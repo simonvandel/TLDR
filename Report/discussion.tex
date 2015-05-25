@@ -10,6 +10,24 @@ Another matter is the support for discrete simulations, as described in \cref{it
 
 The compiler developed for TLDR does not fully implement TLDR. This section will list which parts of TLDR is implemented in the compiler, and which parts are not.
 
+\sinote{ikke helt sikker på alt er noteret}
+
+Implemented:
+
+\begin{itemize}
+\item Addition, subtraction, multiplication, division, root, power, modulo, equalityoperations on ints and reals
+\item And, or, equality operations on bools
+\item For-in statement
+\item Lists as arrays. See \cref{codegen:lists}
+\item If and if-else statements
+\item While loops
+\item print, printint, printreal functions
+\item Actors
+\item Spawn, send, receive and die operations
+\item Integer, boolean and real number constants
+\item Struct definition, struct field access and initialisation
+\end{itemize}
+
 Not implemented:
 
 \begin{itemize}
@@ -17,4 +35,8 @@ Not implemented:
 \item Dynamically allocated lists. The lists currently implemented are simply arrays. See \cref{codegen:lists}
 \item Tuples - Code generation is not implemented
 \item List operations - Currently lists can only be manipulated by indexing into the list and can be iterated with a for-in-loop
+\item Data casts - Only supported in grammar
+\item NAND, NOR and XOR - Code generation not implemented
+\item Char constant - Code generation not implemented
+\item Comparison of tuples, structs - Type checking and code generation not implemented
 \end{itemize}
