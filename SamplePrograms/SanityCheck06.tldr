@@ -1,10 +1,10 @@
 actor main := {
   receive arguments:args := {
     var iStep:iterationStep := (step := 10; st := 3.0; br := true;);
-    let x:real := iStep.st;
-    printreal(x);
-    iStep.step := 5;
-    let i:int := iStep.step;
+    //let x:real := iStep.st;
+   // printreal(x);
+  //  iStep.step := 5;
+  //  let i:int := iStep.step;
     if(iStep.br){
     	printint(i);
     };

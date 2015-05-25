@@ -108,38 +108,7 @@ module Analysis =
                       value = newRhs
                     }
                 do! addEntry entry
-                //return Identifier (id, typeOfElem)
                 return Reassignment (varId, newRhs)
-              (*
-              let idToCheck = match varId with
-                              | SimpleIdentifier _ as simpleId -> simpleId
-                              | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
-              let sDecl = 
-                curState.symbolList |>
-                  List.tryFind (fun e -> e.symbol.identity = idToCheck && e.statementType = Init && isInScope  e.scope curScope)
-              let! newRhs = buildSymbolTable rhs
-              let entry = 
-                  {
-                    symbol = 
-                      {
-                      identity = varId
-                      isMutable = 
-                        match sDecl with
-                        | Some (sEntry) -> sEntry.symbol.isMutable
-                        | None -> false
-                      primitiveType = 
-                        match sDecl with
-                        | Some (sEntry) -> sEntry.symbol.primitiveType
-                        | None -> HasNoType
-                      }
-                    statementType = Reass
-                    scope = curScope
-                    value = newRhs
-                  }
-              do! addEntry entry
-
-              return Reassignment (varId, newRhs)
-              *)
             }
         | Initialisation (lvalue, rhs) as init ->
           state
@@ -351,36 +320,24 @@ module Analysis =
                                      match needle with
                                      | Some (fieldName, fieldType) -> fieldType
                                      | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
-                return Identifier (id, typeOfElem)
-              //////////////////////////////////////
-              (*
-              let idToCheck = match id with
-                              | SimpleIdentifier _ as simpleId -> simpleId
-                              | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
-              let sDecl = 
-                curState.symbolList |>
-                  List.tryFind (fun e -> e.symbol.identity = idToCheck && e.statementType = Init && isInScope e.scope curScope)
-              let newPType = match sDecl with
-                             | Some decl -> decl.symbol.primitiveType
-                             | None -> HasNoType
 
-              let entry = 
-                {
-                  symbol = 
-                    {
-                      identity = id
-                      isMutable = match sDecl with
-                                  | Some decl -> decl.symbol.isMutable
-                                  | None -> false
-                      primitiveType = newPType
-                    }
-                  statementType = Use
-                  scope = curScope
-                  value = Identifier (id, newPType)
-                }
-              do! addEntry entry
-              return Identifier (id, newPType)
-              *)
+                let entry = 
+                      {
+                       symbol = 
+                         {
+                           identity = id
+                           isMutable = match sDecl with
+                                       | Some decl -> decl.symbol.isMutable
+                                       | None -> false
+                           primitiveType = typeOfElem
+                         }
+                       statementType = Use
+                       scope = curScope
+                       value = Identifier (id, typeOfElem)
+                      }
+                do! addEntry entry
+
+                return Identifier (id, typeOfElem)
             }
         | Function (funcName, arguments, types, body) -> 
           state 
