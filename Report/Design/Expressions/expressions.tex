@@ -485,7 +485,7 @@ When creating expressions one also needs operands to use in the operators. The o
 \end{grammar}
 Some of these operands can evaluate something that is not either an Integer, Real or Boolean, for instance lists, actors, structures. This means that, due to the type system seen in \cref{subsec:operators}, the operand cannot be an argument to any operand. This however does not mean that it cannot be an expression, they can because all operands by themselves also have value and are an expression.
 
-\subsubsection{Integer}
+\subsubsection{Integer}\label{subsubsection:integer}
 The integer is a literal integer that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 2;$}, \enquote{2} is an integer literal. All integers are interpreted as decimal numbers and can be any combination of the symbols 0-9 in any length. They can be either positive or negative, illustrated with the symbol \enquote{-}, but may not start with a 0 unless it is only the number \enquote{0}. This is done since readability is weighted higher than writeability, see \cref{analsum}, and it was assessed for instance \enquote{00023} is not very readable compared to \enquote{23}. The formal syntax is described as:
 \begin{grammar}
 <Integer> ::= '-'?[1-9][0-9]* | '0'
@@ -496,7 +496,7 @@ The integer is a literal integer that is written directly in the code, for insta
                  {\Tenv n: \Tint} 
 \end{align*}
 
-\subsubsection{Real}
+\subsubsection{Real}\label{subsubsection:real}
 The real is a literal real that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 4.3;$}, \enquote{4.3} is an real literal. All real are interpreted as decimal numbers and are an integer with the same rule as integers followed by a \enquote{.} and then any combination of the symbols 0-9. They can like integers be either positive or negative, illustrated with the symbol \enquote{-}. There must be at least one number both before and after the \enquote{.}. This means that neither \enquote{.1} and \enquote{1.} are allowed. This is done since it was assessed that for instance \enquote{-0.1} is more readable than \enquote{-.1}. Formally described as:
 \begin{grammar}
 <Real> ::= ('-'?[1-9][0-9]* | '0')'.'[0-9]+
@@ -507,7 +507,7 @@ The real is a literal real that is written directly in the code, for instance in
                  {\Tenv n_1.n_2: \Treal}
 \end{align*}
 
-\subsubsection{Boolean}
+\subsubsection{Boolean}\label{subsubsection:boolean}
 Booleans are the symbols that holds the value whether something is true or false, for instance we can write in mathematics write \enquote{2 > 3}. This is a contradiction and therefore false. Booleans can therefore have two values, true or false. These are often used in mathematical proofs.
 \begin{grammar}
 <Boolean> ::= 'true' | 'false'
@@ -544,7 +544,7 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{align*}
 
 \subsubsection{Literals}
-
+Literals are in TLDR any value that the programmer writes directly into the code. This section will though not cover integers, reals and booleans, see \cref{subsubsection:integer}, \cref{subsubsection:real} and \cref{subsubsection:boolean} for these. 
 \begin{grammar}
 <Literals> ::= <String>
  \alt <ListRange>
