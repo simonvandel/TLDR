@@ -1,14 +1,24 @@
 ﻿<Properties StartupItem="Compiler/Compiler.fsproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/Parser.fs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/CodeGen.fs">
     <Files>
-      <File FileName="Compiler/Program.fs" Line="53" Column="30" />
+      <File FileName="Compiler/Program.fs" Line="1" Column="1" />
       <File FileName="Compiler/Parser.fs" Line="1" Column="1" />
       <File FileName="Compiler/Utils.fs" Line="1" Column="1" />
-      <File FileName="Compiler/CodeGen.fs" Line="1" Column="1" />
-      <File FileName="Tests/Parser.fs" Line="14" Column="31" />
+      <File FileName="Tests/Parser.fs" Line="1" Column="1" />
       <File FileName="Compiler/ParserUtils.fs" Line="1" Column="1" />
+      <File FileName="Compiler/AST.fs" Line="55" Column="41" />
+      <File FileName="Compiler/CodeGen.fs" Line="830" Column="47" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="TLDR" expanded="True">
+            <Node name="Compiler" expanded="True" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
@@ -17,6 +27,7 @@
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="626" column="1" />
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="630" column="1" />
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="636" column="1" />
+      <Breakpoint file="/home/zander/TLDR/Compiler/Compiler/CodeGen.fs" line="836" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

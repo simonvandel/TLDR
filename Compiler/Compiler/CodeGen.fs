@@ -61,6 +61,19 @@ module CodeGen =
             let! st = getState
             return Map.find regName st.registers
         }
+
+    let checkStructs : State<bool, Environment> =
+        state {
+            let! st = getState
+            return if st.structs.Length > 0 then true else false
+        }
+
+    let findStruct (strName:string) : State<CStruct, Environment> =
+        state {
+            let! st = getState
+            let x = st.structs |> List.find (fun (name, types) -> strName = name)
+            return x
+        }
     
     let argsStruct = SimplePrimitive
                       (
@@ -296,15 +309,45 @@ module CodeGen =
 
                             // get the address in the list
                             let! addrReg = freshReg
-                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+                            let regType = "i64*"
+                            //let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
                             let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName idx
                             let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
-                              
+                            //  
                             // store the rhs at the address
                             let! (_,_, storeCode) = genStore toStoreName toStoreType addrName addrType
 
                             let fullString = sprintf "%s\n%s\n%s" code addrCode storeCode
                             return ("","",fullString)
+                          | Identifier (simpel, str) ->
+                            let! flag = checkStructs
+                            if flag = false then return("","","") else
+                                let! (toStoreName, toStoreType, code) = internalCodeGen rhs
+                                let toUpdateName = if baseId.StartsWith("%") then sprintf "%s" baseId
+                                                   else sprintf "%%%s" baseId
+                                let! toUpdateType = findRegister toUpdateName
+                                let i = toUpdateType.Length
+                                let structType = toUpdateType.Substring(8, i-(9))
+                                let! cstr = findStruct structType
+                                let (_, lst) = cstr
+                                let findIndex (fieldName:Identifier) (list:CTypeDeclaration list) : int =
+                                    match fieldName with
+                                    | SimpleIdentifier k -> 
+                                        list
+                                        |> List.find (fun (name, index, _,_) -> name = k)
+                                        |> fun (_,y,_,_) -> y
+                                let i = (snd cstr) |> findIndex simpel
+                                let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName (findIndex simpel lst)
+                                let! addrReg = freshReg
+                                let regType = sprintf "%s*" toStoreType
+                                let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
+                                let storeCode = sprintf "store %s %s, %s %s" toStoreType toStoreName regType addrReg
+                                //let! (_,_, storeCode) = genStore toStoreName toStoreType addrName addrType
+
+                                let fullString = sprintf "%s\n%s\n%s" code addrCode storeCode
+                                //let idx = 
+                                //let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName idx
+                                return ("","",fullString)
                           | _ -> return failwith "struct indexing not implemented" // must be struct
                           }
                  return res
@@ -813,13 +856,39 @@ module CodeGen =
           state {
               match structToInit with
               | Struct (str, types) -> 
-                  let cstruct = toCstruct str types
+                  let (cstructName, cstructTypeDecls) = toCstruct str types
                   let! tempReg = freshReg
                   let beginStructLieteral = sprintf "%s = alloca %%struct.%s\n" tempReg str
                   let! ids = fieldNamesAndVals |> collectAll (fun _ -> freshReg)
 
+                  let findIndex (fieldName:string) (list:CTypeDeclaration list) : int =
+                      list
+                      |> List.find (fun (name, index, _,_) -> name = fieldName)
+                      |> fun (_,y,_,_) -> y
 
-                  return ("", "", "")
+                  let findLlvmType (fieldName:string) (list:CTypeDeclaration list) : string =
+                      list
+                      |> List.find (fun (name, index, _,_) -> name = fieldName)
+                      |> fun (_,_,_,y) -> y
+
+
+                  let elementPointerStrings = fieldNamesAndVals |>
+                                              List.zip ids |>
+                                              List.map (fun (reg, field) -> sprintf "%s = getelementptr %%struct.%s* %s, i32 0, i32 %d\n" reg str tempReg (findIndex (fst field) cstructTypeDecls)) |>
+                                              String.concat "\n"
+
+                  let! bodyList = fieldNamesAndVals |> collectAll (fun (name, body) -> internalCodeGen(body))
+                  let fieldList = bodyList |>
+                                  List.zip ids |>
+                                  List.map (fun (reg, (newReg, regType , codestring)) -> sprintf "store %s %s, %s* %s" regType newReg regType reg) |>
+                                  String.concat "\n"
+                  let! loadReg = freshReg
+                  let loadString = sprintf "\n%s = load %%struct.%s* %s\n" loadReg str tempReg
+                  let returnReg = sprintf "%s" loadReg
+                  let structType = sprintf "%%struct.%s" str
+
+                  let codeString = beginStructLieteral + elementPointerStrings + fieldList + loadString
+                  return (returnReg, structType, codeString)
           }
         | Invocation (functionName, parameters, functionType) -> 
           state {
