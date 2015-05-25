@@ -2,3 +2,33 @@
 
 Hvordan blev kravene til sproget opfyldt?
 Hvordan føles det at skrive i sproget?
+
+simplicitet:
+- fastholdelse af design principper, som er simple
+-- man kan kun sende beskeder til actors, ikke kalde actors
+- simplicitet ved at fjerne muligheder i sproget, som ellers ville øge kompleksiteten
+-- det at skrive parallelle programmer er gjort nemmere ved brug af actors
+
+ortogonalittet:
+- falder ned når vi ikke bare kan tilfå felterne i en actor, men dette er ok, da det gør sproget simplere
+- funktioner kan sidestilles med variabler. Man kan sende funktioner rundt ligesom variabler/symboler. Dog ikke implementeret
+
+syntax design:
+- mere målrettet mod modelleringen, og mindre de underliggende tekniske egenskaber
+- spawn keyword: i stedet for at være tekniske, som i alloker, bruges spawn som beskriver hvad der sker mere abstrakt
+
+data types:
+- vi ville gerne have at matematisk intuition kan bruges i sprog. Det betyder at 2/3 + 1/3 burde give 1, men det vi kun approximerer de irrationelle tal, giver det ikke 1. Dette er en begrænsing vi ikke har ordnet i sproget.
+- andet eksempel med root og potens
+
+typechecking:
+- vi er strongly typed med klare regler for typer
+
+readability vs writability:
+- hvor vi har overholdt princippet: man skal skrive en real literal hvis vi gemmer den i en real variabel
+
+design overfor vores analyse
+- opfylder vores design de krav der er sat i analysen
+
+compiler overfor vores design
+- opfylder vores compiler de krav der er sat i designet
