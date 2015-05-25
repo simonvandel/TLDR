@@ -844,7 +844,39 @@ module CodeGen =
 
                             let fullString = sprintf "%s\n%s" addrCode loadedValueCode
                             return (loadedValueName,loadedValueType,fullString)
-                          | _ -> return failwith "struct indexing not implemented" // must be struct
+                          | Identifier (simpel, str) ->
+                              let! flag = checkStructs
+                              if flag = false then return("","","") else
+                                let! toLoadType = findRegister toLoadName
+                                let i = toLoadType.Length
+                                let structType = toLoadType.Substring(8, i-(9))
+                                let! cstr = findStruct structType
+                                let (_, lst) = cstr
+                                let findIndex (fieldName:Identifier) (list:CTypeDeclaration list) : int =
+                                    match fieldName with
+                                    | SimpleIdentifier k -> 
+                                        list
+                                        |> List.find (fun (name, index, _,_) -> name = k)
+                                        |> fun (_,y,_,_) -> y
+                                let findLlvm (fieldName:Identifier) (list:CTypeDeclaration list) : string =
+                                    match fieldName with
+                                    | SimpleIdentifier k -> 
+                                        list
+                                        |> List.find (fun (name, index, _,_) -> name = k)
+                                        |> fun (_,_,_,y) -> y
+                                let i = (snd cstr) |> findIndex simpel
+                                let! addrReg = freshReg
+                                let regType = (snd cstr) |> findLlvm simpel
+                                let Type = sprintf "%s*" regType
+                                let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toLoadType toLoadName (findIndex simpel lst)
+                                let! (addrName, addrType, addrCode) = newRegister addrReg Type getElemCode
+                                let! loadedValueReg = freshReg
+                                //let loadedValueCode = 
+                                //%_7 = load %struct.iterationStep** %_6
+                                let! (loadedValueName, loadedValueType, loadedValueCode) = genLoad loadedValueReg addrType addrName
+                                let fullString = sprintf "%s\n%s" addrCode loadedValueCode
+
+                                return (loadedValueName,loadedValueType,fullString)
                           }
                 return res
           }
