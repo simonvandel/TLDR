@@ -91,5 +91,5 @@ The semantics for declaring, initializing and assigning variables is as follows:
 \\\\
 &\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
                  {\Braket{\Tx := S,e} \Rightarrow_S e'}
-								 {, e' = e[\Tx \mapsto \Braket{v,\epsilon}]}
+								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
