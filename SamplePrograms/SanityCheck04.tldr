@@ -1,6 +1,6 @@
 actor main := {
   receive arguments:args := {
-    let res:real := 3 # (5 ^ 3);
+    let res:real := 3.0 # (5.0 ^ 3.0);
     printreal(res);
     if( res = 5.0){
       print("Expected");
