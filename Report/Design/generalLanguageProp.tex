@@ -70,12 +70,12 @@ The following primitives exist in the language. All primitives are lower-cased.
 \paragraph{Integer}
 \label{subsubsec:int}
 
-The int primitive can have values of 0 to \sinote{hvor mange bits?}. The int primitive's literal representation is as whole numbers e.g. \emph{2}.
+The integer primitive can have values of 0 to \sinote{hvor mange bits?}. The integers primitive's literal representation is as whole numbers e.g. \emph{2}.
 
 \paragraph{Real}
 \label{subsubsec:real}
 
-The real primitive can have values of \sinote{hvordan definerer vi det her?}. The real primitive's literal representation is as decimal numbers with fractions e.g. \emph{2.5} or \emph{2.0}.
+The real primitive can have values of real numbers. The real primitive's literal representation is as decimal numbers with fractions e.g. \emph{2.5} or \emph{2.0}.
 
 \paragraph{Bool}
 \label{subsubsec:bool}
@@ -91,6 +91,8 @@ The char primitive can have values of the ASCII standard. It is written literall
 \label{sec:unit}
 
 The unit primitive can have only one value: itself. The use of the primitive is to signal emptiness.
+
+The prmitives will be exlaborated upon in \cref{operands}.
 
 \subsubsection{Type Declaration}
 From the start of the language design, TLDR was supposed to have type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the language. Due to prioritisation and time span of the project, it was decided that the language should initially have an explicit type system.
