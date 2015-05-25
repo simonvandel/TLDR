@@ -8,11 +8,11 @@ The static analysis part of the compiler has the following phases:
 \item Checking hiding
 \item Checking types
 \end{itemize}
-Each of these will be explained in this section.
+Each of these will be explained in the following sections.
 \subsection{Symbol Table}
 An important aspect of the static analysis in the TLDR compiler is the construction of a symbol table, a table which contains relevant information about the symbols, that are used in the program that is analysed.
 In \cref{lst:symtableEntry}, the definition of an entry in the symbol table can be seen.
-\begin{lstlisting}[style = fsharp, label = lst:symtableEntry, caption = {The definition of an entry in the symbol table}]
+\begin{lstlisting}[style = fsharp, label = lst:symtableEntry, caption = {The definition of an entry in the symbol table.}]
 [<ReferenceEquality>]
 type SymbolTableEntry = {
   symbol: LValue
@@ -21,10 +21,13 @@ type SymbolTableEntry = {
   value:AST
 }
 \end{lstlisting}
-In the entry, "symbol" is a type which contains the relevant information regarding the identity of the symbol, that is, the identifier, the declared type and whether or not the symbol is mutable.\\
-"statementType" in the entry defines whether the specific use of the symbol is a usage, an initialisation or a reassignment.\\
-"scope" specifies the unique scope of the symbol usage.\\
-"value" is the actual value of the symbol usage. In an assignment, this would be set to the right hand side of the assignment operator.\\
+In the entry, \enquote{symbol} is a type which contains the relevant information regarding the identity of the symbol, that is, the identifier, the declared type and whether or not the symbol is mutable.
+
+\enquote{statementType} in the entry defines whether the specific use of the symbol is a usage, an initialisation or a reassignment.
+
+\enquote{scope} specifies the unique scope of the symbol usage.
+
+\enquote{value} is the actual value of the symbol usage. In an assignment, this would be set to the right hand side of the assignment operator.
 
 \subsection{Checking Illegal Reassignment}
 Checking illegal reassignment, that is, reassignment of an immutable symbol, is fairly trivial. As can be seen in \cref{lst:checkReass}, the function simply takes the symbol table as an argument and reports a failure whenever an entry in the table is both a reassignment and immutable.
@@ -41,8 +44,8 @@ let checkReass symTable =
 \end{lstlisting}
 
 \subsection{Checking Use Before Declaration}
-Checking usage of a symbol before its declaration is similarly trivial. This function takes advantage of the fact that in the function that builds the symbol table, only symbol usages, without prior initialisation or declaration, and definitions are given the type "HasNoType". 
-As seen in \cref{lst:checkUsedBeforeDecl} this function simply sorts out entries which are definitions and reports a failure for every entry with the type "HasNoType".
+Checking usage of a symbol before its declaration is similarly trivial. This function takes advantage of the fact that in the function that builds the symbol table, only symbol usages, without prior initialisation or declaration, and definitions are given the type \enquote{HasNoType}. 
+As seen in \cref{lst:checkUsedBeforeDecl} this function simply sorts out entries which are definitions and reports a failure for every entry with the type \enquote{HasNoType}.
 \begin{lstlisting}[style = fsharp, label = lst:checkUsedBeforeDecl, caption = {The function responsible for checking usage before declaration.}]
 let checkUsedBeforeDecl symTable =
   let res = symTable |>
@@ -70,9 +73,8 @@ let checkHiding symTable =
   | xs -> sumResults xs
 \end{lstlisting}
 
-
 \subsection{Checking Types}
-In order to check that the type of the value of every symbol matches the declared types, the function shown in \cref{lst:checkTypes} is used. This function calls another function, "checkTypesAST" which takes an AST node and returns the type of that node. As seen in \cref{lst:symtableEntry} the value of a symbol table entry is an AST node. The type checker can therefore get the type of every symbol infered from their value and see if that matches the declared type, which is also stored in the symbol table, and report a failure if the two types do not match.
+In order to check that the type of the value of every symbol matches the declared types, the function shown in \cref{lst:checkTypes} is used. This function calls another function, \enquote{checkTypesAST} which takes an AST node and returns the type of that node. As seen in \cref{lst:symtableEntry} the value of a symbol table entry is an AST node. The type checker can therefore get the type of every symbol inferred from their value and see if that matches the declared type, which is also stored in the symbol table, and report a failure if the two types do not match.
 
 \begin{lstlisting}[style = fsharp, label = lst:checkTypes, caption = {The main function responsible for checking types.}]
 let checkTypesSymTable symTable =
