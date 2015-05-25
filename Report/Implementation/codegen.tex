@@ -47,7 +47,7 @@ A actor simply checks for new messages, and performs the corresponding message, 
 
 By having receive constructs simply be labels, all data of an actor can be contained in a single function.
 
-\subsection{Lists}
+\subsection{Lists}\label{codegen:lists}
 
 Lists in TLDR are simply generated as static LLVM arrays. This mean that their size is known at compile time, and that no elements can be added at run-time. This is currently a limitation in the current compiler, but is something that is doable if the project group had prioritised this.
 
