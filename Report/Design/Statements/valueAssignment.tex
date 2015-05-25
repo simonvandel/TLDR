@@ -1,30 +1,32 @@
-\subsection{Initialisations}
-\label{subsec:initialisations}
-
-A value can be assigned to a symbol in either a constant binding or a variable binding.
+\subsection{Initialisations}\label{subsec:initialisations}
+A new symbol in TLDR can be created via an initialisation. It was decided that a symbol should not have the possibility to map no statements and expressions meaning that the environment can never map a symbol to the empty set $\epsilon$. For that reason the initialisation always include an assignment with statements and/or expressions. Statements and/or expressions can be assigned to a symbol in either a constant binding or a variable binding.
 
 In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We wanted to follow this construct as well letting immutable assignment be denoted in this fashion, since they are comparable to definitions. 
 
 But since we wanted assignments, be it mutable or immutable, to have a similarities, we chose \enquote{:=} for all assignments. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{:=} was chosen, since it is a known symbol from other languages. The asymmetry of the \enquote{:=} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
 
-
+When assigning statements and expressions we differentiates between functions and constants/variables. Whether the symbol is constant or not and whether or not it is a function is defined at initialisation. Whether it is a constant or variable binding is denoted with the keywords \enquote{let}, a constant binding, and \enquote{var}, a variable binding. Whether it is a function or not is denoted via parentheses, parentheses meaning that it is a function and no parentheses meaning that it is not. Note that a symbol can have empty parentheses and still be a function meaning that there is a difference between \enquote{let a():int := \dots} and \enquote{let a:int := \dots}. The formal syntax is as follows: 
 
 \begin{grammar}
-<Reassignment> ::= <Identifier> ':=' <Expression>
+<Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) ':=' <Expression>
 
+<FuncDecl> -> <Identifier> '(' <Ids>? ')' ':' <Types>
+
+<SymDecl> -> <Identifier> ':' <Types>
+\end{grammar}
+
+If a symbol is initialised as a function it is dynamically scoped. This means that the statements, a symbol maps to, is evaluated when it is invoked, in the environment in which it is invoked, meaning that if the function is impure, see \cref{subsubsec:invocation}, it will use the statements and expressions the symbols maps to at the time of invocation not initialisation. This means that a function when not invoked maps to the statements and expressions it was assigned and other functions can be assigned these or use them as inputs.
+
+If a symbol is initialised as a constant or variable it still maps
+
+\begin{grammar}
 <Identifier> ::= 'me'
  \alt <Id>
  \alt <Id> <Accessor>
 
 <Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'int' | 'real' | 'char' | 'bool' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
 
-<Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) := <Expression>
-
 <Ids> ::= <Identifier> (',' <Identifier>)*
-
-<FuncDecl> -> <Identifier> '(' <Ids>? ')' ':' <Types>
-
-<SymDecl> -> <Identifier> ':' <Types>
 
 <Types> ::= <Type> ('->' <Type>)*
 
@@ -89,7 +91,10 @@ The semantics for declaring, initializing and assigning variables is as follows:
                          {\Braket{\Tvar \Tx := S,e} \Rightarrow_S e'}
 												 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \\\\
-&\inference[ASS]{}
-                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
+&\inference[ASS]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
+                 {\Braket{\Tx := S,e} \Rightarrow_S \Braket{\Tx := S',e'}}
+\\\\
+&\inference[ASS]{\Braket{S,e} \Rightarrow_S \Braket{v}}
+                 {\Braket{\Tx() := S,e} \Rightarrow_S e'}
 								 {, e' = e[\Tx \mapsto \Braket{S,\epsilon}]}
 \end{align*}
