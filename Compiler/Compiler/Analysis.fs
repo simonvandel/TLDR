@@ -46,6 +46,71 @@ module Analysis =
             {
               let! curScope = getScope
               let! curState = getState
+              let! newRhs = buildSymbolTable rhs
+
+              match varId with
+              | SimpleIdentifier _ ->
+                let sDecl = 
+                  curState.symbolList |>
+                    List.tryFind (fun e -> e.symbol.identity = varId && e.statementType = Init && isInScope  e.scope curScope)
+                let entry = 
+                    {
+                      symbol = 
+                        {
+                        identity = varId
+                        isMutable = 
+                          match sDecl with
+                          | Some (sEntry) -> sEntry.symbol.isMutable
+                          | None -> false
+                        primitiveType = 
+                          match sDecl with
+                          | Some (sEntry) -> sEntry.symbol.primitiveType
+                          | None -> HasNoType
+                        }
+                      statementType = Reass
+                      scope = curScope
+                      value = newRhs
+                    }
+                do! addEntry entry
+
+                return Reassignment (varId, newRhs)
+              | IdentifierAccessor (baseId, nextElem) ->
+                let sDecl = 
+                  curState.symbolList |>
+                    List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier baseId && e.statementType = Init && isInScope e.scope curScope)
+                let newPType = match sDecl with
+                               | Some a -> a.symbol.primitiveType
+                               | None -> HasNoType
+
+                let elemToFind = match nextElem with
+                                 | Identifier (SimpleIdentifier name, _) -> name
+
+                let typeOfElem = match newPType with
+                                 | PrimitiveType.Struct (_, fields) ->
+                                     let needle = fields
+                                                  |> List.tryFind (fun (fieldName, _) -> elemToFind = fieldName)
+                                     match needle with
+                                     | Some (fieldName, fieldType) -> fieldType
+                                     | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
+                let entry = 
+                    {
+                      symbol = 
+                        {
+                        identity = varId
+                        isMutable = 
+                          match sDecl with
+                          | Some (sEntry) -> sEntry.symbol.isMutable
+                          | None -> false
+                        primitiveType = typeOfElem
+                        }
+                      statementType = Reass
+                      scope = curScope
+                      value = newRhs
+                    }
+                do! addEntry entry
+                //return Identifier (id, typeOfElem)
+                return Reassignment (varId, newRhs)
+              (*
               let idToCheck = match varId with
                               | SimpleIdentifier _ as simpleId -> simpleId
                               | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
@@ -74,6 +139,7 @@ module Analysis =
               do! addEntry entry
 
               return Reassignment (varId, newRhs)
+              *)
             }
         | Initialisation (lvalue, rhs) as init ->
           state
@@ -81,10 +147,7 @@ module Analysis =
               let! curState = getState
               let! curScope = getScope
               let! newRhs = buildSymbolTable rhs
-              let newLValPrimType = match newRhs with
-                                    | List(_,prim) -> prim
-                                    | other -> lvalue.primitiveType
-              let newLValue = {lvalue with primitiveType = newLValPrimType}
+
               let newnewRhs = match newRhs with
                            | StructLiteral (structToInit, fieldNamesAndValues) ->
                              let structToInitName = match lvalue.primitiveType with
@@ -100,7 +163,12 @@ module Analysis =
                                                    | None -> failwith "could not find struct declaration"
                              StructLiteral (newStructToInit, fieldNamesAndValues)
                            | other -> other
-              
+              let newLValPrimType = match newnewRhs with
+                                    | List(_,prim) -> prim
+                                    | StructLiteral ((Struct (name,decls)), _) -> PrimitiveType.Struct (name, decls)
+                                    | other -> lvalue.primitiveType
+              let newLValue = {lvalue with primitiveType = newLValPrimType}
+
               let! curScopeAfter = getScope
               let entry =
                   {
@@ -238,6 +306,54 @@ module Analysis =
             {
               let! curScope = getScope
               let! curState = getState
+
+              //////////////////////////////////////
+              match id with
+              | SimpleIdentifier _ ->
+                let sDecl = 
+                  curState.symbolList |>
+                    List.tryFind (fun e -> e.symbol.identity = id && e.statementType = Init && isInScope e.scope curScope)
+                let newPType = match sDecl with
+                               | Some decl -> decl.symbol.primitiveType
+                               | None -> HasNoType
+                             
+                let entry = 
+                  {
+                    symbol = 
+                      {
+                        identity = id
+                        isMutable = match sDecl with
+                                    | Some decl -> decl.symbol.isMutable
+                                    | None -> false
+                        primitiveType = newPType
+                      }
+                    statementType = Use
+                    scope = curScope
+                    value = Identifier (id, newPType)
+                  }
+                do! addEntry entry
+                return Identifier (id, newPType)
+              | IdentifierAccessor (baseId, nextElem) ->
+                let sDecl = 
+                  curState.symbolList |>
+                    List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier baseId && e.statementType = Init && isInScope e.scope curScope)
+                let newPType = match sDecl with
+                               | Some a -> a.symbol.primitiveType
+                               | None -> HasNoType
+
+                let elemToFind = match nextElem with
+                                 | Identifier (SimpleIdentifier name, _) -> name
+
+                let typeOfElem = match newPType with
+                                 | PrimitiveType.Struct (_, fields) ->
+                                     let needle = fields
+                                                  |> List.tryFind (fun (fieldName, _) -> elemToFind = fieldName)
+                                     match needle with
+                                     | Some (fieldName, fieldType) -> fieldType
+                                     | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
+                return Identifier (id, typeOfElem)
+              //////////////////////////////////////
+              (*
               let idToCheck = match id with
                               | SimpleIdentifier _ as simpleId -> simpleId
                               | IdentifierAccessor (startId, nextElem) -> SimpleIdentifier startId
@@ -247,6 +363,7 @@ module Analysis =
               let newPType = match sDecl with
                              | Some decl -> decl.symbol.primitiveType
                              | None -> HasNoType
+
               let entry = 
                 {
                   symbol = 
@@ -263,6 +380,7 @@ module Analysis =
                 }
               do! addEntry entry
               return Identifier (id, newPType)
+              *)
             }
         | Function (funcName, arguments, types, body) -> 
           state 
@@ -437,7 +555,7 @@ module Analysis =
                       {
                         identity = SimpleIdentifier name
                         isMutable = false
-                        primitiveType = HasNoType //SimplePrimitive (Primitive.Struct (name, fields))
+                        primitiveType = PrimitiveType.Struct (name, fields)
                       }
                     statementType = Def
                     scope = {outer = None; level = []} // outermost scope

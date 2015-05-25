@@ -75,14 +75,12 @@ module CodeGen =
             return x
         }
     
-    let argsStruct = SimplePrimitive
-                      (
-                        Primitive.Struct ("args",
+    let argsStruct = PrimitiveType.Struct ("args",
                          [
                            ("argv", ListPrimitive (ListPrimitive (SimplePrimitive Primitive.Char, 128), 128)); // TODO: vi bliver nødt til at hard code længden af lister
                            ("argc", SimplePrimitive Int)
                          ])
-                      )
+                      
 
     let genLoad targetName sourceType sourceName : State<Value, Environment> =
         state {
@@ -170,7 +168,7 @@ module CodeGen =
         | ListPrimitive (prim, len) ->
             sprintf "[%d x %s]" len (genType prim)
         | UserType p -> sprintf "%%struct.%s" p
-
+        | PrimitiveType.Struct (name, _) -> sprintf "%%struct.%s" name
         
     let rec findMainReceive (ast:AST) : AST option =
         match ast with

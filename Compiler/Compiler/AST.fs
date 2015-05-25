@@ -19,13 +19,14 @@ module AST =
         | Void
         | Actor of string
         //| Function of PrimitiveType
-        | Struct of string * (TypeDeclaration list)
+        //| Struct of string * (TypeDeclaration list)
 
     and PrimitiveType =
         | SimplePrimitive of Primitive
         | ListPrimitive of PrimitiveType * int // typeOfElements, length
         | ArrowPrimitive of PrimitiveType list
         | TupleType of PrimitiveType list
+        | Struct of string * (TypeDeclaration list)
         | UserType of string
         | HasNoType
 

@@ -168,7 +168,7 @@ module TypeChecker =
             let fieldNames = fields |> List.map fst
             // TODO: hvordan tjekker vi det her??
             match structToInit with
-            | Struct (stName, typeDecls) -> Success (SimplePrimitive (Primitive.Struct (stName, typeDecls)))
+            | Struct (stName, typeDecls) -> Success ( PrimitiveType.Struct (stName, typeDecls))
             //Success HasNoType
         | Tuple (elems, ptype) ->
             let mutable res = []
@@ -200,6 +200,8 @@ module TypeChecker =
         // check om entry.symbol.primitiveType er lig typen af entry.value
         let results = List.map (fun entry -> 
                          match checkTypesAST entry.value with
+                         | Success HasNoType ->
+                             Success () // don't throw error if hasnotype. for example struct
                          | Success pType ->
                            if entry.symbol.primitiveType = pType then
                              Success ()
