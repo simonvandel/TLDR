@@ -536,6 +536,13 @@ This syntax was decided since it is very close to mathematics, where functions t
 <Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
 \end{grammar}
 
+\begin{align*}
+&\inference[$\text{INVOKE}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
+                  {\Braket{p_1(p_2),e} \Rightarrow_S \Braket{S_1',e'}}
+\\
+&									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
+\end{align*}
+
 \subsubsection{Literals}
 
 \begin{grammar}

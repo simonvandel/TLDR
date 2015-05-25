@@ -197,15 +197,6 @@ The last transition rule is used to map to keep track of user structures. These 
 \begin{center}
 $st = \text{Structs} \rightharpoonup \text{Stm}$
 \end{center}
-The \enquote{a} function holds which environment and user created structures that exists inside an instantiated actor. There is only one function for this since all actors can see all actors and there can only 
-
-\subsubsection{General Constructs}
-\begin{align*}
-&\inference[$\text{INVOKE}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_S \Braket{S_1',e'}}
-                  {\Braket{p_1(p_2),e} \Rightarrow_S \Braket{S_1',e'}}
-\\
-&									{,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\end{align*}
 
 \subsection{Comments}
 \label{subsec:comments}
