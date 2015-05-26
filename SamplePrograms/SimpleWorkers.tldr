@@ -1,9 +1,11 @@
 actor main := {
   receive msg:args := {
     let problems:[Problem] := [(arg1 := 1; arg2 := 2;),(arg1 := 5; arg2 := 7;)];
-    printint(problems.[0].arg1);
-  }
-}
+    let x:Problem := problems.[0];
+    let y:int := x.arg1;
+    printint(y);
+  };
+};
 
 struct Problem := {
   arg1:int;

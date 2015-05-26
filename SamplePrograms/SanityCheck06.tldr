@@ -1,20 +1,13 @@
 actor main := {
   receive arguments:args := {
-    var iStep:iterationStep := (step := 10; st := 3.0; br := true;);
-    //let x:real := iStep.st;
-   // printreal(x);
-  //  iStep.step := 5;
-  //  let i:int := iStep.step;
-    if(iStep.br){
-    	printint(i);
-    };
-    die;
+   let x:[int] := [15,5,7,8];
+   let k:int := x.[1];
+   die;
   };
 };
 
 struct iterationStep := {
   step:int;
   st:real;
-  br:bool;
 };
 
