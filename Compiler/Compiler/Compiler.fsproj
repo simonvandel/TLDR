@@ -18,7 +18,7 @@
     <PlatformTarget>
     </PlatformTarget>
     <ConsolePause>false</ConsolePause>
-    <Commandlineparameters>../../../../SamplePrograms/SimpleWorkers.tldr</Commandlineparameters>
+    <Commandlineparameters>../../../../SamplePrograms/SanityCheck023.tldr</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>

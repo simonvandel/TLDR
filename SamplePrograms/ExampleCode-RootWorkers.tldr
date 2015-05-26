@@ -3,7 +3,7 @@ actor main := {
     let noOfArguments:int := msg.argc;
     let workloadMsg:WorkloadMsg := {
       argumentCount := noOfArguments;
-      arguments := msg.argv
+      arguments := msg.argv;
     }
     let rootMaster := spawn RootMaster workloadMsg;
   }
@@ -42,7 +42,7 @@ actor RootMaster := {
 actor RootWorker := {
   receive msg:RootMsg := {
     let result:real := msg.degree # msg.radicant;
-    send result msg.sender
+    send result msg.sender;
     die;
   }
 }
