@@ -1,7 +1,5 @@
 \section{Actors}
 
-\kanote{Tilføj at actor handles er det eneste sted med referencer, og derved det eneste sted med null}
-
 Here follows descriptions of the usage of actors in TLDR. This includes different principles, functionalities, syntactical and the semantics. But before we can discuss the use of actors in TLDR, we must first cover the semantics of the parallelism used.
 
 \subsubsection{Semantics of parallelism}
@@ -183,7 +181,26 @@ The type rules for \enquote{receive} are:
 
 When an actor is no longer needed, it is possible to discard it with the \enquote{die}-keyword. In other languages, using the actor model, \enquote{die}, or similar functionality, is usually called by the parent of the actor, that is, the actor that spawned the actor. In TLDR however, \enquote{die} can only be called by the actor itself. This is done in order to keep the principle of only interacting with actors through messages, which is a simpler way of handling actors in TLDR, since the language does not have a built-in supervisor functionality as described in \cref{actSupervisors}. 
 
-When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost.
+When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost. 
+
+\subsubsection{Actor references}
+
+In TLDR declarations must be accomodated by an assignment of a value, since no primitives can have a null value. However, since actors handles have the special position in the language of being the only value which is passed by reference, it should incompass a null value. The reason for this becomes apparent if one considers the following example:
+
+\begin{lstlisting}
+actor main := {
+  receive arguments:args := {
+    var jack:man := spawn man;
+  }
+}
+
+actor man := {
+  var bestMan:man := spawn man;
+  }
+}
+\end{lstlisting}
+
+In this example, the bestMan variable would result in an endless recursive spawn chain of actors. This is the most obvious problem, but there are multiple senarioes where forced value assignment for reference types become problematic. Due to this, the language allows for null references.
 
 \subsubsection{Comparison}
 
