@@ -39,6 +39,21 @@ having these semantics:
 &{\Twhere st' = st[T \mapsto s'],st(T) = s,s' = s \cup x]}
 \end{align*}
 
+\begin{align*}
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tstruct T_1 := \{x:T_2;S\}, env_s} \Rightarrow_S \Braket{\Tstruct T_1 := \{S\},env_s'}}
+\\
+&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x]}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet \; x:T := (S),env_s} \Rightarrow_S \Braket{x:T := (S),env_s'}}
+\\
+&{env_s' = env_s[x \mapsto (S,s)],env_s(T) = (\epsilon,s)]}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{s:T := (f := x;S),env_s} \Rightarrow_S \Braket{s.f := x;s:T := (S),env_s}}
+\end{align*}
+
 \subsubsection{Type Rules}
 
 \begin{align*}
