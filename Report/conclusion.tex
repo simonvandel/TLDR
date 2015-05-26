@@ -1,34 +1,42 @@
-\chapter{Konklusion}
+\chapter{conclusion}
 
-Hvordan blev kravene til sproget opfyldt?
-Hvordan føles det at skrive i sproget?
+This chapter of the report will conclude on the findings and results of the project. This will entail an examination of the way TLDR tries to accomodate the criteria set for the language in \cref{analsum}, as well as the constructed compilers ability to implement the language.
 
-simplicitet:
-- fastholdelse af design principper, som er simple
--- man kan kun sende beskeder til actors, ikke kalde actors
-- simplicitet ved at fjerne muligheder i sproget, som ellers ville øge kompleksiteten
--- det at skrive parallelle programmer er gjort nemmere ved brug af actors
+The first criteria was for the language to be simple. This was acheived through staying true to a few select principles, and not allowing to break these principles. The most prominent being the principle of only letting actors be manipulated through messages. The language also incorporates simplicity in the way it allows for modelling parallel programs. The way which the actor abstraction over the handling of threads in the program, removes a lot of technical considerations and thereby simplifies the way the programmer approaches the modeling.
+ 
+On the subject of orthogonality the language performs as expected. The focus on simplicity interferes with the orthogonality of the language. But not quite as expected where the way in which other criterias have interfered. One such could be the lack of implicit casts between number primitives, which was done to uphold readability and the strongly typed language criterias. These criterias have also influenced the language through the explicit difference between the notation for integers and real numbers.
 
-ortogonalittet:
-- falder ned når vi ikke bare kan tilfå felterne i en actor, men dette er ok, da det gør sproget simplere
-- funktioner kan sidestilles med variabler. Man kan sende funktioner rundt ligesom variabler/symboler. Dog ikke implementeret
+The syntax designs focus on modelling have also been fulfilled. This can for example be seen in the keywords used for actors.
 
-syntax design:
-- mere målrettet mod modelleringen, og mindre de underliggende tekniske egenskaber
-- spawn keyword: i stedet for at være tekniske, som i alloker, bruges spawn som beskriver hvad der sker mere abstrakt
 
-data types:
-- vi ville gerne have at matematisk intuition kan bruges i sprog. Det betyder at 2/3 + 1/3 burde give 1, men det vi kun approximerer de irrationelle tal, giver det ikke 1. Dette er en begrænsing vi ikke har ordnet i sproget.
-- andet eksempel med root og potens
 
-typechecking:
-- vi er strongly typed med klare regler for typer
 
-readability vs writability:
-- hvor vi har overholdt princippet: man skal skrive en real literal hvis vi gemmer den i en real variabel
+%simplicitet:
+%- fastholdelse af design principper, som er simple
+%-- man kan kun sende beskeder til actors, ikke kalde actors
+%- simplicitet ved at fjerne muligheder i sproget, som ellers ville øge kompleksiteten
+%-- det at skrive parallelle programmer er gjort nemmere ved brug af actors
 
-design overfor vores analyse
-- opfylder vores design de krav der er sat i analysen
+%ortogonalittet:
+%- falder ned når vi ikke bare kan tilfå felterne i en actor, men dette er ok, da det gør sproget simplere
+%- funktioner kan sidestilles med variabler. Man kan sende funktioner rundt ligesom variabler/symboler. Dog ikke implementeret
 
-compiler overfor vores design
-- opfylder vores compiler de krav der er sat i designet
+%syntax design:
+%- mere målrettet mod modelleringen, og mindre de underliggende tekniske egenskaber
+%- spawn keyword: i stedet for at være tekniske, som i alloker, bruges spawn som beskriver hvad der sker mere abstrakt
+
+%data types:
+%- vi ville gerne have at matematisk intuition kan bruges i sprog. Det betyder at 2/3 + 1/3 burde give 1, men det vi kun approximerer de irrationelle tal, giver det ikke 1. Dette er en begrænsing vi ikke har ordnet i sproget.
+%- andet eksempel med root og potens
+
+%typechecking:
+%- vi er strongly typed med klare regler for typer
+
+%readability vs writability:
+%- hvor vi har overholdt princippet: man skal skrive en real literal hvis vi gemmer den i en real variabel
+
+%design overfor vores analyse
+%- opfylder vores design de krav der er sat i analysen
+
+%compiler overfor vores design
+%- opfylder vores compiler de krav der er sat i designet
