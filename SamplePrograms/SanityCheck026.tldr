@@ -12,8 +12,8 @@ actor printer := {
   receive msg:printMsg := {
 
     printint(msg.i);
-    printint(msg.[0]);
-    printint(msg.[1]);
+    printint(msg.list.[0]);
+    printint(msg.list.[1]);
 
     die;
   };
