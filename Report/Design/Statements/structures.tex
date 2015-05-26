@@ -1,7 +1,7 @@
 \subsection{Structures}
 \label{subsec:structs}
 
-In TLDR there are three ways to do incapsulation. Actors, Tuples and structs. Structs are unique by being fully accessable within the scope, and having named fields. Structs are especially useful in TLDR for creating messages.
+In TLDR there are three ways to do encapsulation. Actors, Tuples and structs. Structs are unique by being fully accessible within the scope, and having named fields. Structs are especially useful in TLDR for creating messages.
 
 \subsubsection{Defining Structures}
 \label{sec:defStructures}
@@ -25,9 +25,13 @@ And a concrete example:
 having these semantics:
 
 \begin{align*}
-&\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S \Braket{S', e'}}
-                            {\Braket{struct\;s := \{S\}, st} \Rightarrow_S \Braket{struct\;s := \{S'\}, st[s \mapsto e']}}
-                            {e=st(s)}
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tstruct s := \{S\}, env_s, st} \Rightarrow_S \Braket{env_s,st'}}
+                            {st' = st[s \mapsto S]}
+\\\\
+&\inference[$\text{STRUCT}$]{st(T) = }
+                            {let s:T := (f := x;S)}
+                            {}
 \\\\
 &\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S e'}
                             {\Braket{struct\;s := \{S\}, st} \Rightarrow_S \Braket{st[s \mapsto e']}}

@@ -47,9 +47,3 @@ In this latter of the two reasignment senarioes, the parameters must be renamed.
 There was an initial push towards allowing signature declarations to occur completely seperated from the function declarations, in order to make it even further resemble mathematical notation. This was not included, since the long term goal is type inherency, by which this signature would become obsolete. Furthermore, the arguement of moving the signature away to resemble mathematics, becomes invalid since any move that actually achieves this, would greatly decrease readability, and if the signature is kept close to the function, it might as well have been tied directly to the function. In the case of the function having an intuitive signature, the inclusion would not decrease readability by any significance, since it is not intertwined with the function declaration.
 
 The semantics for declaring a function is as follows:
-
-\begin{align*}
-&\inference[$\text{INIT}_{FUNC}$]{}
-                         {\Braket{\Tlet \Tx(y) := \{S\};,e} \Rightarrow_S e'}
-												 {, e' = e[\Tx \mapsto \Braket{S,y}]}
-\end{align*}

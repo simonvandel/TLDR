@@ -348,6 +348,13 @@ $\top$ & $\top$ & $\bot$ \\\hline
 \end{center}
 \end{itemize}
 
+\begin{align*}
+&\inference[TRUE]{}
+                   {\Braket{\Ttrue,env_s} \Rightarrow_B \top}
+&\inference[FALSE]{}
+                   {\Braket{\Tfalse,env_s} \Rightarrow_B \bot}
+\end{align*}
+
 All boolean operators, except NOT, takes two booleans and returns a boolean. For the simplicity of the type rules we create the Boolean Operator (BOP):
 
 \begin{center}
