@@ -1,6 +1,8 @@
 %mainfile: ../master.tex
 \section{General Language Properties and Formal Models}
 This section will describe the type system of TLDR, the scoping rules and some fundamental semantics for the language.
+\jenote{- General typesystem properties
+- The semantic model and general constructs}
 
 \subsection{Type System}\label{typesys}
 
@@ -21,40 +23,40 @@ Languages can generally be categorised into dynamically typed and statically typ
 Statically typed languages have the following advantages over dynamically typed languages.
 
 \begin{itemize}
-  \item Type errors are presented at the soonest possible level; compile-time. This makes it impossible to have a program stop unexpectedly because of a type error at run-time
-  \item Because of the fact that types are checked at compile time, no overhead is imposed on the compiled program at run-time
+  \item Type errors are presented at the soonest possible time; compile-time. This makes it impossible to have a program stop unexpectedly because of a type error at run-time
+  \item Because of the fact that types are checked at compile-time, no overhead is imposed on the compiled program at run-time
 \end{itemize}
 
 Of course dynamically typed languages have their uses. One can argue that prototyping a program is done faster in a dynamically typed language because the programmer does not need to think of types when programming. The mental overhead is usually lower. The trade-off of dynamic typing versus static typing is often expressiveness for safety and performance. 
 
 \subsubsection{Type Inference}
-Type checking solves the problem of determining if a program is well-typed i.e. does not have any type errors. Type inference can be seen as solving the opposite problem; determine types in a program, making the program well-typed.
+Type checking solves the problem of determining if a program is well-typed i.e. does not have any type errors. Type inference can be seen as solving the opposite problem; determine types in a program, thus making the program well-typed.
 
 In order to reduce the mental overhead and the number of explicit type declarations to write in a language, type inference can be implemented in the compiler. Having types inferred by the compiler in a statically typed language makes the language as expressive as a dynamically typed language, whilst keeping the safety and performance of static typing.
 
 \subsubsection{Summary}
-Type systems are defined by the type rules it enforces. Because the strictness of the type rules can vary, type systems can range from being very strict to being very weak.
+A type system is defined by the type rules it enforces. Because the strictness of the type rules can vary, type systems can range from being very strict to being very weak.
 
 Generally two different approaches exist to solve the goal of minimising errors in programs. Static typing checks types at compile-time and therefore is able to present type errors at a early stage. Because of this, static typing is often regarded as safer and more performant.
 
-Dynamic typing checks types at run-time and one can argue this allows the programmer to not have the same mental overhead of thinking about types as static typing without type inference. This however comes at the price of safety and performance.
+Dynamic typing checks types at run-time and therefore allows the programmer to not have the same mental overhead of thinking about types when programming. This however comes at the price of safety and performance.
 
 Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
 
 \subsubsection{Type System Choice for TLDR}
 
-The type system for TLDR is \emph{strong} statically typed. No implicit type conversions are made in the type system. This choice of static typing was made based on the domain in which TLDR is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures.
+The type system for TLDR is \emph{strong statically typed}. No implicit type conversions are made in the type system. The choice of static typing was made based on the domain in which TLDR is meant to be used. Having type errors presented early on in the process of developing programs in the language, means much stronger guarantees can be made about the final running program. This is important because running programs on large systems or distributed systems is costly; whenever a program is run on such systems, the program should produce the expected result without run-time failures.
 
 \subsubsection{Primitive Data Types}
 \label{subsec:primitives}
 
-Since mathematics is theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have psychical limits which makes it complicated or inefficient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason, namely the different charateristics numbers have.
+Since mathematics is a theoretical abstraction, it is rarely a problem to denote size of numbers, precision on numbers or even infinities. Computers, sadly, have physical limitations which makes it complicated or inefficient to express all these things as just \enquote{numbers}. This the main reason for type declarations on numbers. In mathematics we can also denote a number to be of a certain \enquote{type}, such as the natural numbers, the rational numbers and the real numbers. However in mathematics, this is done for a different reason, namely the different charateristics numbers have.
 
-However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for \enquote{set membership} isn't found on a regular keyboard, so instead we chose the colon \enquote{:}.
+However, both computer science's type declarations and mathematics' number systems, serve to provide a set of characteristics for the number, and how it will behave. We were inspired by this similarity, and chose to preserve it in our language. However, The mathematical symbol for set membership, \enquote{$\in$}, is not found on a regular keyboard, so instead the colon, \enquote{:}, was chosen.
 
-When initialising a symbol, it being either mutable or immutable, the programmer must declare its type, as if the symbol belonged to a set, where the set must be a type in our language.
+When initialising a symbol, the programmer must declare its type, as if the symbol belonged to a set, where the set must be a type in TLDR.
 
-Primitives are the lowest abstraction of value types, that user can interact with, it is not divisible by the user, therefore atomic from their point of view. This means that it is not possible for the user to express any deeping meaning of something being an integer, e.g. an integer composed of 4 bits. %They acts as endpoints of the abstract syntax tree, as it is not possible for the user to express any more descriptive meaning for the compiler.
+Primitives are the lowest abstraction of value types, that user can interact with, it is not divisible by the user, therefore atomic from their point of view. This means, as an example, that it is not possible for the user to express any deep meaning of what constitutes an integer, e.g. an integer composed of 4 bits.
 
 The following primitives exist in the language. All primitives are lower-cased.
 
@@ -91,12 +93,12 @@ The char primitive can have values of the ASCII standard. It is written literall
 
 The unit primitive can have only one value: itself. The use of the primitive is to signal emptiness.
 
-The prmitives will be exlaborated upon in \cref{operands}.
+The prmitives will be elaborated upon in \cref{operands}.
 
 \subsubsection{Type Declaration}
 From the start of the language design, TLDR was supposed to have type inference, due to types not being a known artifact/property in the mathematics of physics and social sciences, which is the scope of the language. Due to prioritisation and time span of the project, it was decided that the language should initially have an explicit type system.
 
-Types not being a known artifact in previously mentioned sciences and mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen. In this signature the function can take any number of arguments and return either a single typed symbol or a new function. The input and output is differenciated by the amount of input parameters (arg1, arg1, ... ,argN) where N would be the amount of inputs and M - N would be the size of the output.
+Types not being a known artifact in previously mentioned sciences and mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen. In this signature, the function can take any number of arguments and return either a single typed symbol or a new function. The input and output is differenciated by the amount of input parameters (arg1, arg1, ... ,argN) where N would be the amount of inputs and M - N would be the size of the output.
 
 \begin{figure}
 \begin{lstlisting}
@@ -106,7 +108,7 @@ functionName(arg1, arg2, ... ,argN) :: arg1Type -> arg2Type -> ... -> argMType
 \label{typesignature}
 \end{figure}
 
-If the user wants to use functions instead of single typed symbols he or she simply puts these in parentheses as seen in \cref{typesignatureexample0}. Here the function takes another function that maps an integer to an integer and maps this to a real.
+If the user wants to use functions instead of single typed symbols he or she simply puts these in parentheses as seen in \cref{typesignatureexample0}. Here the function, \enquote{f}, takes another function that maps an int to an int and maps this to a real.
 
 \begin{figure}
 \begin{lstlisting}
@@ -116,7 +118,7 @@ If the user wants to use functions instead of single typed symbols he or she sim
 \label{typesignatureexample0}
 \end{figure}
 
-This can be nested in as many levels as the user desires, as illustrated in \cref{typesignatureexample1}, where the function takes a function typed the same way as in \cref{typesignatureexample0} and maps this to a list of characters. Note that both \cref{typesignatureexample0} and \cref{typesignatureexample1} still only take one argument (x) since this is a function and can be used as such in the body.
+This can be nested in as many levels as the user desires, as illustrated in \cref{typesignatureexample1}, where the function takes a function typed the same way as in \cref{typesignatureexample0} and maps this to a list of chars. Note that both \cref{typesignatureexample0} and \cref{typesignatureexample1} still only take one argument (x) since this is a function and can be used as such in the body.
 
 \begin{figure}
 \begin{lstlisting}
@@ -172,26 +174,26 @@ In the end, it was chosen to explicitly express unit both to avoid confusion for
 
 \subsection{Scoping}
 
-As with most of the choices made during the design of this language, we wanted to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessarily complexity to the language implementation, we decided upon other constructs.
+As with most of the choices made during the design of this language, it was desired to strive towards a natural mathematical syntax. This idea was pulling towards the use of linebreaks for denoting the end of a statement, and using indentation for denoting scopes. However since this is impossible to describe with context-free-grammar, and explicitly modifying the parser to support this was adding unnecessary complexity to the language implementation, it was decided upon other constructs.
 %impossible - but why?
-For denoting scopes we went with the bracket symbols \enquote{\{ \}}. This decision was made due to its similarity with the parentheses know from mathematics, where it has the highest precedence, and also since it is a construct known from many other programming languages. For separating statements, we went with a semi-colon \enquote{;}. This is also a known construct from other programming languages. It is also not in conflict with mathematical use, since there is no widespread consensus of such.
+For denoting scopes, the bracket symbols \enquote{\{ \}} were chosen. This decision was made due to its similarity with the parentheses known from mathematics, and since it is a construct known from many other programming languages. For separating statements, a semi-colon \enquote{;} was chosen. This is also a known construct from other programming languages.
 
 
 \subsection{Transition System for Formal Semantics}
 The transition system used in the formal semantics of TLDR uses four different partial functions. These will be introduced at they are needed but here follows an explanation of each function in succession.
-The first transition rule, \enquote{at}, is used to keep track of all actor types. The actor type is a form of prototype used to initialise actors. When created all it statements are run inside a new environment consisting of aEnv, sEnv. This transition rule is the throughout the whole program meaning that all actor types can be initialised everywhere.
+The first transition rule, \enquote{at}, is used to keep track of all actor types. The actor type is a form of prototype used to initialise actors. When created, all its statements are run inside a new environment consisting of aEnv, sEnv. This transition rule is there throughout the whole program meaning that all actor types can be initialised everywhere.
 \begin{center}
 $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 \end{center}
-To describe a complete environment in TLDR one needs both the actor environment and the symbol environment. The actor environment is used to keep track of which handles inside an actor that maps to what actor.
+To describe a complete environment in TLDR one needs both the actor environment and the symbol environment. The actor environment is used to keep track of what handles, for actors, inside an actor maps to.
 \begin{center}
 $aEnv = \text{Anames} \rightharpoonup sEnv$
 \end{center}
-The symbol environment is used to keep track of the which statements and other symbols any symbol maps to. The statements a symbols maps to are the statements are run in an invocation of that symbol, note that all symbols in TLDR are invoked even variables and constants but they will always return the value of which they are assigned, no matter the state af their environment. The symbols that a symbol maps to are used to keep track of what formal parameters an invocation needs, note that this set can be empty.
+The symbol environment is used to keep track of what statements and other symbols map to. The statements that a symbol maps to are the statements that are run in an invocation of that symbol. Note that all symbols in TLDR are invoked, even variables and constants which will always return the value which they are assigned, no matter the state of their environment. The symbols that a symbol maps to are used to keep track of what formal parameters an invocation needs, note that this set can be empty.
 \begin{center}
 $sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \end{center}
-The last transition rule is used to map to keep track of user structures. These are like actor types in that they maps to the statements that are run to initialise the structure, like a recipe.
+The last transition rule is used to keep track of user structures. These are like actor types in that they maps to the statements that are run to initialise the structure.
 \begin{center}
 $st = \text{Structs} \rightharpoonup \text{Symbols}$
 \end{center}
