@@ -13,6 +13,15 @@ The syntactical constructs will be formally presented with EBNF, but it will be 
 
 To describe the semantics, the formal notation will follow the example set by \cite{huttel2010transitions} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and we did not wish to mix the use of semantics.
 
+In the formal semantic rules have the following convention of what specific symbols are used for:
+\begin{itemize}
+	\item $n \in Num$ - Numerals
+	\item $x \in Sym$ - Symbols
+	\item $a \in Aexp$ - Arithmetic expressions
+	\item $b \in Bexp$ - Boolean expressions
+	\item $S \in Stm$ - Statements	
+\end{itemize}
+
 The formal rules have three parts as illustrated in \cref{SS-semantics}
 
 \begin{figure}[H]
@@ -21,13 +30,13 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
                         {[CONCLUSION]}
                         {,[SIDE-CONDITION]}
 \end{align*}
-\caption{A desription of formal small-step semantics}
+\caption{A description of formal small-step semantics}
 \label{SS-semantics}
 \end{figure}
 
-In the formal semantic rules have the following convention of symbols
-
-The conclusion always consists of a transition arrow \enquote{$\Rightarrow$}. On the left hand side the initial code that the rule transitions from and the needed transition functions in their current state inside angel brackets, $\Braket{S,}$. the code that is run and the transition rules
+The conclusion always consists of a transition arrow \enquote{$\Rightarrow$}. On the left hand side the initial code that the rule transitions from and the needed transition functions in their current state inside angel brackets, for example $\Braket{S,env_s,env_a}$. On the right hand side of the transition arrow is the code that this can transition to and the possible updates in the transition functions inside angel brackets, for example $\Braket{S',env_s',env_a'}$. If any symbol are marked with an apostrophe it has the possibility to be something different within the same set. This must be defined in either the premise or side condition.
+The premise is how something else must transition before the conclusion can be met. The side condition is for other things that must be true.
+The mapping of the transition functions are put inside square brackets, for instance \enquote{$env_s = [x \mapsto \underline{4},y \mapsto \underline{5}]$} denotes that $env_s$ is the transition function where x mapsto the numeral \underline{4} and y to \underline{5}. A transition function can also be expanded using square brackets, for instance we can make a new transition function $env_s'$ that expands on $env_s$ so that it also maps z to the numeral \underline{6}; \enquote{$env_s' = env_s[z \mapsto \underline{6}]$}.
 
 \input{Design/generalLanguageProp.tex}
 \input{Design/Expressions/expressions.tex}
