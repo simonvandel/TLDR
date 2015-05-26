@@ -26,6 +26,7 @@ module Parser =
         task.AddInputFile grammarPath
         task.Mode <- Hime.CentralDogma.Output.Mode.Assembly
         let report = task.Execute()
+
         if report.Errors.Count <> 0 && report.Warnings.Count <> 0 then
             // error or warnings
             Failure (report.Errors

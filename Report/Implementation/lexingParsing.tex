@@ -9,18 +9,20 @@ Parsing is the process of transforming the sequence of tokens, read in the lexin
 \subsection{Compiler-Compiler}
 \label{sec:compiler_compiler_choice}
 
-A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the belief that it is easier to maintain the grammar specification rather than the code for a hand written parser.
+A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the belief that it is easier to maintain the grammar specification rather than the code for a hand written parser. The focus of the project being able to experiment with syntax for expressing various constructs in a parralel manor, choosing a tool that supports the largest domain of languages and not having to rewrite the parser if a preffered way of writing grammar is seen needed.
 
 The choice of a compiler-compiler is based on a series of criteria, listed below with the corresponding reason for the criteria.
 
 \begin{enumerate}
 \item \textbf{Output language - C\# or F\#} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the language developers had previous experience with languages running on this. This makes C\# and F\# preferred target languages for the compiler-compiler.
 
-\item \textbf{Type of parser - LR or derivatives} The compiler-compiler should support LR parsing since the authors of this project value left recursion in a grammar specification.\\ \kanote{bør muligvis udbybes hvorfor vi kan lide det?}
+\item \textbf{Type of parser - LR or derivatives} The compiler-compiler should support LR parsing since the authors of this project value left recursion in a grammar specification.\\
 
 \end{enumerate}
 
-Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out as being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind.
+Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out as being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind. Hime also support ENBF, which allows for neatier grammar.
+
+Hime \cref{https://bitbucket.org/laurentw/hime/overview} implements multiple \emph{LR} parsing methods, for this project the LALR(1) algorithm is chosen, this is a simplification of a LR(1) parser, but yet almost as expressive. The LARL(1) is less powerful in the language domain than the LR(1), in that it can produce a \emph{reduce/reduce conflict} due to not knowing the left context as well as LR(1). The parse table of LR(1) includes duplicates of the same "core" states(Same productions and same positions) in its parse table, where LALR(1) does not, but this can potentialy greatly increase the number of entries of states in the parse table, and thereby the usage of memory. This was not a requirement but merely a convience. 
 
 Using Hime, the amount of work of developing the lexing and parsing phase is greatly reduced, as the lexing and parsing phase is done by Hime.
 
