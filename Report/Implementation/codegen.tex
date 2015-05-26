@@ -1,19 +1,19 @@
 %mainfile: ../master.tex
 \section{Code Generation}
 
-This section describes the code generation phase of the compiler developed in this project. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
+This section describes the code generation phase of the compiler described in this report. The focus is on the overall aspect of transforming an abstract syntax tree to the various language constructs in TLDR, however not every language construct will have its code generation described. 
 
-The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. This generated LLVM IR is then compiled into native code by using the clang compiler.
+The purpose of the phase is to output code that can later be run on the computer as an executable. LLVM was chosen as the target language for this compiler in \cref{sec:targetLanguage}, so this is what the code generation phase will output. The generated LLVM IR is then compiled into native code by using the Clang compiler.
 
 \subsection{Data Sizes}
 
-Even though the language design of TLDR requires integers and reals to be of arbitrary precision as seen in \cref{lang_design} \sinote{indsæt reference til afsnit om arbritrary precision}, the code generation phase generates integers and reals of 64-bit size. However, one way of adding arbitrary precision arithmetic to the compiler would be to use a library such as GMP \cite{gmp}, which we chose to do.
+Even though the language design of TLDR requires integers and reals to be of arbitrary precision as described in \cref{lang_design}, the code generation phase generates integers and reals of 64-bit size. However, one way of adding arbitrary precision arithmetic to the compiler would be to use a library such as GMP \cite{gmp}.
 
 \subsection{Actors}
 
-Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using the library, we can avoid having to deal with implementation of actors ourselves. However, as we have not written the library ourselves, we do not have total control over it. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}, hence the project group not having any knowledge about the implementation of library.
+Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using this library can will reduce the development time required to implement actors. However, as the library is third party, some control over the functionality is lost. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}, since the project group does not have in-depth knowledge about the implementation of the library.
 
-Every actor in TLDR is generated into a LLVM function with the following behaviour outlined in pseudo code.
+Every actor in TLDR is generated into an LLVM function with the following behaviour outlined in pseudo code.
 
 \begin{lstlisting}[breaklines]
 active = true
@@ -43,21 +43,21 @@ active = false
 goto start
 \end{lstlisting}
 
-A actor simply checks for new messages, and performs the corresponding message, based on the type of the received message, by jumping to a label. This while loops ends when the actor receives a kill message.
+An actor simply checks for new messages, and performs the corresponding function, based on the type of the message, by jumping to a label. This while loops ends when the actor receives a kill message.
 
 By having receive constructs simply be labels, all data of an actor can be contained in a single function.
 
 \subsection{Lists}\label{codegen:lists}
 
-Lists in TLDR are simply generated as static LLVM arrays. This mean that their size is known at compile time, and that no elements can be added at run-time. This is currently a limitation in the current compiler, but is something that is doable if the project group had prioritised this.
+Lists in TLDR are simply generated as static LLVM arrays. This mean that their size is known at compile time, and that no elements can be added at run-time. This is a limitation in the current compiler.
 
-One way of improving the current implementation is to allow for arrays with sizes determined at run-time. This can be done by allocating a pointer to the elements with the size of the array known at runtime.
+One way of improving the current implementation is to allow for arrays with sizes determined at run-time. This can be done by allocating a pointer to the elements with the size of the array, known at runtime.
 
 \subsection{Optimisations For Free}
 
-Even though speed has not been a primary goal of this implementation of TLDR, many optimisations come for free by generating LLVM IR. The code generation implemented in this project is very naive and thous does not do any optimisations in its generation. However, many optimisation passes are developed in the LLVM project. We can apply these optimisations very easy to our naive code generation, simply by running a LLVM optimiser on the LLVM IR generated by the compiler developed in this project.
+Even though speed has not been a primary goal of this implementation of TLDR, many optimisations come for free by generating LLVM IR. The code generation implemented in this project is very naïve and thus does not do any optimisations in its generation. However, many optimisation passes are developed in the LLVM project. These optimisations can be applied very easily to our naïve code generation, simply by running an LLVM optimiser on the LLVM IR generated by the compiler described in this report.
 
-As an example, let's try and compile the following TLDR code to LLVM IR.
+As an example, let us try and compile the following TLDR code to LLVM IR.
 
 \begin{lstlisting}[breaklines]
 actor main := {
@@ -137,7 +137,7 @@ ret i8* null
 }
 \end{lstlisting}
 
-After running a LLVM IR optimiser on the above LLVM IR, the result is as following.
+After running a LLVM IR optimiser on the above LLVM IR, the result is as follows.
 
 \begin{lstlisting}[style = llvm, breaklines]
 @g1 = constant [4 x i8] c"%d\0A\00"
@@ -166,9 +166,9 @@ attributes #0 = { nounwind }
 attributes #1 = { noreturn }
 \end{lstlisting}
 
-The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removes all unnecessary operations. For example, all the actor specific code, such as the active flag, is not present in the optimised LLVM IR code. While this seems simple, no extra work had to be done on our side, and significant optimisations were achieved.
+The optimiser (run with \enquote{opt -O3 -S}) applies constant folding on $(2 + 3 ) * 4 / 2$ such that this expression is evaluated on compile time and $10$ is stored. It also removes all unnecessary operations. For example, all the actor specific code, such as the active flag, is not present in the optimised LLVM IR code. While this seems simple, no extra work had to be done on the development of the TLDR compiler, and significant optimisations were achieved.
 
-Running clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
+Running Clang (run with \enquote{clang -O3 -lactor -S}) on this optimised LLVM IR, results in the following X86-64 assembly.
 
 \begin{lstlisting}[style = nasm, breaklines]
 	.section	__TEXT,__text,regular,pure_instructions

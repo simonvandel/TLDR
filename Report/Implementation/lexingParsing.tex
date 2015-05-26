@@ -2,16 +2,16 @@
 \section{Lexing \& Parsing}
 \label{sec:lexing/parsing}
 
-Lexing is the process of transforming a string of characters to a set of tokens. A token is a character or a sequence of characters. The tokens are in this report defined as a context-free-grammar. This grammar defines how a valid program is allowed to be written syntactically. For example in the program \enquote{if(true)}, the tokens are \emph{if}, \emph{(}, \emph{true}, \emph{)}.
+Lexing is the process of transforming a string of characters to a set of tokens. A token is a character or a sequence of characters. The tokens are in this report defined as a context free grammar (CFG). This grammar defines how a valid program is allowed to be written syntactically. For example in the program \enquote{if(true)}, the tokens are \emph{if}, \emph{(}, \emph{true} and \emph{)}.
 
-Parsing is the process of transforming the sequence of tokens, read in the lexing process, into a data structure to be used by later stages of the compiler.
+Parsing is the process of transforming the sequence of tokens, created in the lexing process, into a data structure to be used in later stages of the compiler.
 
 \subsection{Compiler-Compiler}
 \label{sec:compiler_compiler_choice}
 
-A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the belief that it is easier to maintain the grammar specification rather than the code for a hand written parser. The focus of the project being able to experiment with syntax for expressing various constructs in a parralel manor, choosing a tool that supports the largest domain of languages and not having to rewrite the parser if a preffered way of writing grammar is seen needed.
+A compiler-compiler tool is used in this project instead of a hand-written lexer and parser, because of the conveniences these kind of tools give. By using a compiler-compiler, code that generates a syntax tree from a input source file, is generated automatically from a separate grammar specification file. This separation of grammar specification and the actual code that parses the input source file, is deemed beneficial in the implementation of a compiler, because of the belief that it is easier to maintain the grammar specification rather than the code for a hand written parser. The focus of the project being able to experiment with syntax for expressing various constructs in a parallel manner, choosing a tool that supports the largest domain of languages and not having to rewrite the parser if a prefered way of writing grammar is deemed needed.
 
-The choice of a compiler-compiler is based on a series of criteria, listed below with the corresponding reason for the criteria.
+The choice of a compiler-compiler is based on a series of criteria, listed below with the corresponding reasons for the criteria.
 
 \begin{enumerate}
 \item \textbf{Output language - C\# or F\#} It was chosen to construct the compiler in a language compatible with the common language infrastructure (CLI), since the language developers had previous experience with languages running on this. This makes C\# and F\# preferred target languages for the compiler-compiler.
@@ -20,16 +20,16 @@ The choice of a compiler-compiler is based on a series of criteria, listed below
 
 \end{enumerate}
 
-Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out as being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind. Hime also support ENBF, which allows for neatier grammar.
+Over the years, many compiler-compiler tools have been developed that satisfy the criteria listed above. Although no tool stood out as being superior, a choice had to be made anyway. In the end, Hime was chosen based on its documentation, frequent rate of updates and its spirit of being developed with the features of C\# in mind. Hime also support ENBF, which allows for more constructs in the grammar.
 
-Hime \cref{https://bitbucket.org/laurentw/hime/overview} implements multiple \emph{LR} parsing methods, for this project the LALR(1) algorithm is chosen, this is a simplification of a LR(1) parser, but yet almost as expressive. The LARL(1) is less powerful in the language domain than the LR(1), in that it can produce a \emph{reduce/reduce conflict} due to not knowing the left context as well as LR(1). The parse table of LR(1) includes duplicates of the same "core" states(Same productions and same positions) in its parse table, where LALR(1) does not, but this can potentialy greatly increase the number of entries of states in the parse table, and thereby the usage of memory. This was not a requirement but merely a convience. 
+Hime \cref{https://bitbucket.org/laurentw/hime/overview} implements multiple \emph{LR} parsing methods, for this project the LALR(1) algorithm is chosen, this is a simplification of a LR(1) parser, but yet almost as expressive. The LARL(1) is less powerful in the language domain than the LR(1), in that it can produce a \emph{reduce/reduce conflict} due to not knowing the left context as well as LR(1). The parse table of LR(1) includes duplicates of the same "core" states (same productions and same positions) in its parse table, where LALR(1) does not, but this can potentialy greatly increase the number of entries of states in the parse table, and thereby the usage of memory. This was not a requirement but merely a convenience.
 
-Using Hime, the amount of work of developing the lexing and parsing phase is greatly reduced, as the lexing and parsing phase is done by Hime.
+Using Hime, the amount of work required in developing the lexing and parsing phase is greatly reduced, as the lexing and parsing phase is done by Hime.
 
 \subsection{Tree Transformations}
 \label{sec:tree_transformations}
 
-The output of running Hime on a grammar is a syntax tree. By default the output syntax tree matches the grammar rules one-to-one. That is, the syntax tree is a concrete syntax tree (CST). In the later stages of the compiler, many nodes of the CST are unneeded. \Cref{fig:indirection_example} lists two types of nodes, not needed in the final abstract syntax tree (AST), adding an extra layer of indirection and altogether superfluous nodes.
+The output of running Hime on a grammar is a syntax tree. By default, the output syntax tree matches the grammar rules one-to-one. That is, the syntax tree is a concrete syntax tree (CST). In the later stages of the compiler, many nodes of the CST are unneeded. \Cref{fig:indirection_example} lists two types of nodes, not needed in the final abstract syntax tree (AST), adding an extra layer of indirection and altogether superfluous nodes.
 
 \begin{lstlisting}[caption={Starting example grammar}, label={fig:indirection_example}]
   A -> ( B )
@@ -62,7 +62,7 @@ To solve these two problems, the promote and drop actions can be utilised.
 
 \subsubsection{Promote Action}
 
-The promote action, when applied to a node, replaces its parent node with itself, thereby becoming the new parent node.
+The promote action, when applied to a node, replaces its parent node with itself.
 
 The promote action can be applied to \emph{C} in \cref{fig:cst_example} as seen in \cref{fig:indirection_example_promote} to achieve the desired AST.
 
@@ -102,11 +102,11 @@ Using both the promote and drop actions, the CST has been transformed into an AS
 
 \subsection{Improving AST Representation}
 
-The feature of tree transformations allow for stripping a CST to a AST, as described in \cref{sec:tree_transformations}. The Hime AST generated by applying tree transformations contains all the information needed for later phases of the compiler. However, every node in the AST is \enquote{stringly typed}, meaning that every information is encoded as strings. While containing the information, a more optimal and safe encoding can be made using the discriminated union feature of F\#. It would be ideal to convert the stringly typed Hime AST to a AST with different types encoding different language constructs. By doing this conversion, the AST can be described more precise by using types that the F\# compiler can statically verify are being used correctly, hereby avoiding a large range of potential implementation bugs in the compiler described in this project.
+The feature of tree transformations allow for stripping a CST to a AST, as described in \cref{sec:tree_transformations}. The Hime AST generated by applying tree transformations contains all the information needed for later phases of the compiler. However, every node in the AST is \enquote{stringly typed}, meaning that every information is encoded as strings. While containing the information, a more optimal and safe encoding can be made using the discriminated union feature of F\#. It would be ideal to convert the stringly typed Hime AST to an AST with different types, encoding different language constructs. By doing this conversion, the AST can be described more precise by using types that the F\# compiler can statically verify as being used correctly, hereby avoiding a large range of potential implementation bugs in the compiler described in this report.
 
-To do this conversion from the Hime AST to the more optimal typed representation, a function, \enquote{toAST}, converts every known node string representation to the stronger typed wanted representation. The AST data type used throughout the compiler can be seen in \cref{lst:ast_listing}. 
+To do this conversion from the Hime AST to the more optimal typed representation, a function, \enquote{toAST}, converts every known node string representation to the stronger typed desired representation. The AST data type used throughout the compiler can be seen in \cref{lst:ast_listing}. 
 
-The AST data type includes all the data needed to perform all the phases of the compiler. Every language construct in TLDR is a case of the union type of the AST data type. The AST is as the name implies a tree. It is therefore defined recursively. For example, the \enquote{if} case has the value of a tuple containing two subtrees: the AST for the conditional body and the AST for the if body.
+The AST data type includes all the data needed to perform all the phases of the compiler. Every language construct in TLDR is a case of the union type of the AST data type. The AST is, as the name implies, a tree. It is therefore defined recursively. For example, the \enquote{if} case has the value of a tuple containing two subtrees: the AST for the condition and the AST for the body.
 
 \begin{lstlisting}[style = fsharp, label = lst:ast_listing, caption = {Data type of AST used throughout the compiler}]
 data AST = 
