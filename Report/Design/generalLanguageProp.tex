@@ -1,8 +1,6 @@
 %mainfile: ../master.tex
 \section{General Language Properties and Formal Models}
 This section will describe the type system of TLDR, the scoping rules and some fundamental semantics for the language.
-\jenote{- General typesystem properties
-- The semantic model and general constructs}
 
 \subsection{Type System}\label{typesys}
 
@@ -39,7 +37,7 @@ Type systems are defined by the type rules it enforces. Because the strictness o
 
 Generally two different approaches exist to solve the goal of minimising errors in programs. Static typing checks types at compile-time and therefore is able to present type errors at a early stage. Because of this, static typing is often regarded as safer and more performant.
 
-Dynamic typing checks types at run-time and therefore allows the programmer to not have the same mental overhead of thinking about types when programming. \chnote{Kan static typing med type inference ikke også det? Maybe rephrase} This however comes at the price of safety and performance.
+Dynamic typing checks types at run-time and one can argue this allows the programmer to not have the same mental overhead of thinking about types as static typing without type inference. This however comes at the price of safety and performance.
 
 Type inference removes the need to explicitly annotate programs with type annotations. This can reduce the mental overhead associated with static typing.
 
@@ -205,7 +203,12 @@ Comments are declared in C style by \enquote{//} being a single line comment and
 
 They follow this grammar:
 
-\kanote{indsæt grammar for kommentar}
+\begin{grammar}
+  <COMMENT\_LINE> ::= '//' (.* - (.* <NEW\_LINE> .*)) <NEW\_LINE>?
+\end{grammar}
+\begin{grammar}
+  <COMMENT\_BLOCK> ::= '/*' (.* - (.* '*/' .*)) '*/'
+\end{grammar}
 
 A concrete example:
 
