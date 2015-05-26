@@ -10,12 +10,14 @@ One of the main features, and the pièce de résistance of TLDR, is the central 
 
 Another difference between TLDR and other languages with actors is that TLDR enforces the use of actors. Every program has at least one actor, main, where the execution of the program starts. This enforces the principle of a central controller in a network of concurrent processes. This means that any TLDR program can be considered, and reasoned about, as a graph-like structure rooted in the main actor, with vertices representing actors and edges representing messages between them.
 
-\kanote{Andre features?}
-
 \subsection{Paradigms}
 TLDR focuses a lot on the \enquote{swarm of bees}-style of programming, that is, having large amounts of simple logic rather than having a unified complex algorithm for all the logic in the program. This can be thought of as a characteristic of modular programming languages.
 
 Another focus of TLDR is that of functions as first class citizens. This means that the language does not distinguish between functions and other symbols declared by the programmer. Any place a symbol can be used in a program, a function can be used as well, e.g. as a parameter for a function, a return value of a function or a message to an actor. This, combined with the use of expressions and the avoidance of state and mutable data gives the language a very functional, or declarative, feel, similar to that of F\# or Scala.
+
+The Actor Model does however give the language a modelling form which resembles an object oriented approach. And as will be explained in \cref{dis:func}, creative use of actors can make functions obsolete, which would seem strange for a functional language.
+
+Considering these things, TLDR might not belong strictly to a specific paradigm, but can be adaptive based on programmers approach.
 
 \subsection{Abstraction}
 TLDR is a rather high level language. TLDR provides a high level of abstraction over data, with arbitrary precision integer and floating point data types, control flow, with mathematical operations built into the language as well as message passing and loop-structures, and concurrency, with actors and message passing.
@@ -24,7 +26,7 @@ TLDR is a rather high level language. TLDR provides a high level of abstraction 
 
 This section will discuss some language constructs not implemented in the compiler. The full list can be seen in \cref{sec:compilerStatus}.
 
-\subsection{Functions}
+\subsection{Functions}\label{dis:func}
 
 As the group members were writing programs in TLDR, the absence of functions in the implementation of the compiler, caused some creative ways of modelling a program without the use of functions. As actors were implemented in the compiler, these could be used as a stand-in for functions. A simple function taking a int and returning the int squared, can be modelled as a actor with a receive function, taking a struct containing a int and a sender actor. 
 
@@ -64,7 +66,7 @@ struct st := {
 };
 \end{lstlisting}
 
-Theoretically, any function can be modelled as actors taking structures, however there is some mental overhead involved. The function example is shorter to write and arguably also easier to understand. 
+Theoretically, any function can be modelled as actors taking structures, however there is some mental overhead involved. The function example is shorter to write and arguably also easier to understand.
 
 On the other side, the fact that every function can be modelled as an actor, shows how powerful actors can be in modeling a program into small logical sections.
 
