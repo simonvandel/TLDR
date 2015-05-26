@@ -1,0 +1,32 @@
+actor main := {
+	receive arguments:args := {
+
+		var list:[int] := [1,2,3,4];
+		let print:int := 0;
+
+		let testact:listTester := spawn listTester list;
+
+
+		send listTester print;
+
+		list.[0] := 100;
+
+		send listTester print;
+
+		die;
+	}
+}
+
+actor listTester := {
+	
+	var lister:[int] := [0,0,0,0];
+
+
+	receive msg:[int] := {
+		lister := msg;
+	}
+
+	receive msg:int := {
+		printint(lister.[0]);
+	}
+}
