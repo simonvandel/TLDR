@@ -274,7 +274,7 @@ module AST =
                 
         | "Receive" ->
             let msgName = (getChildByIndexes [0;0;0] root).Symbol.Value
-            let msgType = toPrimitiveType (getChildByIndexes [0;1;0;0] root)
+            let msgType = toPrimitiveType (getChildByIndexes [0;1;0] root)
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->

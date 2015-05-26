@@ -200,6 +200,13 @@ module ParserTest =
         debugTestParseWith "receive msg:msgType := {true}"
         <| should equal (Program [Body [(Receive ("msg", msgType, body))]])
 
+    [<Test>]
+    let ``When syntax for receive is given with msg of int list and empty body, expect Receive AST`` () =
+        let msgType = ListPrimitive (SimplePrimitive Int, 0)
+        let body = Block [Body[ Constant (SimplePrimitive Primitive.Bool, PrimitiveValue.Bool true)]]
+        debugTestParseWith "receive msg:[int] := {true}"
+        <| should equal (Program [Body [(Receive ("msg", msgType, body))]])
+
     (* --------------------------- ForIn --------------------------- *)
 
     [<Test>]

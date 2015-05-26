@@ -13,7 +13,8 @@ actor main := {
 
 actor listPrinter := {
 	receive msg:[int] := {
-		printint(msg.[0]);
+                let k:int := msg.[0];
+		printint(k);
 
 		die;
 	};

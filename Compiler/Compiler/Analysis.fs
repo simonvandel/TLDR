@@ -106,16 +106,16 @@ module Analysis =
 
                 let! realType = getRealType newPType
 
-                let elemToFind = match nextElem with
-                                 | Identifier (SimpleIdentifier name, _) -> name
-
                 let typeOfElem = match realType with
                                  | PrimitiveType.Struct (_, fields) ->
+                                     let elemToFind = match nextElem with
+                                                      | Identifier (SimpleIdentifier name, _) -> name
                                      let needle = fields
                                                   |> List.tryFind (fun (fieldName, _) -> elemToFind = fieldName)
                                      match needle with
                                      | Some (fieldName, fieldType) -> fieldType
                                      | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
+                                 | ListPrimitive (pType, _) -> pType
                 let entry = 
                     {
                       symbol = 
