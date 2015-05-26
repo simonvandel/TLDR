@@ -656,11 +656,6 @@ The following mathematical operations are built into the language. They follow t
 
 \paragraph{Loop Expressions}
 \begin{align*}
-\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tt$}
-&\inference[WHILE]{\Tenv b : \Tbool &
-                  \Tenv e : \Tt}
-                 {\Tenv \mathbin{\text{while}} \; (b) \; {e}: ok}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
 &\inference[FOR]{\Tenv l : [\Tpt]}
                  {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt

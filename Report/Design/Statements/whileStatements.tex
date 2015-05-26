@@ -1,20 +1,13 @@
-\subsection{While-loop Statements}
+\subsection{While-loop}
 \label{subsec:whileLoopStatements}
 
-The while loop statement runs a block of statements until a boolean expression returns false.
+The while loop statement runs a block of statements until a boolean expression provided returns false.
 
-\paragraph{While loop}
-\label{sec:whileLoop}
+\subsubsection{Syntax}
 
-The while statement has the following syntax rules:
-
-\kanote{indsæt grammatik for while her}
-
-Which would have this signature:
-
-\begin{verbatim}
-  while (<boolExp>) {<loopBody>}
-\end{verbatim}
+\begin{grammar}
+<While> ::= 'while' <Expression> <Block>
+\end{grammar}
 
 A concrete example:
 
@@ -23,12 +16,23 @@ A concrete example:
   while (i < 10) {i := i + 1}
 \end{verbatim}
 
-Below follows the semantics for the while-loop statement:
+\subsubsection{Semantics}
 
 \begin{align*}
-&\inference[$\text{WHILE}_\top$]{e \vdash b \Rightarrow_B \top}
-                       {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},e}}
+\intertext{In the case that the boolean expression $b$ is true, the rule for composition of statements is used. First the statement $S$ is evaluated and then the while statement is run again. The statement $S$ may have changed $b$.}
+&\inference[$\text{WHILE}_\top$]{env_S \vdash b \Rightarrow_B \top}
+                       {\Braket{\Twhile(b)\{S\},env_s} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},env_S}}
 \\\\
-&\inference[$\text{WHILE}_\bot$]{e \vdash b \Rightarrow_B \bot}
-                       {\Braket{\Twhile(b)\{S\},e} \Rightarrow_S e}
+\intertext{In the case that the boolean expression $b$ is false, the while statement has ended, and can simply be rewritten to the environment $env_S$}
+&\inference[$\text{WHILE}_\bot$]{env_S \vdash b \Rightarrow_B \bot}
+                       {\Braket{\Twhile(b)\{S\},env_S} \Rightarrow_S env_S}
+\end{align*}
+
+\subsubsection{Type Rules}
+
+\begin{align*}
+\intertext{The conditional body of the while construct must be of type bool. The body of the while-loop can be of any type defined in $\Tt$}
+&\inference[WHILE]{\Tenv b : \Tbool &
+                  \Tenv e : \Tt}
+                 {\Tenv \mathbin{\text{while}} \; (b) \; {e}: ok}
 \end{align*}
