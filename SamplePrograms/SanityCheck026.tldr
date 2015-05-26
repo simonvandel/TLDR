@@ -1,0 +1,25 @@
+actor main := {
+	receive arguments:args := {
+
+		let MyMsg:printMsg := ( i := 5, list := [1,2]);
+
+		MyPrinter:printer := spawn printer MyMsg;
+    
+	};
+};
+
+actor printer := {
+	receive msg:printMsg := {
+
+    printint(msg.i);
+		printint(msg.[0]);
+    printint(msg.[1]);
+
+    die;
+	};	
+};
+
+struct printMsg := {
+	i:int;
+	list:[int];
+};
