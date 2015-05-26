@@ -1,6 +1,52 @@
-\subsection{Conditional}
-\subsubsection{If statements}
+\subsection{If statements}
 \label{subsec:ifStatements}
+
+If-statements can be written either as a if-else statement or just as an if-statement. In a if-else statement, the body just after the condition is evaluated if the condition evaluates to the boolean value \emph{true}. If the condition evaluates to \emph{false}, the body after the else keyword is evaluated. In a if statement, the body after the condition is run, if the condition has the value \emph{true}. If the condition has value \emph{false}, nothing is evaluated.
+
+\subsubsection{Syntax}
+
+\begin{grammar}
+<If> ::= 'if' <Expression> <Block>
+
+<IfElse> ::= 'if' <Expression> <Block> 'else' <Block>
+\end{grammar}
+
+A concrete example:
+
+\begin{verbatim}
+  // if-then-else statement
+  if (2 + 2 = 4) {"math works!"}
+  else {"something is wrong here!"}
+
+  // if-statement
+  if (remainingTime < 10) {initiateCountdown()}
+\end{verbatim}
+
+\subsubsection{Semantics}
+
+\begin{align*}
+\intertext{In the case that the condition $b$ is true, the rule for the if-statement can simply be rewritten to the statement $S$.}
+&\inference[$\text{IF}_\top$]{}
+                      {\Braket{if(b)\{S\},env_S} \Rightarrow_S \Braket{\{S\},env_S}}
+                      {,b \Rightarrow_B \top}
+\\\\
+\intertext{In the case that the condition $b$ is false, nothing is evaluated, and the if-statement is rewritten to the symbol environment $env_S$.}
+&\inference[$\text{IF}_\bot$]{}
+                      {\Braket{if(b)\{S\},env_S} \Rightarrow_S env_S}
+                      {,b \Rightarrow_B \bot}
+\\\\
+\intertext{In the case that the condition $b$ is true, the rule for the if-else statement is rewritten to $S_1$.}
+&\inference[$\text{IF-ELSE}_\top$]{}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_1\},e}}
+                      {,b \Rightarrow_B \top}
+\\\\
+\intertext{In the case that the condition $b$ is false, the rule can be rewritten to $S_2$.}
+&\inference[$\text{IF-ELSE}_\bot$]{}
+                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_2\},e}}
+                      {,b \Rightarrow_B \bot}
+\end{align*}
+
+\subsubsection{Type Rules}
 
 \begin{align*}
 \intertext{The conditional body of a if-statement must be of type bool. The body can be of any type defined in $\Tt$. The type of the if-statement is well-typed.}
@@ -15,49 +61,7 @@
                  {\Tenv \mathbin{\text{if}} \; (b) \; \{e_1\} \mathbin{\text{else}} \{e_2\}: ok}
 \end{align*}
 
-If-statements can be written either as a if-then-else statement or just as an if-statement. The following shows either way.
-
-\begin{verbatim}
-  // if-then-else statement
-  if (<condition>) {<what to do if condition is true>}
-  else {<what to do if condition is false>}
-
-  // if-statement
-  if (<condition>) {<what to do if condition is true>}
-\end{verbatim}
-
-A concrete example:
-
-\begin{verbatim}
-  // if-then-else statement
-  if (2 + 2 = 4) {"math works!"}
-  else {"something is wrong here!"}
-
-  // if-statement
-  if (remainingTime < 10) {initiateCountdown()}
-\end{verbatim}
-
-Below follows the semantics for the If-statements:
-
-\begin{align*}
-&\inference[$\text{IF}_\top$]{}
-                      {\Braket{if(b)\{S\},e} \Rightarrow_S \Braket{\{S\},e}}
-                      {,b \Rightarrow_B \top}
-\\\\
-&\inference[$\text{IF}_\bot$]{}
-                      {\Braket{if(b)\{S\},e} \Rightarrow_S e}
-                      {,b \Rightarrow_B \bot}
-\\\\
-&\inference[$\text{IF-ELSE}_\top$]{}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_1\},e}}
-                      {,b \Rightarrow_B \top}
-\\\\
-&\inference[$\text{IF-ELSE}_\bot$]{}
-                      {\Braket{if(b)\{S_1\}else\{S_2\},e} \Rightarrow_S \Braket{\{S_2\},e}}
-                      {,b \Rightarrow_B \bot}
-\end{align*}
-
-\subsubsection{Match statements}
+\subsection{Match statements}
 \label{subsec:matchStatements}
 
 Match statements can be seen as syntactical sugar for multiple chained if-statements. The syntax is as follows.
@@ -81,6 +85,6 @@ A concrete example:
   }
 \end{verbatim}
 
-\paragraph{Delimitation}
+\subsubsection{Delimitation}
 
 Due to other work being deemed more importantly, match statements will not be further developed. A future improvement to TLDR could possibly include match statements.
