@@ -95,7 +95,7 @@ grammar vSprogGrammar{
     /*--------- Spawn ---------*/
     Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
 
-	/*--------- Send ---------*/
+    /*--------- Send ---------*/
     Send             -> SEND! Identifier Expression;
 
     /*--------- Return ---------*/
@@ -104,11 +104,11 @@ grammar vSprogGrammar{
     /*--------- Receive ---------*/
     Receive          -> RECEIVE! SymDecl ASSIGN! Block;
 
-	/*--------- Die ---------*/
+    /*--------- Die ---------*/
     Die              -> DIE;
 
     /*--------- For ---------*/
-    ForIn            -> FOR! Ids IN! (List | Identifier) Block;
+    ForIn            -> FOR! Identifier IN! (List | Identifier) Block;
 
     /*--------- While ------*/
     While            -> WHILE! Expression Block;
@@ -163,11 +163,11 @@ grammar vSprogGrammar{
 
     String           -> STRING;
 
-    StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS!;
+    StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS! (COLON! Identifier)?;
 
     Invocation       -> Identifier (LPARENS (Expression (COMMA! Expression)*)? RPARENS)?;
 
-	Identifier       -> ME
+    Identifier       -> ME
                       | IDENTIFIER
                       | IDENTIFIER Accessor;
 

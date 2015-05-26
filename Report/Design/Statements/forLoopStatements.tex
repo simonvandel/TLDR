@@ -1,3 +1,4 @@
+%mainfile: ../master.tex
 \subsection{For-loop Statements}
 \label{subsec:forLoopStatements}
 
@@ -8,24 +9,44 @@ The for loop statement follows this grammar:
 
 Which can informally be viewed as:
 
-\begin{verbatim}
-  for <element> in <collection> {<loopBody>}
-\end{verbatim}
+\subsubsection{Syntax}
+
+\begin{grammar}
+<ForIn> ::= 'for' <Identifier> 'in' <List | Identifier> <Block>
+\end{grammar}
 
 A concrete example:
 
 \begin{verbatim}
-  for i:int in [0..10]:[int] { /* Do stuff with i elements */ }
+  sum:int = 0;
+  for i:int in [0..10]:[int] { sum = sum + i }
 \end{verbatim}
 
-Here follows the semantics for the for-loop statement:
+
+\subsubsection{Syntax}
+
+Here follows the semantics for the ForIn-loop statement:
+
+In the case that the list contains more than one element, the rule can be rewritten as x now being the head of the list, the statements of the block and the ForIn-loop statement again with rest of the list.
 
 \begin{align*}
-&\inference[$\text{FOR}_{1}$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},e} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},e}}
+\intertext{In the case that the list contains more than one element, the rule can be rewritten as x now being the head of the list, the statements of the block and the ForIn-loop statement again with rest of the list.}
+&\inference[$\text{FORIN}_{1}$]{}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},env_S}}
 \\\\
-&\inference[$\text{FOR}_{2}$]{}
-                       {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},e} \Rightarrow_S \Braket{x := n_m;\{S\},e}}
+\intertext{In the case that the list contains only one element, the rule can be rewritten as x now being the head of the list, the statements of the block.}
+&\inference[$\text{FORIN}_{2}$]{}
+                       {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_m;\{S\},env_S}}
 \end{align*}
 
 Initially a parallel for-loop was included in the language, and this is still potentially a wanted feature. It was removed however, since the languages focuses on parallelism through actors, and so it was deemed too time consuming to focus on also parallelising statements and expressions.
+
+\subsubsection{Type Rules}
+
+\begin{align*}
+\intertext{The element i of the ForIn construct must be of the same type as L. The body of the ForIn-loop can be of any type defined in $\Tt'$}
+&\inference[FORIN]{\Tenv t : \Tt &
+                   \Tenv L : [\Tt] &
+                  \Tenv e : \Tt'}
+                 {\Tenv \mathbin{\text{for}} \; (t \; \mathbin{\text{in}} L) \; {e}: ok}
+\end{align*}
