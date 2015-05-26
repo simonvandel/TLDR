@@ -1,0 +1,19 @@
+actor main := {
+	receive arguments:args := {
+
+		let x:[int] := [5];
+
+		let p:listPrinter := spawn listPrinter x;
+
+		die;
+
+	};
+};
+
+actor listPrinter := {
+	receive msg:[int] := {
+		printint(msg.[0]);
+
+		die;
+	};
+};
