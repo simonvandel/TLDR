@@ -28,7 +28,7 @@ This section will discuss some language constructs not implemented in the compil
 
 As the group members were writing programs in TLDR, the absence of functions in the implementation of the compiler, caused some creative ways of modelling a program without the use of functions. As actors were implemented in the compiler, these could be used as a stand-in for functions. A simple function taking a int and returning the int squared, can be modelled as a actor with a receive function, taking a struct containing a int and a sender actor. 
 
-\begin{lstlisting}[caption = {Example of modeling a function taking a int and returning the int squared, as an actor.}]
+\begin{lstlisting}[style=TLDR, caption = {Simple example using a function.}]
 let f(x) : int -> int := {
   x + x;
 };
@@ -39,11 +39,12 @@ actor main := {
     printint(res);
   };
 };
-
-// the same functionality modeled as an actor
+\end{lstlisting}
+\begin{lstlisting}[style=TLDR, caption = {Example of modeling a function taking a int and returning the int squared, as an actor.}]
 actor main := {
   receive arguments:args := {
-    let handle:a := spawn a 2
+    let msg:st := {n := 2; sender := me;};
+    let handle:a := spawn a msg;
   };
   
   receive res:int := {
@@ -53,13 +54,13 @@ actor main := {
 
 actor a := {
   receive msg:st := {
-    send msg.sender (msg.n + msg.n)
+    send msg.sender (msg.n + msg.n);
   };
 };
 
 struct st := {
   n:int;
-  sender:a
+  sender:main;
 };
 \end{lstlisting}
 
