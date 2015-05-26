@@ -18,27 +18,28 @@ which informally would look as such:
 
 And a concrete example:
 
-\begin{verbatim}
+\begin{lstlisting}[style=TLDR]
   struct Person := {Name:[char]; Age:int}
-\end{verbatim}
+\end{lstlisting}
 
 having these semantics:
 
 \begin{align*}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tstruct s := \{S\}, env_s, st} \Rightarrow_S \Braket{env_s,st'}}
-                            {st' = st[s \mapsto S]}
-\\\\
-&\inference[$\text{STRUCT}$]{st(T) = }
-                            {let s:T := (f := x;S)}
-                            {}
-\\\\
-&\inference[$\text{STRUCT}$]{\Braket{S, e} \Rightarrow_S e'}
-                            {\Braket{struct\;s := \{S\}, st} \Rightarrow_S \Braket{st[s \mapsto e']}}
-                            {e=st(s)}
+                            {\Braket{\Tstruct T := \{x:T;S\}, env_s, st} \Rightarrow_S \Braket{\Tstruct a := \{S\},env_s,st'}}
+\\
+&{\Twhere st' = st[a \mapsto s'],st(T) = s,s' = s \cup x]}
 \\\\
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{x:T, e} \Rightarrow_S e[x]}
+                            {\Braket{\Tstruct T := \{x:T\}, env_s, st} \Rightarrow_S \Braket{env_s,st'}}
+\\
+&{\Twhere st' = st[a \mapsto s'],st(T) = s,s' = s \cup x]}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet s:T := (f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet s:T := (S),env_s,st}}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet s:T := (f := x),env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
 \end{align*}
 
 \subsubsection{Initialising Structures}
