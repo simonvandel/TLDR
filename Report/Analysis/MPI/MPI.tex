@@ -5,7 +5,7 @@ The reason for creating this standard is to ensure portability and ease-of-use. 
 
 MPI is designed to allow efficient communication between processes, use in heterogeneous environments and ensure thread-safety. The semantics of the interface itself should be independent from any language it is implemented in, however it does focus on providing convenient bindings for the C and Fortran languages. MPI also specifies how communication failures are dealt with, in the underlying systems.
 
-The standard is designed for message passing only and does not include specifications for explicit operations on shared memory. Operations, that go beyond the current operating system support, are not included. These include interrupt-driven receives, remote execution, or active messages, since the interface is not intended for kernel programming/embedded systems. Neither does it include support for debugging, explicit support for threads or task management nor support for I/O functions.
+The standard is designed for message passing only and does not include specifications for explicit operations on shared memory. Operations, that go beyond the current operating system support, are not included. These include interrupt-driven receives, remote execution and active messages, since the interface is not intended for kernel programming/embedded systems. Neither does it include support for debugging, explicit support for threads or task management nor support for I/O functions.
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 1)
 
@@ -16,7 +16,7 @@ Point-to-point communication is the the basic building block of message passing.
 \paragraph{Send}
 Here one process sends data in form of a message to a single other process.
 \paragraph{Receive}
-When a process receives a message, it enqueues the message in a queue called its message box. Each message in the message box is processed sequentially by dequeuing and handling them one at the time.
+When a process receives a message, it enqueues the message in a queue called its message box. Each message in the message box is processed sequentially by dequeuing and handling them one at a time.
 
 (Source: http://www.mpi-forum.org/docs/mpi-1.0/mpi-10.ps chapter 3)
 

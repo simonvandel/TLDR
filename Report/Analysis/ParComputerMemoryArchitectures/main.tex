@@ -1,11 +1,11 @@
 \section{Memory Architectures}
 
-This section describes two memory architectures commonly used in parallel computing. Based on the characteristics of the architectures, an architecture is chosen for TLDR.
+This section describes two memory architectures commonly used in parallel computing. Based on the characteristics of the architectures, a target architecture is chosen for TLDR.
 
 \subsection{Shared Memory}
 
 In this memory architecture, all processors in the computer have access to the same memory, that is, the memory address space is global. In addition the memory is in close proximity to the processors, providing lower access latency. This approach of having unified memory is very simplistic and eases the programmer's view of the memory layout.
-Because of this sharing of memory, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without any synchronisation between processors~\cite{compLLNL}. 
+Because of this sharing of memory, a processor A can affect memory used by processor B. This leads to non-deterministic programs where a processor can not be sure what state the memory is in at a given time, without synchronisation between processors~\cite{compLLNL}. 
 
 To summarise on the above, the architecture has the following advantages and disadvantages. 
 
@@ -17,7 +17,7 @@ To summarise on the above, the architecture has the following advantages and dis
 
 \noindent\textbf{Disadvantages}
 \begin{itemize}
-    \item Sharing of memory between processes lead to non-deterministic processes if synchronisation between processes is not employed
+    \item Sharing of memory between processes leads to non-deterministic processes if synchronisation between processes is not employed
 \end{itemize}
 
 \subsection{Distributed Memory}
