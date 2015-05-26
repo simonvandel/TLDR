@@ -310,16 +310,22 @@ module Analysis =
                                | Some a -> a.symbol.primitiveType
                                | None -> HasNoType
 
-                let elemToFind = match nextElem with
-                                 | Identifier (SimpleIdentifier name, _) -> name
+                
 
-                let typeOfElem = match newPType with
-                                 | PrimitiveType.Struct (_, fields) ->
-                                     let needle = fields
-                                                  |> List.tryFind (fun (fieldName, _) -> elemToFind = fieldName)
-                                     match needle with
-                                     | Some (fieldName, fieldType) -> fieldType
-                                     | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
+
+                let typeOfElem = 
+                   match nextElem with
+                   | Identifier (SimpleIdentifier name, _) -> // struct indexing
+                       match newPType with
+                       | PrimitiveType.Struct (_, fields) ->
+                         let needle = fields
+                                      |> List.tryFind (fun (fieldName, _) -> name = fieldName)
+                         match needle with
+                         | Some (fieldName, fieldType) -> fieldType
+                         | None -> failwith (sprintf "Could not find %s in %A" name id)
+                   | Constant (SimplePrimitive Int, _) -> // lust/tuple indexing
+                       match newPType with
+                       | ListPrimitive (pType, _) -> pType
 
                 let entry = 
                       {
