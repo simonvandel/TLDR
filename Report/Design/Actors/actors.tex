@@ -28,7 +28,7 @@ Here follows descriptions of the usage of actors in TLDR. This includes differen
 
 \subsubsection{Isolation and Independence}
 
-A central principle in TLDR is the use of actors, based on actor modeling. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when other actors interact with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of separation of processes, which will allow for greater concurrency by letting processes operate on local data instead of global, shared data. Therefore, TLDR tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions as no data is ever accessed by more than one process.
+A central principle in TLDR is the use of actors, based on the actor model. Actors are to be seen as entities with interaction. In other words, in order for a construct to qualify as an actor, it must define a way to behave when other actors interact with it. Actors should function independently, and in that regard, not be open to direct manipulation and only able to be changed through the messages it receives. This requirement is due to the wish of separation of processes, which will allow for greater concurrency by letting processes operate on local data instead of global, shared data. Therefore, TLDR tries to encourage natural isolation of functionality through actors, which in turn will also give a greater control of race conditions as no data is ever accessed by more than one process.
 
 \subsubsection{The Main Actor}
 
