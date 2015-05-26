@@ -26,6 +26,10 @@
 \usepackage[nounderscore]{syntax}
 
 %%%%%%%flotte listings
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
 \lstdefinelanguage{scala}{
   morekeywords={abstract,case,catch,class,def,%
     do,else,extends,false,final,finally,%
@@ -43,9 +47,39 @@
   morestring=[b]"""
 }
 
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstdefinelanguage{TLDR}{
+  keywords={else,false,in,%
+    for,if,return,true,try,%
+    var,while,let,actor,struct,receive,send},
+  keywords=[2]{int,real,bool,args},
+  keywords=[3]{->,:=,:},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+\lstdefinestyle{TLDR}{
+  language=TLDR,
+  alsoletter={->,:=,:},
+  aboveskip=2mm,
+  belowskip=2mm,
+	commentstyle=\color{gray},
+	stringstyle=\color{string},
+	keywordstyle=\color{mauve},
+	keywordstyle=[2]\color{blue},
+	keywordstyle=[3]\color{dkgreen},
+	basicstyle=\footnotesize\ttfamily,
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	breaklines=true,
+	showstringspaces=false,
+	upquote=true,
+	tabsize=4,
+}
+
 
 \lstdefinestyle{scala}{
   language=scala,
@@ -715,7 +749,6 @@ rsp, si, sil, sp, spl
 	tabsize=4,
 }
 
-%\lstset{language=[Sharp]C}
 %Use the typeface Source Code Pro for listings
 \usepackage[nottdefault]{sourcecodepro}
 \lstset{basicstyle=\fontfamily{SourceCodePro-TLF}\footnotesize,breaklines=true,commentstyle=}
