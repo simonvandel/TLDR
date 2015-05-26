@@ -75,11 +75,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "+" is a binary operator that adds two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{ADD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&\inference[$\text{ADD}_\text{L}$]{env_s \vdash a_1 \Rightarrow_A a_1'}
+                    {env_s \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
-&\inference[$\text{ADD}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+&\inference[$\text{ADD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
 \\\\
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
@@ -89,11 +89,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "-" is a binary operator that subtracts two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{SUB}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&\inference[$\text{SUB}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
 &
-&\inference[$\text{SUB}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+&\inference[$\text{SUB}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
 \\\\
 &\inference[$\text{SUB}_\text{V}$]{}
                     {v_1 - v_2 \Rightarrow_A v}
@@ -103,11 +103,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "*" is a binary operator that multiplies two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{MULT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                     {e \vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&\inference[$\text{MULT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                     {env_s\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
 &
-&\inference[$\text{MULT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                     {e \vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+&\inference[$\text{MULT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                     {env_s\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
 \\\\
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
@@ -117,11 +117,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "/" is a binary operator that divides two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{DIV}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&\inference[$\text{DIV}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
 &
-&\inference[$\text{DIV}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+&\inference[$\text{DIV}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
 \\\\
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
@@ -131,11 +131,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "\%" is a binary operator that returns the remainder of a floored division of two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{MOD}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&\inference[$\text{MOD}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
-&\inference[$\text{MOD}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+&\inference[$\text{MOD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
 \\\\
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
@@ -145,11 +145,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "\^{}" is a binary operator that lifts the first number to the power of the second number
 
 \begin{align*}
-&\inference[$\text{POW}_\text{L}$]{e \vdash a_1  \Rightarrow_A a_1'}
-                    {e \vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
+&\inference[$\text{POW}_\text{L}$]{env_s\vdash a_1  \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
 &
-&\inference[$\text{POW}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
+&\inference[$\text{POW}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
 \\\\
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \Twedge v_2 \Rightarrow_A v}
@@ -158,11 +158,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 
 \item "\#" is a binary operator that roots the first operand to the second operand
 \begin{align*}
-&\inference[$\text{ROOT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&\inference[$\text{ROOT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
 &
-&\inference[$\text{ROOT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+&\inference[$\text{ROOT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
 \\\\
 &\inference[$\text{ROOT}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
@@ -172,8 +172,8 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "( )" Parenteses gives what they surrounds the highest precedence.
 
 \begin{align*}
-&\inference[$\text{PARENS}_\text{A}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                       {e \vdash (a_1) \Rightarrow_A (a_1')}
+&\inference[$\text{PARENS}_\text{A}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                       {env_s\vdash (a_1) \Rightarrow_A (a_1')}
 &
 &\inference[$\text{PARENS}_\text{V}$]{}
                        {(v) \Rightarrow_A v}

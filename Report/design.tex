@@ -1,13 +1,13 @@
 %mainfile: ../master.tex
 \chapter{Language}\label{part:design}
 
-This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language.
+This chapter will describe the design of TLDR and explain the reasoning behind the choices made during the design of the language.
 
 The chapter is split into four parts. The first part is the general properties and formal models. This includes the type system, general semantics and scope rules.
 
 After this three sections will cover the specifics of the language. The seperation is between expressions, statements, and actors. Even though actors are also statements, their importance for the characteristics of the language, deemed it worth of a seperate section.
 
-The different sections will contain explanations, which will mostly consist of an informal explanation of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
+The different sections will contain explanations, which will consist of both formal and informal syntax, semantics and type rulesn of the construct and why this was chosen. Some construct will merit more discussion and explanation than others.
 
 The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where it is not deemed that EBNF will provide further clarification. 
 
@@ -25,9 +25,14 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \label{SS-semantics}
 \end{figure}
 
+In the formal semantic rules have the following convention of symbols
+
+The conclusion always consists of a transition arrow \enquote{$\Rightarrow$}. On the left hand side the initial code that the rule transitions from and the needed transition functions in their current state inside angel brackets, $\Braket{S,}$. the code that is run and the transition rules
+
 \input{Design/generalLanguageProp.tex}
 \input{Design/Expressions/expressions.tex}
 \input{Design/Statements/statements.tex}
 \input{Design/Actors/actors.tex}
 \input{Design/Semantik/semantik.tex}
 \input{Design/grammar.tex}
+\input{Design/semantics.tex}
