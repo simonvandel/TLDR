@@ -14,6 +14,18 @@ But even without a supercomputer a distributed network of multiple computers can
 For parallel computing, Gene Amdahl, an american computer scientist, defined a law for describing the theoretical maximum speedup using multiple processors. The maximum speedup a system can achieve by parallelisation is limited to at most 20×.
 The law can be used to describe the speed up achievable by a giving system, by the percentage of parallelisable code, in this equation \cite{wiki_amdahl}.
 
+The time an algorithm takes to finish with $n \in \mathbb{N}$ execution units and $B \in [0, 1]$ the fraction of the algorithm that is strictly serial.
+
+\begin{equation}
+  T(n) = T(1)(B + \frac{1}{n} (1 - B))
+\end{equation}
+
+The theoretical speedup to be made can then be described by:
+
+\begin{equation}
+  S(n) = \frac{T(1)}{T(n)} = \frac{T(1)}{T(1)(B + \frac{1}{n} (1 - B))} = \frac{1}{B + \frac{1}{n} (1 - B)}
+\end{equation}
+
 By this law maximising the percentage of parallelisable, the highest possible speed up achievable is increased, thereby improving the scaling of the solution on multiple processor.
 
 \subsection{Types of Tasks}\label{top}
