@@ -3,7 +3,8 @@ actor main := {
 
 		let x:[int] := [5];
 
-		let p:listPrinter := spawn listPrinter x;
+		let p:listPrinter := spawn listPrinter; 
+                send p x;
 
 		die;
 

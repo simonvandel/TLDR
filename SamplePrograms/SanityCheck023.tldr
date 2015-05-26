@@ -1,23 +1,30 @@
 actor main := {
   receive arguments:args := {
-   let k:st := (step := 5;);
-   let y:test := spawn test;  
-   die;
-  };
-};
-
-
-actor test := {
-  receive arguments:st := {
-   let x:int := arguments.step;
+   let k:st := (step := 5; r := 2.3; b := true;);
+   let y:test := spawn test;
+   send y k;
+   print("hej");
+   let x:int := k.step;
    printint(x);
    die;
   };
 };
 
 
+actor test := {
+  receive msg:st := {
+   var msgCopy:st := msg;
+   msgCopy.step := 1;
+   let x:int := msgCopy.step;
+   let r:real := msgCopy.r;
+   printint(x);
+   die;
+  };
+};
+
 struct st := {
   step:int;
-  st:real;
+  r:real;
+  b:bool;
 };
 
