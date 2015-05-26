@@ -1,0 +1,7 @@
+actor main := {
+  receive arguments:args := {
+    let x:int := 0;
+    let xs:[int] := [x..9];
+    die;
+  }
+}

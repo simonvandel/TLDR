@@ -1,0 +1,23 @@
+actor main := {
+  receive arguments:args := {
+   let k:st := (step := 5;);
+   let y:test := spawn test;  
+   die;
+  };
+};
+
+
+actor test := {
+  receive arguments:st := {
+   let x:int := arguments.step;
+   printint(x);
+   die;
+  };
+};
+
+
+struct st := {
+  step:int;
+  st:real;
+};
+
