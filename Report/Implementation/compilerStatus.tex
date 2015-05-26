@@ -1,0 +1,37 @@
+\section{Compiler Status}\label{sec:compilerStatus}
+
+The compiler developed for TLDR does not fully implement TLDR. This section lists which parts of TLDR is implemented in the compiler, and which parts are not.
+
+\sinote{ikke helt sikker på alt er noteret}
+
+Implemented:
+
+\begin{itemize}
+\item Arithmetic operations
+\item And, or, equality operations on bools
+\item For-in statement
+\item Lists as arrays. See \cref{codegen:lists}
+\item If and if-else statements
+\item While loops
+\item print, printint, printreal functions
+\item Actors
+\item Spawn, send, receive and die operations
+\item Integer, boolean and real number constants
+\item Struct definition, struct field access and initialisation
+\item Initialisation and reassignment constructs
+\end{itemize}
+
+Not implemented:
+
+\begin{itemize}
+\item Functions - Code generation is not implemented
+\item Dynamically allocated lists. The lists currently implemented are simply arrays. See \cref{codegen:lists}
+\item Tuples - Code generation is not implemented
+\item List operations - Currently lists can only be manipulated by indexing into the list and can be iterated with a for-in-loop
+\item Data casts - Only supported in grammar
+\item NAND, NOR and XOR - Code generation not implemented
+\item Char constant - Code generation not implemented
+\item Comparison of tuples, structs - Type checking and code generation not implemented
+\item Send/receive of structs/tuples
+\item Arguments from command line
+\end{itemize}

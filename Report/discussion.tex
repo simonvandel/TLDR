@@ -1,10 +1,6 @@
 \chapter{Discussion}
 
-Here a discussion on future development plans will follow. It will examine ideas that was not imlemented, but was considered by the group for future adition. The discussion will consider the results of adding features to TLDR, and how the principles of the language could have been futher supported or changed by those.
-
-TLDR, being a language focused on allowing easy modelling shares a lot of principles with object oriented programming languages, and so the inclusion of common object oriented features is a likely idea. Including inheritance in some form or another would be a good way to allow for faster and more precise programming. Possible candidates could be traits, interfaces, abstract actors or some type of inheiritance. Interfaces could be very useful for making sure that messages are only sent to actors which actually implements a receive for that message, while still allowing multiple types of actors to be candidates. The usefulness of inheiritance or other ways of sharing functionalities across different actors, are also a good idea, since it will allow for more concise code and faster writing.
-
-Another matter is the support for discrete simulations, as described in \cref{iterprob}. The solutions suggested are based around grouping actors into units, which work isolated from the rest of the actors. This idea of grouping actors, could potentially be used for other purposes, such has highly modular programs and functionalities, and promote purity when writing code in TLDR. But what is more interesting, is the possibility of a change of focus, from having the programmer think in terms of how actors mimic real things, to focusing on having environments mimic the conditions reality sets for things. Examples could be chemistry or physics, where one could want to find the optimal conditions for a chain reaction to occur. This problem could be approached by creating a single version of the actor, and then have the environments implement the changes in values, temperatures, pressure or what it might be. Such an apporach might be useful for problems where certain objects behavior can be discribed through know matematical structures, but where the conditions can change immensely and by extension, the results of a given simulation.
+This chapter discusses TLDR as a language, the features not implemented in the compiler, and how the language can be further improved in the future.
 
 \section{Language}
 The Language Described in this report is a domain specific programming language, borrowing ideas and constructs from other languages. This section will discuss some of these ideas and constructs, and describe TLDRs rationale and usefulness in the domain of programming languages.
@@ -14,7 +10,7 @@ One of the main features, and the pièce de résistance of TLDR, is the central 
 
 Another difference between TLDR and other languages with actors is that TLDR enforces the use of actors. Every program has at least one actor, main, where the execution of the program starts. This enforces the principle of a central controller in a network of concurrent processes. This means that any TLDR program can be considered, and reasoned about, as a graph-like structure rooted in the main actor, with vertices representing actors and edges representing messages between them.
 
-Andre features?
+\kanote{Andre features?}
 
 \subsection{Paradigms}
 TLDR focuses a lot on the "swarm of bees"-style of programming, that is, having large amounts of simple logic rather than having a unified complex algorithm for all the logic in the program. This can be thought of as a characteristic of modular programming languages.
@@ -26,38 +22,65 @@ TLDR is a rather high level language. TLDR provides a high level of abstraction 
 
 \section{Compiler}
 
-The compiler developed for TLDR does not fully implement TLDR. This section will list which parts of TLDR is implemented in the compiler, and which parts are not.
+This section will discuss some language constructs not implemented in the compiler. The full list can be seen in \cref{sec:compilerStatus}.
 
-\sinote{ikke helt sikker på alt er noteret}
+\subsection{Functions}
 
-Implemented:
+As the group members were writing programs in TLDR, the absence of functions in the implementation of the compiler, caused some creative ways of modelling a program without the use of functions. As actors were implemented in the compiler, these could be used as a stand-in for functions. A simple function taking a int and returning the int squared, can be modelled as a actor with a receive function, taking a struct containing a int and a sender actor. 
 
-\begin{itemize}
-\item Addition, subtraction, multiplication, division, root, power, modulo, equalityoperations on ints and reals
-\item And, or, equality operations on bools
-\item For-in statement
-\item Lists as arrays. See \cref{codegen:lists}
-\item If and if-else statements
-\item While loops
-\item print, printint, printreal functions
-\item Actors
-\item Spawn, send, receive and die operations
-\item Integer, boolean and real number constants
-\item Struct definition, struct field access and initialisation
-\item Initialisation and reassignment constructs
-\end{itemize}
+\begin{lstlisting}[caption = {Example of modeling a function taking a int and returning the int squared, as an actor.}]
+let f(x) : int -> int := {
+  x + x;
+};
 
-Not implemented:
+actor main := {
+  receive arguments:args := {
+    let res:int := f(2);
+    printint(res);
+  };
+};
 
-\begin{itemize}
-\item Functions - Code generation is not implemented
-\item Dynamically allocated lists. The lists currently implemented are simply arrays. See \cref{codegen:lists}
-\item Tuples - Code generation is not implemented
-\item List operations - Currently lists can only be manipulated by indexing into the list and can be iterated with a for-in-loop
-\item Data casts - Only supported in grammar
-\item NAND, NOR and XOR - Code generation not implemented
-\item Char constant - Code generation not implemented
-\item Comparison of tuples, structs - Type checking and code generation not implemented
-\item Send/receive of structs/tuples
-\item Arguments from command line
-\end{itemize}
+// the same functionality modeled as an actor
+actor main := {
+  receive arguments:args := {
+    let handle:a := spawn a 2
+  };
+  
+  receive res:int := {
+    printint(res);
+  };
+};
+
+actor a := {
+  receive msg:st := {
+    send msg.sender (msg.n + msg.n)
+  };
+};
+
+struct st := {
+  n:int;
+  sender:a
+};
+\end{lstlisting}
+
+Theoretically, any function can be modelled as actors taking structures, however there is some mental overhead involved. The function example is shorter to write and arguably also easier to understand. 
+
+On the other side, the fact that every function can be modelled as an actor, shows how powerful actors can be in modeling a program into small logical sections.
+
+\subsection{Lists}
+
+The lists implemented in the compiler can not be reallocated at runtime, and there is no way of concatenating two lists. This limits the usefulness of lists, as observed when writing programs in TLDR. Having concatenation of lists implemented in the compiler would allow for several other operations to be implemented based on concatenation. For example, appending an element to a list, can simply be implemented as a concatenation of the list to append to and a list containing 1 element: the element to append. Assuming the concatenation function is implemented, the append function can be implemented as follows.
+
+\begin{lstlisting}[caption = {Implementation of the append function based on the concatenation function.}]
+let append(xs, x) : [int] -> int -> [int] := {
+  concat(xs, [x]);
+};
+\end{lstlisting}
+
+\section{Future Language Improvements}
+
+TLDR, being a language focused on allowing easy modelling shares a lot of principles with object oriented programming languages, and so the inclusion of common object oriented features is a likely idea. Including inheritance in some form or another would be a good way to allow for faster and more precise programming. Possible candidates could be traits, interfaces, abstract actors or some type of inheritance. Interfaces could be very useful for making sure that messages are only sent to actors which actually implements a receive for that message, while still allowing multiple types of actors to be candidates. The usefulness of inheritance or other ways of sharing functionalities across different actors, are also a good idea, since it will allow for more concise code and faster writing.
+
+\subsection{Support for Discrete Simulations}
+
+Another matter is the support for discrete simulations, as described in \cref{iterprob}. The solutions suggested are based around grouping actors into units, which work isolated from the rest of the actors. This idea of grouping actors, could potentially be used for other purposes, such has highly modular programs and functionalities, and promote purity when writing code in TLDR. But what is more interesting, is the possibility of a change of focus, from having the programmer think in terms of how actors mimic real things, to focusing on having environments mimic the conditions reality sets for things. Examples could be chemistry or physics, where one could want to find the optimal conditions for a chain reaction to occur. This problem could be approached by creating a single version of the actor, and then have the environments implement the changes in values, temperatures, pressure or what it might be. Such an approach might be useful for problems where certain objects behavior can be described through know mathematical structures, but where the conditions can change immensely and by extension, the results of a given simulation.
