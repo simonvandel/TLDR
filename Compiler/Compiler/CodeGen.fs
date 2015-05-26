@@ -177,7 +177,7 @@ module CodeGen =
           |> List.map findMainReceive
           |> List.filter Option.isSome // 'Some' means that the main receive was found
           |> List.head
-        | Receive ("arguments", UserType "args", _) as mainReceive -> 
+        | Receive (_, UserType "args", _) as mainReceive -> 
             Some mainReceive
         | _ -> None
 
