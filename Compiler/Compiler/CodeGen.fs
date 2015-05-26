@@ -5,6 +5,7 @@ open vSprog.CommonTypes
 open AnalysisUtils
 open System
 open System.IO
+open System.Text.RegularExpressions
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
@@ -27,6 +28,9 @@ module CodeGen =
             do! putState newEnv
             return (sprintf "%%_%d" newEnv.regCounter)
         }
+    let extractTypeListType (listType:string) : string =
+        let regex = Regex(@"^\[\d\sx\s(.+)\]")
+        regex.Match(listType).Groups.[1].Value
 
 //    let append (code:string) : State<unit, Environment> =
 //        state {
@@ -308,8 +312,10 @@ module CodeGen =
 
                             // get the address in the list
                             let! addrReg = freshReg
-                            let regType = "i64*"
-                            //let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+
+
+
+                            let regType = sprintf "%s*" (extractTypeListType toUpdateType)
                             let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toUpdateType toUpdateName idx
                             let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
                             //  
@@ -833,7 +839,8 @@ module CodeGen =
                           | Constant ( SimplePrimitive Int, PrimitiveValue.Int idx) -> // it must be a list/tuple
                             // get the address in the list
                             let! addrReg = freshReg
-                            let regType = "i64*" // TODO: det er kun i64* ved lister af ints. Skal laves på baggrund af toLoadType
+
+                            let regType = sprintf "%s*" (extractTypeListType toLoadType)
                             let getElemCode = sprintf "getelementptr %s %s, i32 0, i32 %d" toLoadType toLoadName idx
                             let! (addrName, addrType, addrCode) = newRegister addrReg regType getElemCode
 
