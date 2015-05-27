@@ -1,0 +1,168 @@
+\section{Formal Semantics}
+\subsection{Transition System}
+
+\begin{center}
+$at = \text{ActorTypes} \rightharpoonup \text{Stm}$
+
+$aEnv = \text{Anames} \rightharpoonup sEnv$
+
+$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+
+$st = \text{Structs} \rightharpoonup \text{Symbols}$
+\end{center}
+
+\subsection{Expressions}
+\subsubsection{Arithmetic}
+\begin{align*}
+&\inference[$\text{ADD}_\text{L}$]{env_s \vdash a_1 \Rightarrow_A a_1'}
+                    {env_s \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&
+&\inference[$\text{ADD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+\\\\
+&\inference[$\text{ADD}_\text{V}$]{}
+                    {v_1 + v_2 \Rightarrow_A v}
+                    {, v_1 + v_2 = v}
+\\\\
+&\inference[$\text{SUB}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&
+&\inference[$\text{SUB}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+\\\\
+&\inference[$\text{SUB}_\text{V}$]{}
+                    {v_1 - v_2 \Rightarrow_A v}
+                    {, v_1 - v_2 = v}
+\\\\
+&\inference[$\text{MULT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                     {env_s\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&
+&\inference[$\text{MULT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                     {env_s\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+\\\\
+&\inference[$\text{MULT}_\text{V}$]{}
+                     {v_1 * v_2 \Rightarrow_A v}
+                     {, v_1 * v_2 = v}
+\\\\
+&\inference[$\text{DIV}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&
+&\inference[$\text{DIV}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+\\\\
+&\inference[$\text{DIV}_\text{V}$]{}
+                    {v_1 / v_2 \Rightarrow_A v}
+                    {, \frac{v_1}{v_2} = v}
+\\\\
+&\inference[$\text{MOD}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&
+&\inference[$\text{MOD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+\\\\
+&\inference[$\text{MOD}_\text{V}$]{}
+                    {v_1 \% v_2 \Rightarrow_A v}
+                    {, v_1 \;\; \textrm{mod} \;\; v_2 = v}
+\\\\
+&\inference[$\text{POW}_\text{L}$]{env_s\vdash a_1  \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
+&
+&\inference[$\text{POW}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
+\\\\
+&\inference[$\text{POW}_\text{V}$]{}
+                    {v_1 \Twedge v_2 \Rightarrow_A v}
+                    {, v_1 ^ {v_2} = v}
+\\\\
+&\inference[$\text{ROOT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&
+&\inference[$\text{ROOT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                    {env_s\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+\\\\
+&\inference[$\text{ROOT}_\text{V}$]{}
+                    {v_1 \# v_2 \Rightarrow_A v}
+                    {, \sqrt[v_1]{v_2} = v}
+\\\\
+&\inference[$\text{PARENS}_\text{A}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
+                       {env_s\vdash (a_1) \Rightarrow_A (a_1')}
+&
+&\inference[$\text{PARENS}_\text{V}$]{}
+                       {(v) \Rightarrow_A v}
+\end{align*}
+\subsubsection{Boolean}
+\begin{align*}
+&\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
+                           {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{AND}_2$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+                           {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{AND}_3$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+                           {e \vdash b_1 \Tand b_2 \Rightarrow_B \top}
+\\\\
+&\inference[OR]{}
+               {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
+\\\\
+&\inference[XOR]{}
+                  {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+\\\\
+&\inference[NOR]{}
+                {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
+\\\\
+&\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
+                              {e \vdash \Tnot b_1 \Rightarrow_B \bot}
+\\\\
+&\inference[$\text{NOT}_\bot$]{e \vdash b_1 \Rightarrow_B \bot}
+                              {e \vdash \Tnot b_1 \Rightarrow_B \top}
+\\\\
+&\inference[NAND]{}
+                   {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
+\\\\
+&\inference[TRUE]{}
+                   {\Braket{\Ttrue,env_s} \Rightarrow_B \top}
+&\inference[FALSE]{}
+                   {\Braket{\Tfalse,env_s} \Rightarrow_B \bot}
+\end{align*}
+\subsubsection{Logical}
+\begin{align*}
+&\inference[$\text{EQUALS}_\text{L}$]{e \vdash a_1 \Rightarrow_B a_1'}
+                    {e \vdash a_1 = a_2 \Rightarrow_B a_1' = a_2}
+&
+&\inference[$\text{EQUALS}_\text{R}$]{e \vdash a_1 \Rightarrow_B a_1'}
+                    {e \vdash a_2 = a_1 \Rightarrow_B a_2 = a_1'}
+\\\\
+&\inference[$\text{EQUALS}_\text{V1}$]{}
+                    {v_1 = v_2 \Rightarrow_B \top}
+                    {, v_1 = v_2}
+&
+&\inference[$\text{EQUALS}_\text{V2}$]{}
+                    {v_1 = v_2 \Rightarrow_B \bot}
+                    {, v_1 \neq v_2}
+\\\\
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e}
+                    {act_1 = act_2 \Rightarrow_B \top}
+&
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e'}
+                    {act_1 = act_2 \Rightarrow_B \bot}
+                    {e \neq e'}
+\\\\
+&\inference[$NEQUALS$]{}
+                    {e \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
+&\inference[$\text{LT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_1 < a_2 \Rightarrow_A a_1' < a_2}
+&
+&\inference[$\text{LT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
+                    {e \vdash a_2 < a_1 \Rightarrow_A a_2 < a_1'}
+\\\\
+&\inference[$\text{LT}_\text{V1}$]{}
+                    {v_1 < v_2 \Rightarrow_B \top}
+                    {, v_1 < v_2}
+&
+&\inference[$\text{LT}_\text{V2}$]{}
+                    {v_1 < v_2 \Rightarrow_B \bot}
+                    {, v_1 \geq v_2}
+\end{align*}
+\subsection{Statements}
+
+\subsection{Actors}

@@ -19,6 +19,28 @@ module Analysis =
                 return x1 :: xs1
               }
 
+    let argsFields = [
+                      ("argv", ListPrimitive (ListPrimitive (SimplePrimitive Primitive.Char, 128), 128)); // TODO: vi bliver nødt til at hard code længden af lister
+                      ("argc", SimplePrimitive Int)
+                     ]
+    let argsStruct = PrimitiveType.Struct ("args",argsFields)
+
+    let getRealType (msgType:PrimitiveType) : State<PrimitiveType, Environment> =
+        state {
+            let! curState = getState
+            let! curScope = getScope
+            let realType = match msgType with
+                           | UserType typeName ->
+                             let sDecl = 
+                                 curState.symbolList |>
+                                   List.tryFind (fun e -> e.symbol.identity = SimpleIdentifier typeName && (e.statementType = Init || e.statementType = Def) && isInScope  e.scope curScope)
+                             match sDecl with
+                             | Some a -> a.symbol.primitiveType
+                             | None -> HasNoType
+                           | other -> other
+            return realType
+        }
+
     let rec buildSymbolTable (root:AST) :  State<AST, Environment> =
         match root with
         | Program stms ->
@@ -82,16 +104,18 @@ module Analysis =
                                | Some a -> a.symbol.primitiveType
                                | None -> HasNoType
 
-                let elemToFind = match nextElem with
-                                 | Identifier (SimpleIdentifier name, _) -> name
+                let! realType = getRealType newPType
 
-                let typeOfElem = match newPType with
+                let typeOfElem = match realType with
                                  | PrimitiveType.Struct (_, fields) ->
+                                     let elemToFind = match nextElem with
+                                                      | Identifier (SimpleIdentifier name, _) -> name
                                      let needle = fields
                                                   |> List.tryFind (fun (fieldName, _) -> elemToFind = fieldName)
                                      match needle with
                                      | Some (fieldName, fieldType) -> fieldType
                                      | None -> failwith (sprintf "Could not find %s in %A" elemToFind id)
+                                 | ListPrimitive (pType, _) -> pType
                 let entry = 
                     {
                       symbol = 
@@ -136,7 +160,8 @@ module Analysis =
                                     | List(_,prim) -> prim
                                     | StructLiteral ((Struct (name,decls)), _) -> PrimitiveType.Struct (name, decls)
                                     | other -> lvalue.primitiveType
-              let newLValue = {lvalue with primitiveType = newLValPrimType}
+              let! realType = getRealType newLValPrimType
+              let newLValue = {lvalue with primitiveType = realType}
 
               let! curScopeAfter = getScope
               let entry =
@@ -228,9 +253,31 @@ module Analysis =
           state 
             {
               do! openScope
+
+              let! curScope = getScope
+
+              let! realMsgType = getRealType msgType
+
+              let msgLvalue = {identity = SimpleIdentifier msgName; primitiveType = realMsgType; isMutable = false}
+              let msgInitialisation = Initialisation (msgLvalue, Block [])
+
+              let entry =
+                  {
+                    symbol = 
+                      {
+                        identity = SimpleIdentifier msgName
+                        isMutable = false
+                        primitiveType = realMsgType
+                      }
+                    statementType = Init
+                    scope = curScope
+                    value = Block []
+                  }
+              do! addEntry entry
+
               let! newBody =  buildSymbolTable body
               do! closeScope
-              return Receive (msgName, msgType, newBody)
+              return Receive (msgName, realMsgType, newBody)
             }
         | ForIn (counterName, list, body) -> 
           state 
@@ -311,12 +358,12 @@ module Analysis =
                                | None -> HasNoType
 
                 
-
+                let! realType = getRealType newPType
 
                 let typeOfElem = 
                    match nextElem with
                    | Identifier (SimpleIdentifier name, _) -> // struct indexing
-                       match newPType with
+                       match realType with
                        | PrimitiveType.Struct (_, fields) ->
                          let needle = fields
                                       |> List.tryFind (fun (fieldName, _) -> name = fieldName)
@@ -324,7 +371,7 @@ module Analysis =
                          | Some (fieldName, fieldType) -> fieldType
                          | None -> failwith (sprintf "Could not find %s in %A" name id)
                    | Constant (SimplePrimitive Int, _) -> // lust/tuple indexing
-                       match newPType with
+                       match realType with
                        | ListPrimitive (pType, _) -> pType
 
                 let entry = 
@@ -528,7 +575,19 @@ module Analysis =
         | _ -> []
 
     let analyse (ast:AST) : Result<AST> =
-        let structEntries = findAllStructs ast
+        let mainStructEntry = 
+            {
+             symbol = 
+              {
+                identity = SimpleIdentifier "args"
+                isMutable = false
+                primitiveType = argsStruct
+              }
+             statementType = Def
+             scope = {outer = None; level = []} // outermost scope
+             value = Struct ("args", argsFields)
+            }
+        let structEntries = mainStructEntry :: findAllStructs ast
         let (newAST, environment) = runState (buildSymbolTable ast) {symbolList = structEntries; errors = []; scope = {outer = None; level = []}; scopeCounter = 0; ast = Program []}
         checkReass environment.symbolList
         >>= checkUsedBeforeDecl

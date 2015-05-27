@@ -2,12 +2,12 @@ actor main := {
   receive arguments:args := {
    let x:[int] := [15,5,7,8];
    let k:int := x.[1];
+   if(k = 5) {
+     print("Expected");
+   }
+   else {
+     print("Not expected");
+   };
    die;
   };
 };
-
-struct iterationStep := {
-  step:int;
-  st:real;
-};
-

@@ -1,3 +1,4 @@
+%mainfile: ../../master.tex
 \subsection{Structures}
 \label{subsec:structs}
 
@@ -6,15 +7,13 @@ In TLDR there are three ways to do encapsulation. Actors, Tuples and structs. St
 \subsubsection{Defining Structures}
 \label{sec:defStructures}
 
+\subsubsection{Syntax}
+
 Structures are defined by using the \enquote{struct} keyword. The grammar for declaring structs are as follows:
 
-\kanote{grammatik for structs skal stå her}
-
-which informally would look as such:
-
-\begin{verbatim}
-  struct <structName> := {<structFields>}
-\end{verbatim}
+\begin{grammar}
+  <Struct> ::= 'struct' <Identifier> ':= \{' <TypeDecls> '\}'
+\end{grammar}
 
 And a concrete example:
 
@@ -22,34 +21,72 @@ And a concrete example:
   struct Person := {Name:[char]; Age:int}
 \end{lstlisting}
 
+\subsubsection{Semantics}
+
 having these semantics:
 
 \begin{align*}
+\intertext{In the case that we have multiple S of assignments, we can rewrite the T to now map to new s' that includes x, in the new st' environment and the rest of declaration statements}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tstruct T := \{x:T;S\}, env_s, st} \Rightarrow_S \Braket{\Tstruct a := \{S\},env_s,st'}}
+                            {\Braket{\Tstruct T := \{x:T';S\}, env_s, st} \Rightarrow_S \Braket{\Tstruct T := \{S\},env_s,st'}}
 \\
-&{\Twhere st' = st[a \mapsto s'],st(T) = s,s' = s \cup x]}
+&{\Twhere st' = st[T \mapsto s'],st(T) = s,s' = s \cup x]}
 \\\\
+\intertext{In the case that we have multiple S of assignments, we can rewrite the T to now map to new s' that includes x, in the new st' environment}
 &\inference[$\text{STRUCT}$]{}
                             {\Braket{\Tstruct T := \{x:T\}, env_s, st} \Rightarrow_S \Braket{env_s,st'}}
 \\
-&{\Twhere st' = st[a \mapsto s'],st(T) = s,s' = s \cup x]}
-\\\\
-&\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet s:T := (f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet s:T := (S),env_s,st}}
-\\\\
-&\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet s:T := (f := x),env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
+&{\Twhere st' = st[T \mapsto s'],st(T) = s,s' = s \cup x]}
 \end{align*}
+
+\begin{align*}
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tstruct T_1 := (x:T_2;S), env_s} \Rightarrow_S \Braket{\Tstruct T_1 := (S),env_s'}}
+\\
+&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x]}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet \; x:T := (S),env_s} \Rightarrow_S \Braket{x:T := (S),env_s'}}
+\\
+&{env_s' = env_s[x \mapsto (S,s)],env_s(T) = (\epsilon,s)]}
+\\\\
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{s:T := (f := x;S),env_s} \Rightarrow_S \Braket{s.f := x;s:T := (S),env_s}}
+\\\\
+&\inference[$\text{LIST}$]{}
+                            {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
+\\
+&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+\\\\
+&\inference[$\text{TUPLE}$]{}
+                           {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
+\\
+&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+\end{align*}
+
+\subsubsection{Type Rules}
+
+\begin{align*}
+\intertext{The elements can be of any type defined in $\Tt$}
+&\inference[STRUCT]{E[s \mapsto (e_1:\Tt_1;e_2:\Tt_2;...;e_n:\Tt_n) \rightarrow ok]\vdash S : ok & }
+                 {\Tenv \mathbin{\text{struct s}} := \{e_1:\Tt_1;e_2:\Tt_2;...;e_n:\Tt_n\}; S: ok}
+\end{align*}
+
+
 
 \subsubsection{Initialising Structures}
 \label{sec:initStructures}
 
 Structs can be initialised and assigned to symbols using either a constant assignment or a variable assignment. Structs initialised as a constant assignment cannot change any of the fields of the structs; the struct is immutable. Structs initialised as a variable assignment can change all of its fields at any time; the struct is mutable.
 
+\subsubsection{Syntax}
+
 The syntax for initialising a struct is as follow.
 
-\kanote{grammatik for initialisering af structs sættes her}
+\begin{grammar}
+<StructLiteral> ::= '(' (<Reassignment>';')* ')' (':' <Identifier>)?
+\end{grammar}
+
 
 With concrete examples for immutables:
 
@@ -61,6 +98,12 @@ And for mutable struct is as follow.
 
 \begin{verbatim}
   var Alice:Person := (Name := "Alice"; Age := 20);
+\end{verbatim}
+
+And for usage in lists.
+
+\begin{verbatim}
+  [(Name := "Alice"; Age := 20):Person];
 \end{verbatim}
 
 \subsubsection{Access to Structure Fields}
@@ -79,3 +122,37 @@ Structs declared as mutable can have fields reassigned using the following synta
   Alice.Name := "Bob";
   Alice.Name; // "Bob";
 \end{verbatim}
+ 
+\subsubsection{Semantics}
+
+\begin{align*}
+\intertext{In the case that we have multiple S of assignments, we can rewrite the s to now having an accessor that maps to value of the first assignment and the rest of pending assignments in s}
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet \; s:T := (f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),env_s,st}}
+\\\\
+\intertext{In the case that we have only one assignment, we can rewrite the s to now having an accessor that maps to value of the assignment}
+&\inference[$\text{STRUCT}$]{}
+                            {\Braket{\Tlet \; s:T := (f := x),env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
+%\\\\
+%&\inference[$\text{STRUCT}$]{}
+%                            {\Braket{(f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),env_s,st}}
+%\\\\
+%&\inference[$\text{STRUCT}$]{}
+%                            {\Braket{(f := x):T,env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
+\end{align*}
+
+\subsubsection{Type Rules}
+
+Each e of type t is matching the declared struct types, evaluates to the type of the declared struct.
+
+\begin{align*}
+&\inference[STRUCTLITERAL]{\Tenv (e_1 : \Tt_1;e_2 : \Tt_2;...;e_n : \Tt_n):\Tt'}
+                 {\Tenv \mathbin{\text{(}} e_1; e_2;...;e_n\mathbin{\text{)}}:\Tt': \Tt'}
+\end{align*}
+
+\subsubsection{Comparison of structs}
+\begin{align*}
+\intertext{}
+&\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv e_1 = e_2: \Tbool}
+\end{align*}

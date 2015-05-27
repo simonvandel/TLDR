@@ -6,6 +6,7 @@ open AnalysisUtils
 open System
 open System.IO
 open System.Text.RegularExpressions
+open vSprog.Analysis
 
 module CodeGen =
     type Value = (string * string * string) // name, type, code
@@ -19,6 +20,7 @@ module CodeGen =
         globalVars:(string * string * string) list // name, type, initialValue
         structs:CStruct list //structs
         actors:Map<string, (int * string) list> // key is actorName, value is receiveLabels
+        isFirstRun:bool // whether this is the first run
         }
 
     let freshReg : State<string, Environment> = // Gives us a new register, with unique name given by regCounter+1
@@ -28,9 +30,99 @@ module CodeGen =
             do! putState newEnv
             return (sprintf "%%_%d" newEnv.regCounter)
         }
+
+    // applies a state workflow to all elements in list
+    let rec collectAll (p:('a ->State<'b,'c>)) (list:'a list) : State<'b list, 'c> =
+        state {
+            match list with
+            | [] -> return []
+            | x::xs ->
+                let! x1 = p x
+                let! xs1 = collectAll p xs
+                return x1 :: xs1
+              }
+
+    let isFirstRun : State<bool, Environment> =
+        state {
+            let! st = getState
+            return st.isFirstRun
+        }
+
+    let extractStructTypeFromReg (reg:string) : State<PrimitiveType, Environment> =
+      state {
+        let! curState = getState
+        let structs = curState.structs
+        let structName = (Regex.Match (reg, @"\w+\.(\w+)")).Groups.[1].Value // find the structName from for example "%struct.st"
+        let pType = structs
+                          |> List.find (fun (name, _) -> name = structName)
+                          |> snd
+                          |> List.map ( fun (fieldName,_,pType,_) -> (fieldName, pType))
+                          |> fun typeDecls -> PrimitiveType.Struct (structName, typeDecls)
+        return pType
+      }
+
+    let extractLLVMTypesFromStructReg (reg:string) : State<string list, Environment> =
+      state {
+        let! curState = getState
+        let structs = curState.structs
+        let structName = (Regex.Match (reg, @"\w+\.(\w+)")).Groups.[1].Value // find the structName from for example "%struct.st"
+        let pType = structs
+                          |> List.find (fun (name, _) -> name = structName)
+                          |> snd
+                          |> List.map ( fun (_,_,_,llvmType) -> llvmType)
+        return pType
+      }
+
     let extractTypeListType (listType:string) : string =
-        let regex = Regex(@"^\[\d\sx\s(.+)\]")
+        let regex = Regex(@"^\[\d+\sx\s(.+)\]")
         regex.Match(listType).Groups.[1].Value
+
+    let extractSizeListType (listType:string) : int =
+        let regex = Regex(@"^\[(\d+)\sx\s.+\]")
+        int (regex.Match(listType).Groups.[1].Value)
+
+    let rec getReverseType (revType:string) : State<PrimitiveType, Environment> =
+        state {
+            let! curState = getState
+            let! flag = isFirstRun
+            if (flag) then // check if this is first run of codegen
+              return HasNoType
+            else
+              match revType with
+              | "i64" -> return SimplePrimitive Int
+              | "double" -> return SimplePrimitive Real
+              | "i1" -> return SimplePrimitive Bool
+              | _ when revType.StartsWith("[") -> // must be list type
+                let elementTypeLlvm = extractTypeListType revType
+                let! elementTypeTldr = getReverseType elementTypeLlvm
+                let size = extractSizeListType revType
+                return ListPrimitive (elementTypeTldr, size)
+              | _ -> 
+                let! res =extractStructTypeFromReg revType
+                return res
+        }
+
+    let rec calculateSize (dataType:string) : State<int, Environment> =
+        state {
+            let! curState = getState
+            let! flag = isFirstRun
+            if (flag) then // check if this is first run of codegen
+              return 0
+            else
+              match dataType with
+              | "i64" -> return 8
+              | "double" -> return 8
+              | "i1" -> return 1
+              | _ when dataType.StartsWith("[") -> // must be list type
+                let elementTypeLlvm = extractTypeListType dataType
+                let numElements = extractSizeListType dataType
+                let! elementSize = calculateSize elementTypeLlvm
+                return numElements * elementSize
+              | _ ->
+                let! llvmTypes = extractLLVMTypesFromStructReg dataType
+                let! test = collectAll calculateSize llvmTypes
+                return List.sum test
+        }
 
 //    let append (code:string) : State<unit, Environment> =
 //        state {
@@ -66,25 +158,12 @@ module CodeGen =
             return Map.find regName st.registers
         }
 
-    let checkStructs : State<bool, Environment> =
-        state {
-            let! st = getState
-            return if st.structs.Length > 0 then true else false
-        }
-
     let findStruct (strName:string) : State<CStruct, Environment> =
         state {
             let! st = getState
             let x = st.structs |> List.find (fun (name, types) -> strName = name)
             return x
-        }
-    
-    let argsStruct = PrimitiveType.Struct ("args",
-                         [
-                           ("argv", ListPrimitive (ListPrimitive (SimplePrimitive Primitive.Char, 128), 128)); // TODO: vi bliver nødt til at hard code længden af lister
-                           ("argc", SimplePrimitive Int)
-                         ])
-                      
+        }             
 
     let genLoad targetName sourceType sourceName : State<Value, Environment> =
         state {
@@ -181,7 +260,7 @@ module CodeGen =
           |> List.map findMainReceive
           |> List.filter Option.isSome // 'Some' means that the main receive was found
           |> List.head
-        | Receive (_, UserType "args", _) as mainReceive -> 
+        | Receive (_, PrimitiveType.Struct ("args",_), _) as mainReceive -> 
             Some mainReceive
         | _ -> None
 
@@ -206,7 +285,13 @@ module CodeGen =
         | k -> [k]
 
     let receiveLabelName (types:PrimitiveType) : string =
-        (sprintf "rec_%A" types).Replace(' ', '_').Replace('"', '_')//"
+        let replaceManyWith (input:string) (toReplace:char list) (replaceWith:char) : string =
+            toReplace
+            |> List.fold (fun acc c -> acc.Replace(c, replaceWith)) input
+        let stringWithUnderscores = replaceManyWith (sprintf "rec_%A" types) [' '; '"'; ','; '('; ')'; '['; ']'; ';';'\n'; '0'; '1'; '2'; '3'; '4'; '5'; '6'; '7'; '8'; '9'] '_'
+        List.ofSeq stringWithUnderscores
+        |> List.filter (fun c -> c <> '_')
+        |> String.Concat
 
     let rec calcReceiveJumps (asts:AST list) : (int * string) list =
         Seq.zip (Seq.unfold (fun x -> Some(x, x + 1)) 102) asts // start from 102. must be above 100. 101 is reserved for die message
@@ -217,20 +302,22 @@ module CodeGen =
             )
         |> List.ofSeq
 
-    let getReverseType (revType:string) : PrimitiveType =
-        match revType with
-        | "i64" -> SimplePrimitive Int
-        | "double" -> SimplePrimitive Real
-        | "i1" -> SimplePrimitive Bool
+
+
 
     let getReceiveID (msgGenType:string) (actorName:string) : State<int, Environment> =
         state {
             let! st = getState
-            let reverseType = getReverseType msgGenType
-            let res = st.actors.Item actorName
-                      |> List.find (fun (_, labelName) -> labelName = receiveLabelName reverseType)
-                      |> fst
-            return res
+            let! flag = isFirstRun
+            if (flag) then // check if this is first run of codegen
+              return 0
+            else
+              let! reverseType = getReverseType msgGenType
+              let actorMap = st.actors.Item actorName
+              let res = actorMap
+                        |> List.find (fun (_, labelName) -> labelName = receiveLabelName reverseType)
+                        |> fst
+              return res
             
         }
 
@@ -246,16 +333,7 @@ module CodeGen =
                 return res
         }
 
-    // applies a state workflow to all elements in list
-    let rec collectAll (p:('a ->State<'b,'c>)) (list:'a list) : State<'b list, 'c> =
-        state {
-            match list with
-            | [] -> return []
-            | x::xs ->
-                let! x1 = p x
-                let! xs1 = collectAll p xs
-                return x1 :: xs1
-              }
+
     
     let declareStruct (str:CStruct) : State<Value, Environment> = 
         state {
@@ -325,8 +403,8 @@ module CodeGen =
                             let fullString = sprintf "%s\n%s\n%s" code addrCode storeCode
                             return ("","",fullString)
                           | Identifier (simpel, str) ->
-                            let! flag = checkStructs
-                            if flag = false then return("","","") else
+                            let! flag = isFirstRun
+                            if flag then return("","","") else
                                 let! (toStoreName, toStoreType, code) = internalCodeGen rhs
                                 let toUpdateName = if baseId.StartsWith("%") then sprintf "%s" baseId
                                                    else sprintf "%%%s" baseId
@@ -385,7 +463,7 @@ module CodeGen =
 
               let receivesToGen = findAllReceives body // don't generate code for main receive
                                   |> List.filter (fun ast -> match ast with
-                                                             | Receive(_, UserType "args", _) -> false
+                                                             | Receive(_, PrimitiveType.Struct ("args",_), _) -> false
                                                              | _ -> true
                                                  )
               let receiveLabels = calcReceiveJumps receivesToGen
@@ -517,13 +595,11 @@ module CodeGen =
           }
         | Send (actorHandle, actorToSendTo, msg) -> 
           state {
-              printf "%s" actorHandle
-              printf "%s" actorToSendTo
               let! (msgGenName, msgGenType, msgGenCode) = internalCodeGen msg
               let! msgId = getReceiveID msgGenType actorToSendTo
-              let msgSize = match msgGenType with
-                            | "i64" -> "8"
-                            | "double" -> "8"
+
+              let! msgSizeInt = calculateSize msgGenType
+              let msgSize = string msgSizeInt
 
               // allocate a pointer to store the msg
               let! allocMsgReg = freshReg
@@ -554,15 +630,18 @@ module CodeGen =
         | Receive (msgName, msgType, body) -> 
           state {
               match msgType with
-              | UserType "args" ->
+              | PrimitiveType.Struct ("args",_) ->
                 let! genBody = internalCodeGen body
                 return genBody
-              | _ ->
-                let labelName = receiveLabelName msgType
-                let! (_,_,genBody) = internalCodeGen body
+              | _ -> // not main receive
 
                 // allocate pointer to receive argument
                 let! (allocatedMsgName,allocatedMsgType,allocatedMsgCode) = genAlloca msgName (genType msgType)
+
+                let labelName = receiveLabelName msgType
+                let! (_,_,genBody) = internalCodeGen body
+
+
 
                 // load msg struct
                 let! loadedMsg = freshReg
@@ -851,8 +930,8 @@ module CodeGen =
                             let fullString = sprintf "%s\n%s" addrCode loadedValueCode
                             return (loadedValueName,loadedValueType,fullString)
                           | Identifier (simpel, str) ->
-                              let! flag = checkStructs
-                              if flag = false then return("","","") else
+                              let! flag = isFirstRun
+                              if flag then return("","","") else
                                 let! toLoadType = findRegister toLoadName
                                 let i = toLoadType.Length
                                 let structType = toLoadType.Substring(8, i-(9))
@@ -1074,9 +1153,9 @@ module CodeGen =
 
     let codeGen (ast:AST) : string =
         let filledActors = findAllActorLabels ast
-        let ((_,_,_), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors})
+        let ((_,_,_), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = []; globalVars = []; actors = filledActors; isFirstRun = true})
         let struct1 = env.structs
-        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = env.structs; globalVars = []; actors = filledActors})
+        let ((_,_,fullString), env) = (runState (internalCodeGen ast) {regCounter = 0; genString =""; registers = Map.empty; structs = env.structs; globalVars = []; actors = filledActors; isFirstRun = false})
         let structs = (struct1 |> StructsToStr) + "\n"
         let globals = env.globalVars
                       |> List.map (fun (name,type',str) -> (name, type', str.Replace("\"", "\22")))

@@ -3,7 +3,8 @@ actor main := {
 
 		let x:[int] := [5];
 
-		let p:listPrinter := spawn listPrinter x;
+		let p:listPrinter := spawn listPrinter; 
+                send p x;
 
 		die;
 
@@ -12,7 +13,8 @@ actor main := {
 
 actor listPrinter := {
 	receive msg:[int] := {
-		printint(msg.[0]);
+                let k:int := msg.[0];
+		printint(k);
 
 		die;
 	};

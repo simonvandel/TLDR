@@ -1,17 +1,26 @@
 %mainfile: ../master.tex
 \chapter{Language}\label{part:design}
 
-This chapter will describe TLDR and explain the reasoning behind the choices made during the design of the language.
+This chapter will describe the design of TLDR and explain the reasoning behind the choices made during the design of the language.
 
 The chapter is split into four parts. The first part is the general properties and formal models. This includes the type system, general semantics and scope rules.
 
-After this three sections will cover the specifics of the language. The seperation is between expressions, statements, and actors. Even though actors are also statements, their importance for the characteristics of the language, deemed it worth of a seperate section.
+After this three sections will cover the specifics of the language. The seperation is between expressions, statements, and actors. Even though actors are also statements, their importance for the characteristics of the language, was deemed worthy of a seperate section.
 
-The different sections will contain explanations, which will mostly consist of an informal explanation of the construct, as well as the syntax and the formal semantics. Some construct will merit more discussion and explaination than others.
+The different sections will contain explanations, which will consist of both formal and informal syntax, semantics and type rules of the construct and why this was chosen. Some constructs will merit more discussion and explanation than others.
 
-The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where it is not deemed that EBNF will provide further clarification. 
+The syntactical constructs will be formally presented with EBNF, but it will be kept close to BNF where EBNF will not provide further clarification. 
 
-To describe the semantics, the formal notation will follow the example set by \cite{huttel2010transitions} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and we did not wish to mix the use of semantics.
+To describe the semantics, the formal notation will follow the example set by \cite{huttel2010transitions} for small step semantics. The choice of small step semantics is done, since big step semantics can not describe parallelism, and a uniform use of semantics was prefered.
+
+The formal semantic rules have the following convention of what specific symbols are used for:
+\begin{itemize}
+	\item $n \in Num$ - Numerals
+	\item $x \in Sym$ - Symbols
+	\item $a \in Aexp$ - Arithmetic expressions
+	\item $b \in Bexp$ - Boolean expressions
+	\item $S \in Stm$ - Statements	
+\end{itemize}
 
 The formal rules have three parts as illustrated in \cref{SS-semantics}
 
@@ -21,9 +30,13 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
                         {[CONCLUSION]}
                         {,[SIDE-CONDITION]}
 \end{align*}
-\caption{A desription of formal small-step semantics}
+\caption{A description of formal small-step semantics}
 \label{SS-semantics}
 \end{figure}
+
+The conclusion always consists of a transition arrow, \enquote{$\Rightarrow$}. On the left hand side, the initial code that the rule transitions from and the needed transition functions in their current state is placed inside angle brackets, for example $\Braket{S,env_s,env_a}$. On the right hand side of the transition arrow is the code that this can transition to and the possible updates in the transition functions inside angle brackets, for example $\Braket{S',env_s',env_a'}$. If any symbol is marked with an apostrophe, it has the possibility to be something different within the same set. This must be defined in either the premise or side condition.
+The premise is how something else must transition before the conclusion can be met. The side condition is other things that are side effects of the premise.
+The mapping of the transition functions are put inside square brackets, for instance \enquote{$env_s = [x \mapsto \underline{4},y \mapsto \underline{5}]$} denotes that $env_s$ is the transition function where x maps to the numeral \underline{4} and y to \underline{5}. A transition function can also be expanded using square brackets, for instance we can make a new transition function $env_s'$ that expands on $env_s$ so that it also maps z to the numeral \underline{6}; \enquote{$env_s' = env_s[z \mapsto \underline{6}]$}.
 
 \input{Design/generalLanguageProp.tex}
 \input{Design/Expressions/expressions.tex}
@@ -31,3 +44,4 @@ The formal rules have three parts as illustrated in \cref{SS-semantics}
 \input{Design/Actors/actors.tex}
 \input{Design/Semantik/semantik.tex}
 \input{Design/grammar.tex}
+\input{Design/semantics.tex}

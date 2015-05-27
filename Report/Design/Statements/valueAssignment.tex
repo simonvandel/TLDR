@@ -131,3 +131,19 @@ A concrete example:
                  {\Braket{\Tx := S,e} \Rightarrow_S e'}
 								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
+
+
+\begin{align*}
+\intertext{}
+&\inference[LET]{}
+                 {\Tenv \mathbin{\text{let}} \; e:T: ok}
+\\\\
+&\inference[VAR]{}
+                 {\Tenv \mathbin{\text{var}} \; e:T: ok}
+\\\\
+&\inference[LET1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv \mathbin{\text{let}} \; e_1 := e_2: ok}
+\\\\
+&\inference[VAR1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
+                 {\Tenv \mathbin{\text{var}} \; e_1 := e_2: ok}
+\end{align*}
