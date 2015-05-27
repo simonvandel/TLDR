@@ -4,23 +4,23 @@
 Here follows descriptions of the usage of actors in TLDR. This includes different principles, functionalities, syntax and semantics. But before we can discuss the use of actors in TLDR, we must first cover the semantics of the parallelism used.
 
 \subsubsection{Semantics of Parallelism}
-Parallelism is achieved through non-determinism in TLDR. The following four rules all have the same left side of the arrow in the conclusion meaning that for the saEnvement
+Parallelism is achieved through non-determinism in TLDR. The following four rules all have the same left side of the arrow in the conclusion meaning that for the statement
 
 \begin{align*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The left side of a parallel saEnvement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
+\intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_1$]{\Braket{S_1,sEnv_1,aEnv} \Rightarrow_S \Braket{S_1',sEnv_1',aEnv'}} 
                            {\Braket{S_1,sEnv_1,aEnv}|\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{S_1',sEnv_1',aEnv'}|\Braket{S_2,sEnv_2,aEnv'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The left side of a parallel saEnvement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
+\intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
 &\inference[$\text{PAR}_2$]{\Braket{S_1,sEnv_1,aEnv} \Rightarrow_S \Braket{sEnv_1',aEnv'}} 
                            {\Braket{S_1,sEnv_1,aEnv}|\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{S_2,sEnv_2,aEnv'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The right side of a parallel saEnvement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
+\intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
 &\inference[$\text{PAR}_3$]{\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{S_2',sEnv_2',aEnv'}} 
                            {\Braket{S_1,sEnv_1,aEnv}|\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{S_1,sEnv_1,aEnv'}|\Braket{S_2',sEnv_2',aEnv'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\intertext{The right side of a parallel saEnvement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
+\intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
 &\inference[$\text{PAR}_4$]{\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{sEnv_2',aEnv'}}
                            {\Braket{S_1,sEnv_1,aEnv}|\Braket{S_2,sEnv_2,aEnv} \Rightarrow_S \Braket{S_1,sEnv_1,aEnv'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,7 +107,7 @@ var MyActor:<identifier> := spawn <identifier> <message>;
 
 As can be seen above, there are four parts of the spawn functionality: an identifier, the keyword, the type of the actor, and optionally an initial message. Firstly, the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly.
 
-When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however doing it via a constructor would conflict with a central principle, since it would mean manipulating an actors saEnve directly.
+When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however doing it via a constructor would conflict with a central principle, since it would mean manipulating an actors state directly.
 
 The semantics of \enquote{spawn} is as follows:
 
@@ -165,7 +165,7 @@ actor <nameOfActor> := {
 }
 \end{lstlisting}
 
-In this example the receive-method defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message. This message is immutable no matter if it was mutable where it was sent from. This is done to discourage muaEnving messages.
+In this example the receive-method defines the way messages of the type \enquote{<typeOfMessage>} are handled. Within the functionality \enquote{<nameOfMessage>} is the reference to the message. This message is immutable no matter if it was mutable where it was sent from. This is done to discourage mutating messages.
 
 It is also the intention to include a \enquote{wait on <typeOfMessage>} keyword, which will cause the actor to not evaluate the next message in the message queue, but instead traverse the queue, until a message matching \enquote{<typeOfMessage} is found. Then that message is de-queued and evaluated. This has not been implemented in the current version of the TLDR compiler, but it will be a central part of supporting discrete simulations.
 
