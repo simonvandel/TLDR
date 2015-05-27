@@ -19,7 +19,7 @@ The two first conditions are rather trivial to check. But for the last condition
 \item The actors must keep track of and report their status.
 \end{itemize} 
 
-To illustrate the solution we first look at the first condition.
+To illustrate the solution we now look at the first condition.
 To keep track of which actors can communicate with other actors, there must be some way to group actors together. If we look to discrete simulations, each iteration illustrates an update for all objects and subsystems within a closed system. The initial idea was that one could create actors within actors. 
 
 The problem with this solution is that actors can see symbols declared in the same scope as themselves. This means that if they are declared within another actor they can also see the symbols declared within that actor, thereby violating one of the principles of MPI and defying the definition of an actor. There could be made a special case for this, but this could result in complicated rules that can be hard to remember; especially for people that are not used to programming.\\
