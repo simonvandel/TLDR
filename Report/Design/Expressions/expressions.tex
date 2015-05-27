@@ -602,7 +602,7 @@ A block is bit different than most other constructs in TLDR in that it is a stat
 &\inference[$\text{BLOCK}_{S2}$]{\Braket{S,e} \Rightarrow_S e'}
                                 {\Braket{\{S\},e} \Rightarrow_S e'}
 \end{align*}
-An expression by itself is in principle a statement in TLDR, for instance \enquote{2 + 2;}. Note that this is not allowed in an expression, for instance \enquote{2 + 2; + 4} is \emph{not} allowed. The statement will therefore not have value, but can give a block value if it is the last thing that is evaluated in it. If it is, the block takes the value of this expression thereby making the block an expression. So for instance the block:
+An expression by itself is in principle a statement in TLDR, for instance \enquote{2 + 2;}. Note that this is not allowed in an expression, for instance \enquote{2 + 2; + 4}. An expression which takes the form of a statement, will not have value, but can give a block value if it is the last thing that is evaluated in it. If it is, the block takes the value of this expression thereby making the block an expression. So for instance the block:
 \begin{lstlisting}
 {
   let a:int := 5;
