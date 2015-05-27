@@ -78,6 +78,8 @@ Expanding the amount of input parameters is a trivial task. All symbols are plac
 												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,\{x,y\}}]}
 \end{align*}
 
+There was an initial push towards allowing signature declarations to occur completely seperated from the function declarations, in order to make it even further resemble mathematical notation. This was not included, since the long term goal is type inherency, by which this signature would become obsolete. Furthermore, the arguement of moving the signature away to resemble mathematics, becomes invalid since any move that actually achieves this, would greatly decrease readability, and if the signature is kept close to the function, it might as well have been tied directly to the function. In the case of the function having an intuitive signature, the inclusion would not decrease readability by any significance, since it is not intertwined with the function declaration.\\
+
 Note that all rules are defined as constant bindings (\enquote{let}) but the exact same semantic goes for all variable bindings, since the allowance of reassignment is checked by the type system.
 
 \begin{grammar}
