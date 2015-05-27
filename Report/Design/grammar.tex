@@ -1,18 +1,25 @@
-\section{Grammar}
+\chapter*{Grammar}
 \setlength{\grammarindent}{100pt}
 /*--------- Identifiers ---------*/
 \begin{grammar}
-<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'boolean' | 'integer' | 'real' | 'char' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'bool' | 'integer' | 'real' | 'char' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
 \end{grammar}
 /*--------- Operators ---------*/
 \begin{grammar}
 <Pzerooperator> ::= '(' primitive ')'
+
 <Poneoperator> ::= '$\Tpot$' | '\#'
+
 <Ptwooperator> ::= '*' | '/' | '\%'
+
 <Pthreeoperator> ::= '+' | '-'
+
 <Pfouroperator> ::= '=' | '!=' | '<' | '<=' | '>' | '>='
+
 <Pfiveoperator> ::= 'NOT'
+
 <Psixoperator> ::= 'AND' | 'NAND'
+
 <Psevenoperator> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
 /*--------- Primitives ---------*/
@@ -140,7 +147,6 @@
  \alt <Integer>
  \alt <Real>
  \alt <Boolean>
- \alt <Identifier>
  \alt <Literals>
  \alt <Invocation>
 
@@ -153,7 +159,7 @@
  \alt <StructLiteral>
  \alt <Tuple>
 
-<StructLiteral> ::= '(' <Field> (';' <Field>)* ')'
+<StructLiteral> ::= '(' (<Reassignment>';')* ')' (':' <Identifier>)?
 
 <Invocation> ::= <Identifier> '(' (<Expression> (',' <Expression>)*)? ')'
 
@@ -197,7 +203,7 @@
 
 <TupleType> ::= '(' <Types> ')'
 
-<ListType> ::= '\[' <Types> '\]'
+<ListType> ::= '[' <Types> ']'
 \end{grammar}
 /*--------- List ---------*/
 \begin{grammar}
@@ -209,4 +215,11 @@
 /*--------- Tuple ---------*/
 \begin{grammar}
 <Tuple> ::= '(' <Expression> (',' <Expression>)+ ')'
+\end{grammar}
+/*--------- Comments ---------*/
+\begin{grammar}
+  <COMMENT\_LINE> ::= '//' (.* - (.* <NEW\_LINE> .*)) <NEW\_LINE>?
+\end{grammar}
+\begin{grammar}
+  <COMMENT\_BLOCK> ::= '/*' (.* - (.* '*/' .*)) '*/'
 \end{grammar}

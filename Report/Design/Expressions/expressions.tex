@@ -7,32 +7,32 @@ This section describes expressions. In The Language Described in This Report, ex
 First we look at the mathematical operators that can combine expressions.
 \setlength{\grammarindent}{100pt}
 \begin{grammar}
-<Expression> ::= <Expression> <PSEVENOPERATOR> <OP7>
+<Expression> ::= <Expression> <Psevenoperator> <OP6>
  \alt <OP7>
 
-<OP7> ::= <OP7> <PSIXOPERATOR> <OP6>
+<OP7> ::= <OP7> <Psixoperator> <OP6>
  \alt <OP6>
 
-<OP6> ::= <OP6> <PFIVEOPERATOR> <OP5>
+<OP6> ::= <Pfiveoperator> <OP6>
  \alt <OP5>
 
-<OP5> ::= <PFOUROPERATOR> <OP5>
+<OP5> ::= <OP5> <Pfouroperator> <OP4>
  \alt <OP4>
 
-<OP4> ::= <OP4> <PTHREEOPERATOR> <OP3>
+<OP4> ::= <OP4> <Pthreeoperator> <OP3>
  \alt <OP3>
 
-<OP3> ::= <OP3> <PTWOOPERATOR> <OP2>
+<OP3> ::= <OP3> <Ptwooperator> <OP2>
  \alt <OP2>
 
-<OP2> ::= <OP2> <PONEOPERATOR> <OP1>
+<OP2> ::= <OP2> <Poneoperator> <OP1>
  \alt <OP1>
 
-<OP1> ::= <PZEROOPERATOR> <OP1>
+<OP1> ::= <Pzerooperator> <OP1>
  \alt <OP0>
 
 <OP0> ::= <Operand>
- \alt '(' <Operation> ')'
+ \alt '(' <Expression> ')'
 
 <PZEROOPERATOR> ::= '(''int' | 'real' | 'char' | 'bool'')'
 
@@ -48,7 +48,7 @@ First we look at the mathematical operators that can combine expressions.
 
 <PSIXOPERATOR> ::= 'AND' | 'NAND'
 
-<PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
+<PSEVENOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
 The precedence of the operators are created in the grammar. Here, the parse tree will be created, such that the $\braket{PSEVENOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSEVENOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses, which resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
 \begin{center}
@@ -580,12 +580,12 @@ This syntax was decided since it is very close to mathematics, where functions t
  \alt <Id>
  \alt <Id> <Accessor>
 
-<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'int' | 'real' | 'char' | 'bool' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'bool' | 'integer' | 'real' | 'char' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
 
 <Accessor> ::= '.' <Identifier>
- \alt '.' '[' <Operation> ']'
+ \alt '.' '[' <Expression> ']'
 
-<Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
+<Primitive> ::= 'int' | 'real' | 'char' | 'bool'
 \end{grammar}
 
 \begin{align*}
@@ -625,7 +625,8 @@ This syntax was decided since it is very close to mathematics, where functions t
 
 \begin{grammar}
 <Literals> ::= <String>
- \alt <ListRange>
+ \alt <Char>
+ \alt <List>
  \alt <StructLiteral>
  \alt <Tuple>
 

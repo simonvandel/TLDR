@@ -83,22 +83,22 @@ Note that all rules are defined as constant bindings (\enquote{let}) but the exa
  \alt <Id>
  \alt <Id> <Accessor>
 
-<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'int' | 'real' | 'char' | 'bool' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me ')
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'bool' | 'integer' | 'real' | 'char' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
 
 <Ids> ::= <Identifier> (',' <Identifier>)*
 
 <Types> ::= <Type> ('->' <Type>)*
 
-<Type> ::= <PrimitiveType>
+<Type> ::= <Primitive>
  \alt <Identifier>
  \alt <ListType>
  \alt <TupleType>
 
 <TupleType> ::= '(' <Types> ')'
 
-<ListType> ::= '\{' <Types> '\}'
+<ListType> ::= '\[' <Types> '\]'
 
-<PrimitiveType> ::= 'int' | 'real' | 'char' | 'bool'
+<Primitive> ::= 'int' | 'real' | 'char' | 'bool'
 \end{grammar}
 
 As can be seen, values can either be an immutable constant, or a mutable variable.
@@ -138,7 +138,7 @@ A concrete example:
 As mentioned in \cref{subsec:initialisations}, variables can be assigned a value after their initialisation. This is only the case if the right hand side of the assignment is a value and of the same type as the variable.
 This is the grammar, specifying the syntax for assignment:
 \begin{grammar}
-<Assignment> ::= <Identifier>  ':=' <Expression>
+<Reassignment> ::= <Identifier>  ':=' <Expression>
 \end{grammar}
 Assignment uses the \enquote{:=} operator. The left hand side of the operator is the symbol to be assigned the value. The right hand side is an expression which is the value to be assigned.
 
