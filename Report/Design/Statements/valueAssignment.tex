@@ -148,13 +148,24 @@ Assignment uses the \enquote{:=} operator. The left hand side of the operator is
 
 These are the semantic rules for assignment:
 \begin{align*}
-&\inference[ASS]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
-                 {\Braket{\Tx := S,e} \Rightarrow_S \Braket{\Tx := S',e'}}
+&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
+                 {\Braket{\Tx := S,sEnv} \Rightarrow_S \Braket{\Tx := S',sEnv'}}
+\\\\
+&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_a v}
+                 {\Braket{\Tx := S,sEnv} \Rightarrow_S sEnv'}
+								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+\end{align*}
+
+\begin{align*}
+&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
+                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
+								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \\\\
 &\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
                  {\Braket{\Tx := S,e} \Rightarrow_S e'}
 								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
+
 
 This is the type rule for assignment:
 \begin{align*}

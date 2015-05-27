@@ -75,8 +75,13 @@ And a concrete example:
 \end{align*}
 
 \begin{align*}
-&\inference[$\text{LIST}$]{}
-                            {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
+&\inference[$\text{LIST}$]{x_n \Rightarrow_a x_n' & sEnv(l) = \Braket{S,\epsilon}}
+                            {\Braket{l:[T] := [x_n,..,x_m],sEnv} \Rightarrow_S \Braket{s:[T] := [x_n',..,x_m],sEnv[l \mapsto \Braket{S}]}}
+\\
+&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+\\\\
+&\inference[$\text{LIST}$]{x_n \Rightarrow_a v & sEnv(l) = \Braket{S,\epsilon}}
+                            {\Braket{l:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv[l \mapsto \Braket{S}]}}
 \\
 &{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
 \\\\
