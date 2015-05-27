@@ -27,11 +27,9 @@ Here follows the semantics for the for-loop statement:
 In the case that the list contains more than one element, the rule can be rewritten as x now being the head of the list, the statements of the block and the for-loop statement again with rest of the list.
 
 \begin{align*}
-\intertext{}
 &\inference[$\text{FORIN}_{1}$]{}
                        {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},env_S}}
 \\\\
-\intertext{}
 &\inference[$\text{FORIN}_{2}$]{}
                        {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_m;\{S\},env_S}}
 \end{align*}

@@ -81,7 +81,6 @@ As shown, the actor keyword precedes the definition, denoting the meaning of sai
 
 
 \begin{align*}
-\intertext{}
 &\inference[ACTOR]{}
                  {\Tenv \mathbin{\text{actor}} \; \Tt: ok}
 \end{align*}
@@ -122,7 +121,6 @@ The semantics of \enquote{spawn} is as follows:
 Type rules for \enquote{spawn}:
 
 \begin{align*}
-\intertext{}
 &\inference[SPAWN]{}
                  {\Tenv \mathbin{\text{spawn}} \; \Tt: \Tt}
 \end{align*}
@@ -149,7 +147,6 @@ The semantics of \enquote{send} is as follows:
 and the type rules for \enquote{send}:
 
 \begin{align*}
-\intertext{}
 &\inference[SEND]{\Tenv m : \Tt & \Tenv a: \Tt'}
                  {\Tenv \mathbin{\text{send}} \; \mathbin{\text{m}} \; \mathbin{\text{a}} : ok }
 \end{align*}
@@ -179,7 +176,6 @@ The semantics of \enquote{receive} is as follows:
 The type rules for \enquote{receive} are:
 
 \begin{align*}
-\intertext{}
 &\inference[RECEIVE]{\Tenv m : \Tt}
                  {\Tenv \mathbin{\text{recieve}} \; \mathbin{\text{m}} :\Tt : ok }
 \end{align*}
@@ -189,7 +185,6 @@ When an actor is no longer needed, it is possible to discard it with the \enquot
 When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost.
 Here is the semantic rule for \emph{die}:
 \begin{align*}
-\intertext{}
 &\inference[DIE]{}
                  {\Braket{{die;S}, aEnv, sEnv, at} \Rightarrow_S at}
 \end{align*}
@@ -220,7 +215,6 @@ When comparing actors, they are considered equal, if they are reference equals.
 Here are the type rules for comparison:
 
 \begin{align*}
-\intertext{}
 &\inference[ACTOR]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
                  {\Tenv e_1 = e_2: \Tbool}                 
 \end{align*}
