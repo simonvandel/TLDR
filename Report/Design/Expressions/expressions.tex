@@ -608,7 +608,10 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{grammar}
 
 \subsubsection{Block}
-Blocks are in TLDR are a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it, formally:
+Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it.
+
+\paragraph{Syntax}
+
 \begin{grammar}
 <Block> ::= '\{' <Body> '\}'
 
@@ -616,9 +619,14 @@ Blocks are in TLDR are a way to encapsulate statements, see \cref{sec:statements
  \alt <Body> ';'
  \alt <Statement>
 \end{grammar}
+
+
 Note the that the last semicolon in a block is optional.
 
-Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it is run. Formally described as:
+Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it is run.
+
+\paragraph{Semantics}
+
 \begin{align*}
 &\inference[$\text{BLOCK}_{S1}$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
                                 {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
@@ -669,10 +677,11 @@ The keyword \enquote{return} forces a quit from the block and gives the block th
                    {\Braket{\{\Treturn\},e} \Rightarrow_S \Braket{e}}
 \end{align*}
 If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
-\\\\
+
+\paragraph{Type Rules}
 
 \begin{align*}
-\intertext{}
+\intertext{Blocks have the type of the last statement run in the block.}
 &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
                  {\Tenv \{s_1; s_2\} : \Tt'}
 \end{align*}
