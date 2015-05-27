@@ -5,7 +5,7 @@ The compiler described in this report, is divided into three phases; parsing, an
 
 If a phase fails, the compilation stops and the error is reported to the user. If a phase succeeds, the next phase is started.
 
-\subsection{Parser}
+\subsection{Parsing}
 
 Upon start of compilation, the source file of a given program written in TLDR is loaded into memory. Then, the source code is parsed by the parser as will be described in \cref{sec:lexing/parsing}. The parser constructs an abstract syntax tree \cite{fisher}, containing the language constructions used in the TLDR source program, by forming tokens based on the grammatical rules described in \cref{part:design}.
 
