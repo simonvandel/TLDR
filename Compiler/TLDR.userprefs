@@ -1,17 +1,43 @@
-﻿<Properties StartupItem="Compiler/Compiler.fsproj">
+<Properties StartupItem="Compiler/Compiler.fsproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/AST.fs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Compiler/CodeGen.fs">
     <Files>
       <File FileName="Compiler/Utils.fs" Line="1" Column="1" />
       <File FileName="Tests/AssemblyInfo.fs" Line="1" Column="1" />
       <File FileName="Tests/TestUtils.fs" Line="1" Column="1" />
-      <File FileName="Tests/Parser.fs" Line="1" Column="1" />
+      <File FileName="Tests/Parser.fs" Line="56" Column="5" />
       <File FileName="Compiler/Parser.fs" Line="1" Column="1" />
-      <File FileName="Compiler/AST.fs" Line="278" Column="1" />
-      <File FileName="Compiler/Program.fs" Line="1" Column="1" />
+      <File FileName="Compiler/AST.fs" Line="281" Column="35" />
+      <File FileName="Compiler/Program.fs" Line="22" Column="48" />
       <File FileName="Compiler/AssemblyInfo.fs" Line="1" Column="1" />
+      <File FileName="Compiler/AnalysisUtils.fs" Line="1" Column="1" />
+      <File FileName="Compiler/CommonTypes.fs" Line="1" Column="1" />
+      <File FileName="Tests/TypeChecker.fs" Line="1" Column="1" />
+      <File FileName="Tests/CheckUsedBeforeDecl.fs" Line="1" Column="1" />
+      <File FileName="Compiler/Analysis.fs" Line="363" Column="1" />
       <File FileName="Compiler/TypeChecker.fs" Line="1" Column="1" />
+      <File FileName="Compiler/CodeGen.fs" Line="759" Column="35" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="TLDR" expanded="True">
+            <Node name="Compiler" expanded="True">
+              <Node name="CodeGen.fs" selected="True" />
+            </Node>
+            <Node name="Tests" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+      <Pad Id="MonoDevelop.NUnit.TestPad">
+        <State name="__root__">
+          <Node name="TLDR" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
@@ -20,7 +46,7 @@
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="626" column="1" />
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="630" column="1" />
       <Breakpoint file="/Users/simon/Documents/P4/Compiler/vSprog/fsharpTry/CodeGen.fs" line="636" column="1" />
-      <Breakpoint file="/home/zander/TLDR/Compiler/Compiler/CodeGen.fs" line="318" column="49" />
+      <Breakpoint file="/Users/simon/Documents/P4/Compiler/Compiler/CodeGen.fs" line="754" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

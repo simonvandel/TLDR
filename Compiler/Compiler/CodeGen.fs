@@ -612,7 +612,7 @@ module CodeGen =
               let! bitcastedPtrReg = freshReg
               let! (bitcastedPtrName, bitcastedPtrType, bitcastedPtrCode) = newRegister bitcastedPtrReg "i8*" (sprintf "bitcast %s %s to %s" allocMsgType allocMsgName "i8*")
 
-              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s, i64 %d, i8* %s, i64 %s)" actorToSendTo msgId bitcastedPtrName msgSize 
+              let code = sprintf "call void @actor_send_msg(i64 %%_spawned_%s_%s, i64 %d, i8* %s, i64 %s)" actorToSendTo actorHandle msgId bitcastedPtrName msgSize 
               let fullstring = sprintf "%s\n%s\n%s\n%s\n%s" msgGenCode allocMsgCode storeMsgCode bitcastedPtrCode code
               return ("","", fullstring)
           }
@@ -620,12 +620,32 @@ module CodeGen =
           state {
               match rhs with
                   | Some (actorName, initMsg) ->
-                      let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
-                      let tempReg = sprintf "%%_spawned_%s" actorName
-                      let! reg = newRegister tempReg "i64" code
-                      return reg
+                      match initMsg with
+                      | None ->
+                          let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
+                          let tempReg = sprintf "%%_spawned_%s_%s" actorName (match lvalue.identity with
+                                                                              | SimpleIdentifier str -> str
+                                                                              | IdentifierAccessor (baseId, _) -> baseId)
+                          let! reg = newRegister tempReg "i64" code
+                          return reg
+                      | Some a ->
+                          let code = sprintf "call i64 @spawn_actor(i8* (i8*)* bitcast (i8* ()* @_actor_%s to i8* (i8*)*), i8* null)" actorName
+                          let tempReg = sprintf "%%_spawned_%s_%s" actorName (match lvalue.identity with
+                                                                              | SimpleIdentifier str -> str
+                                                                              | IdentifierAccessor (baseId, _) -> baseId)
+                          let! (regName, regType, regCode) = newRegister tempReg "i64" code
+
+                          let actorHandle = match lvalue.identity with
+                                            | SimpleIdentifier str -> str
+                          let sendAST = Send(actorHandle, actorName, a)
+                          let! (_,_,sendCode) = internalCodeGen sendAST
+
+                          let fullstring = sprintf "%s\n%s" regCode sendCode
+
+                          return (regName, regType, fullstring)
+                          //return failwith "not handled"
                   | None ->
-                      return failwith "This should be reached"
+                      return failwith "This should not be reached"
           }
         | Receive (msgName, msgType, body) -> 
           state {

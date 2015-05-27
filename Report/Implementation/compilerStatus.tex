@@ -1,6 +1,6 @@
 \section{Compiler Status}\label{sec:compilerStatus}
 
-The compiler described in this report does not fully implement TLDR. This section lists which parts of TLDR is implemented in the compiler, and which parts are not.
+The compiler described in this report does not fully implement TLDR. This section lists which parts of TLDR is implemented in the compiler, and which parts are not. In addition to that, it presents a sample program written in TLDR.
 
 \sinote{ikke helt sikker på alt er noteret}
 
@@ -35,3 +35,75 @@ Not implemented:
 \item Send/receive of structs/tuples
 \item Arguments from command line
 \end{itemize}
+
+\subsection{Sample Program}
+
+The following program demonstrates addition of ints and reals, output of results, and how interaction between actors occur. The output of the program is:
+
+\begin{verbatim}
+5.00000000000000000000
+150
+\end{verbatim}
+
+\begin{lstlisting}[style = tldr]
+actor main := {
+  receive arguments:args := {
+    let msg1:realInputMsg := (x := 2.5; y := 2.5;);
+    let msg2:intInputMsg := (x := 50; y := 100;);
+    let plusser:plusActor := spawn plusActor;
+    let list:[int] := [0];
+    send plusser msg1;
+    send plusser msg2;
+    die;
+  };
+};
+
+actor plusActor := {
+  var messagesReceived:int := 0;
+  let messagesToReceive:int := 2;
+
+  receive rMsg:realInputMsg := {
+    messagesReceived := messagesReceived + 1;
+    let x1:real := rMsg.x;
+    let y1:real := rMsg.y;
+    let realRes:real := x1 + y1;
+    let printer1:printActor := spawn printActor realRes;
+    if(messagesReceived = messagesToReceive) { 
+      die;
+    };
+  };
+
+  receive iMsg:intInputMsg := {
+    messagesReceived := messagesReceived + 1;
+    let x2:int := iMsg.x;
+    let y2:int := iMsg.y;
+    let intRes:int := x2 + y2;
+    let printer2:printActor := spawn printActor intRes;
+    if(messagesReceived = messagesToReceive) { 
+      die;
+    };
+  };
+};
+
+actor printActor := {
+  receive intMsg:int := {
+    printint(intMsg);
+    die;
+  };
+
+  receive realMsg:real := {
+    printreal(realMsg);
+    die;
+  };
+};
+
+struct realInputMsg := {
+  x:real;
+  y:real;
+};
+
+struct intInputMsg := {
+  x:int;
+  y:int;
+};
+\end{lstlisting}

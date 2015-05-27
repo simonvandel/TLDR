@@ -278,7 +278,7 @@ module AST =
             let body = toAST (root.Children.Item 1)
             Receive (msgName, msgType, body)
         | "ForIn" ->
-            let counterName = (getChildByIndexes [0;0;0] root).Symbol.Value
+            let counterName = (getChildByIndexes [0;0] root).Symbol.Value
             let list = toAST (root.Children.Item 1)
             let body = toAST (root.Children.Item 2)
             ForIn (counterName, list, body)
