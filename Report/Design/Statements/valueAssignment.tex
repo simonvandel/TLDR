@@ -21,29 +21,29 @@ If a symbol is a constant or variable, the right hand side of the \enquote{:=} i
 
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-A1}$]{\Braket{x,sEnv} \Rightarrow_A \Braket{x',sEnv}}
-                         {\Braket{\Tlet \Tat := x,sEnv} \Rightarrow_S \Braket{\Tlet \Tat := x',sEnv}}
+                         {\Braket{\Tlet \Ta := x,sEnv} \Rightarrow_S \Braket{\Tlet \Ta := x',sEnv}}
 \\\\
 &\inference[$\text{INIT}_{SYM-A2}$]{\Braket{x,sEnv} \Rightarrow_A v}
-                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
+                         {\Braket{\Tlet \Ta := x,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+&{\Twhere sEnv' = env_{s}[\Ta \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
 
 The value the expression evaluates to is converted, via the $\mathcal{N}$ function, to the numeral and the symbol is assigned this as within a block. In this way an invocation of the symbol will evaluate the block and the same value each time. If the right hand side is evaluated to a boolean the formal semantics are described as follows:
 
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-BOOL}$]{\Braket{b,sEnv} \Rightarrow_B \Braket{b',sEnv}}
-                         {\Braket{\Tlet \Tat := b,sEnv} \Rightarrow_S \Braket{\Tlet \Tat := b',sEnv}}
+                         {\Braket{\Tlet \Ta := b,sEnv} \Rightarrow_S \Braket{\Tlet \Ta := b',sEnv}}
 \\\\
 &\inference[$\text{INIT}_{SYM-\top}$]{\Braket{b,sEnv} \Rightarrow_B \top}
-                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
+                         {\Braket{\Tlet \Ta := b,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Ttrue\},\epsilon}]}
+&{\Twhere sEnv' = sEnv[\Ta \mapsto \Braket{\{\Ttrue\},\epsilon}]}
 \\\\
 &\inference[$\text{INIT}_{SYM-\bot}$]{\Braket{b,sEnv} \Rightarrow_B \bot}
-                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
+                         {\Braket{\Tlet \Ta := b,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Tfalse\},\epsilon}]}
+&{\Twhere sEnv' = sEnv[\Ta \mapsto \Braket{\{\Tfalse\},\epsilon}]}
 \end{align*}
 
 Again, the resulting value is placed as the statement \enquote{true} or \enquote{false} inside a block, thereby always evaluating to this value.
@@ -65,7 +65,6 @@ If the symbol is a function and takes input parameters these are placed as forma
                          {\Braket{\Tlet \Tx(x) := \{S\},sEnv} \Rightarrow_S sEnv'}
 												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,y}]}
 \end{align*}
-j
 Expanding the amount of input parameters is a trivial task. All symbols are placed in the set in the order they appear in the code. 
 
 \begin{align*}
@@ -142,36 +141,83 @@ This is the grammar, specifying the syntax for assignment:
 \end{grammar}
 Assignment uses the \enquote{:=} operator. The left hand side of the operator is the symbol to be assigned the value. The right hand side is an expression which is the value to be assigned.
 
-These are the semantic rules for assignment:
+Since space is not allocated in semantics but the functions merely maps symbols to values the semantic rules for assignment are practically the same as initialisations:
 \begin{align*}
-&\inference[$\text{ASS}_{SYM-A1}$]{\Braket{x,env_s} \Rightarrow_A \Braket{x',env_s}}
-                         {\Braket{\Tat := x,env_s} \Rightarrow_S \Braket{\Tat := x',env_s}}
+&\inference[$\text{ASS}_{SYM-A1}$]{\Braket{x,sEnv} \Rightarrow_A \Braket{x',sEnv}}
+                         {\Braket{\Ta := x,sEnv} \Rightarrow_S \Braket{\Ta := x',sEnv}}
 \\\\
-&\inference[$\text{ASS}_{SYM-A2}$]{\Braket{x,env_s} \Rightarrow_A v}
-                         {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
+&\inference[$\text{ASS}_{SYM-A2}$]{\Braket{x,sEnv} \Rightarrow_A v}
+                         {\Braket{\Ta := x,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+&{\Twhere sEnv' = env_{s}[\Ta \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
 
 \begin{align*}
-&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
-                 {\Braket{\Tx := S,sEnv} \Rightarrow_S \Braket{\Tx := S',sEnv'}}
+&\inference[$\text{ASS}_{SYM-BOOL}$]{\Braket{b,sEnv} \Rightarrow_B \Braket{b',sEnv}}
+                         {\Braket{\Ta := b,sEnv} \Rightarrow_S \Braket{\Ta := b',sEnv}}
 \\\\
-&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_a v}
-                 {\Braket{\Tx := S,sEnv} \Rightarrow_S sEnv'}
-								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+&\inference[$\text{ASS}_{SYM-\top}$]{\Braket{b,sEnv} \Rightarrow_B \top}
+                         {\Braket{\Ta := b,sEnv} \Rightarrow_S sEnv'}
+\\
+&{\Twhere sEnv' = sEnv[\Ta \mapsto \Braket{\{\Ttrue\},\epsilon}]}
+\\\\
+&\inference[$\text{ASS}_{SYM-\bot}$]{\Braket{b,sEnv} \Rightarrow_B \bot}
+                         {\Braket{\Ta := b,sEnv} \Rightarrow_S sEnv'}
+\\
+&{\Twhere sEnv' = sEnv[\Ta \mapsto \Braket{\{\Tfalse\},\epsilon}]}
 \end{align*}
 
 \begin{align*}
-&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
-                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
-								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
-\\\\
-&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
-                 {\Braket{\Tx := S,e} \Rightarrow_S e'}
-								 {, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+&\inference[$\text{INIT}_{FUNC1}$]{}
+                         {\Braket{\Tx() := \{S\},sEnv} \Rightarrow_S sEnv'}
+												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,\epsilon}]}
 \end{align*}
 
+\begin{align*}
+&\inference[$\text{INIT}_{FUNC2}$]{}
+                         {\Braket{\Tx(x) := \{S\},sEnv} \Rightarrow_S sEnv'}
+												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,y}]}
+\end{align*} 
+
+\begin{align*}
+&\inference[$\text{INIT}_{FUNC3}$]{}
+                         {\Braket{\Tx(x,y) := \{S\};,sEnv} \Rightarrow_S sEnv'}
+												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,\{x,y\}}]}
+\end{align*}
+
+%\begin{align*}
+%&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
+                 %{\Braket{\Tx := S,sEnv} \Rightarrow_S \Braket{\Tx := S',sEnv'}}
+%\\\\
+%&\inference[ASS]{\Braket{S,sEnv} \Rightarrow_a v}
+                 %{\Braket{\Tx := S,sEnv} \Rightarrow_S sEnv'}
+								 %{, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+%\end{align*}
+%
+%\begin{align*}
+%&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
+                 %{\Braket{\Tx := S,e} \Rightarrow_S e'}
+								 %{, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+%\\\\
+%&\inference[ASS]{\Braket{S,e} \Rightarrow_S v}
+                 %{\Braket{\Tx := S,e} \Rightarrow_S e'}
+								 %{, e' = e[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+%\end{align*}
+%
+%\begin{align*}
+%&\inference[$\text{ASS}_{SYM-BOOL}$]{\Braket{b,sEnv} \Rightarrow_B \Braket{b',sEnv}}
+                         %{\Braket{\Tat := b,sEnv} \Rightarrow_S \Braket{\Tat := b',sEnv}}
+%\\\\
+%&\inference[$\text{ASS}_{SYM-\top}$]{\Braket{b,sEnv} \Rightarrow_B \top}
+                         %{\Braket{\Tx := x,sEnv} \Rightarrow_S sEnv'}
+%\\
+%&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Ttrue\},\epsilon}]}
+%\\\\
+%&\inference[$\text{ASS}_{SYM-\bot}$]{\Braket{b,sEnv} \Rightarrow_B \bot}
+                         %{\Braket{\Tx := x,sEnv} \Rightarrow_S sEnv'}
+%\\
+%&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Tfalse\},\epsilon}]}
+%\end{align*}
 
 This is the type rule for assignment:
 \begin{align*}

@@ -69,22 +69,22 @@ And a concrete example:
 \\
 &{\Braket{\Tlet \Ta.f := (S_2),sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \end{align*}
-
-\begin{align*}
-&\inference[$\text{LIST}$]{x_n \Rightarrow_a x_n' & sEnv(l) = \Braket{S,\epsilon}}
-                            {\Braket{l:[T] := [x_n,..,x_m],sEnv} \Rightarrow_S \Braket{s:[T] := [x_n',..,x_m],sEnv[l \mapsto \Braket{S}]}}
-\\
-&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
-\\\\
-&\inference[$\text{LIST}$]{x_n \Rightarrow_a v & sEnv(l) = \Braket{S,\epsilon}}
-                            {\Braket{l:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv[l \mapsto \Braket{S}]}}
-\\
-&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
-\\\\
-&\inference[$\text{TUPLE}$]{}
-                           {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
-\\
-&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+%
+%\begin{align*}
+%&\inference[$\text{LIST}$]{x_n \Rightarrow_a x_n' & sEnv(l) = \Braket{S,\epsilon}}
+                            %{\Braket{l:[T] := [x_n,..,x_m],sEnv} \Rightarrow_S \Braket{s:[T] := [x_n',..,x_m],sEnv[l \mapsto \Braket{S}]}}
+%\\
+%&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+%\\\\
+%&\inference[$\text{LIST}$]{x_n \Rightarrow_a v & sEnv(l) = \Braket{S,\epsilon}}
+                            %{\Braket{l:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv[l \mapsto \Braket{S}]}}
+%\\
+%&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
+%\\\\
+%&\inference[$\text{TUPLE}$]{}
+                           %{\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
+%\\
+%&{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
 \end{align*}
 
 \begin{align*}
