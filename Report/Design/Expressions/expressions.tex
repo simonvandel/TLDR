@@ -494,21 +494,30 @@ When creating expressions one also needs operands to use in the operators. The o
 Some of these operands can evaluate something that is not either an Integer, Real or Boolean, for instance lists, actors, structures. This means that, due to the type system seen in \cref{subsec:operators}, the operand cannot be an argument to any operand. This however does not mean that it cannot be an expression, they can because all operands by themselves also have value and are an expression.
 
 \subsubsection{Integer}
-The integer is a literal integer that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 2;$}, \enquote{2} is an integer literal. All integers are interpreted as decimal numbers and can be any combination of the symbols 0-9 in any length. They can be either positive or negative, illustrated with the symbol \enquote{-}, but may not start with a 0 unless it is only the number \enquote{0}. This is done since readability is weighted higher than writeability, see \cref{analsum}, and it was assessed for instance \enquote{00023} is not very readable compared to \enquote{23}. The formal syntax is described as:
+The integer is a literal integer that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 2;$}, \enquote{2} is an integer literal. All integers are interpreted as decimal numbers and can be any combination of the symbols 0-9 in any length. They can be either positive or negative, illustrated with the symbol \enquote{-}, but may not start with a 0 unless it is only the number \enquote{0}. This is done since readability is weighted higher than writeability, see \cref{analsum}, and it was assessed for instance \enquote{00023} is not very readable compared to \enquote{23}. 
+
+\paragraph{Syntax}
+
 \begin{grammar}
 <Integer> ::= '-'?[1-9][0-9]* | '0'
 \end{grammar}
 
-\begin{align*}
-&\inference[NUM]{\Tenv n:\Tint}
-                 {\Tenv n: \Tint} 
-\end{align*}
+\paragraph{Semantics}
+
 
 \begin{align*}
-\intertext{The num rule is mapping numerals to numbers}
+\intertext{The num rule is mapping numerals to numbers.}
 &\inference[NUM]{}
                   {e \vdash n \Rightarrow_A v}
                   {, \mathcal{N}(n) = v}
+\end{align*}
+
+\paragraph{Type Rules}
+
+\begin{align*}
+\intertext{The type of a integer literal is simply $int$}
+&\inference[NUM]{\Tenv n:\Tint}
+                 {\Tenv n: \Tint} 
 \end{align*}
 
 \subsubsection{Real}
