@@ -504,6 +504,13 @@ The integer is a literal integer that is written directly in the code, for insta
                  {\Tenv n: \Tint} 
 \end{align*}
 
+\begin{align*}
+\intertext{The num rule is mapping numerals to numbers}
+&\inference[NUM]{}
+                  {e \vdash n \Rightarrow_A v}
+                  {, \mathcal{N}(n) = v}
+\end{align*}
+
 \subsubsection{Real}
 The real is a literal real that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 4.3;$}, \enquote{4.3} is an real literal. All real are interpreted as decimal numbers and are an integer with the same rule as integers followed by a \enquote{.} and then any combination of the symbols 0-9. They can like integers be either positive or negative, illustrated with the symbol \enquote{-}. There must be at least one number both before and after the \enquote{.}. This means that neither \enquote{.1} and \enquote{1.} are allowed. This is done since it was assessed that for instance \enquote{-0.1} is more readable than \enquote{-.1}. Formally described as:
 \begin{grammar}
@@ -513,6 +520,14 @@ The real is a literal real that is written directly in the code, for instance in
 \begin{align*}
 &\inference[REAL]{\Tenv n_1:\Tint & \Tenv n_2:\Tint}
                  {\Tenv n_1.n_2: \Treal}
+\end{align*}
+
+
+\begin{align*}
+\intertext{The real rule is mapping numerals to reals}
+&\inference[REAL]{}
+                  {e \vdash n \Rightarrow_A v}
+                  {, \mathcal{R}(n) = v}
 \end{align*}
 
 \subsubsection{Boolean}
@@ -625,15 +640,6 @@ If the block is not an expression we say it has the return type \enquote{unit}. 
 \intertext{}
 &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
                  {\Tenv \{s_1; s_2\} : \Tt'}
-\end{align*}
-
-\subsubsection{Num}
-
-\begin{align*}
-\intertext{The num rule is mapping numerals to numbers}
-&\inference[NUM]{}
-                  {e \vdash n \Rightarrow_A v}
-                  {, \mathcal{N}(n) = v}
 \end{align*}
 
 \subsubsection{Invocations}
