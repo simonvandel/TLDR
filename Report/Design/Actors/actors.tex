@@ -79,6 +79,13 @@ As shown, the actor keyword precedes the definition, denoting the meaning of sai
                            {\Braket{\Tactor \Tact := \{S\}, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
 \end{align*}
 
+
+\begin{align*}
+\intertext{}
+&\inference[ACTOR]{}
+                 {\Tenv \mathbin{\text{actor}} \; \Tt: ok}
+\end{align*}
+
 \subsubsection{Basic Actor Functionality}
 \label{subsubsec:BasicActorFunctionality}
 There are four basic functionalities for actors: \enquote{spawn}, \enquote{die}, \enquote{send}, and \enquote{receive}, which are all used through keywords. It was desired to keep the syntax of these functionalities different from the syntax of functions. Even though they behave much like functions, taking input and giving output, they are more powerful. For example, regular functions cannot contain a type as a parameter, but the \enquote{spawn} functionality does this. Due to this and more differences, which follow below, it was decided to separate them syntactically.
