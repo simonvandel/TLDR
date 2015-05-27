@@ -98,33 +98,21 @@ From the start of the language design, TLDR was supposed to have type inference,
 
 Types not being a known artifact in previously mentioned sciences and mathematics, a technique known from the functional paradigm of separating the type signature from the function definition, as shown here \cref{typesignature}, was chosen. In this signature, the function can take any number of arguments and return either a single typed symbol or a new function. The input and output is differenciated by the amount of input parameters (arg1, arg1, ... ,argN) where N would be the amount of inputs and M - N would be the size of the output.
 
-\begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[label = typesignature]
 functionName(arg1, arg2, ... ,argN) :: arg1Type -> arg2Type -> ... -> argMType
 \end{lstlisting}
-\caption{}
-\label{typesignature}
-\end{figure}
 
 If the user wants to use functions instead of single typed symbols he or she simply puts these in parentheses as seen in \cref{typesignatureexample0}. Here the function, \enquote{f}, takes another function that maps an int to an int and maps this to a real.
 
-\begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[label = typesignatureexample0]
   f(x) : (int -> int) -> real
 \end{lstlisting}
-\caption{}
-\label{typesignatureexample0}
-\end{figure}
 
 This can be nested in as many levels as the user desires, as illustrated in \cref{typesignatureexample1}, where the function takes a function typed the same way as in \cref{typesignatureexample0} and maps this to a list of chars. Note that both \cref{typesignatureexample0} and \cref{typesignatureexample1} still only take one argument (x) since this is a function and can be used as such in the body.
 
-\begin{figure}
-\begin{lstlisting}
+\begin{lstlisting}[label = typesignatureexample1 ]
   f(x) : ((int -> int) -> real) -> [char]
 \end{lstlisting}
-\caption{}
-\label{typesignatureexample1}
-\end{figure}
 
 \paragraph{Implicit Unit}
 This approach posed a problem with the concept of \enquote{unit}. This represents the non-existing value, for the type system. It means that something does not have a value and using it in any context does not make sense. For instance when a function returns unit i.e. nothing, it cannot be assigned to anything. The need for explicitness resides in that The Language Described in This Report has functions as, what is called, \enquote{first class citizens}, meaning that functions can be used as arguments and essentially are treated in the same way as other symbols such as integers, structs etc. Here, the language becomes ambigious with implicit unit, i.e. the user not needing to explicitly tell when a function returns unit. For instance in \cref{typesignatureexample0} the programmer would not be able to tell whether the function takes a function that takes an int and returns an int or returns a function that goes from int to unit since the syntax is the same.
