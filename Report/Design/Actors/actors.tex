@@ -176,7 +176,13 @@ The type rules for \enquote{receive} are:
 
 When an actor is no longer needed, it is possible to discard it with the \enquote{die}-keyword. In other languages, using the actor model, \enquote{die}, or similar functionality, is usually called by the parent of the actor, that is, the actor that spawned the actor. In TLDR however, \enquote{die} can only be called by the actor itself. This is done in order to keep the principle of only interacting with actors through messages, which is a simpler way of handling actors in TLDR, since the language does not have a built-in supervisor functionality as described in \cref{actSupervisors}. 
 
-When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost. 
+When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost.
+Here is the semantic rule for \emph{die}:
+\begin{align*}
+\intertext{}
+&\inference[DIE]{}
+                 {\Braket{{die;S}, aEnv, sEnv, at} \Rightarrow_S at}
+\end{align*}
 
 \subsubsection{Actor References}
 
