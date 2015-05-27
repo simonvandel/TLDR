@@ -1,13 +1,15 @@
 \subsection{Initialisations}\label{subsec:initialisations}
-A new symbol in TLDR can be created via an initialisation. A symbol always maps to at least one statement, i.e. a symbol can not map to nothing. This means that the environment can never map a symbol to the empty set $\epsilon$. For that reason the initialisation always include an assignment with statements and/or expressions. Since symbols only can map to statements a symbol can only have a value when evaluated.
+A new symbol in TLDR can be created via an initialisation. A symbol always maps to at least one statement, i.e. a symbol can not map to nothing. This means that the environment can never map a symbol to the empty set $\epsilon$. For that reason the initialisation always include an assignment with statements and/or expressions. Since symbols can only map statements, a symbol can only have a value when evaluated.
 
 In traditional mathematical notation, the \enquote{=} symbol is also sometimes used to let certain symbols represent a more complex meaning, in order to simplify something, such as an equation or a function. When used like this, often mathematicians put the word \enquote{let} in front of a statement to denote that it is a definition. We wanted to follow this construct as well letting immutable assignment be denoted in this fashion, since they are comparable to definitions. 
 
-But since we wanted assignments, be it mutable or immutable, to have a similarities, we chose \enquote{:=} for all assignments. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{:=} was chosen, since it is a known symbol from other languages. The asymmetry of the \enquote{:=} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
+But since we wanted assignments, be it mutable or immutable, to have similarities, we chose \enquote{:=} for all assignments. This concept is less known in traditional mathematics, but is widely used in computational science. In the historically significant languages such as Fortran and C, the \enquote{=} symbol, was used for this. However, since we wish to keep that symbol closer to its original meaning, we needed something else. \enquote{:=} was chosen, since it is a known symbol from other languages. The asymmetry of the \enquote{:=} symbol also illustrates that it matters which side of the symbol a variable is on, as opposed to the \enquote{=} symbol.
 
-When assigning statements we differentiates between functions and constants/variables. Whether the symbol is constant or not and whether or not it is a function is defined at initialisation. Whether it is a constant or variable binding is denoted with the keywords \enquote{let}, a constant binding, and \enquote{var}, a variable binding. If the statements are bound constant they can never be changed. This is useful, especially in mathematics where many things both functions and constants never changes. But for things like results, state and generic behaviour a variable binding is useful.
+When assigning statements we differentiate between functions and constants/variables and whether the symbol is constant or not and whether or not it is a function is defined at initialisation. Whether it is a constant or variable binding it is denoted with the keywords \enquote{let} for a constant binding, and \enquote{var} for a variable binding. If the statements are bound constant they can never be changed. This is useful, especially in mathematics where many things both functions and constants never changes. But for things like results, state and generic behaviour for a variable binding is useful.
 
-Whether a symbol is a function or not is denoted via parentheses, parentheses meaning that it is a function and no parentheses meaning that it is not. Note that a symbol can have empty parentheses and still be a function meaning that there is a difference between \enquote{let a():int := \dots} and \enquote{let a:int := \dots}. The formal syntax is as follows: 
+Whether a symbol is a function or not is denoted via parentheses, parentheses meaning that it is a function and no parentheses meaning that it is not. Note that a symbol can have empty parentheses and still be a function meaning that there is a difference between \enquote{let a():int := \dots} and \enquote{let a:int := \dots}. 
+
+\paragraph{Syntax}
 
 \begin{grammar}
 <Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) ':=' <Expression>
@@ -16,7 +18,11 @@ Whether a symbol is a function or not is denoted via parentheses, parentheses me
 
 <SymDecl> -> <Identifier> ':' <Types>
 \end{grammar}
-If a symbol is a constant or variable the right hand side of the \enquote{:=} is evaluated and the symbol is assigned the simplest statement that will always evaluate to the value of the evaluation. If the right hand side is evaluated to a number it is formally described as follows:
+
+\paragraph{Semantics}
+
+If a symbol is a constant or variable, the right hand side of the \enquote{:=} is evaluated and the symbol is assigned the simplest statement that will always evaluate to the value of the evaluation. If the right hand side is evaluated to a number it is formally described as follows:
+
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-A1}$]{\Braket{x,env_s} \Rightarrow_A \Braket{x',env_s}}
                          {\Braket{\Tlet \Tat := x,env_s} \Rightarrow_S \Braket{\Tlet \Tat := x',env_s}}
@@ -26,7 +32,9 @@ If a symbol is a constant or variable the right hand side of the \enquote{:=} is
 \\
 &{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
+
 The value the expression evaluates is converted via the $\mathcal{N}$ to the numeral and the symbol is assigned this as within a block. In this way an invocation of the symbol will evaluate the block and the same value each time. If the right hand side is evaluated to a boolean the formal semantics are described as follows:
+
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-BOOL}$]{\Braket{b,env_s} \Rightarrow_B \Braket{b',env_s}}
                          {\Braket{\Tlet \Tat := b,env_s} \Rightarrow_S \Braket{\Tlet \Tat := b',env_s}}
@@ -41,29 +49,35 @@ The value the expression evaluates is converted via the $\mathcal{N}$ to the num
 \\
 &{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{\Tfalse\},\epsilon}]}
 \end{align*}
+
 Again the resulting value is placed as the statement \enquote{true} or \enquote{false} inside a block, thereby always evaluating to this value.
 
-For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, such as \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to delimit ourselves from type inherence it must be declared. This is done in the same style as any type declaration, with a kolon. Functions in TLDR are treated like values, being reassignable and potentially having a function take another function as a parameter or give it as a return value.
+For the representation of functions in our language, we wanted to stay as close as possible to the mathematical functions, such as \enquote{f(x,y) = z}. In order to achieve this, the type of the function arguments had to either be inherent or declared elsewhere. Since we chose to delimit ourselves from type inherence it must be declared. This is done in the same style as any type declaration, with a colon. Functions in TLDR are treated like values, being reassignable and potentially having a function take another function as a parameter or give it as a return value.
 
-If a symbol is initialised as a function it is dynamically scoped. This means that the statements, a symbol maps to, is evaluated when it is invoked, in the environment in which it is invoked, meaning that if the function is impure, see \cref{subsubsec:invocation}, it will use the statements the symbols maps to at the time of invocation not initialisation. This means that a function when not invoked maps to the statements it was assigned and other functions can be assigned these or use them as inputs.
+If a symbol is initialised as a function it is dynamically scoped. This means that the statements a symbol maps to, is evaluated when it is invoked, in the environment in which it is invoked, meaning that if the function is impure, see \cref{subsubsec:invocation}, it will use the statements the symbols maps to at the time of invocation, not at the time of initialisation. This means that a function when not invoked maps to the statements it was assigned and other functions can be assigned these or use them as inputs.
 
 \begin{align*}
 &\inference[$\text{INIT}_{FUNC1}$]{}
                          {\Braket{\Tlet \Tx() := \{S\},sEnv} \Rightarrow_S sEnv'}
 												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,\epsilon}]}
 \end{align*}
+
 If the symbol is a function and takes input parameters these are placed as formal parameters in the symbols ordered set the symbol maps to in the order they appear.
+
 \begin{align*}
 &\inference[$\text{INIT}_{FUNC2}$]{}
                          {\Braket{\Tlet \Tx(x) := \{S\},sEnv} \Rightarrow_S sEnv'}
 												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,y}]}
 \end{align*}
+j
 Expanding the amount of input parameters is a trivial task. All symbols are placed in the set in the order they appeal in the code. 
+
 \begin{align*}
 &\inference[$\text{INIT}_{FUNC3}$]{}
                          {\Braket{\Tlet \Tx(x,y) := \{S\};,sEnv} \Rightarrow_S sEnv'}
 												 {, sEnv' = sEnv[\Tx \mapsto \Braket{S,\{x,y\}}]}
 \end{align*}
+
 Note that all rules are defined as constant bindings (\enquote{let}) but the exact same semantic goes for all variable bindings, since the allowance of reassignment is checked by the type system.
 
 \begin{grammar}
