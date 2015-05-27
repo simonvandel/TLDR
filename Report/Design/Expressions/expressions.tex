@@ -622,7 +622,11 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{align*}
 
 \subsubsection{Literals}
-
+There are four types of literals other than the numerical types and booleans. These are \emph{char}, \emph{list}, \emph{structLiteral} and \emph{tuple}.\\
+A \emph{char} is a single alphanumerical character, written in the code with apostrophes on either side. An example of a char is \emph{'a'}.\\
+A \emph{list} is a collection type which can contain an arbitrary number of elements of a single type. A \emph{list} is written in the code inside square brackets, with the elements either separated by commas or written as a range from one number to another signified by \emph{..}. Two examples of a \emph{list} are \emph{[1,2,3]} and \emph{[1 .. 10]}.\\
+A \emph{structliteral} is an initialisation of a struct. If we have a struct \emph{struct s := \{x:int; y:real;\};}, a literal of \emph{s} could for example be \emph{\{x := 3; y:= 2.3;\}}.\\
+A \emph{tuple} is much like a \emph{struct} in the way it can contain an arbitrary amount of fields with no restrictions on types. In \emph{tuples} however, the fields have no name. An example of a \emph{tuple} is \emph{(1, 2.5 , \enquote{hello world} )}.\\
 \begin{grammar}
 <Literals> ::= <String>
  \alt <Char>
