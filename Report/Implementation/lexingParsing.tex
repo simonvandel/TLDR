@@ -110,28 +110,29 @@ The AST data type includes all the data needed to perform all the phases of the 
 
 \begin{lstlisting}[style = fsharp, label = lst:ast_listing, caption = {Data type of AST used throughout the compiler}]
 data AST = 
-     | Program of AST list
-     | Block of AST list
-     | Body of AST list
-     | Reassignment of Identifier * AST // varId, rhs
-     | Initialisation of LValue * AST // lvalue, rhs
-     | Constant of PrimitiveType * PrimitiveValue // type, value
-     | Actor of string * AST // name, body FIXME: Add more fields?
-     | Struct of string * TypeDeclaration list // name, fields
-     | If of AST * AST // conditional, body
-     | IfElse of AST * AST * AST // conditional, trueBody, falseBody
-     | Send of string * AST // actorName, msg
-     | Spawn of LValue * string * AST option // lvalue, actorName, initMsg
-     | Receive of string * PrimitiveType * AST // msgName, msgType, body
-     | ForIn of string * AST * AST // counterName, list, body
-     | While of AST * AST // condition, body
-     | List of AST list * PrimitiveType // content, type
-     | BinOperation of AST * BinOperator * AST // lhs, op, rhs
-     | UnaryOperation of UnaryOperator * AST // op, rhs
-     | Identifier of Identifier * PrimitiveType // id, typeOfId
-     | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
-     | StructLiteral of (string * AST) list // (fieldName, fieldValue) list
-     | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
-     | Return of AST option // body
-     | Die
+    | Program of AST list
+    | Block of AST list
+    | Body of AST list
+    | Reassignment of Identifier * AST // varId, rhs
+    | Initialisation of LValue * AST // lvalue, rhs
+    | Constant of PrimitiveType * PrimitiveValue // type, value
+    | Actor of string * AST // name, body FIXME: Add more fields?
+    | Struct of string * (TypeDeclaration list) // name, fields
+    | If of AST * AST // conditional, body
+    | IfElse of AST * AST * AST // conditional, trueBody, falseBody
+    | Send of string * string * AST // actorHandle, actorToSendTo, msg
+    | Spawn of LValue * (string * AST option) option // lvalue, (actorName, initMsg) or uninit spawn
+    | Receive of string * PrimitiveType * AST // msgName, msgType, body
+    | ForIn of string * AST * AST // counterName, list, body
+    | While of AST * AST // condition, body
+    | List of AST list * PrimitiveType // content, type
+    | BinOperation of AST * BinOperator * AST // lhs, op, rhs
+    | UnaryOperation of UnaryOperator * AST // op, rhs
+    | Identifier of Identifier * PrimitiveType // id, typeOfId
+    | Function of string * string list * PrimitiveType * AST// funcName, arguments, types, body
+    | StructLiteral of AST * (string * AST) list // struct, (fieldName, fieldValue) list
+    | Invocation of string * string list * PrimitiveType // functionName, parameters, functionSignature
+    | Tuple of AST list * PrimitiveType // Entries
+    | Return of AST option // body
+    | Die
 \end{lstlisting}
