@@ -76,11 +76,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "+" is a binary operator that adds two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{ADD}_\text{L}$]{env_s \vdash a_1 \Rightarrow_A a_1'}
-                    {env_s \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&\inference[$\text{ADD}_\text{L}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
-&\inference[$\text{ADD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+&\inference[$\text{ADD}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
 \\\\
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
@@ -90,11 +90,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "-" is a binary operator that subtracts two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{SUB}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&\inference[$\text{SUB}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
 &
-&\inference[$\text{SUB}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+&\inference[$\text{SUB}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
 \\\\
 &\inference[$\text{SUB}_\text{V}$]{}
                     {v_1 - v_2 \Rightarrow_A v}
@@ -104,11 +104,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "*" is a binary operator that multiplies two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{MULT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                     {env_s\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&\inference[$\text{MULT}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                     {sEnv\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
 &
-&\inference[$\text{MULT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                     {env_s\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+&\inference[$\text{MULT}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                     {sEnv\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
 \\\\
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
@@ -118,11 +118,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "/" is a binary operator that divides two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{DIV}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&\inference[$\text{DIV}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
 &
-&\inference[$\text{DIV}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+&\inference[$\text{DIV}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
 \\\\
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
@@ -135,8 +135,8 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 &\inference[$\text{MOD}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
                     {env_s\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
-&\inference[$\text{MOD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+&\inference[$\text{MOD}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
 \\\\
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
@@ -146,11 +146,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "\^{}" is a binary operator that lifts the first number to the power of the second number
 
 \begin{align*}
-&\inference[$\text{POW}_\text{L}$]{env_s\vdash a_1  \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
+&\inference[$\text{POW}_\text{L}$]{sEnv\vdash a_1  \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
 &
-&\inference[$\text{POW}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
+&\inference[$\text{POW}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
 \\\\
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \Twedge v_2 \Rightarrow_A v}
@@ -159,11 +159,11 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 
 \item "\#" is a binary operator that roots the first operand to the second operand
 \begin{align*}
-&\inference[$\text{ROOT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&\inference[$\text{ROOT}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
 &
-&\inference[$\text{ROOT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+&\inference[$\text{ROOT}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
 \\\\
 &\inference[$\text{ROOT}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
@@ -173,8 +173,8 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "( )" Parentheses gives what they surrounds the highest precedence.
 
 \begin{align*}
-&\inference[$\text{PARENS}_\text{A}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                       {env_s\vdash (a_1) \Rightarrow_A (a_1')}
+&\inference[$\text{PARENS}_\text{A}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                       {sEnv\vdash (a_1) \Rightarrow_A (a_1')}
 &
 &\inference[$\text{PARENS}_\text{V}$]{}
                        {(v) \Rightarrow_A v}
@@ -692,15 +692,15 @@ If the block is not an expression we say it has the return type \enquote{unit}. 
 \paragraph{Semantics}
 
 \begin{align*}
-\intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $env_S$.}
+\intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $sEnv$.}
 &\inference[$\text{INVOKE}_{A1}$]{\Braket{S,sEnv} \Rightarrow_A v}
                   {\Braket{x,sEnv} \Rightarrow_A v}
                   {,sEnv(x) = \Braket{S,\epsilon}}
-\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $env_S$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $sEnv$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
+\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $sEnv$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $sEnv$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
 &\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
                   {\Braket{x_1(x_2),sEnv} \Rightarrow_A v}
                   {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
-\intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $env_S$, evaluates to true.}
+\intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $sEnv$, evaluates to true.}
 &\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,sEnv} \Rightarrow_B \top}
                   {\Braket{x,sEnv} \Rightarrow_B \top}
                   {,sEnv(x) = \Braket{S,\epsilon}}
@@ -715,7 +715,7 @@ If the block is not an expression we say it has the return type \enquote{unit}. 
 \intertext{This rule is the same as $INVOKE_{B2\top}$, but instead of the boolean value being true, it is false.}
 &\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
                   {\Braket{x_1(x_2),sEnv} \Rightarrow_B \bot}
-                 {,sEnv(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
+                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
 \end{align*}
 
 \paragraph{Type Rules}
