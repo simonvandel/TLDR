@@ -1,3 +1,4 @@
+%mainfile: ../../master.tex
 \section{Actors}
 
 Here follows descriptions of the usage of actors in TLDR. This includes different principles, functionalities, syntactical and the semantics. But before we can discuss the use of actors in TLDR, we must first cover the semantics of the parallelism used.
@@ -8,20 +9,20 @@ Parallelism is achieved through non-determinism in TLDR. The following four rule
 \begin{align*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1',e_1',\Ta'}|\Braket{S_2,e_2,\Ta'}}
+&\inference[$\text{PAR}_1$]{\Braket{S_1,e_1,\Tat} \Rightarrow_S \Braket{S_1',e_1',\Tat'}} 
+                           {\Braket{S_1,e_1,\Tat}|\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{S_1',e_1',\Tat'}|\Braket{S_2,e_2,\Tat'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The left side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_1$.}
-&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\Ta} \Rightarrow_S \Braket{e_1',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2,e_2,\Ta'}}
+&\inference[$\text{PAR}_2$]{\Braket{S_1,e_1,\Tat} \Rightarrow_S \Braket{e_1',\Tat'}} 
+                           {\Braket{S_1,e_1,\Tat}|\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{S_2,e_2,\Tat'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, but not finished. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_3$]{\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_2',e_2',\Ta'}} 
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1,e_1,\Ta'}|\Braket{S_2',e_2',\Ta'}}
+&\inference[$\text{PAR}_3$]{\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{S_2',e_2',\Tat'}} 
+                           {\Braket{S_1,e_1,\Tat}|\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{S_1,e_1,\Tat'}|\Braket{S_2',e_2',\Tat'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \intertext{The right side of a parallel statement is executed, and finishes. The environment and actor model is updated when executing $S_2$.}
-&\inference[$\text{PAR}_4$]{\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{e_2',\Ta'}}
-                           {\Braket{S_1,e_1,\Ta}|\Braket{S_2,e_2,\Ta} \Rightarrow_S \Braket{S_1,e_1,\Ta'}}
+&\inference[$\text{PAR}_4$]{\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{e_2',\Tat'}}
+                           {\Braket{S_1,e_1,\Tat}|\Braket{S_2,e_2,\Tat} \Rightarrow_S \Braket{S_1,e_1,\Tat'}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{align*}
 
@@ -33,7 +34,7 @@ A central principle in TLDR is the use of actors, based on the actor model. Acto
 
 Main is always the first actor, and any program writtin in TLDR is started with main receiving the arguments message. This is done to force the programmer to start and end the program with an actor, which will better support the actor modeling perspective. This means that the main actor is started with a message for the arguments, and when the main actor is killed the program will stop executing, whether or not there are still working actors.
 
-The argument message called args, is a struct which consists of a argument counter called argv, and a lists of char lists called argv.
+The argument message called args, is a struct which consists of a argument counter calleXd argv, and a lists of char lists called argv.
 
 Another way that this affects the programmer, is the idea of spawning actors and having them send messages to main, instead of calling functions and having them return. This also means that there must be a way to reference main, since it is not spawned by another actor. This is solved by the introduction of the \enquote{me} keyword, which will evaluate to a reference to the current actor. This is very useful, especially if an actor wishes to delegate work to other actors. The message that is sent with the work, must simply contain a reference back to the delegating actor, which was included through the use of the \enquote{me} keyword.
 
@@ -44,7 +45,7 @@ Here are the semantics for the main actor.
                           {\Braket{\Treceive \Tr:args := \{S\},e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}
 
-\subsubsection{Construction of an Actor}
+\subsubsection{Declaration of an Actor}
 \label{sub:constructionOfAnActor}
 
 The syntactical declaration of an actor is as follows:
@@ -68,14 +69,23 @@ And a concrete example could be:
 
 As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the declaration is needed, which will serve as the specific actor type. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on run-time, which would make little sense, and completely undermine the type safety in the language.
 
-Some general semantics of actors:
-
 \begin{align*}
+\intertext{Messages sent to an actor will be evaluated based on the type of the message.}
 &\inference[TYPEOF]{}
-                  {e \vdash m \Rightarrow_T t}
+                  {sEnv \vdash m \Rightarrow_T t}
                   {, \mathbb{T}(m) = t}
+<<<<<<< Updated upstream
+\intertext{When an actor is declared in a given environment, then the declaration of that actor can be reached by all in that environment. Since the type rules only allow actors to be declared in the global environment, any actor declaration can be reached from anywhere.}
+&\inference[$\text{ACTOR}$]{}
+                           {\Braket{\Tactor \Tact := \{S\}, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
+=======
 \\\\
-                           {\Braket{\Tactor \Tact := \{S\}, \Tat} \Rightarrow_S \Braket{\Tat[\Tact \mapsto S]}}
+&\inference[$\text{ACTOR}$]{\Tat' = \Tat[\Tact \mapsto e \times st]}
+                           {\Braket{\Tactor \Tact := \{S\}, \Tat} \Rightarrow_S \Braket{S,e,at[\Tact \mapsto S],a'}}
+\\\\
+&\inference[$\text{ACTOR}$]{}
+                           {\Braket{\Tactor \Tact := 1S, \Tat} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
+>>>>>>> Stashed changes
 \end{align*}
 
 \subsubsection{Basic Actor Functionality}
@@ -97,7 +107,7 @@ or alternatively:
 var MyActor:<identifier> := spawn <identifier> <message>;
 \end{lstlisting}
 
-As can be seen above, there are four parts of the spawn functionality: an identifier, the keyword, the type of the actor, and optionally an initial message. Firstly, the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly. \kanote{reference til garbage collection afsnit}
+As can be seen above, there are four parts of the spawn functionality: an identifier, the keyword, the type of the actor, and optionally an initial message. Firstly, the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly.
 
 When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however doing it via a constructor would conflict with a central principle, since it would mean manipulating an actors state directly.
 
@@ -105,9 +115,9 @@ The semantics of \enquote{spawn} is as follows:
 
 \begin{align*}
 &\inference[$\text{SPAWN}$]{}
-                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Ta} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Ta[act \mapsto e \times st]}}
+                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Tat} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Tat[act \mapsto sEnv]}}
 \\
-&                       {, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
+&                       {, \Tat(x) \mapsto \Braket{S,p} , \Tat' = \Tat[\Tact \mapsto \Braket{S, p}]}
 \end{align*}
 
 Type rules for \enquote{spawn}:
@@ -133,7 +143,7 @@ The semantics of \enquote{send} is as follows:
 
 \begin{align*}
 &\inference[$\text{SEND}$]{e_2 = a(act),m \Rightarrow_T t}
-                       {\Braket{\Tsend \Tact \Tm ; S,\Ta,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
+                       {\Braket{\Tsend \Tact \Tm ; S,\Tat,e_1} \Rightarrow_S \Braket{S,e_1,a}|\Braket{\_t(m),e_2,a}}
 \end{align*}
 
 and the type rules for \enquote{send}:
@@ -194,6 +204,16 @@ actor man := {
   }
 }
 \end{lstlisting}
+
+\begin{align*}
+\\\\
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e}
+                    {act_1 = act_2 \Rightarrow_B \top}
+&
+&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e'}
+                    {act_1 = act_2 \Rightarrow_B \bot}
+                    {e \neq e'}
+\end{align*}
 
 In this example, the bestMan variable would result in an endless recursive spawn chain of actors. This is the most obvious problem, but there are multiple senarioes where forced value assignment for reference types become problematic. Due to this, the language allows for null references.
 

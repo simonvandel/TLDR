@@ -398,13 +398,6 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 &\inference[$\text{EQUALS}_\text{V2}$]{}
                     {v_1 = v_2 \Rightarrow_B \bot}
                     {, v_1 \neq v_2}
-\\\\
-&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e}
-                    {act_1 = act_2 \Rightarrow_B \top}
-&
-&\inference[$\text{EQUALS}_\text{Actor}$]{a(act_1) = e\\ a(act_2) = e'}
-                    {act_1 = act_2 \Rightarrow_B \bot}
-                    {e \neq e'}
 \end{align*}
 
 \item "!=" is a binary operator that compares the two operands for equality. Returns true if not equal. False otherwise.

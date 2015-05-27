@@ -191,7 +191,7 @@ For denoting scopes, the bracket symbols \enquote{\{ \}} were chosen. This decis
 
 
 \subsection{Transition System for Formal Semantics}
-The transition system used in the formal semantics of TLDR uses four different partial functions. These will be introduced at they are needed but here follows an explanation of each function in succession.
+The transition system used in the formal semantics of TLDR uses three different partial functions. These will be introduced at they are needed but here follows an explanation of each function in succession.
 The first transition rule, \enquote{at}, is used to keep track of all actor types. The actor type is a form of prototype used to initialise actors. When created, all its statements are run inside a new environment consisting of aEnv, sEnv. This transition rule is there throughout the whole program meaning that all actor types can be initialised everywhere.
 \begin{center}
 $at = \text{ActorTypes} \rightharpoonup \text{Stm}$

@@ -19,7 +19,7 @@ Whether a symbol is a function or not is denoted via parentheses, parentheses me
 If a symbol is a constant or variable the right hand side of the \enquote{:=} is evaluated and the symbol is assigned the simplest statement that will always evaluate to the value of the evaluation. If the right hand side is evaluated to a number it is formally described as follows:
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-A1}$]{\Braket{x,env_s} \Rightarrow_A \Braket{x',env_s}}
-                         {\Braket{\Tlet \Ta := x,env_s} \Rightarrow_S \Braket{\Tlet \Ta := x',env_s}}
+                         {\Braket{\Tlet \Tat := x,env_s} \Rightarrow_S \Braket{\Tlet \Tat := x',env_s}}
 \\\\
 &\inference[$\text{INIT}_{SYM-A2}$]{\Braket{x,env_s} \Rightarrow_A v}
                          {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
@@ -29,7 +29,7 @@ If a symbol is a constant or variable the right hand side of the \enquote{:=} is
 The value the expression evaluates is converted via the $\mathcal{N}$ to the numeral and the symbol is assigned this as within a block. In this way an invocation of the symbol will evaluate the block and the same value each time. If the right hand side is evaluated to a boolean the formal semantics are described as follows:
 \begin{align*}
 &\inference[$\text{INIT}_{SYM-BOOL}$]{\Braket{b,env_s} \Rightarrow_B \Braket{b',env_s}}
-                         {\Braket{\Tlet \Ta := b,env_s} \Rightarrow_S \Braket{\Tlet \Ta := b',env_s}}
+                         {\Braket{\Tlet \Tat := b,env_s} \Rightarrow_S \Braket{\Tlet \Tat := b',env_s}}
 \\\\
 &\inference[$\text{INIT}_{SYM-\top}$]{\Braket{b,env_s} \Rightarrow_B \top}
                          {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
