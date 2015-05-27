@@ -178,7 +178,7 @@ When an actor is no longer needed, it is possible to discard it with the \enquot
 
 When an actor dies it stops immediately and does not compute further, and whatever messages might have been in the actors message-queue, will be lost. 
 
-\subsubsection{Actor references}
+\subsubsection{Actor References}
 
 In TLDR declarations must be accomodated by an assignment of a value, since no primitives can have a null value. However, since actors handles have the special position in the language of being the only value which is passed by reference, it should incompass a null value. The reason for this becomes apparent if one considers the following example:
 
