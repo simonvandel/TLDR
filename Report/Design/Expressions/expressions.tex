@@ -1,7 +1,7 @@
 %mainfile: ../../master.tex
 \section{Expressions}
 \label{sec:Expressions}
-This part of the language describes expressions. Expressions are in The Language Described in This Report defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
+This section describes expressions. In The Language Described in This Report, expressions are defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions, they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
 
 \subsection{Operators}\label{subsec:operators}
 First we look at the mathematical operators that can combine expressions.
@@ -50,7 +50,7 @@ First we look at the mathematical operators that can combine expressions.
 
 <PSIXOPERATOR> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
-The precedence of the operators are created in the grammar. Here the parse tree will be created, such that the $\braket{PSEVENOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSEVENOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses that resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
+The precedence of the operators are created in the grammar. Here, the parse tree will be created, such that the $\braket{PSEVENOPERATOR}$ is placed highest in the tree and the $\braket{PZEROOPERATOR}$ is placed lowest as standard, meaning that the precedence goes from $\braket{PZEROOPERATOR}$ to $\braket{PSEVENOPERATOR}$ with zero having highest precedence. This precedence can be overwritten by parentheses, which resets the order so expressions inside parentheses are placed lowest in the tree. All operators have left associativity. An example can be seen in \cref{precedenceExamples} this shows how the parse tree is created from the expression: \\
 \begin{center}
 $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \end{center}
@@ -62,15 +62,15 @@ $\Tnot a \Tand b \Txor 2 < 3 * (2 + 2) + 4$
 \label{precedenceExamples}
 \end{figure}
 
-We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a higher precedence, and should there for be lower in the tree. This is done because the parentheses overwrites the the order so that everything inside gets higher precedence as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
+We can see that the operator placed lowest in the tree is \enquote{+} even though \enquote{*} has a higher precedence, and should therefore be lower in the tree. This is done because the parentheses overwrite the order, so that everything inside gets higher precedence, as intended. If we insert parentheses to illustrate the implicit precedence in the expression it would look like this:
 \begin{center}
 $((\Tnot a) \Tand b) \Txor (2 < ((3 * (2 + 2)) + 4))$
 \end{center}
-In \cref{precedenceExamples} we can see that the \enquote{XOR} operator is placed highest in the tree meaning that it has the lowest precedence. We can also see from the tree that this operator takes the result from \enquote{AND} and \enquote{<} as arguments where \enquote{<} again takes the result from \enquote{+} and the integer 2 as arguments and so on. We can see that the arguments changes type as we traverse the tree. We now look at the semantics and what impact this has on the formal type rules.
+In \cref{precedenceExamples} we can see that the \enquote{XOR} operator is placed highest in the tree meaning that it has the lowest precedence. We can also see from the tree that this operator takes the result from \enquote{AND} and \enquote{<} as arguments where \enquote{<} again takes the result from \enquote{+} and the integer 2 as arguments and so on. We can see that the arguments change type as we traverse the tree. We now look at the semantics and what impact this has on the formal type rules.
 
 \subsubsection{Arithmetic Expressions}
 
-First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluates to a number, either a real or integer. The operators that creates the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. The semantics for these operators are as follows:
+First we look at arithmetic expressions. Arithmetic expressions are in TLDR defined as expressions that evaluate to a number, either a real or integer. The operators that create the arithmetic expressions are +, -, *, /, \%, $\Tpot$ and \#. The semantics for these operators are as follows:
 
 \begin{itemize}
 \item "+" is a binary operator that adds two numbers of the same type
@@ -170,7 +170,7 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
                     {, \sqrt[v_1]{v_2} = v}
 \end{align*}
 
-\item "( )" Parenteses gives what they surrounds the highest precedence.
+\item "( )" Parentheses gives what they surrounds the highest precedence.
 
 \begin{align*}
 &\inference[$\text{PARENS}_\text{A}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
@@ -187,9 +187,9 @@ For simplicity we create the following set since all type rules for these are th
 $\Taop = \left\{ {+, -, *, /, \%, \; \Tpot \;} \right\}$
 \end{center}
 
-Due to the semantics of all \enquote{AOP} operators these can not evaluate to a real if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real.
+Due to the semantics of all \enquote{AOP} operators these cannot evaluate to a real, if the two inputs are both integers. Therefore all operators in this set can take either two integers and evaluate to an integer or two reals and evaluate to a real.
 
-The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $\sqrt[2]{2}$ evaluates to $1.4142\dots$ Therefore both rules for \enquote{\#} evaluates to a real.
+The \enquote{\#} operator is a bit different. When taking the an integer root of another integer it can still evaluate to a real, for instance $\sqrt[2]{2}$ evaluates to $1.4142\dots$ Therefore both rules for \enquote{\#} evaluate to a real.
 
 No operator can take a combination of real and integer. This is done since all implicit type casts are avoided in TLDR. The reason for this is that the language is designed to give the programmer all errors as early as possible, preferably on compile-time, see \cref{typesys}. With no implicit type casts the programmer is always aware when type casts are performed and will therefore not be as prone to make runtime type errors.
 
@@ -475,7 +475,7 @@ $\Tlop = \left\{ {=, !=, <, <=, >, >=} \right\}$
 
 \subsection{Operands}\label{operands}
 
-When creating expressions one also needs operands to use in the operators. The operators are as follows in formal syntax:
+When creating expressions, one also needs operands to use in the operators. The operands are as follows in formal syntax:
 \begin{grammar}
 <Operand>	::= <Block>
  \alt <Integer>
@@ -484,7 +484,7 @@ When creating expressions one also needs operands to use in the operators. The o
  \alt <Literals>
  \alt <Invocation>
 \end{grammar}
-Some of these operands can evaluate something that is not either an Integer, Real or Boolean, for instance lists, actors, structures. This means that, due to the type system seen in \cref{subsec:operators}, the operand cannot be an argument to any operand. This however does not mean that it cannot be an expression, they can because all operands by themselves also have value and are an expression.
+Some of these operands can evaluate something that is neither an Integer, Real or Boolean; for instance lists, actors and structures. This means that, due to the type system seen in \cref{subsec:operators}, the operand cannot be an argument to any operand. This however does not mean that it cannot be an expression, they can because all operands by themselves also have value and are an expression.
 
 \subsubsection{Integer}
 The integer is a literal integer that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 2;$}, \enquote{2} is an integer literal. All integers are interpreted as decimal numbers and can be any combination of the symbols 0-9 in any length. They can be either positive or negative, illustrated with the symbol \enquote{-}, but may not start with a 0 unless it is only the number \enquote{0}. This is done since readability is weighted higher than writeability, see \cref{analsum}, and it was assessed for instance \enquote{00023} is not very readable compared to \enquote{23}. 
@@ -514,7 +514,7 @@ The integer is a literal integer that is written directly in the code, for insta
 \end{align*}
 
 \subsubsection{Real}
-The real is a literal real that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 4.3;$}, \enquote{4.3} is an real literal. All real are interpreted as decimal numbers and is an integer with the same rule as integers followed by a \enquote{.} and then any combination of the symbols 0-9. They can like integers be either positive or negative, illustrated with the symbol \enquote{-}. There must be at least one number both before and after the \enquote{.}. This means that neither \enquote{.1} and \enquote{1.} are allowed. This is done since it was assessed that for instance \enquote{-0.1} is more readable than \enquote{-.1}.
+The real is a literal real that is written directly in the code, for instance in the statement \enquote{$\Tlet \Tx := 4.3;$}, \enquote{4.3} is an real literal. All real are interpreted as decimal numbers and is an integer followed by a \enquote{.} and then any combination of the symbols 0-9. They can like integers be either positive or negative, indicated with the symbol \enquote{-}. There must be at least one number both before and after the \enquote{.}. This means that neither \enquote{.1} and \enquote{1.} are allowed. This is done since it was assessed that for instance \enquote{-0.1} is more readable than \enquote{-.1}.
 
 \paragraph{Syntax}
 
@@ -539,7 +539,7 @@ The real is a literal real that is written directly in the code, for instance in
 \end{align*}
 
 \subsubsection{Boolean}
-Booleans are the symbols that holds the value whether something is true or false, for instance we can in mathematics write \enquote{2 > 3}. This is a contradiction and therefore false. Booleans can therefore have two values, true or false.
+Booleans are symbols that hold the value of either true or false. For instance we can in mathematics write \enquote{2 > 3}, this is a contradiction and therefore false.
 
 \paragraph{Syntax}
 
@@ -565,11 +565,11 @@ Booleans are the symbols that holds the value whether something is true or false
 \end{align*}
 
 \subsubsection{Invocation}\label{subsubsec:invocation}
-An invocation in TLDR is defined as a series of characters, from here on referred to as the symbol, which is associated with a value. The value can either depend on arguments, a function, or be independent from any input, a constant or variable. If the value depends on arguments the language evaluation is done lazy, meaning that the output value are only associated with the symbol when the symbol is invoked. Otherwise the symbol is associated with the functionality, i.e. its statements and how to evaluate the function. 
+An invocation in TLDR is defined as a series of characters, from here on referred to as the symbol, which is associated with a value. The value can either depend on arguments, a function, or be independent from any input, a constant or variable. If the value depends on arguments the evaluation is done lazy, meaning that the output value is only associated with the symbol when the symbol is invoked. Otherwise the symbol is associated with the functionality, i.e. its statements and how to evaluate the function. 
 
-We differentiate between direct and indirect arguments. Direct arguments are put inside parentheses after the symbol. These arguments can be any value as long as the types follows the type rules. A symbol can be dependent on a value that is not given as a direct input but outside its body, as long as it is in scope. We call these indirect arguments. If a function is dependent on indirect arguments we call it impure. Note that this property will be important in \cref{subsubsec:BasicActorFunctionality}. 
+We differentiate between direct and indirect arguments. Direct arguments are put inside parentheses after the symbol. These arguments can be any value as long as the types follow the type rules. A symbol can be dependent on a value, that is not given as a direct input, but outside its body, as long as it is in scope. We call these indirect arguments. If a function is dependent on indirect arguments we call it impure. Note that this property will be important in \cref{subsubsec:BasicActorFunctionality}. 
 
-A symbol's dependence on arguments, both direct and indirect, are illustrated with parentheses. Inside the parentheses are the direct arguments. Note that these parentheses can be empty if the symbol is only dependent on indirect or no arguments. For instance if x is declared as a symbol that takes an integer and returns an integer, see \cref{subsubsec:BasicActorFunctionality} for declarations, writing \enquote{y := x} would mean that y also has to be a function that takes an integer and returns an integer, but writing \enquote{z := x(2)} means that z is an integer. Any symbol, both invoked and uninvoked, can be considered expressions, i.e. having a value.
+A symbols dependence on arguments, both direct and indirect, is illustrated with parentheses. Inside the parentheses are the direct arguments. Note that these parentheses can be empty, if the symbol is only dependent on indirect or no arguments. For instance if x is declared as a symbol that takes an integer and returns an integer, see \cref{subsubsec:BasicActorFunctionality} for declarations, writing \enquote{y := x} would mean that y also has to be a function that takes an integer and returns an integer, but writing \enquote{z := x(2)} means that z is an integer. Any symbol, both invoked and uninvoked, can be considered expressions, i.e. having a value.
 
 This syntax was decided since it is very close to mathematics, where functions take arguments in parentheses.
 \begin{grammar}
@@ -601,7 +601,7 @@ This syntax was decided since it is very close to mathematics, where functions t
 \end{grammar}
 
 \subsubsection{Block}
-Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it.
+In TLDR, blocks are a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it.
 
 \paragraph{Syntax}
 
@@ -616,7 +616,7 @@ Blocks are in TLDR a way to encapsulate statements, see \cref{sec:statements}. T
 
 Note the that the last semicolon in a block is optional.
 
-Statements do not have a value in TLDR but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it is run.
+Statements do not have a value in TLDR, but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it are run.
 
 \paragraph{Semantics}
 
@@ -624,7 +624,7 @@ Statements do not have a value in TLDR but they update the state of the program 
 &\inference[$\text{BLOCK}_{S1}$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
                                 {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
 \end{align*}
-A block is bit different than most other constructs in TLDR in that it is a statement but can at the same time be an expression too. If the last that is run inside the block is a statement the block is too only a statement:
+A block is bit different than most other constructs in TLDR in that it is a statement, but can at the same time be an expression too. If the last that is run inside the block is a statement the block itself is only a statement:
 \begin{align*}
 &\inference[$\text{BLOCK}_{S2}$]{\Braket{S,e} \Rightarrow_S e'}
                                 {\Braket{\{S\},e} \Rightarrow_S e'}
@@ -636,7 +636,7 @@ An expression by itself is in principle a statement in TLDR, for instance \enquo
   a * 2
 }
 \end{lstlisting}
-will have the value 10 (5 * 2) when evaluated. This is formally, for aritmetic expressions, described as:
+will have the value 10 when evaluated. This is formally, for aritmetic expressions, described as:
 \begin{align*}
 &\inference[$\text{BLOCK}_{A3}$]{\Braket{x,e} \Rightarrow_A \Braket{x',e}}
                          {\Braket{\{x\},e} \Rightarrow_A \Braket{\{x'\},e}}
@@ -655,7 +655,7 @@ And for boolean and logical expressions:
 &\inference[$\text{BLOCK}_{B3}$]{\Braket{x,e} \Rightarrow_B \bot}
                          {\Braket{\{x\},e} \Rightarrow_B \bot}
 \end{align*}
-The keyword \enquote{return} forces a quit from the block and gives the block the value of whatever that expression that is after it. This is done simply by inserting the expression and removing any further statements.
+The keyword \enquote{return} forces an exit from the block and gives the block the value of whatever that expression that is after the keyword. This is done simply by inserting the expression and removing any further statements.
 \begin{align*}
 &\inference[$\text{RETURN}_{1}$]{}
                    {\Braket{\{\Treturn \Tx;S\},e} \Rightarrow_S \Braket{\{x\},e}}
@@ -669,7 +669,7 @@ The keyword \enquote{return} forces a quit from the block and gives the block th
 &\inference[$\text{RETURN}_{3}$]{}
                    {\Braket{\{\Treturn\},e} \Rightarrow_S \Braket{e}}
 \end{align*}
-If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
+If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code, that does not evaluate to a value, is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
 
 \paragraph{Type Rules}
 

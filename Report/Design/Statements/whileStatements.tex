@@ -2,7 +2,7 @@
 \subsection{While-loop}
 \label{subsec:whileLoopStatements}
 
-The while loop statement runs a block of statements until a boolean expression provided returns false.
+The while-loop statement runs a block of statements until a boolean expression provided returns false.
 
 \subsubsection{Syntax}
 
@@ -20,7 +20,7 @@ A concrete example:
 \subsubsection{Semantics}
 
 \begin{align*}
-\intertext{In the case that the boolean expression $b$ is true, the rule for composition of statements is used. First the statement $S$ is evaluated and then the while statement is run again. The statement $S$ may have changed $b$.}
+\intertext{In the case that the boolean expression $b$ is true, the rule for composition of statements is used. First, the statement $S$ is evaluated and then the while statement is run again. The statement $S$ may have changed $b$.}
 &\inference[$\text{WHILE}_\top$]{env_S \vdash b \Rightarrow_B \top}
                        {\Braket{\Twhile(b)\{S\},env_s} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},env_S}}
 \\\\
