@@ -43,15 +43,24 @@ having these semantics:
 &\inference[$\text{STRUCT}$]{}
                             {\Braket{\Tstruct T_1 := (x:T_2;S), env_s} \Rightarrow_S \Braket{\Tstruct T_1 := (S),env_s'}}
 \\
-&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x]}
+&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x}
 \\\\
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet \; x:T := (S),env_s} \Rightarrow_S \Braket{x:T := (S),env_s'}}
+                            {\Braket{\Tlet \; \Ta:T := (S),env_s} \Rightarrow_S \Braket{\Ta := (S),env_s'}}
 \\
 &{env_s' = env_s[x \mapsto (S,s)],env_s(T) = (\epsilon,s)]}
 \\\\
-&\inference[$\text{STRUCT}$]{}
-                            {\Braket{s:T := (f := x;S),env_s} \Rightarrow_S \Braket{s.f := x;s:T := (S),env_s}}
+&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a \Braket{x',sEnv}}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta := (f := x';S),env_s}}
+\\\\
+&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a n}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta := (S),env_s[s.f \mapsto {n}]}}
+\\\\
+&\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S),s}}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta.f.s := s;\Ta := (S),env_s}}
+\\\\
+&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a n}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet s := (S),env_s[s.f \mapsto {n}]}}
 \\\\
 &\inference[$\text{LIST}$]{}
                             {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}

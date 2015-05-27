@@ -198,11 +198,11 @@ $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 \end{center}
 To describe a complete environment in TLDR one needs both the actor environment and the symbol environment. The actor environment is used to keep track of what handles, for actors, inside an actor maps to.
 \begin{center}
-$aEnv = \text{Anames} \rightharpoonup sEnv$
+$aEnv = \text{Anames} \cup {next} \rightharpoonup sEnv$
 \end{center}
 The symbol environment is used to keep track of what statements and other symbols map to. The statements that a symbol maps to are the statements that are run in an invocation of that symbol. Note that all symbols in TLDR are invoked, even variables and constants which will always return the value which they are assigned, no matter the state of their environment. The symbols that a symbol maps to are used to keep track of what formal parameters an invocation needs, note that this set can be empty.
 \begin{center}
-$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols} \times \text{sEnv}$
+$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
 \end{center}
 
 \subsection{Comments}

@@ -105,9 +105,9 @@ The semantics of \enquote{spawn} is as follows:
 
 \begin{align*}
 &\inference[$\text{SPAWN}$]{}
-                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,\Ta} \Rightarrow_S \Braket{\Tsend \Tact \Tm,\Ta[act \mapsto e \times st]}}
+                       {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,at,aEnv,sEnv} \Rightarrow_S \Braket{\Tsend \Tact \Tm,at,aEnv',sEnv}}
 \\
-&                       {, \Ta(x) \mapsto \Braket{S,p} , \Ta' = \Ta[\Tact \mapsto \Braket{S, p}]}
+&                       {, aEnv(next) = e, aEnv' = aEnv[act \mapsto e, next \mapsto new(e)]}
 \end{align*}
 
 Type rules for \enquote{spawn}:
