@@ -44,7 +44,7 @@ Here are the semantics for the main actor.
                           {\Braket{\Treceive \Tr:args := \{S\},e} \Rightarrow_S \Braket{\Tr := input;S, e]}}
 \end{align*}
 
-\subsubsection{Construction of an Actor}
+\subsubsection{Declaration of an Actor}
 \label{sub:constructionOfAnActor}
 
 The syntactical declaration of an actor is as follows:
@@ -68,18 +68,14 @@ And a concrete example could be:
 
 As shown, the actor keyword precedes the definition, denoting the meaning of said definition. After the keyword an identifier of the declaration is needed, which will serve as the specific actor type. It is suggested that this identifier reflects the role of the actor in a context of use. Noticeably there is no \enquote{let} or \enquote{var} keyword in front of the definition, as there usually is when assigning. This is a deliberate choice since \enquote{let} and \enquote{var} implies interchangeability, which is not an option is this case. If variable declaration of actor definitions were possible, it would effectively be the equivalent of changing the definition of a type on run-time, which would make little sense, and completely undermine the type safety in the language.
 
-Some general semantics of actors:
-
 \begin{align*}
+\intertext{Messages sent to an actor will be evaluated based on the type of the message.}
 &\inference[TYPEOF]{}
-                  {e \vdash m \Rightarrow_T t}
+                  {sEnv \vdash m \Rightarrow_T t}
                   {, \mathbb{T}(m) = t}
-\\\\
-&\inference[$\text{ACTOR}$]{a' = a[\Tact \mapsto e \times st]}
-                           {\Braket{\Tactor \Tact := \{S\}, a} \Rightarrow_S \Braket{S,e,at[\Tact \mapsto S],a'}}
-\\\\
+\intertext{When an actor is declared in a given environment, then the declaration of that actor can be reached by all in that environment. Since the type rules only allow actors to be declared in the global environment, any actor declaration can be reached from anywhere.}
 &\inference[$\text{ACTOR}$]{}
-                           {\Braket{\Tactor \Tact := 1S, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
+                           {\Braket{\Tactor \Tact := \{S\}, at} \Rightarrow_S \Braket{at[\Tact \mapsto S]}}
 \end{align*}
 
 \subsubsection{Basic Actor Functionality}
