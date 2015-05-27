@@ -1,4 +1,4 @@
-%mainfile: ../master.tex
+%mainfile: ../../master.tex
 \section{Expressions}
 \label{sec:Expressions}
 This part of the language describes expressions. Expressions are in The Language Described in This Report defined as the constructs that have a value. These can be used together with specific operators to create larger expressions as one would do in mathematics. Apart from combining expressions they are often used as the right hand side of an assignment, but can also be used for indexing, the condition in conditional statements, for return values and in general all places where a value is expected.
@@ -620,13 +620,25 @@ The keyword \enquote{return} forces a quit from the block and gives the block th
 \end{align*}
 If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code that does not evaluate to any value is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
 \\\\
--------------------- RESTEN HØRER IKKE TIL HER --------------------
 
-The following mathematical operations are built into the language. They follow these semantic base rules:
 \begin{align*}
+\intertext{}
+&\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
+                 {\Tenv \{s_1; s_2\} : \Tt'}
+\end{align*}
+
+\subsubsection{Num}
+
+\begin{align*}
+\intertext{The num rule is mapping numerals to numbers}
 &\inference[NUM]{}
                   {e \vdash n \Rightarrow_A v}
                   {, \mathcal{N}(n) = v}
+\end{align*}
+
+\subsubsection{Invocations}
+
+\begin{align*}
 \\\\
 &\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
                   {\Braket{p,e} \Rightarrow_A v}
@@ -636,10 +648,6 @@ The following mathematical operations are built into the language. They follow t
                   {\Braket{p_1(p_2),e} \Rightarrow_A v}
                   {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
 \\\\
-\end{align*}
-
-
-\begin{align*}
 &\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,e} \Rightarrow_B \top}
                   {\Braket{p_1,e} \Rightarrow_B \top}
                   {,e(p) = \Braket{S,\epsilon}}
@@ -662,38 +670,8 @@ The following mathematical operations are built into the language. They follow t
                        {e \vdash (b_1) \Rightarrow_B (b_1')}
 \end{align*}
 
-\paragraph{Loop Expressions}
 \begin{align*}
-\intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
-&\inference[FOR]{\Tenv l : [\Tpt]}
-                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt
-\end{align*}
-
-\paragraph{Comparison of structs}
-\begin{align*}
-\intertext{}
-&\inference[STRUCT]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
-                 {\Tenv e_1 = e_2: \Tbool}
-\end{align*}
-
-\paragraph{Misc constructs}
-\begin{align*}
-\intertext{}
-&\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
-                 {\Tenv \{s_1; s_2\} : \Tt'}
-\\\\
-&\inference[LET]{}
-                 {\Tenv \mathbin{\text{let}} \; e:T: ok}
-\\\\
-&\inference[VAR]{}
-                 {\Tenv \mathbin{\text{var}} \; e:T: ok}
-\\\\
-&\inference[LET1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
-                 {\Tenv \mathbin{\text{let}} \; e_1 := e_2: ok}
-\\\\
-&\inference[VAR1]{\Tenv e_1: \Tt & \Tenv e_2: \Tt}
-                 {\Tenv \mathbin{\text{var}} \; e_1 := e_2: ok}
-\\\\
 &\inference[INVOKE]{\Tenv n: \Tt}
                  {\Tenv n: \Tt}
 \end{align*}
+

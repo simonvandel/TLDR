@@ -50,3 +50,10 @@ Initially a parallel for-loop was included in the language, and this is still po
                   \Tenv e : \Tt'}
                  {\Tenv \mathbin{\text{for}} \; (t \; \mathbin{\text{in}} L) \; {e}: ok}
 \end{align*}
+
+\subsubsection{Loop Expressions}
+\begin{align*}
+\intertext{For loops can only work on lists. The counter variable is the type of a element in the list being iterated.}
+&\inference[FOR]{\Tenv l : [\Tpt]}
+                 {\Tenv \mathbin{\text{for}} \; \mathbin{\text{x}} \; \mathbin{\text{in}} \; {l} \; : ok },	 \Tenv x : \Tpt
+\end{align*}
