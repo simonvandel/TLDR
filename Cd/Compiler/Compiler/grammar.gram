@@ -1,0 +1,213 @@
+grammar vSprogGrammar{
+
+  options{
+    Axiom             = "Program";
+    Separator         = "SEPARATOR";
+  }
+
+  terminals{
+    NEW_LINE         -> U+000D | U+000A | U+000D U+000A | U+2028 |  U+2029;
+    WHITE_SPACE      -> U+0020 | U+0009 | U+000B | U+000C;
+    COMMENT_LINE     -> '//' (.* - (.* NEW_LINE .*)) NEW_LINE?;
+    COMMENT_BLOCK    -> '/*' (.* - (.* '*/' .*)) '*/';
+    SEPARATOR        -> (NEW_LINE | WHITE_SPACE| COMMENT_LINE | COMMENT_BLOCK)+;
+
+    /*--------- Keywords ---------*/
+    LET              -> 'let';
+    WAIT             -> 'wait';
+    ACTOR            -> 'actor';
+    RECEIVE          -> 'receive';
+    SEND             -> 'send';
+    SPAWN            -> 'spawn';
+    VAR              -> 'var';
+    WHILE            -> 'while';
+    DIE              -> 'die';
+    ME               -> 'me';
+    FOR              -> 'for';
+    IN               -> 'in';
+    IF               -> 'if';
+    ELSE             -> 'else';
+    STRUCT           -> 'struct';
+    RETURN           -> 'return';
+    PRIMITIVE        -> 'int' | 'real' | 'char' | 'bool';
+
+    IDENTIFIER       -> [a-zA-Z][a-zA-Z_0-9]*-(LET | VAR | PRIMITIVE | STRUCT | ACTOR | RECEIVE | SEND | SPAWN | RETURN | FOR | IN | IF | ELSE | WHILE | DIE | ME);
+
+    /*--------- Symbols ---------*/
+    ASSIGN           -> ':=';
+    LPARENS          -> '(';
+    RPARENS          -> ')';
+    STARTTUPLE       -> '<';
+    ENDTUPLE         -> '>';
+    LEADSTO          -> '->';
+    COLON            -> ':';
+    BLOCKSTART       -> '{';
+    BLOCKEND         -> '}';
+    TO               -> '..';
+    DOT              -> '.';
+    SEMICOLON        -> ';';
+    STARTLIST        -> '[';
+    ENDLIST          -> ']';
+    COMMA            -> ',';
+
+    PZEROOPERATOR    -> '(' PRIMITIVE ')';
+    PONEOPERATOR     -> '^' | '#';
+    PTWOOPERATOR     -> '*' | '/' | '%';
+    PTHREEOPERATOR   -> '+' | '-';
+    PFOUROPERATOR    -> '=' | '!=' | '<' | '<=' | '>' | '>=';
+    PFIVEOPERATOR    -> 'NOT';
+    PSIXOPERATOR     -> 'AND' | 'NAND';
+    PSEVENOPERATOR   -> 'OR' | 'XOR' | 'NOR';
+
+    /*--------- Numbers ---------*/
+    INT              -> '-'?[1-9][0-9]* | '0'; 
+    REAL             -> (('-'?[1-9][0-9]* | '0')'.'[0-9]*) | ('.'([0-9])+);
+
+    BOOL             -> 'true' | 'false';
+
+    /*--------- Chars ---------*/
+    STRING           -> '"' (U+0020 .. U+007E)* '"';
+    CHAR             -> '\'' U+0020 .. U+007E '\'';
+  }
+
+  rules{
+    /*--------- Program ---------*/
+    Program          -> Body;
+
+    Body             -> Body^ SEMICOLON! Statement
+                      | Body^ SEMICOLON!
+                      | Statement;
+
+    /*--------- Statement ---------*/
+    Statement        -> Declaration^
+                      | Reassignment^
+                      | Expression^
+                      | Receive^
+                      | Spawn^
+                      | Return^
+                      | Die^
+                      | Send^
+                      | If^
+                      | IfElse^
+                      | While^
+                      | ForIn^;
+
+    /*--------- Spawn ---------*/
+    Spawn            -> (LET | VAR) SymDecl (ASSIGN! SPAWN! Identifier Expression?)?;
+
+    /*--------- Send ---------*/
+    Send             -> SEND! Identifier Expression;
+
+    /*--------- Return ---------*/
+    Return           -> RETURN! Expression?;
+
+    /*--------- Receive ---------*/
+    Receive          -> RECEIVE! SymDecl ASSIGN! Block;
+
+    /*--------- Die ---------*/
+    Die              -> DIE;
+
+    /*--------- For ---------*/
+    ForIn            -> FOR! Identifier IN! (List | Identifier) Block;
+
+    /*--------- While ------*/
+    While            -> WHILE! Expression Block;
+
+    /*--------- If ---------*/
+    If               -> IF! Expression Block;
+    IfElse           -> IF! Expression Block ELSE! Block;
+
+    /*--------- Block ---------*/
+    Block            -> BLOCKSTART! Body BLOCKEND!;
+
+    /*--------- Expression ---------*/
+    Expression       -> Expression PSEVENOPERATOR OP6
+                      | OP7;
+    OP7              -> OP7 PSIXOPERATOR OP6
+                      | OP6^;
+    OP6              -> PFIVEOPERATOR OP6
+                      | OP5^;
+    OP5              -> OP5 PFOUROPERATOR OP4
+                      | OP4^;
+    OP4              -> OP4 PTHREEOPERATOR OP3
+                      | OP3^;
+    OP3              -> OP3 PTWOOPERATOR OP2
+                      | OP2^;
+    OP2              -> OP2 PONEOPERATOR OP1
+                      | OP1^;
+    OP1              -> PZEROOPERATOR OP1
+                      | OP0^;
+    OP0              -> Operand^
+                      | LPARENS! Expression^ RPARENS!;
+    Operand	         -> Block^
+                      | Integer^
+                      | Real^
+                      | Boolean^
+                      | Literals^
+                      | Invocation^;
+
+    Boolean          -> BOOL;
+    Integer          -> INT;
+    Real             -> REAL;
+
+    Accessor         -> DOT! Identifier^
+                      | DOT! STARTLIST! Expression^ ENDLIST!;
+
+    Literals         -> String^
+                      | Char^
+                      | List^
+                      | StructLiteral^
+                      | Tuple^;
+
+    Char             -> CHAR;
+
+    String           -> STRING;
+
+    StructLiteral    -> LPARENS! (Reassignment SEMICOLON!)* RPARENS! (COLON! Identifier)?;
+
+    Invocation       -> Identifier (LPARENS (Expression (COMMA! Expression)*)? RPARENS)?;
+
+    Identifier       -> ME
+                      | IDENTIFIER
+                      | IDENTIFIER Accessor;
+
+    /*--------- Declaration ---------*/
+    Declaration      -> Struct^
+                      | Actor^
+                      | Initialisation^;
+
+    Struct           -> STRUCT! Identifier ASSIGN! BLOCKSTART! TypeDecls? BLOCKEND!;
+    TypeDecls        -> ((FuncDecl | SymDecl) SEMICOLON!)+;
+
+    Actor            -> ACTOR! Identifier ASSIGN! Block;
+
+    Initialisation   -> (LET | VAR) (FuncDecl | SymDecl) ASSIGN! Expression;
+
+    FuncDecl         -> Identifier LPARENS! Ids? RPARENS! COLON! Types;
+    SymDecl          -> Identifier COLON! Types;
+
+    Ids              -> Identifier (COMMA! Identifier)*;
+
+    /*--------- Reassignment ---------*/
+    Reassignment     -> Identifier ASSIGN! Expression;
+
+    /*-------- Type ---------*/
+    Types            -> Type (LEADSTO! Type)*;
+    Type             -> PrimitiveType^
+                      | Identifier^
+                      | ListType^
+                      | TupleType^;
+
+    TupleType        -> LPARENS! Types RPARENS!;
+    ListType         -> STARTLIST! Types ENDLIST!;
+    PrimitiveType    -> PRIMITIVE;
+
+    /*--------- List ---------*/
+    List             -> STARTLIST! ListElem (COMMA! ListElem)* ENDLIST!;
+    ListElem         -> Expression TO^ Expression
+                      | Expression^;
+                                 
+    /*--------- Tuple ---------*/
+    Tuple            -> LPARENS! Expression (COMMA! Expression)+ RPARENS!;
+  }
+}

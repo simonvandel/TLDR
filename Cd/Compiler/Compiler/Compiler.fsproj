@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5B4D7374-E266-4482-8919-6AAFE88C7DE2}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TLDR</RootNamespace>
+    <AssemblyName>TLDR</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <Tailcalls>false</Tailcalls>
+    <PlatformTarget>
+    </PlatformTarget>
+    <ConsolePause>false</ConsolePause>
+    <Commandlineparameters>../../../../SamplePrograms/tilRapport.tldr</Commandlineparameters>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>
+    </PlatformTarget>
+    <Externalconsole>true</Externalconsole>
+    <Tailcalls>true</Tailcalls>
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>
+    </DefineConstants>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="AST.fs" />
+    <Compile Include="CommonTypes.fs">
+    </Compile>
+    <Compile Include="AnalysisUtils.fs" />
+    <Compile Include="TypeChecker.fs" />
+    <Compile Include="Analysis.fs" />
+    <Compile Include="ParserUtils.fs" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="CodeGen.fs" />
+    <Compile Include="Utils.fs" />
+    <Compile Include="Program.fs" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="Hime.CentralDogma">
+      <HintPath>..\packages\Hime.SDK.1.3.2.0\lib\net20\Hime.CentralDogma.dll</HintPath>
+    </Reference>
+    <Reference Include="Hime.Redist">
+      <HintPath>..\packages\Hime.Redist.1.3.2.0\lib\net20\Hime.Redist.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
