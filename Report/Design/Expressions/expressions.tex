@@ -226,14 +226,14 @@ The following are the semantics for all boolean operators and their truth table.
   \begin{minipage}[c]{0.45\linewidth}
 	  \centering
     \begin{align*}
-    &\inference[$\text{AND}_1$]{e \vdash b_1 \Rightarrow_B \bot}
-                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+    &\inference[$\text{AND}_1$]{sEnv \vdash b_1 \Rightarrow_B \bot}
+                               {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
     \\\\
-    &\inference[$\text{AND}_2$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
-                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
+    &\inference[$\text{AND}_2$]{sEnv \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+                               {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
     \\\\
-    &\inference[$\text{AND}_3$]{e \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
-                               {e \vdash b_1 \Tand b_2 \Rightarrow_B \top}
+    &\inference[$\text{AND}_3$]{sEnv \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+                               {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \top}
     \end{align*}
   \end{minipage}
 	\quad
@@ -254,7 +254,7 @@ The following are the semantics for all boolean operators and their truth table.
 
 \begin{align*}
 &\inference[OR]{}
-                 {e \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
+                 {sEnv \vdash b_1 \Tor b_2 \Rightarrow_B \Tnot(\Tnot b_1 \Tand \Tnot b_2)}
 \end{align*}
 
 \begin{center}
@@ -272,7 +272,7 @@ $\top$ & $\top$ & $\top$ \\\hline
 
 \begin{align*}
 &\inference[XOR]{}
-                  {e \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
+                  {sEnv \vdash b_1 \Txor b_2 \Rightarrow_B (\Tnot(b_1 \Tand b_2)) \Tand (b_1 \Tor b_2)}
 \end{align*}
 
 \begin{center}
@@ -290,7 +290,7 @@ $\top$ & $\top$ & $\bot$ \\\hline
 
 \begin{align*}
 &\inference[NOR]{}
-                   {e \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
+                   {sEnv \vdash b_1 \Tnor b_2 \Rightarrow_B \Tnot( b_1 \Tor b_2 )}
 \end{align*}
 
 \begin{center}
@@ -311,11 +311,11 @@ $\top$ & $\top$ & $\bot$ \\\hline
 \begin{minipage}[c]{0.45\linewidth}
 \centering
 \begin{align*}
-&\inference[$\text{NOT}_\top$]{e \vdash b_1 \Rightarrow_B \top}
-                       {e \vdash \Tnot b_1 \Rightarrow_B \bot}
+&\inference[$\text{NOT}_\top$]{sEnv \vdash b_1 \Rightarrow_B \top}
+                       {sEnv \vdash \Tnot b_1 \Rightarrow_B \bot}
 \\\\
-&\inference[$\text{NOT}_\bot$]{e \vdash b_1 \Rightarrow_B \bot}
-                       {e \vdash \Tnot b_1 \Rightarrow_B \top}
+&\inference[$\text{NOT}_\bot$]{sEnv \vdash b_1 \Rightarrow_B \bot}
+                       {sEnv \vdash \Tnot b_1 \Rightarrow_B \top}
 \end{align*}
 \end{minipage}
 \quad
@@ -334,7 +334,7 @@ $\top$ & $\bot$ \\\hline
 
 \begin{align*}
 &\inference[NAND]{}
-                   {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
+                   {sEnv \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
 \end{align*}
 
 \begin{center}
@@ -351,16 +351,16 @@ $\top$ & $\top$ & $\bot$ \\\hline
 \item "()" Parentheses gives what they surround the highest precedence.
   
 \begin{align*}
-&\inference[$\text{PARENS}_\text{B}$]{e \vdash b_1 \Rightarrow_B b_1'}
-                       {e \vdash (b_1) \Rightarrow_B (b_1')}
+&\inference[$\text{PARENS}_\text{B}$]{sEnv \vdash b_1 \Rightarrow_B b_1'}
+                       {sEnv \vdash (b_1) \Rightarrow_B (b_1')}
 \end{align*}
 \end{itemize}
 
 \begin{align*}
 &\inference[TRUE]{}
-                   {\Braket{\Ttrue,env_s} \Rightarrow_B \top}
+                   {\Braket{\Ttrue,sEnv} \Rightarrow_B \top}
 &\inference[FALSE]{}
-                   {\Braket{\Tfalse,env_s} \Rightarrow_B \bot}
+                   {\Braket{\Tfalse,sEnv} \Rightarrow_B \bot}
 \end{align*}
 
 
@@ -393,11 +393,11 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 \item "=" is a binary operator that compares the two operands for equality. Returns true if equal. False otherwise.
 
 \begin{align*}
-&\inference[$\text{EQUALS}_\text{L}$]{e \vdash a_1 \Rightarrow_B a_1'}
-                    {e \vdash a_1 = a_2 \Rightarrow_B a_1' = a_2}
+&\inference[$\text{EQUALS}_\text{L}$]{sEnv \vdash a_1 \Rightarrow_B a_1'}
+                    {sEnv \vdash a_1 = a_2 \Rightarrow_B a_1' = a_2}
 &
-&\inference[$\text{EQUALS}_\text{R}$]{e \vdash a_1 \Rightarrow_B a_1'}
-                    {e \vdash a_2 = a_1 \Rightarrow_B a_2 = a_1'}
+&\inference[$\text{EQUALS}_\text{R}$]{sEnv \vdash a_1 \Rightarrow_B a_1'}
+                    {sEnv \vdash a_2 = a_1 \Rightarrow_B a_2 = a_1'}
 \\\\
 &\inference[$\text{EQUALS}_\text{V1}$]{}
                     {v_1 = v_2 \Rightarrow_B \top}
@@ -412,17 +412,17 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 
 \begin{align*}
 &\inference[$NEQUALS$]{}
-                    {e \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
+                    {sEnv \vdash a_1 != a_2 \Rightarrow_B \Tnot (a_1 = a_2)}
 \end{align*}
 
 \item "<" is a binary operator that compares the two operands. Returns true if the first operand is strictly less than the second operand. False otherwise.
 
 \begin{align*}
-&\inference[$\text{LT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 < a_2 \Rightarrow_A a_1' < a_2}
+&\inference[$\text{LT}_\text{L}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash a_1 < a_2 \Rightarrow_A a_1' < a_2}
 &
-&\inference[$\text{LT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 < a_1 \Rightarrow_A a_2 < a_1'}
+&\inference[$\text{LT}_\text{R}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash a_2 < a_1 \Rightarrow_A a_2 < a_1'}
 \\\\
 &\inference[$\text{LT}_\text{V1}$]{}
                     {v_1 < v_2 \Rightarrow_B \top}
@@ -437,17 +437,17 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 
 \begin{align*}
 &\inference[$LTEQ$]{}
-                    {e \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
+                    {sEnv \vdash a_1 <= a_2 \Rightarrow_A (a_1 < a_2) \Tor (a_1 = a_2)}
 \end{align*}
 
 \item ">" is a binary operator that compares the two operands. Returns true if the first operand is strictly greater than the second operand. False otherwise.
 
 \begin{align*}
-&\inference[$\text{GT}_\text{L}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_1 > a_2 \Rightarrow_A a_1' > a_2}
+&\inference[$\text{GT}_\text{L}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash a_1 > a_2 \Rightarrow_A a_1' > a_2}
 &
-&\inference[$\text{GT}_\text{R}$]{e \vdash a_1 \Rightarrow_A a_1'}
-                    {e \vdash a_2 > a_1 \Rightarrow_A a_2 > a_1'}
+&\inference[$\text{GT}_\text{R}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash a_2 > a_1 \Rightarrow_A a_2 > a_1'}
 \\\\
 &\inference[$\text{GT}_\text{V1}$]{}
                     {v_1 > v_2 \Rightarrow_B \top}
@@ -462,7 +462,7 @@ For logical comparisons we chose \enquote{=}. This was done in accordance with t
 
 \begin{align*}
 &\inference[$GTEQ$]{}
-                    {e \vdash a_1 >= a_2 \Rightarrow_A (a_1 > a_2) \Tor (a_1 = a_2)}
+                    {sEnv \vdash a_1 >= a_2 \Rightarrow_A (a_1 > a_2) \Tor (a_1 = a_2)}
 \end{align*}
 \end{itemize}
 
@@ -509,7 +509,7 @@ The integer is a literal integer that is written directly in the code, for insta
 \begin{align*}
 \intertext{The num rule is mapping numerals to numbers.}
 &\inference[NUM]{}
-                  {env_S \vdash n \Rightarrow_A v}
+                  {sEnv \vdash n \Rightarrow_A v}
                   {, \mathcal{N}(n) = v}
 \end{align*}
 
@@ -535,7 +535,7 @@ The real is a literal real that is written directly in the code, for instance in
 \begin{align*}
 \intertext{The real rule is mapping numerals to reals}
 &\inference[REAL]{}
-                  {env_S \vdash n \Rightarrow_A v}
+                  {sEnv \vdash n \Rightarrow_A v}
                   {, \mathcal{R}(n) = v}
 \end{align*}
 
@@ -560,7 +560,7 @@ Booleans are symbols that hold the value of either true or false. For instance w
 \begin{align*}
 \intertext{The bool rule is mapping boolean literals to boolean values}
 &\inference[BOOL]{}
-                 {env_S \vdash b \Rightarrow_B v}
+                 {sEnv \vdash b \Rightarrow_B v}
                   {, \mathcal{B}(b) = v}
 \end{align*}
 
@@ -629,13 +629,13 @@ Statements do not have a value in TLDR, but they update the state of the program
 \paragraph{Semantics}
 
 \begin{align*}
-&\inference[$\text{BLOCK}_{S1}$]{\Braket{S,e} \Rightarrow_S \Braket{S',e'}}
-                                {\Braket{\{S\},e} \Rightarrow_S \Braket{\{S'\},e'}}
+&\inference[$\text{BLOCK}_{S1}$]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
+                                {\Braket{\{S\},sEnv} \Rightarrow_S \Braket{\{S'\},sEnv'}}
 \end{align*}
 A block is bit different than most other constructs in TLDR in that it is a statement, but can at the same time be an expression too. If the last that is run inside the block is a statement the block itself is only a statement:
 \begin{align*}
-&\inference[$\text{BLOCK}_{S2}$]{\Braket{S,e} \Rightarrow_S e'}
-                                {\Braket{\{S\},e} \Rightarrow_S e'}
+&\inference[$\text{BLOCK}_{S2}$]{\Braket{S,sEnv} \Rightarrow_S sEnv'}
+                                {\Braket{\{S\},sEnv} \Rightarrow_S sEnv'}
 \end{align*}
 An expression by itself is in principle a statement in TLDR, for instance \enquote{2 + 2;}. Note that this is not allowed in an expression, for instance \enquote{2 + 2; + 4}. An expression which takes the form of a statement, will not have value, but can give a block value if it is the last thing that is evaluated in it. If it is, the block takes the value of this expression thereby making the block an expression. So for instance the block:
 \begin{lstlisting}
@@ -646,36 +646,36 @@ An expression by itself is in principle a statement in TLDR, for instance \enquo
 \end{lstlisting}
 will have the value 10 when evaluated. This is formally, for aritmetic expressions, described as:
 \begin{align*}
-&\inference[$\text{BLOCK}_{A3}$]{\Braket{x,e} \Rightarrow_A \Braket{x',e}}
-                         {\Braket{\{x\},e} \Rightarrow_A \Braket{\{x'\},e}}
+&\inference[$\text{BLOCK}_{A3}$]{\Braket{x,sEnv} \Rightarrow_A \Braket{x',sEnv}}
+                         {\Braket{\{x\},sEnv} \Rightarrow_A \Braket{\{x'\},sEnv}}
 &
-&\inference[$\text{BLOCK}_{A4}$]{\Braket{x,e} \Rightarrow_A v}
-                         {\Braket{\{x\},e} \Rightarrow_A v}
+&\inference[$\text{BLOCK}_{A4}$]{\Braket{x,sEnv} \Rightarrow_A v}
+                         {\Braket{\{x\},sEnv} \Rightarrow_A v}
 \end{align*}
 And for boolean and logical expressions:
 \begin{align*}
-&\inference[$\text{BLOCK}_{B1}$]{\Braket{x,e} \Rightarrow_B \Braket{x',e}}
-                         {\Braket{\{x\},e} \Rightarrow_B \Braket{\{x'\},e}}
+&\inference[$\text{BLOCK}_{B1}$]{\Braket{x,sEnv} \Rightarrow_B \Braket{x',sEnv}}
+                         {\Braket{\{x\},sEnv} \Rightarrow_B \Braket{\{x'\},sEnv}}
 \\\\
-&\inference[$\text{BLOCK}_{B2}$]{\Braket{x,e} \Rightarrow_B \top}
-                         {\Braket{\{x\},e} \Rightarrow_B \top}
+&\inference[$\text{BLOCK}_{B2}$]{\Braket{x,sEnv} \Rightarrow_B \top}
+                         {\Braket{\{x\},sEnv} \Rightarrow_B \top}
 &
-&\inference[$\text{BLOCK}_{B3}$]{\Braket{x,e} \Rightarrow_B \bot}
-                         {\Braket{\{x\},e} \Rightarrow_B \bot}
+&\inference[$\text{BLOCK}_{B3}$]{\Braket{x,sEnv} \Rightarrow_B \bot}
+                         {\Braket{\{x\},sEnv} \Rightarrow_B \bot}
 \end{align*}
 The keyword \enquote{return} forces an exit from the block and gives the block the value of whatever that expression that is after the keyword. This is done simply by inserting the expression and removing any further statements.
 \begin{align*}
 &\inference[$\text{RETURN}_{1}$]{}
-                   {\Braket{\{\Treturn \Tx;S\},e} \Rightarrow_S \Braket{\{x\},e}}
+                   {\Braket{\{\Treturn \Tx;S\},sEnv} \Rightarrow_S \Braket{\{x\},sEnv}}
 \\\\
 &\inference[$\text{RETURN}_{2}$]{}
-                   {\Braket{\{\Treturn \Tx\},e} \Rightarrow_S \Braket{\{x\},e}}
+                   {\Braket{\{\Treturn \Tx\},sEnv} \Rightarrow_S \Braket{\{x\},sEnv}}
 \\\\
 &\inference[$\text{RETURN}_{3}$]{}
-                   {\Braket{\{\Treturn;S\},e} \Rightarrow_S \Braket{e}}
+                   {\Braket{\{\Treturn;S\},sEnv} \Rightarrow_S \Braket{sEnv}}
 \\\\
 &\inference[$\text{RETURN}_{3}$]{}
-                   {\Braket{\{\Treturn\},e} \Rightarrow_S \Braket{e}}
+                   {\Braket{\{\Treturn\},sEnv} \Rightarrow_S \Braket{sEnv}}
 \end{align*}
 If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code, that does not evaluate to a value, is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
 
@@ -693,29 +693,29 @@ If the block is not an expression we say it has the return type \enquote{unit}. 
 
 \begin{align*}
 \intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $env_S$.}
-&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,env_S} \Rightarrow_A v}
-                  {\Braket{x,env_S} \Rightarrow_A v}
-                  {,env_S(x) = \Braket{S,\epsilon}}
-\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $env_S$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $env_S$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
-&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,env_S[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
-                  {\Braket{x_1(x_2),env_S} \Rightarrow_A v}
-                  {,env_S(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,sEnv} \Rightarrow_A v}
+                  {\Braket{x,sEnv} \Rightarrow_A v}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
+\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $env_S$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $sEnv$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_A v}
+                  {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
 \intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $env_S$, evaluates to true.}
-&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,env_S} \Rightarrow_B \top}
-                  {\Braket{x,env_S} \Rightarrow_B \top}
-                  {,env_S(x) = \Braket{S,\epsilon}}
+&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,sEnv} \Rightarrow_B \top}
+                  {\Braket{x,sEnv} \Rightarrow_B \top}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
 \intertext{This rule is the same as the above, but in this case, the body of the symbol $x$ evaluates to false, and therefore so does $x$ too.}
-&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,env_S} \Rightarrow_B \bot}
-                  {\Braket{x,env_S} \Rightarrow_B \bot}
-                  {,env_S(x) = \Braket{S,\epsilon}}
+&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,sEnv} \Rightarrow_B \bot}
+                  {\Braket{x,sEnv} \Rightarrow_B \bot}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
 \intertext{This rule is similar to the rule $INVOKE_{A2}$, but instead of the value being a arithmetic value, it is a boolean value.}
-&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,env_s[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \top}
-                  {\Braket{x_1(x_2),env_s} \Rightarrow_B \top}
-                 {,env_s(x_1) = \Braket{S_1,x_1'}, env_s(x_2) = \Braket{S_2,x_2'}}
+&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \top}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \top}
+                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
 \intertext{This rule is the same as $INVOKE_{B2\top}$, but instead of the boolean value being true, it is false.}
-&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,env_S[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
-                  {\Braket{x_1(x_2),env_S} \Rightarrow_B \bot}
-                 {,env_S(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
+&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \bot}
+                 {,sEnv(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
 \end{align*}
 
 \paragraph{Type Rules}
