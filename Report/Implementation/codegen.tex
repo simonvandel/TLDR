@@ -7,11 +7,11 @@ The purpose of the phase is to output code that can later be run on the computer
 
 \subsection{Data Sizes}
 
-Even though the language design of TLDR requires integers and reals to be of arbitrary precision as described in \cref{lang_design}, the code generation phase generates integers and reals of 64-bit size. However, one way of adding arbitrary precision arithmetic to the compiler would be to use a library such as GMP \cite{gmp}.
+Even though the language design of TLDR requires integers and reals to be of arbitrary precision as described in \cref{part:design}, the code generation phase generates integers and reals of 64-bit size. However, one way of adding arbitrary precision arithmetic to the compiler would be to use a library such as GMP \cite{gmp}.
 
 \subsection{Actors}
 
-Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using this library can will reduce the development time required to implement actors. However, as the library is third party, some control over the functionality is lost. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:syntax}, since the project group does not have in-depth knowledge about the implementation of the library.
+Actors are implemented using the C library \enquote{libactor} \cite{libactor}. Using this library can will reduce the development time required to implement actors. However, as the library is third party, some control over the functionality is lost. This also means that there might be differences in the semantics between \enquote{libactor} and the semantics for actors as described in \cref{sec:actors}, since the project group does not have in-depth knowledge about the implementation of the library.
 
 Every actor in TLDR is generated into an LLVM function with the following behaviour outlined in pseudo code.
 
