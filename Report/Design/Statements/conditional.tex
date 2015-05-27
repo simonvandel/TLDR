@@ -28,12 +28,12 @@ A concrete example:
 \begin{align*}
 \intertext{In the case that the condition $b$ is true, the rule for the if-statement can simply be rewritten to the statement $S$.}
 &\inference[$\text{IF}_\top$]{}
-                      {\Braket{if(b)\{S\},env_S} \Rightarrow_S \Braket{\{S\},env_S}}
+                      {\Braket{if(b)\{S\},sEnv} \Rightarrow_S \Braket{\{S\},sEnv}}
                       {,b \Rightarrow_B \top}
 \\\\
-\intertext{In the case that the condition $b$ is false, nothing is evaluated, and the if-statement is rewritten to the symbol environment $env_S$.}
+\intertext{In the case that the condition $b$ is false, nothing is evaluated, and the if-statement is rewritten to the symbol environment $sEnv$.}
 &\inference[$\text{IF}_\bot$]{}
-                      {\Braket{if(b)\{S\},env_S} \Rightarrow_S env_S}
+                      {\Braket{if(b)\{S\},sEnv} \Rightarrow_S sEnv}
                       {,b \Rightarrow_B \bot}
 \\\\
 \intertext{In the case that the condition $b$ is true, the rule for the if-else statement is rewritten to $S_1$.}

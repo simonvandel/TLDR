@@ -26,12 +26,12 @@ And a concrete example:
 \begin{align*}
 \intertext{In the case that we have multiple S of assignments, we can rewrite the T to now map to new s' that includes x, in the new st' environment and the rest of declaration statements}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tstruct T := \{x:T';S\}, env_s, st} \Rightarrow_S \Braket{\Tstruct T := \{S\},env_s,st'}}
+                            {\Braket{\Tstruct T := \{x:T';S\}, sEnv, st} \Rightarrow_S \Braket{\Tstruct T := \{S\},sEnv,st'}}
 \\
 &{\Twhere st' = st[T \mapsto s'],st(T) = s,s' = s \cup x]}
 \intertext{In the case that we have multiple S of assignments, we can rewrite the T to now map to new s' that includes x, in the new st' environment}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tstruct T := \{x:T\}, env_s, st} \Rightarrow_S \Braket{env_s,st'}}
+                            {\Braket{\Tstruct T := \{x:T\}, sEnv, st} \Rightarrow_S \Braket{sEnv,st'}}
 \\
 &{\Twhere st' = st[T \mapsto s'],st(T) = s,s' = s \cup x]}
 \end{align*}
@@ -39,39 +39,39 @@ And a concrete example:
 \begin{align*}
 \intertext{When initialising the struct $a$, a symbol $a.f$ is created that has the value of $x'$, where $x'$ is $x$ evaluated, but not finished. Then, the struct $a$ is assigned to the rest of the struct initialisation $S$.}
 &\inference[$\text{STRUCT}$]{x \Rightarrow_a x' & sEnv(a) = \Braket{(S_2),s}}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := x;S),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := x';\Tlet \Ta := (S),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := x';\Tlet \Ta := (S),sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \intertext{The rule is the same as above, but the value $b$ is now evaluated to a boolean value.}
 &\inference[$\text{STRUCT}$]{b \Rightarrow_b b' & sEnv(a) = \Braket{(S_2),s}}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := x;S),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := b';\Tlet \Ta := (S),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := b';\Tlet \Ta := (S),sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \intertext{In this rule, the last field assignment in the struct initialisation is evaluated.}
 &\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
-                            {\Braket{\Tlet \Ta := (f := x),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := x),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := x,env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := x,sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \intertext{This rule is similar to the first struct rule, but the difference is that the symbol $x$ is a Statement $S_2$ in the symbol environment.}
 &\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S_2),s} & sEnv(a) = \Braket{(S_3),s}}
-                            {\Braket{\Tlet \Ta := (f := x;S_1),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := x;S_1),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),env_s[a \mapsto \Braket{(S_3;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),sEnv[a \mapsto \Braket{(S_3;f := a.f),s}]}}
 \intertext{This rule is the same as the above, but here, the struct assignment is done evaluating.}
 &\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S_2),s} & sEnv(a) = \Braket{(S_3),s}}
-                            {\Braket{\Tlet \Ta := (f := x),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := x),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := (S_2),env_s[a \mapsto \Braket{(S_3;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := (S_2),sEnv[a \mapsto \Braket{(S_3;f := a.f),s}]}}
 \intertext{In this rule, the field $f$ being assigned in the struct, has the value of a struct. This allows for nested structs.}
 &\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
-                            {\Braket{\Tlet \Ta := (f := (S_2);S_1),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := (S_2);S_1),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \intertext{This rule is similar to the rule above, but the difference is that this time, there are no more fields to initialise.}
 &\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
-                            {\Braket{\Tlet \Ta := (f := (S_2)),env_s} \Rightarrow_S}
+                            {\Braket{\Tlet \Ta := (f := (S_2)),sEnv} \Rightarrow_S}
 \\
-&{\Braket{\Tlet \Ta.f := (S_2),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+&{\Braket{\Tlet \Ta.f := (S_2),sEnv[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \end{align*}
 
 \begin{align*}
@@ -155,17 +155,17 @@ Structs declared as mutable can have fields reassigned using the following synta
 \begin{align*}
 \intertext{In the case that we have multiple S of assignments, we can rewrite the s to now having an accessor that maps to value of the first assignment and the rest of pending assignments in s}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet \; s:T := (f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),env_s,st}}
+                            {\Braket{\Tlet \; s:T := (f := x;S),sEnv,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),sEnv,st}}
 \\\\
 \intertext{In the case that we have only one assignment, we can rewrite the s to now having an accessor that maps to value of the assignment}
 &\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet \; s:T := (f := x),env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
+                            {\Braket{\Tlet \; s:T := (f := x),sEnv,st} \Rightarrow_S \Braket{s.f := x,sEnv,st}}
 %\\\\
 %&\inference[$\text{STRUCT}$]{}
-%                            {\Braket{(f := x;S),env_s,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),env_s,st}}
+%                            {\Braket{(f := x;S),sEnv,st} \Rightarrow_S \Braket{s.f := x;\Tlet \; s:T := (S),sEnv,st}}
 %\\\\
 %&\inference[$\text{STRUCT}$]{}
-%                            {\Braket{(f := x):T,env_s,st} \Rightarrow_S \Braket{s.f := x,env_s,st}}
+%                            {\Braket{(f := x):T,sEnv,st} \Rightarrow_S \Braket{s.f := x,sEnv,st}}
 \end{align*}
 
 \subsubsection{Type Rules}

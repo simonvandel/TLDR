@@ -132,8 +132,8 @@ First we look at arithmetic expressions. Arithmetic expressions are in TLDR defi
 \item "\%" is a binary operator that returns the remainder of a floored division of two numbers of the same type
 
 \begin{align*}
-&\inference[$\text{MOD}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&\inference[$\text{MOD}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
 &\inference[$\text{MOD}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
                     {sEnv\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}

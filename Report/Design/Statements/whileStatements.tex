@@ -21,12 +21,12 @@ A concrete example:
 
 \begin{align*}
 \intertext{In the case that the boolean expression $b$ is true, the rule for composition of statements is used. First, the statement $S$ is evaluated and then the while statement is run again. The statement $S$ may have changed $b$.}
-&\inference[$\text{WHILE}_\top$]{env_S \vdash b \Rightarrow_B \top}
-                       {\Braket{\Twhile(b)\{S\},env_s} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},env_S}}
+&\inference[$\text{WHILE}_\top$]{sEnv \vdash b \Rightarrow_B \top}
+                       {\Braket{\Twhile(b)\{S\},sEnv} \Rightarrow_S \Braket{\{S\}; \Twhile (b)\{S\},sEnv}}
 \\\\
-\intertext{In the case that the boolean expression $b$ is false, the while statement has ended, and can simply be rewritten to the environment $env_S$}
-&\inference[$\text{WHILE}_\bot$]{env_S \vdash b \Rightarrow_B \bot}
-                       {\Braket{\Twhile(b)\{S\},env_S} \Rightarrow_S env_S}
+\intertext{In the case that the boolean expression $b$ is false, the while statement has ended, and can simply be rewritten to the environment $sEnv$}
+&\inference[$\text{WHILE}_\bot$]{sEnv \vdash b \Rightarrow_B \bot}
+                       {\Braket{\Twhile(b)\{S\},sEnv} \Rightarrow_S sEnv}
 \end{align*}
 
 \subsubsection{Type Rules}

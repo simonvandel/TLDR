@@ -24,30 +24,30 @@ Whether a symbol is a function or not is denoted via parentheses, parentheses me
 If a symbol is a constant or variable, the right hand side of the \enquote{:=} is evaluated and the symbol is assigned the simplest statement that will always evaluate to the value of the evaluation. If the right hand side is evaluated to a number, it is formally described as follows:
 
 \begin{align*}
-&\inference[$\text{INIT}_{SYM-A1}$]{\Braket{x,env_s} \Rightarrow_A \Braket{x',env_s}}
-                         {\Braket{\Tlet \Tat := x,env_s} \Rightarrow_S \Braket{\Tlet \Tat := x',env_s}}
+&\inference[$\text{INIT}_{SYM-A1}$]{\Braket{x,sEnv} \Rightarrow_A \Braket{x',sEnv}}
+                         {\Braket{\Tlet \Tat := x,sEnv} \Rightarrow_S \Braket{\Tlet \Tat := x',sEnv}}
 \\\\
-&\inference[$\text{INIT}_{SYM-A2}$]{\Braket{x,env_s} \Rightarrow_A v}
-                         {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
+&\inference[$\text{INIT}_{SYM-A2}$]{\Braket{x,sEnv} \Rightarrow_A v}
+                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
 \end{align*}
 
 The value the expression evaluates to is converted, via the $\mathcal{N}$ function, to the numeral and the symbol is assigned this as within a block. In this way an invocation of the symbol will evaluate the block and the same value each time. If the right hand side is evaluated to a boolean the formal semantics are described as follows:
 
 \begin{align*}
-&\inference[$\text{INIT}_{SYM-BOOL}$]{\Braket{b,env_s} \Rightarrow_B \Braket{b',env_s}}
-                         {\Braket{\Tlet \Tat := b,env_s} \Rightarrow_S \Braket{\Tlet \Tat := b',env_s}}
+&\inference[$\text{INIT}_{SYM-BOOL}$]{\Braket{b,sEnv} \Rightarrow_B \Braket{b',sEnv}}
+                         {\Braket{\Tlet \Tat := b,sEnv} \Rightarrow_S \Braket{\Tlet \Tat := b',sEnv}}
 \\\\
-&\inference[$\text{INIT}_{SYM-\top}$]{\Braket{b,env_s} \Rightarrow_B \top}
-                         {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
+&\inference[$\text{INIT}_{SYM-\top}$]{\Braket{b,sEnv} \Rightarrow_B \top}
+                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{\Ttrue\},\epsilon}]}
+&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Ttrue\},\epsilon}]}
 \\\\
-&\inference[$\text{INIT}_{SYM-\bot}$]{\Braket{b,env_s} \Rightarrow_B \bot}
-                         {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
+&\inference[$\text{INIT}_{SYM-\bot}$]{\Braket{b,sEnv} \Rightarrow_B \bot}
+                         {\Braket{\Tlet \Tx := x,sEnv} \Rightarrow_S sEnv'}
 \\
-&{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{\Tfalse\},\epsilon}]}
+&{\Twhere sEnv' = env_{s}[\Tx \mapsto \Braket{\{\Tfalse\},\epsilon}]}
 \end{align*}
 
 Again, the resulting value is placed as the statement \enquote{true} or \enquote{false} inside a block, thereby always evaluating to this value.

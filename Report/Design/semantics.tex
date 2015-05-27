@@ -14,78 +14,78 @@ $st = \text{Structs} \rightharpoonup \text{Symbols}$
 \subsection{Expressions}
 \subsubsection{Arithmetic}
 \begin{align*}
-&\inference[$\text{ADD}_\text{L}$]{env_s \vdash a_1 \Rightarrow_A a_1'}
-                    {env_s \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
+&\inference[$\text{ADD}_\text{L}$]{sEnv \vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv \vdash  a_1 + a_2 \Rightarrow_A a_1' + a_2}
 &
-&\inference[$\text{ADD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
+&\inference[$\text{ADD}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 + a_1 \Rightarrow_A a_2 + a_1'}
 \\\\
 &\inference[$\text{ADD}_\text{V}$]{}
                     {v_1 + v_2 \Rightarrow_A v}
                     {, v_1 + v_2 = v}
 \\\\
-&\inference[$\text{SUB}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
+&\inference[$\text{SUB}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 - a_2 \Rightarrow_A a_1' - a_2}
 &
-&\inference[$\text{SUB}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
+&\inference[$\text{SUB}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 - a_1 \Rightarrow_A a_2 - a_1'}
 \\\\
 &\inference[$\text{SUB}_\text{V}$]{}
                     {v_1 - v_2 \Rightarrow_A v}
                     {, v_1 - v_2 = v}
 \\\\
-&\inference[$\text{MULT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                     {env_s\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
+&\inference[$\text{MULT}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                     {sEnv\vdash a_1 * a_2 \Rightarrow_A a_1' * a_2}
 &
-&\inference[$\text{MULT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                     {env_s\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
+&\inference[$\text{MULT}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                     {sEnv\vdash a_2 * a_1 \Rightarrow_A a_2 * a_1'}
 \\\\
 &\inference[$\text{MULT}_\text{V}$]{}
                      {v_1 * v_2 \Rightarrow_A v}
                      {, v_1 * v_2 = v}
 \\\\
-&\inference[$\text{DIV}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
+&\inference[$\text{DIV}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 / a_2 \Rightarrow_A a_1' / a_2}
 &
-&\inference[$\text{DIV}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
+&\inference[$\text{DIV}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 / a_1 \Rightarrow_A a_2 / a_1'}
 \\\\
 &\inference[$\text{DIV}_\text{V}$]{}
                     {v_1 / v_2 \Rightarrow_A v}
                     {, \frac{v_1}{v_2} = v}
 \\\\
-&\inference[$\text{MOD}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
+&\inference[$\text{MOD}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \% a_2 \Rightarrow_A a_1' \% a_2}
 &
-&\inference[$\text{MOD}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
+&\inference[$\text{MOD}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \% a_1 \Rightarrow_A a_2 \% a_1'}
 \\\\
 &\inference[$\text{MOD}_\text{V}$]{}
                     {v_1 \% v_2 \Rightarrow_A v}
                     {, v_1 \;\; \textrm{mod} \;\; v_2 = v}
 \\\\
-&\inference[$\text{POW}_\text{L}$]{env_s\vdash a_1  \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
+&\inference[$\text{POW}_\text{L}$]{sEnv\vdash a_1  \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \Twedge a_2 \Rightarrow_A a_1' \Twedge a_2}
 &
-&\inference[$\text{POW}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
+&\inference[$\text{POW}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \Twedge a_1 \Rightarrow_A a_2 \Twedge a_1'}
 \\\\
 &\inference[$\text{POW}_\text{V}$]{}
                     {v_1 \Twedge v_2 \Rightarrow_A v}
                     {, v_1 ^ {v_2} = v}
 \\\\
-&\inference[$\text{ROOT}_\text{L}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
+&\inference[$\text{ROOT}_\text{L}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_1 \# a_2 \Rightarrow_A a_1' \# a_2}
 &
-&\inference[$\text{ROOT}_\text{R}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                    {env_s\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
+&\inference[$\text{ROOT}_\text{R}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                    {sEnv\vdash a_2 \# a_1 \Rightarrow_A a_2 \# a_1'}
 \\\\
 &\inference[$\text{ROOT}_\text{V}$]{}
                     {v_1 \# v_2 \Rightarrow_A v}
                     {, \sqrt[v_1]{v_2} = v}
 \\\\
-&\inference[$\text{PARENS}_\text{A}$]{env_s\vdash a_1 \Rightarrow_A a_1'}
-                       {env_s\vdash (a_1) \Rightarrow_A (a_1')}
+&\inference[$\text{PARENS}_\text{A}$]{sEnv\vdash a_1 \Rightarrow_A a_1'}
+                       {sEnv\vdash (a_1) \Rightarrow_A (a_1')}
 &
 &\inference[$\text{PARENS}_\text{V}$]{}
                        {(v) \Rightarrow_A v}
@@ -120,9 +120,9 @@ $st = \text{Structs} \rightharpoonup \text{Symbols}$
                    {e \vdash b_1 \Tnand b_2 \Rightarrow_B \Tnot( b_1 \Tand b_2 )}
 \\\\
 &\inference[TRUE]{}
-                   {\Braket{\Ttrue,env_s} \Rightarrow_B \top}
+                   {\Braket{\Ttrue,sEnv} \Rightarrow_B \top}
 &\inference[FALSE]{}
-                   {\Braket{\Tfalse,env_s} \Rightarrow_B \bot}
+                   {\Braket{\Tfalse,sEnv} \Rightarrow_B \bot}
 \end{align*}
 \subsubsection{Logical}
 \begin{align*}

@@ -28,10 +28,10 @@ In the case that the list contains more than one element, the rule can be rewrit
 
 \begin{align*}
 &\inference[$\text{FORIN}_{1}$]{}
-                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},env_S}}
+                       {\Braket{\Tfor \Tx \Tin [n_1,\dots,n_m]\{S\},sEnv} \Rightarrow_S \Braket{x := n_1;\{S\}; \Tfor \mathbin{\text{x}} \mathbin{\text{in}} [n_2,\dots,n_m]\{S\},sEnv}}
 \\\\
 &\inference[$\text{FORIN}_{2}$]{}
-                       {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},env_S} \Rightarrow_S \Braket{x := n_m;\{S\},env_S}}
+                       {\Braket{\Tfor \mathbin{\text{x}}\mathbin{\text{in}} [n_m]\{S\},sEnv} \Rightarrow_S \Braket{x := n_m;\{S\},sEnv}}
 \end{align*}
 
 Initially a parallel for-loop was included in the language, and this is still potentially a desired feature. It was removed however, since the languages focuses on parallelism through actors, and so it was deemed too time consuming to focus on also parallelising statements and expressions.
