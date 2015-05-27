@@ -1,29 +1,29 @@
 \chapter{Conclusion}
 
 
-This chapter of the report will conclude on problem statement from \cref{problemSatement}. Based on the problem statement a analyse of the problem domain where made in \cref{problemDomain}, where the properties and ambitions for the language. furthermore research of concurrency and the analyse of problem domain resulted in a basis for the the design of the functionality of the language in form of criterias for the language described in \cref{analsum}.
+This chapter of the report will conclude on the problem statement presented in \cref{problemSatement}. Based on the problem statement an analysis of the problem domain was made in \cref{problemDomain}, where the properties and ambitions for the language were described. Furthermore, research of concurrency and the analysis of the problem domain resulted in a basis for the design of the functionality of the language in form of criterias for the language described in \cref{analsum}.
 
-This will entail an examination of the way TLDR tries to accomodate the criteria set for the language, as well as the constructed compilers ability to implement the language.
+The following entail an examination of the way TLDR tries to accomodate the criteria set for the language, as well as the constructed compilers ability to implement the language.
 
-The first criteria was for the language to be simple. This was achieved through staying true to a few select principles, and not allowing them to be broken. The most prominent one being the principle of only letting actors be manipulated through messages. The language also incorporates simplicity in the way it allows for modelling parallel programs. The way which the actor abstraction over the handling of threads in the program, removes a lot of technical considerations and thereby simplifies the way the programmer approaches the modeling.
- 
-On the subject of orthogonality the language performs as expected. The focus on simplicity interferes with the orthogonality of the language. But not quite as expected where the way in which other criterias have interfered. One such could be the lack of implicit casts between number primitives, which was done to uphold readability and the strongly typed language criterias. These criterias have also influenced the language through the explicit difference between the notation for integers and real numbers.
+The first criteria was for the language to be simple. This was achieved through staying true to a few select principles, and not allowing them to be broken. The most prominent one being the principle of only letting actors be manipulated through messages. The language also incorporates simplicity in the way that it allows for modeling concurrent programs. The way which the actor model abstracts over the handling of threads in the program removes a lot of technical considerations and thereby simplifies the way the programmer approaches the modeling.
 
-The syntax designs focus on modelling have also been fulfilled. This can for example be seen in the keywords used for actors.
+On the subject of orthogonality, the language performs as expected. The focus on simplicity interferes with the orthogonality of the language, but not quite as expected, where the way in which other criteria have interfered. One such criteria could be the lack of implicit casts between number primitives, which was done to uphold readability and the strongly typed language criterias. These criteria have also influenced the language through the explicit difference between the notation for integers and real numbers.
 
-On the subject of data types and the mathematical notation, the language encountered a few places where the possibility for mathematical intuition was not achieved. This can best be explained with this expression:
+The focus in the syntax design on modeling has also been satisfied. This can be seen in the keywords used for actors.
+
+On the subject of data types and mathematical notation, the language encountered a few places where the possibility for mathematical intuition was not achieved. This can best be explained with this expression:
 
 \begin{lstlisting}
 let number:int := 2/3 + 1/3;
 \end{lstlisting}
 
-By mathematical intuition, the constant should be 1, but due integer division it results in number being 0.
+By mathematical intuition, \emph{number} should be assigned the value 1, but due to integer division, it results in \emph{number} being assigned the value 0.
 
-Based upon the problem statement the purpose of this project was to describe how a language for simulation could be designed for concurrently computing, This question has been answered through \cref{part:implementation}, by specifying formal syntax and semantics for the language.
-To ensure concurrency actor modelling is the recommended way to do modeling in TLDR, which helps the programmer to inherently think of how to make it run parallel.
-The problem statement also questions how the language can be implement, to answer this a delimited set of the language has been implemented "hvilken section" describes which features that were included and which ones that not are included. The section also discuss why some features were prioritized higher than others.
+Based upon the problem statement, the purpose of this project was to describe how a language for simulation could be designed for concurrent computing, This question has been answered in \cref{part:implementation}, by specifying the formal syntax and semantics for the language.
+To ensure concurrency, the actor model is the recommended way to do concurrency modeling in TLDR, which helps the programmer to abstract over the specifics of concurrency and parallelism.
+The problem statement also asks how the language can be implemented, to answer this, a delimited set of the language has been implemented. \cref{sec:compilerStatus} describes which features were implemented and which ones were not. The section also discusses why some features were prioritized higher than others.
 
-To conclude on the whole project the compiler and the language documentation answers the problem statement by giving an example of how such a language could be implemented. Although the compiler needs some features that were not included due to priorities. The compiler can still compile some code and the primary features such as actors works which is assessed to fulfill the criterias mentioned for the language.
+To conclude on the project in general, the compiler and the language documentation answers the problem statement by giving an example of how such a language could be implemented. Although the compiler lacks some features, due to priorities, the compiler is in a working state, where it can compile some code containing fundamental features such as actors. This is assessed to satisfy the criteria for the language.
 
 
 
