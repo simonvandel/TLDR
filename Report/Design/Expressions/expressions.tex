@@ -347,6 +347,13 @@ $\top$ & $\bot$ & $\top$ \\\hline
 $\top$ & $\top$ & $\bot$ \\\hline
 \end{tabular}
 \end{center}
+
+\item "()" Parentheses gives what they surround the highest precedence.
+  
+\begin{align*}
+&\inference[$\text{PARENS}_\text{B}$]{e \vdash b_1 \Rightarrow_B b_1'}
+                       {e \vdash (b_1) \Rightarrow_B (b_1')}
+\end{align*}
 \end{itemize}
 
 \begin{align*}
@@ -355,6 +362,7 @@ $\top$ & $\top$ & $\bot$ \\\hline
 &\inference[FALSE]{}
                    {\Braket{\Tfalse,env_s} \Rightarrow_B \bot}
 \end{align*}
+
 
 All boolean operators, except NOT, takes two booleans and returns a boolean. For the simplicity of the type rules we create the Boolean Operator (BOP):
 
@@ -681,40 +689,40 @@ If the block is not an expression we say it has the return type \enquote{unit}. 
 
 \subsubsection{Invocations}
 
-\begin{align*}
-\\\\
-&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,e} \Rightarrow_A v}
-                  {\Braket{p,e} \Rightarrow_A v}
-                  {,e(p) = \Braket{S,\epsilon}}
-\\\\
-&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_A v}
-                  {\Braket{p_1(p_2),e} \Rightarrow_A v}
-                  {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\\\\
-&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,e} \Rightarrow_B \top}
-                  {\Braket{p_1,e} \Rightarrow_B \top}
-                  {,e(p) = \Braket{S,\epsilon}}
-\\\\
-&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,e} \Rightarrow_B \bot}
-                  {\Braket{p_1,e} \Rightarrow_B \bot}
-                  {,e(p) = \Braket{S,\epsilon}}
-\\\\
-&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \top}
-                  {\Braket{p_1(p_2),e} \Rightarrow_B \top}
-\\                  
-&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\\\\
-&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,e[p_1' \mapsto \Braket{S_2,p_2'}]} \Rightarrow_B \bot}
-                  {\Braket{p_1(p_2),e} \Rightarrow_B \bot}
-\\                  
-&                 {,e(p_1) = \Braket{S_1,p_1'}, e(p_2) = \Braket{S_2,p_2'}}
-\\\\
-&\inference[$\text{PARENS}_\text{B}$]{e \vdash b_1 \Rightarrow_B b_1'}
-                       {e \vdash (b_1) \Rightarrow_B (b_1')}
-\end{align*}
+\paragraph{Semantics}
 
 \begin{align*}
-&\inference[INVOKE]{\Tenv n: \Tt}
-                 {\Tenv n: \Tt}
+\intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $env_S$.}
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,env_S} \Rightarrow_A v}
+                  {\Braket{x,env_S} \Rightarrow_A v}
+                  {,env_S(x) = \Braket{S,\epsilon}}
+\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $env_S$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $env_S$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,env_S[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
+                  {\Braket{x_1(x_2),env_S} \Rightarrow_A v}
+                  {,env_S(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
+\intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $env_S$, evaluates to true.}
+&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,env_S} \Rightarrow_B \top}
+                  {\Braket{x,env_S} \Rightarrow_B \top}
+                  {,env_S(x) = \Braket{S,\epsilon}}
+\intertext{This rule is the same as the above, but in this case, the body of the symbol $x$ evaluates to false, and therefore so does $x$ too.}
+&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,env_S} \Rightarrow_B \bot}
+                  {\Braket{x,env_S} \Rightarrow_B \bot}
+                  {,env_S(x) = \Braket{S,\epsilon}}
+\intertext{This rule is similar to the rule $INVOKE_{A2}$, but instead of the value being a arithmetic value, it is a boolean value.}
+&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,env_s[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \top}
+                  {\Braket{x_1(x_2),env_s} \Rightarrow_B \top}
+                 {,env_s(x_1) = \Braket{S_1,x_1'}, env_s(x_2) = \Braket{S_2,x_2'}}
+\intertext{This rule is the same as $INVOKE_{B2\top}$, but instead of the boolean value being true, it is false.}
+&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,env_S[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
+                  {\Braket{x_1(x_2),env_S} \Rightarrow_B \bot}
+                 {,env_S(x_1) = \Braket{S_1,x_1'}, env_S(x_2) = \Braket{S_2,x_2'}}
+\end{align*}
+
+\paragraph{Type Rules}
+
+\begin{align*}
+\intertext{The type of an invocation can be looked up in the type environment $E$.}
+&\inference[INVOKE]{\Tenv x: \Tt}
+                 {\Tenv x: \Tt}
 \end{align*}
 
