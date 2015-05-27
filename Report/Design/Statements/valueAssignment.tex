@@ -7,9 +7,7 @@ But, since we wanted assignments, be it mutable or immutable, to have similariti
 
 When assigning statements, we differentiate between functions and constants/variables. Whether it is a constant or variable binding it is denoted with the keywords \enquote{let} for a constant binding and \enquote{var} for a variable binding. If the statements are bound as a constant they can never be changed. This is useful, especially in mathematics where many things both functions and constants never changes. But for things like results, state and generic behaviour a variable binding is useful.
 
-Whether a symbol is a function or not is denoted via parentheses, parentheses meaning that it is a function and no parentheses meaning that it is not. Note that a symbol can have empty parentheses and still be a function, meaning that there is a difference between \enquote{let a():int := \dots} and \enquote{let a:int := \dots}. 
-
-\paragraph{Syntax}
+Whether a symbol is a function or not is denoted via parentheses, parentheses meaning that it is a function and no parentheses meaning that it is not. Note that a symbol can have empty parentheses and still be a function, meaning that there is a difference between \enquote{let a():int := \dots} and \enquote{let a:int := \dots}.
 
 \begin{grammar}
 <Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) ':=' <Expression>
@@ -18,8 +16,6 @@ Whether a symbol is a function or not is denoted via parentheses, parentheses me
 
 <SymDecl> -> <Identifier> ':' <Types>
 \end{grammar}
-
-\paragraph{Semantics}
 
 If a symbol is a constant or variable, the right hand side of the \enquote{:=} is evaluated and the symbol is assigned the simplest statement that will always evaluate to the value of the evaluation. If the right hand side is evaluated to a number, it is formally described as follows:
 
@@ -147,6 +143,16 @@ This is the grammar, specifying the syntax for assignment:
 Assignment uses the \enquote{:=} operator. The left hand side of the operator is the symbol to be assigned the value. The right hand side is an expression which is the value to be assigned.
 
 These are the semantic rules for assignment:
+\begin{align*}
+&\inference[$\text{ASS}_{SYM-A1}$]{\Braket{x,env_s} \Rightarrow_A \Braket{x',env_s}}
+                         {\Braket{\Tat := x,env_s} \Rightarrow_S \Braket{\Tat := x',env_s}}
+\\\\
+&\inference[$\text{ASS}_{SYM-A2}$]{\Braket{x,env_s} \Rightarrow_A v}
+                         {\Braket{\Tlet \Tx := x,env_s} \Rightarrow_S env_s'}
+\\
+&{\Twhere env_s' = env_{s}[\Tx \mapsto \Braket{\{n\},\epsilon}], \mathcal{N}(n) = v}
+\end{align*}
+
 \begin{align*}
 &\inference[ASS]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
                  {\Braket{\Tx := S,sEnv} \Rightarrow_S \Braket{\Tx := S',sEnv'}}

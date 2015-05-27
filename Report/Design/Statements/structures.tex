@@ -7,8 +7,6 @@ In TLDR there are three ways to do encapsulation. Actors, Tuples and structs. St
 \subsubsection{Defining Structures}
 \label{sec:defStructures}
 
-\subsubsection{Syntax}
-
 Structures are defined by using the \enquote{struct} keyword. The grammar for declaring structs are as follows:
 
 \begin{grammar}
@@ -20,8 +18,6 @@ And a concrete example:
 \begin{lstlisting}[style=TLDR]
   struct Person := {Name:[char]; Age:int}
 \end{lstlisting}
-
-\subsubsection{Semantics}
 
 \begin{align*}
 \intertext{In the case that we have multiple S of assignments, we can rewrite the T to now map to new s' that includes x, in the new st' environment and the rest of declaration statements}
@@ -91,22 +87,16 @@ And a concrete example:
 &{sEnv_1(s) = \Braket{\epsilon,\epsilon,sEnv_2},sEnv_2' = sEnv_2[n \mapsto x_n],sEnv_1'(s) = \Braket{\epsilon,\epsilon,sEnv_2'}}
 \end{align*}
 
-\subsubsection{Type Rules}
-
 \begin{align*}
 \intertext{The elements can be of any type defined in $\Tt$}
 &\inference[STRUCT]{E[s \mapsto (e_1:\Tt_1;e_2:\Tt_2;...;e_n:\Tt_n) \rightarrow ok]\vdash S : ok & }
                  {\Tenv \mathbin{\text{struct s}} := \{e_1:\Tt_1;e_2:\Tt_2;...;e_n:\Tt_n\}; S: ok}
 \end{align*}
 
-
-
 \subsubsection{Initialising Structures}
 \label{sec:initStructures}
 
 Structs can be initialised and assigned to symbols using either a constant assignment or a variable assignment. Structs initialised as a constant assignment cannot change any of the fields of the structs; the struct is immutable. Structs initialised as a variable assignment can change all of its fields at any time; the struct is mutable.
-
-\subsubsection{Syntax}
 
 The syntax for initialising a struct is as follow.
 
@@ -149,8 +139,6 @@ Structs declared as mutable can have fields reassigned using the following synta
   Alice.Name := "Bob";
   Alice.Name; // "Bob";
 \end{verbatim}
- 
-\subsubsection{Semantics}
 
 \begin{align*}
 \intertext{In the case that we have multiple S of assignments, we can rewrite the s to now having an accessor that maps to value of the first assignment and the rest of pending assignments in s}
@@ -167,8 +155,6 @@ Structs declared as mutable can have fields reassigned using the following synta
 %&\inference[$\text{STRUCT}$]{}
 %                            {\Braket{(f := x):T,sEnv,st} \Rightarrow_S \Braket{s.f := x,sEnv,st}}
 \end{align*}
-
-\subsubsection{Type Rules}
 
 Each e of type t is matching the declared struct types, evaluates to the type of the declared struct.
 

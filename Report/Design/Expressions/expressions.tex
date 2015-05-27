@@ -229,10 +229,10 @@ The following are the semantics for all boolean operators and their truth table.
     &\inference[$\text{AND}_1$]{sEnv \vdash b_1 \Rightarrow_B \bot}
                                {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
     \\\\
-    &\inference[$\text{AND}_2$]{sEnv \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \bot}
+    &\inference[$\text{AND}_2$]{sEnv \vdash b_1 \Rightarrow_B \top \\ sEnv \vdash b_2 \Rightarrow_B \bot}
                                {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \bot}
     \\\\
-    &\inference[$\text{AND}_3$]{sEnv \vdash b_1 \Rightarrow_B \top \\ b_2 \Rightarrow_B \top}
+    &\inference[$\text{AND}_3$]{sEnv \vdash b_1 \Rightarrow_B \top \\ sEnv \vdash b_2 \Rightarrow_B \top}
                                {sEnv \vdash b_1 \Tand b_2 \Rightarrow_B \top}
     \end{align*}
   \end{minipage}
@@ -355,14 +355,6 @@ $\top$ & $\top$ & $\bot$ \\\hline
                        {sEnv \vdash (b_1) \Rightarrow_B (b_1')}
 \end{align*}
 \end{itemize}
-
-\begin{align*}
-&\inference[TRUE]{}
-                   {\Braket{\Ttrue,sEnv} \Rightarrow_B \top}
-&\inference[FALSE]{}
-                   {\Braket{\Tfalse,sEnv} \Rightarrow_B \bot}
-\end{align*}
-
 
 All boolean operators, except NOT, takes two booleans and returns a boolean. For the simplicity of the type rules we create the Boolean Operator (BOP):
 
@@ -558,10 +550,11 @@ Booleans are symbols that hold the value of either true or false. For instance w
 \paragraph{Semantics}
 
 \begin{align*}
-\intertext{The bool rule is mapping boolean literals to boolean values}
-&\inference[BOOL]{}
-                 {sEnv \vdash b \Rightarrow_B v}
-                  {, \mathcal{B}(b) = v}
+\intertext{The bool rules are mapping boolean literals to boolean values}
+&\inference[TRUE]{}
+                   {\Braket{\Ttrue,sEnv} \Rightarrow_B \top}
+&\inference[FALSE]{}
+                   {\Braket{\Tfalse,sEnv} \Rightarrow_B \bot}
 \end{align*}
 
 \paragraph{Type Rules}
@@ -595,6 +588,39 @@ This syntax was decided since it is very close to mathematics, where functions t
 <Primitive> ::= 'void' | 'int' | 'real' | 'char' | 'bool'
 \end{grammar}
 
+\begin{align*}
+\intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $sEnv$.}
+&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,sEnv} \Rightarrow_A v}
+                  {\Braket{x,sEnv} \Rightarrow_A v}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
+\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $sEnv$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $sEnv$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
+&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_A v}
+                  {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
+\intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $sEnv$, evaluates to true.}
+&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,sEnv} \Rightarrow_B \top}
+                  {\Braket{x,sEnv} \Rightarrow_B \top}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
+\intertext{This rule is the same as the above, but in this case, the body of the symbol $x$ evaluates to false, and therefore so does $x$ too.}
+&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,sEnv} \Rightarrow_B \bot}
+                  {\Braket{x,sEnv} \Rightarrow_B \bot}
+                  {,sEnv(x) = \Braket{S,\epsilon}}
+\intertext{This rule is similar to the rule $INVOKE_{A2}$, but instead of the value being a arithmetic value, it is a boolean value.}
+&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \top}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \top}
+                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
+\intertext{This rule is the same as $INVOKE_{B2\top}$, but instead of the boolean value being true, it is false.}
+&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
+                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \bot}
+                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
+\end{align*}
+
+\begin{align*}
+\intertext{The type of an invocation can be looked up in the type environment $E$.}
+&\inference[INVOKE]{\Tenv x: \Tt}
+                 {\Tenv x: \Tt}
+\end{align*}
+
 \subsubsection{Literals}
 
 \begin{grammar}
@@ -611,8 +637,6 @@ This syntax was decided since it is very close to mathematics, where functions t
 \subsubsection{Block}
 In TLDR, blocks are a way to encapsulate statements, see \cref{sec:statements}. This is done via curly brackets, \enquote{\{} starting the block, and \enquote{\}} ending it.
 
-\paragraph{Syntax}
-
 \begin{grammar}
 <Block> ::= '\{' <Body> '\}'
 
@@ -621,12 +645,9 @@ In TLDR, blocks are a way to encapsulate statements, see \cref{sec:statements}. 
  \alt <Statement>
 \end{grammar}
 
-
 Note the that the last semicolon in a block is optional.
 
 Statements do not have a value in TLDR, but they update the state of the program or at least have the possibility to do so. When a block is evaluated the statements inside it are run.
-
-\paragraph{Semantics}
 
 \begin{align*}
 &\inference[$\text{BLOCK}_{S1}$]{\Braket{S,sEnv} \Rightarrow_S \Braket{S',sEnv'}}
@@ -679,50 +700,8 @@ The keyword \enquote{return} forces an exit from the block and gives the block t
 \end{align*}
 If the block is not an expression we say it has the return type \enquote{unit}. Any piece of code, that does not evaluate to a value, is said to be of type unit and cannot be used in an assignment. Note that all statements by themselves have the type unit, but that a block only has the type unit when evaluated.
 
-\paragraph{Type Rules}
-
 \begin{align*}
 \intertext{Blocks have the type of the last statement run in the block.}
 &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
                  {\Tenv \{s_1; s_2\} : \Tt'}
 \end{align*}
-
-\subsubsection{Invocations}
-
-\paragraph{Semantics}
-
-\begin{align*}
-\intertext{A symbol, $x$, is evaluated to a value by finding the symbol in the symbol environment $sEnv$.}
-&\inference[$\text{INVOKE}_{A1}$]{\Braket{S,sEnv} \Rightarrow_A v}
-                  {\Braket{x,sEnv} \Rightarrow_A v}
-                  {,sEnv(x) = \Braket{S,\epsilon}}
-\intertext{A function, $x_1$ is invoked with the parameter $x_2$ and evaluated to a value by finding $x_1$ in the symbol environment $sEnv$. This lookup results in the statement $S_1$ which is the body of the function, and the formal parameter $x_1'$. The actual parameter $x_2$ is then looked up in the symbol environment $sEnv$ for the statement $S_2$ which is the body of the actual parameter, and $x_2'$ which is the parameter for $x_2$. To evaluate the function, the formal parameter $x_1'$ in the symbol environment is assigned to the result of the lookup of the formal parameter $x_2$, $S_2$ and $x_2'$.}
-&\inference[$\text{INVOKE}_{A2}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_A v}
-                  {\Braket{x_1(x_2),sEnv} \Rightarrow_A v}
-                  {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
-\intertext{A symbol $x$ is evaluated to a boolean value of true, when the body $S$ of the symbol is found in the symbol environment $sEnv$, evaluates to true.}
-&\inference[$\text{INVOKE}_{B1\top}$]{\Braket{S,sEnv} \Rightarrow_B \top}
-                  {\Braket{x,sEnv} \Rightarrow_B \top}
-                  {,sEnv(x) = \Braket{S,\epsilon}}
-\intertext{This rule is the same as the above, but in this case, the body of the symbol $x$ evaluates to false, and therefore so does $x$ too.}
-&\inference[$\text{INVOKE}_{B1\bot}$]{\Braket{S,sEnv} \Rightarrow_B \bot}
-                  {\Braket{x,sEnv} \Rightarrow_B \bot}
-                  {,sEnv(x) = \Braket{S,\epsilon}}
-\intertext{This rule is similar to the rule $INVOKE_{A2}$, but instead of the value being a arithmetic value, it is a boolean value.}
-&\inference[$\text{INVOKE}_{B2\top}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \top}
-                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \top}
-                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
-\intertext{This rule is the same as $INVOKE_{B2\top}$, but instead of the boolean value being true, it is false.}
-&\inference[$\text{INVOKE}_{B2\bot}$]{\Braket{S_1,sEnv[x_1' \mapsto \Braket{S_2,x_2'}]} \Rightarrow_B \bot}
-                  {\Braket{x_1(x_2),sEnv} \Rightarrow_B \bot}
-                 {,sEnv(x_1) = \Braket{S_1,x_1'}, sEnv(x_2) = \Braket{S_2,x_2'}}
-\end{align*}
-
-\paragraph{Type Rules}
-
-\begin{align*}
-\intertext{The type of an invocation can be looked up in the type environment $E$.}
-&\inference[INVOKE]{\Tenv x: \Tt}
-                 {\Tenv x: \Tt}
-\end{align*}
-

@@ -4,8 +4,6 @@
 
 A for-loop iterates through a list of elements.
 
-\subsubsection{Syntax}
-
 The for loop statement follows this grammar:
 
 \begin{grammar}
@@ -18,9 +16,6 @@ A concrete example:
   sum:int = 0;
   for i:int in [0..10]:[int] { sum = sum + i }
 \end{verbatim}
-
-
-\subsubsection{Syntax}
 
 Here follows the semantics for the for-loop statement:
 
@@ -35,8 +30,6 @@ In the case that the list contains more than one element, the rule can be rewrit
 \end{align*}
 
 Initially a parallel for-loop was included in the language, and this is still potentially a desired feature. It was removed however, since the languages focuses on parallelism through actors, and so it was deemed too time consuming to focus on also parallelising statements and expressions.
-
-\subsubsection{Type Rules}
 
 \begin{align*}
 \intertext{The element i of the ForIn construct must be of the same type as L. The body of the ForIn-loop can be of any type defined in $\Tt'$}
