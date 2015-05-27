@@ -40,28 +40,53 @@ having these semantics:
 \end{align*}
 
 \begin{align*}
-&\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tstruct T_1 := (x:T_2;S), env_s} \Rightarrow_S \Braket{\Tstruct T_1 := (S),env_s'}}
+%&\inference[$\text{STRUCT}$]{}
+                            %{\Braket{\Tstruct T_1 := (x:T_2;S), env_s} \Rightarrow_S \Braket{\Tstruct T_1 := (S),env_s'}}
+%\\
+%&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x}
+%\\\\
+%&\inference[$\text{STRUCT}$]{}
+                            %{\Braket{\Tstruct T_1 := (x:T_2), env_s} \Rightarrow_S \Braket{\Tstruct T_1 := (S),env_s'}}
+%\\
+%&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x}
+%\\\\
+&\inference[$\text{STRUCT}$]{x \Rightarrow_a x' & sEnv(a) = \Braket{(S_2),s}}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S}
 \\
-&{\Twhere env_s' = env_s[T \mapsto \Braket{\epsilon,s'}],env_s(T) = s,s' = s \cup x}
+&{\Braket{\Tlet \Ta.f := x';\Tlet \Ta := (S),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \\\\
-&\inference[$\text{STRUCT}$]{}
-                            {\Braket{\Tlet \; \Ta:T := (S),env_s} \Rightarrow_S \Braket{\Ta := (S),env_s'}}
+&\inference[$\text{STRUCT}$]{b \Rightarrow_a b' & sEnv(a) = \Braket{(S_2),s}}
+                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S}
 \\
-&{env_s' = env_s[x \mapsto (S,s)],env_s(T) = (\epsilon,s)]}
+&{\Braket{\Tlet \Ta.f := b';\Tlet \Ta := (S),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \\\\
-&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a \Braket{x',sEnv}}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta := (f := x';S),env_s}}
+&\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
+                            {\Braket{\Tlet \Ta := (f := x),env_s} \Rightarrow_S}
+\\
+&{\Braket{\Tlet \Ta.f := x,env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \\\\
-&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a n}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta := (S),env_s[s.f \mapsto {n}]}}
+&\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S_2),s} & sEnv(a) = \Braket{(S_3),s}}
+                            {\Braket{\Tlet \Ta := (f := x;S_1),env_s} \Rightarrow_S}
+\\
+&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),env_s[a \mapsto \Braket{(S_3;f := a.f),s}]}}
 \\\\
-&\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S),s}}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet \Ta.f.s := s;\Ta := (S),env_s}}
+&\inference[$\text{STRUCT}$]{sEnv(x) = \Braket{(S_2),s} & sEnv(a) = \Braket{(S_3),s}}
+                            {\Braket{\Tlet \Ta := (f := x),env_s} \Rightarrow_S}
+\\
+&{\Braket{\Tlet \Ta.f := (S_2),env_s[a \mapsto \Braket{(S_3;f := a.f),s}]}}
 \\\\
-&\inference[$\text{STRUCT}$]{\Braket{x,sEnv} \Rightarrow_a n}
-                            {\Braket{\Tlet \Ta := (f := x;S),env_s} \Rightarrow_S \Braket{\Tlet s := (S),env_s[s.f \mapsto {n}]}}
+&\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
+                            {\Braket{\Tlet \Ta := (f := (S_2);S_1),env_s} \Rightarrow_S}
+\\
+&{\Braket{\Tlet \Ta.f := (S_2);\Ta := (S_1),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
 \\\\
+&\inference[$\text{STRUCT}$]{sEnv(a) = \Braket{(S_2),s}}
+                            {\Braket{\Tlet \Ta := (f := (S_2)),env_s} \Rightarrow_S}
+\\
+&{\Braket{\Tlet \Ta.f := (S_2),env_s[a \mapsto \Braket{(S_2;f := a.f),s}]}}
+\end{align*}
+
+\begin{align*}
 &\inference[$\text{LIST}$]{}
                             {\Braket{s:[T] := [x_n,..,x_m],sEnv_1} \Rightarrow_S \Braket{s:[T] := [x_{n+1},..,x_m],sEnv_1}}
 \\
