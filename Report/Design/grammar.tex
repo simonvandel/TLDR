@@ -1,5 +1,40 @@
 \section{Grammar}
 \setlength{\grammarindent}{100pt}
+/*--------- Identifiers ---------*/
+\begin{grammar}
+<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'boolean' | 'integer' | 'real' | 'char' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
+\end{grammar}
+/*--------- Operators ---------*/
+\begin{grammar}
+<Pzerooperator> ::= '(' primitive ')'
+<Poneoperator> ::= '$\Tpot$' | '\#'
+<Ptwooperator> ::= '*' | '/' | '\%'
+<Pthreeoperator> ::= '+' | '-'
+<Pfouroperator> ::= '=' | '!=' | '<' | '<=' | '>' | '>='
+<Pfiveoperator> ::= 'NOT'
+<Psixoperator> ::= 'AND' | 'NAND'
+<Psevenoperator> ::= 'OR' | 'XOR' | 'NOR'
+\end{grammar}
+/*--------- Primitives ---------*/
+\begin{grammar}
+
+<Primitive> ::= <Boolean>
+\alt <Integer>
+\alt <Real>
+\alt <Char>
+
+<Boolean> ::= 'true' | 'false'
+
+<Integer> ::= '-'?[1-9][0-9]* | '0'
+
+<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
+
+<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
+
+<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
+
+
+\end{grammar}
 /*--------- Program ---------*/
 \begin{grammar}
 <Program> ::= <Body>
@@ -52,7 +87,7 @@
 \end{grammar}
 /*--------- For ---------*/
 \begin{grammar}
-<ForIn> ::= 'for' <Ids> 'in' (<List> | <Identifier>) <Block>
+<ForIn> ::= 'for' <Identifier> 'in' (<List> | <Identifier>) <Block>
 
 \end{grammar}
 /*--------- While ---------*/
@@ -70,18 +105,20 @@
 /*--------- Block ---------*/
 \begin{grammar}
 <Block> ::= '\{' <Body> '\}'
- \alt '\{' '\}'
 
 \end{grammar}
 /*--------- Expression ---------*/
 \begin{grammar}
-<Expression> ::= <Expression> <Psixoperator> <OP6>
+<Expression> ::= <Expression> <Psevenoperator> <OP6>
+ \alt <OP7>
+
+<OP7> ::= <OP7> <Psixoperator> <OP6>
  \alt <OP6>
 
-<OP6> ::= <OP6> <Pfiveoperator> <OP5>
+<OP6> ::= <Pfiveoperator> <OP6>
  \alt <OP5>
 
-<OP5> ::= <Pfouroperator> <OP5>
+<OP5> ::= <OP5> <Pfouroperator> <OP4>
  \alt <OP4>
 
 <OP4> ::= <OP4> <Pthreeoperator> <OP3>
@@ -93,7 +130,7 @@
 <OP2> ::= <OP2> <Poneoperator> <OP1>
  \alt <OP1>
 
-<OP1> ::= <OP1> <Pzerooperator> <OP0>
+<OP1> ::= <Pzerooperator> <OP1>
  \alt <OP0>
 
 <OP0> ::= <Operand>
@@ -107,18 +144,6 @@
  \alt <Literals>
  \alt <Invocation>
 
-<Boolean> ::= 'true' | 'false'
-
-<Integer> ::= '-'?[1-9][0-9]* | '0'
-
-<Real> ::= ([0-9]+'.'[0-9]+)|([0-9]+'.')|('.'([0-9])+)
-
-<Identifier> ::= 'me'
- \alt <Id>
- \alt <Id> <Accessor>
-
-<Id> ::= [a-zA-Z][a-zA-Z\_0-9]*-('let' | 'var' | 'primitive' | 'struct' | 'actor' | 'receive' | 'send' | 'spawn' | 'wait' | 'return' | 'for' | 'in' | 'if' | 'else' | 'while' | 'die' | 'me');
-
 <Accessor> ::= '.' <Identifier>
  \alt '.' '[' <Expression> ']'
 
@@ -128,28 +153,14 @@
  \alt <StructLiteral>
  \alt <Tuple>
 
-<Char> ::= '\textquotesingle' U+0020 .. U+007E '\textquotesingle'
-
-<String> ::= '\textquotedbl' (U+0020 .. U+007E)* '\textquotedbl'
-
 <StructLiteral> ::= '(' <Field> (';' <Field>)* ')'
-<Field> ::= <Identifier> ':=' <Expression>
 
 <Invocation> ::= <Identifier> '(' (<Expression> (',' <Expression>)*)? ')'
 
-<Pzerooperator> ::= '$\Tpot$' | '\#'
+<Identifier> ::= 'me'
+ \alt <Id>
+ \alt <Id> <Accessor>
 
-<Poneoperator> ::= '*' | '/' | '\%'
-
-<Ptwooperator> ::= '+' | '-'
-
-<Pthreeoperator> ::= '=' | '!=' | '<' | '<=' | '>' | '>='
-
-<Pfouroperator> ::= 'NOT'
-
-<Pfiveoperator> ::= 'AND' | 'NAND'
-
-<Psixoperator> ::= 'OR' | 'XOR' | 'NOR'
 \end{grammar}
 /*--------- Declaration ---------*/
 \begin{grammar}
@@ -159,19 +170,17 @@
 
 <Struct> ::= 'struct' <Identifier> := '\{' <TypeDecls>? '\}'
 
-<TypeDecls> ::= (<FuncDecl> | <SymDecl>) ';' <TypeDecls>
- \alt (<FuncDecl> | <SymDecl>) ';'
- \alt <FuncDecl> | <SymDecl>
+<TypeDecls> ::= ((<FuncDecl> | <SymDecl>) ';' <TypeDecls>)+
 
 <Actor> ::= 'actor' <Identifier> := <Block>
 
 <Initialisation> ::= ('let' | 'var') (<FuncDecl> | <SymDecl>) := <Expression>
 
+<FuncDecl> -> <Identifier> '(' <Ids>? ')' ';' <Types>
+<SymDecl> -> <Identifier> ';' <Types>
+
 <Ids> ::= <Identifier> (',' <Identifier>)*
 
-<FuncDecl> -> <Identifier> '(' <Ids>? ')' ';' <Types>
-
-<SymDecl> -> <Identifier> ';' <Types>
 \end{grammar}
 /*--------- Reassignment ---------*/
 \begin{grammar}
@@ -181,14 +190,14 @@
 \begin{grammar}
 <Types> ::= <Type> ('->' <Type>)*
 
-<Type> ::= <PrimitiveType>
+<Type> ::= <Primitive>
  \alt <Identifier>
  \alt <ListType>
  \alt <TupleType>
 
 <TupleType> ::= '(' <Types> ')'
 
-<ListType> ::= '\{' <Types> ',' <Integer> '\}'
+<ListType> ::= '\[' <Types> '\]'
 \end{grammar}
 /*--------- List ---------*/
 \begin{grammar}
