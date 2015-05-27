@@ -2,7 +2,6 @@
 
 The compiler described in this report does not fully implement TLDR. This section lists which parts of TLDR is implemented in the compiler, and which parts are not. In addition to that, it presents a sample program written in TLDR.
 
-\sinote{ikke helt sikker på alt er noteret}
 
 Implemented:
 
@@ -45,7 +44,7 @@ The following program demonstrates addition of ints and reals, output of results
 150
 \end{verbatim}
 
-\begin{lstlisting}[style = tldr]
+\begin{lstlisting}[style = TLDR,caption={Example program, able to be compiled by the compiler described in this report}]
 actor main := {
   receive arguments:args := {
     let msg1:realInputMsg := (x := 2.5; y := 2.5;);

@@ -101,7 +101,7 @@ or alternatively:
 var MyActor:<identifier> := spawn <identifier> <message>;
 \end{lstlisting}
 
-As can be seen above, there are four parts of the spawn functionality: an identifier, the keyword, the type of the actor, and optionally an initial message. Firstly, the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly. \kanote{reference til garbage collection afsnit}
+As can be seen above, there are four parts of the spawn functionality: an identifier, the keyword, the type of the actor, and optionally an initial message. Firstly, the identifier is preceded by a keyword for mutability, such as \enquote{let} or \enquote{var}. This allows for the substitution of handles, which provides possibilities of dynamic changes. This however opens up the possibility of \enquote{losing contact} with an actor, if the handle is replaced. This could potentially lead to memory leaks if not handled properly.
 
 When spawning a new actor, you can also choose to add a message. The reason for this is to give the programmer a way of initialising the new actor with a certain message. In object-oriented languages this is usually done with a constructor, however doing it via a constructor would conflict with a central principle, since it would mean manipulating an actors state directly.
 
