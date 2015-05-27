@@ -1,3 +1,4 @@
+%mainfile: ../master.tex
 \section{Actors}
 
 Here follows descriptions of the usage of actors in TLDR. This includes different principles, functionalities, syntactical and the semantics. But before we can discuss the use of actors in TLDR, we must first cover the semantics of the parallelism used.
@@ -104,6 +105,7 @@ When spawning a new actor, you can also choose to add a message. The reason for 
 The semantics of \enquote{spawn} is as follows:
 
 \begin{align*}
+\intertext{The rule for spawning an actor can be rewritten as the send rule. Doing this, the actor environment $aEnv$ is changed. The actor handle $act$ is added to the actor environment $aEnv$. In addition, the $next$ actor handle is updated to be a new unique actor handle.}
 &\inference[$\text{SPAWN}$]{}
                        {\Braket{\Tlet \Tact:T := \Tspawn \; T \Tm,at,aEnv,sEnv} \Rightarrow_S \Braket{\Tsend \Tact \Tm,at,aEnv',sEnv}}
 \\
