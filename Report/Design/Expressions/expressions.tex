@@ -508,7 +508,7 @@ The integer is a literal integer that is written directly in the code, for insta
 \begin{align*}
 \intertext{The num rule is mapping numerals to numbers.}
 &\inference[NUM]{}
-                  {e \vdash n \Rightarrow_A v}
+                  {env_S \vdash n \Rightarrow_A v}
                   {, \mathcal{N}(n) = v}
 \end{align*}
 
@@ -534,7 +534,7 @@ The real is a literal real that is written directly in the code, for instance in
 \begin{align*}
 \intertext{The real rule is mapping numerals to reals}
 &\inference[REAL]{}
-                  {e \vdash n \Rightarrow_A v}
+                  {env_S \vdash n \Rightarrow_A v}
                   {, \mathcal{R}(n) = v}
 \end{align*}
 
@@ -546,10 +546,30 @@ The real is a literal real that is written directly in the code, for instance in
 \end{align*}
 
 \subsubsection{Boolean}
-Booleans are the symbols that holds the value whether something is true or false, for instance we can write in mathematics write \enquote{2 > 3}. This is a contradiction and therefore false. Booleans can therefore have two values, true or false. These are often used in mathematical proofs.
+Booleans are the symbols that holds the value whether something is true or false, for instance we can in mathematics write \enquote{2 > 3}. This is a contradiction and therefore false. Booleans can therefore have two values, true or false.
+
+\paragraph{Syntax}
+
 \begin{grammar}
 <Boolean> ::= 'true' | 'false'
 \end{grammar}
+
+\paragraph{Semantics}
+
+\begin{align*}
+\intertext{The bool rule is mapping boolean literals to boolean values}
+&\inference[BOOL]{}
+                 {env_S \vdash b \Rightarrow_B v}
+                  {, \mathcal{B}(b) = v}
+\end{align*}
+
+\paragraph{Type Rules}
+
+\begin{align*}
+\intertext{The type of a bool literal is simply a bool type}
+&\inference[BOOL]{\Tenv b:\Tbool}
+                 {\Tenv b: \Tbool}
+\end{align*}
 
 \subsubsection{Invocation}\label{subsubsec:invocation}
 An invocation in TLDR is defined as a series of characters, from here on referred to as the symbol, which is associated with a value. The value can either depend on arguments, a function, or be independent from any input, a constant or variable. If the value depends on arguments the language evaluation is done lazy, meaning that the output value are only associated with the symbol when the symbol is invoked. Otherwise the symbol is associated with the functionality, i.e. its statements and how to evaluate the function. 
