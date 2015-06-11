@@ -1,0 +1,106 @@
+%\documentclass[10pt, t, aspectratio=169]{beamer}
+\documentclass[10pt, t]{beamer}
+\usetheme[left]{AAUsidebar}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{epstopdf}
+\usepackage{multicol}
+
+\usepackage{amsmath}
+\usepackage[noend]{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+
+\setbeamertemplate{part page}
+{
+  \aauwavesbg
+	\finalpage{\insertpart\par}
+}
+	
+	\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  %breaklines=true,
+  frame=single,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  keywordstyle=\color{bluekeywords},
+	keywordstyle=[2]\color{cyan},
+	keywordstyle=[3]\color{cyan},
+  commentstyle=\itshape\color{dkgreen},
+  %identifierstyle=\color{dkgreen},
+	columns=flexible,
+  stringstyle=\color{redstrings},
+	morekeywords={foreach, bool, List, public, in, false, true},
+	morekeywords=[2]{TaskInstance, Task, Team},
+	keepspaces,
+	literate={=}{{{\color{magenta}=}}}1 {*}{{{\color{magenta}*}}}1 {+}{{{\color{magenta}+}}}1 {-}{{{\color{magenta}-}}}1 {!}{{{\color{magenta}!}}}1 {<}{{{\color{magenta}<}}}1 {>}{{{\color{magenta}>}}}1 {/}{{{\color{magenta}/}}}1 {\{}{{{\color{black}\{}}}1 {\}}{{{\color{black}\}}}}1 {(}{{{\color{black}(}}}1 {)}{{{\color{black})}}}1 {[}{{{\color{black}[}}}1 {]}{{{\color{black}]}}}1 {.}{{{\color{black}.}}}1 {,}{{{\color{black},}}}1 {;}{{{\color{black};}}}1
+}
+
+\lstdefinestyle{nonumbers}
+{
+    numbers=none,
+}
+
+\lstdefinestyle{small}
+{
+    numbers=none,
+    basicstyle={\fontsize{10pt}{10pt}\ttfamily}
+}
+
+\newcommand{\chref}[2]{
+    \href{#1}{{\usebeamercolor[bg]{AAUsidebar}#2}}
+}
+\title[openPlaylist]{P3: openPlaylist}
+\subtitle{En Software Analyse og -Implementation}
+\date{26/01 2015}
+\author[ds318e14] 
+{
+    Alexander Krog
+    \href{mailto:akrog13@student.aau.dk}{\textit{<akrog13@student.aau.dk>}}\linebreak
+		Christian Heider Nielsen
+    \href{mailto:chrini13@student.aau.dk}{\textit{<chrini13@student.aau.dk>}}\linebreak
+		Frederik Højholt Andersen
+    \href{mailto:fhan13@student.aau.dk}{\textit{<fhan13@student.aau.dk>}}\linebreak
+		Jens Hegner Stærmose
+    \href{mailto:jstarm13@student.aau.dk}{\textit{<jstarm13@student.aau.dk>}}\linebreak
+		Kasper Fuglsang Christensen
+    \href{mailto:kfch13@student.aau.dk}{\textit{<kfch13@student.aau.dk>}}\linebreak
+    Simon Vandel Sillesen
+    \href{mailto:ssille13@student.aau.dk}{\textit{<ssille13@student.aau.dk>}}
+}
+
+\institute[
+    Department of Computer Science\linebreak
+    Selma Lagerlöfs Vej 300\linebreak
+    DK-9220 Aalborg Ø\linebreak
+    http://cs.aau.dk
+]
+{
+    Department of Computer Science\linebreak
+    Selma Lagerlöfs Vej 300\linebreak
+    DK-9220 Aalborg Ø\linebreak
+    http://cs.aau.dk/
+    
+}
+
+\pgfdeclareimage[height=1.5cm]{titlepagelogo}{AAUgraphics/aau_logo_new}
+\titlegraphic{  
+    \pgfuseimage{titlepagelogo}
+}
+

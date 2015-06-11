@@ -1,0 +1,29 @@
+\input{setup/preamble}
+
+\setbeamertemplate{section page}
+{
+	\thispagestyle{empty}
+	\frame{
+  \aauwavesbg
+  \finalpage{\insertsection\par}
+	}
+}
+\AtBeginSection{\sectionpage}
+
+\begin{document}
+
+% Forside
+{\aauwavesbg
+\begin{frame}[plain,noframenumbering]
+	\titlepage
+\end{frame}}
+
+% Table of contents
+\begin{frame}{Agenda}{}
+	{\scriptsize\tableofcontents}
+\end{frame}
+
+
+%Input slides her
+
+\end{document}
