@@ -2,10 +2,21 @@
 \begin{frame}
   \frametitle{Introduction}
   \begin{enumerate}
-    \item Modeling
     \item Simulations
+    \begin{enumerate}
+      \item Created by natural and social scientists
+      \item Run on HPC systems
+    \end{enumerate}
     \item Real World Systems
+    \begin{enumerate}
+      \item Massive scale
+      \item Inherently concurrent
+    \end{enumerate}
     \item Languages
+    \begin{enumerate}
+      \item C
+      \item Fortran
+    \end{enumerate}
   \end{enumerate}
 \end{frame}
 
@@ -14,11 +25,16 @@
 \begin{frame}
   \frametitle{The Actor Model}
   \begin{enumerate}
+    \item Inherently concurrent
     \item State
+    \begin{enumerate}
+      \item Isolated
+    \end{enumerate}
     \item Communication
     \begin{enumerate}
+      \item Message passing
+      \item Asynchronous
       \item Reactive
-      \item Mailbox
     \end{enumerate}
   \end{enumerate}
   \begin{figure}[htbp]
@@ -33,8 +49,10 @@
   \begin{enumerate}
     \item Sending
     \begin{enumerate}
-      \item Blocking vs. Non-blocking
+      \item Blocking
+      \item Non-blocking
     \end{enumerate}
     \item Receiving
+    \item MPI
   \end{enumerate}
 \end{frame}
