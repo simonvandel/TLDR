@@ -1,0 +1,80 @@
+\section{Konkret Sprog Design}
+\subsection{Grammatik}
+\begin{frame}
+	\frametitle{Grammatik - Expressions}
+	\dots
+	\begin{grammar}
+	<OP2> ::= <OP2> <Poneoperator> <OP1>
+  \alt <OP1>
+  
+	<OP1> ::= <Pzerooperator> <OP1>
+  \alt <OP0>
+
+  <OP0> ::= <Operand>
+  \alt '(' <Expression> ')'
+  \end{grammar}
+	\dots
+	\begin{grammar}
+	<PTWOOPERATOR> ::= '*' | '/' | '\%'
+	
+	<PTHREEOPERATOR> ::= '+' | '-'
+	
+	<PFOUROPERATOR> ::= '=' | '!=' | '$\textless$' | '$\textless$=' | '$\textgreater$' | '$\textgreater$='
+	\end{grammar}
+	\dots
+\end{frame}
+
+\begin{frame}
+	\frametitle{Grammatik - Expressions}
+	\begin{grammar}
+  <Operand> ::= <Block>
+    \alt <Integer>
+    \alt <Real>
+    \alt <Boolean>
+    \alt <Literals>
+    \alt <Invocation>
+  \end{grammar}
+\end{frame}
+
+\subsection{Semantik}
+\begin{frame}
+	\frametitle{Semantik - Transitions System}
+	\begin{center}	
+  $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
+	
+	$aEnv = \text{Anames} \cup {next} \rightharpoonup sEnv$
+	
+	$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+  \end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Semantik - Eksempel}
+	\begin{align*}
+	&\inference[$\text{INVOKE}_{A1}$]{}
+                  {\Braket{x,sEnv} \Rightarrow_A v}
+                  {,sEnv(x) = \Braket{n,\epsilon}, \mathcal{N}(n) = v}
+	\\\\
+	&\inference[$\text{INVOKE}_{A1}$]{}
+                  {\Braket{x,sEnv} \Rightarrow_A \top}
+                  {,sEnv(x) = \Braket{true,\epsilon}}
+	\\\\
+	&\inference[$\text{INVOKE}_{A1}$]{}
+                  {\Braket{x,sEnv} \Rightarrow_A \bot}
+                  {,sEnv(x) = \Braket{false,\epsilon}}
+  \\\\
+	&\inference[$\text{INVOKE}_{A1}$]{}
+                  {\Braket{x,sEnv} \Rightarrow_A \Braket{\{S\},\epsilon}}
+                  {,sEnv(x) = \Braket{\{S\},\epsilon}}
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Semantik - Eksempel}
+	\begin{align*}
+	&\inference[$\text{INVOKE}_{A1}$]{}
+                  {\Braket{x(y),sEnv} \Rightarrow_A \Braket{S_1,sEnv[z \mapsto \Braket{S_2,s}]}}
+                  \\
+					        &{,sEnv(x) = \Braket{\{S_1\},z},sEnv(y) = \Braket{S_2,s}}
+	\end{align*}
+\end{frame}

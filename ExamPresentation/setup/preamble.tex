@@ -13,11 +13,14 @@
 \usepackage{color}
 \usepackage{epstopdf}
 \usepackage{multicol}
-
+\usepackage[inference]{semantic}
 \usepackage{amsmath}
 \usepackage[noend]{algpseudocode}
 \usepackage{algorithmicx}
 \usepackage{algorithm}
+\usepackage{amssymb}
+\usepackage{braket}
+\usepackage[nounderscore]{syntax}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -104,3 +107,49 @@
     \pgfuseimage{titlepagelogo}
 }
 
+%semantik commands
+\newcommand{\Twedge}{\mathbin{^\wedge{}}}
+\newcommand{\Tfor}{\mathbin{\text{for}}}
+\newcommand{\Tin}{\mathbin{\text{in}}}
+\newcommand{\Twhile}{\mathbin{\text{while}}}
+\newcommand{\Tx}{\mathbin{\; \text{x} \;}}
+\newcommand{\Tlet}{\text{let}}
+\newcommand{\Tvar}{\text{var}}
+\newcommand{\Tspawn}{\mathbin{\text{spawn}}}
+\newcommand{\Tsend}{\mathbin{\text{send}}}
+\newcommand{\Tat}{\; \mathbin{\text{at}} \;}
+\newcommand{\Ta}{\; \mathbin{\text{a}} \;}
+\newcommand{\Taenv}{\; \mathbin{\text{aEnv}} \;}
+\newcommand{\Tm}{\; \mathbin{\text{m}} \;}
+\newcommand{\Twhere}{\mathbin{\text{where}}\;\;}
+\newcommand{\Ten}{\mathbin{\text{env}}}
+\newcommand{\Tactor}{\mathbin{\text{actor}} \;}
+\newcommand{\Tact}{\; \mathbin{\text{act}} \;}
+\newcommand{\Treceive}{\mathbin{\text{receive}} \;}
+\newcommand{\Tr}{\; \mathbin{\text{r}} \;}
+\newcommand{\Tstruct}{\mathbin{\text{struct}} \;}
+\newcommand{\Tand}{\text{\; AND \;}}
+\newcommand{\Tnot}{\text{NOT \;}}
+\newcommand{\Tnand}{\text{\; NAND \;}}
+\newcommand{\Tor}{\text{\; OR \;}} 
+\newcommand{\Tnor}{\text{\; NOR \;}}
+\newcommand{\Txor}{\text{\; XOR \;}}
+\newcommand{\Tif}{\text{if}}
+\newcommand{\Telse}{\text{else}}
+\newcommand{\Treturn}{\text{return}}
+\newcommand{\Te}{\text{\; e}}
+\newcommand{\Ttrue}{\text{true}}
+\newcommand{\Tfalse}{\text{false}}
+
+%typesystem commands
+\newcommand{\Tpot}{^\wedge{}}
+\newcommand{\Tint}{\text{int}}
+\newcommand{\Treal}{\text{real}}
+\newcommand{\Tbool}{\text{bool}}
+\newcommand{\Tchar}{\text{char}}
+\newcommand{\Taop}{\text{AOP}}
+\newcommand{\Tlop}{\text{LOP}}
+\newcommand{\Tbop}{\text{BOP}}
+\newcommand{\Tt}{\text{T}}
+\newcommand{\Tpt}{\text{PT}}
+\newcommand{\Tenv}{E \vdash}
