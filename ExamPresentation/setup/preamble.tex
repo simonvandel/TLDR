@@ -8,7 +8,7 @@
 \usepackage{helvet}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{shapes.geometric, arrows, positioning}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{epstopdf}
@@ -33,6 +33,46 @@
 {
   \aauwavesbg
 	\finalpage{\insertpart\par}
+}
+
+\lstdefinelanguage{fsharp}%
+{morekeywords={let, new, match, with, rec, open, module, namespace, type, of, member, % 
+and, for, while, true, false, in, do, begin, end, fun, function, return, yield, try, %
+mutable, if, then, else, cloud, async, static, use, abstract, interface, inherit, finally },
+  otherkeywords={ let!, return!, do!, yield!, use!, var, from, select, where, order, by },
+  keywordstyle=\color{bluekeywords},
+  sensitive=true,
+  basicstyle=\fontsize{7}{8}\selectfont\ttfamily,%\ttfamily,
+	breaklines=true,
+  xleftmargin=\parindent,
+  aboveskip=\bigskipamount,
+	tabsize=2,
+  morecomment=[l][\color{dkgreen}]{///},
+  morecomment=[l][\color{dkgreen}]{//},
+  morecomment=[s][\color{dkgreen}]{{(*}{*)}},
+  morestring=[b]",
+  showstringspaces=false,
+  literate={`}{\`}1,
+  stringstyle=\color{redstrings},
+}
+
+\lstdefinestyle{fsharp}{
+  language=fsharp,
+  aboveskip=1mm,
+  belowskip=1mm,
+	commentstyle=\color{comment},
+	stringstyle=\color{string},
+	keywordstyle=\color{instruction},
+	keywordstyle=[2]\color{directive},
+	keywordstyle=[3]\color{register},
+	basicstyle=\footnotesize\ttfamily,
+	numbers=left,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	breaklines=true,
+	showstringspaces=false,
+	upquote=true,
+	tabsize=2,
 }
 	
 	\lstdefinestyle{customc}{

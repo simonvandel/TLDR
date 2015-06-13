@@ -1,0 +1,104 @@
+\section{Compiler}
+\begin{frame}{F\# evaluering}
+  \begin{columns}
+    \begin{column}{.5\textwidth}
+      \structure{Godt}
+      \begin{itemize}
+        \item Ny vinkel til programmering
+        \item Kort og præcis kode
+        \item Exhaustive checks ved pattern matching
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{.5\textwidth}
+      \structure{Dårligt}
+      \begin{itemize}
+        \item Nyt sprog at lære
+        \item Ikke så meget compiler-læremateriale
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Struktur}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=latex', node distance = 2cm, auto]
+        \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
+        input/.style={ % requires library shapes.geometric
+        draw,
+        trapezium,
+        trapezium left angle=60,
+        trapezium right angle=120,
+        minimum width=2cm,
+        align=center,
+        minimum height=1cm
+    },
+        }
+        \node [block]  (input) {Source file};
+        \node [block, right =1cm of input] (parser) {Parser};
+        \node [block, above =1cm of parser] (parserErrors) {Errors};
+        \node [block, right =1cm of parser] (toAST) {To AST};
+        \node [block, right =1cm of toAST] (analyser) {Analyser};
+        \node [block, above =1cm of analyser] (analyserErrors) {Errors};
+        \node [block, below =1cm of input] (codegen) {Code generator};
+        \node [block, right =1cm of codegen] (targetLang) {LLVM IR};
+        \node [block, right =1cm of targetLang] (clang) {Clang};
+        \node [block, right =1cm of clang] (nativeCode) {Native Code};
+        \node [coordinate, below =.5cm and 1cm of analyser] (belowAnalyser) {};
+        \node [coordinate, above =.5cm and 1cm of codegen] (aboveCodegen) {};
+%% paths
+        \path[draw,->] (input) edge (parser)
+                    (parser) edge (toAST)
+                    (parser) edge (parserErrors)
+                    (toAST) edge (analyser)
+                    (analyser) edge (analyserErrors)
+                    (analyser.south) -- (belowAnalyser) -- (aboveCodegen) -- (codegen)
+                    (codegen) edge (targetLang)
+                    (targetLang) edge (clang)
+                    (clang) edge (nativeCode)
+                    ;
+    \end{tikzpicture}
+    }
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Overgang Mellem Faser}
+  \begin{lstlisting}[language=fsharp]
+type Result<'a> =
+     | Success of 'a
+     | Failure of string list
+  \end{lstlisting}
+
+  \begin{lstlisting}[language=fsharp]
+let (>>=) (res:Result<'a>) (f:'a -> Result<'b>) : Result<'b> =
+    match res with
+    | Success r -> f r
+    | Failure errs -> Failure errs
+  \end{lstlisting}
+
+  \begin{lstlisting}[language=fsharp]
+let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> = ...
+  \end{lstlisting}
+
+  \begin{lstlisting}[language=fsharp]
+let rec toAST (root:ASTNode) : AST = ...
+  \end{lstlisting}
+  
+  \begin{lstlisting}[language=fsharp]
+parse input grammarPath 
+>>= fun tree -> Success (toAST tree)
+>>= analyse
+>>= (fun ast -> Success (codeGen ast))
+  \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}{Alternativ Compiler Struktur}
+  \begin{itemize}
+    \item Dekorere AST igennem faser => undgå symbol tabel
+    \item Mere uafhængig struktur => alting er transformationer
+  \end{itemize}
+
+\end{frame}
