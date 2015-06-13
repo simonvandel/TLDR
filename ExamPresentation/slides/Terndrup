@@ -1,0 +1,60 @@
+\section{Filosifier i sprog}
+\begin{frame}
+	\frametitle{Sprog filosofi}
+	\begin{enumerate}
+		\item Hvorfor har sprog en filosofi?
+		\item Parallele mentale modeller er svære.
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Filosofier bag TLDR}
+	\begin{enumerate}
+		\item Gennemførte Principper
+		\item Fail Fast, Fail Hard
+		\item Matematisk modellering
+		\item First Class Citizen Functions
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Gennemførte Principper}
+	\begin{enumerate}
+		\item Mentale Modeller er svære (nok).
+		\item Actors data er isoleret.
+		\item Ingen implicit casts
+		\item Tal kan skelnes i signaturen
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametile{Fail Fast, Fail Hard}
+	\begin{enumerate}
+		\item Fejl så tidligt som muligt
+		\item Store systemer
+		\item Falske positive med race conditions
+		\item Ingen implicit casts
+	\end{enumerate}
+\end{frame}
+
+\begin{frame}
+	\frametile{Matematisk Modellering}
+	\begin{enumerate}
+		\item Simuleringer og matematisk beskrivelser
+		\item Data typer som reflektere matematik
+		\item Præcision
+		\begin{enumerate}
+			\item Designet
+			\item Implementation
+		\end{enumerate}
+	\end{enumerate}
+\end{frame}
+
+\bdegin{frame}
+	\frametile{First Class Citizen Functions}
+	\begin{enumerate}
+		\item Sende functioner mellem actors
+		\item Generisk opbygning
+		\item Purity er vigtigt
+	\end{enumerate}
+\end{frame}
