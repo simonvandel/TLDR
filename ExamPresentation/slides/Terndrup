@@ -50,7 +50,7 @@
 	\end{enumerate}
 \end{frame}
 
-\bdegin{frame}
+\begin{frame}
 	\frametile{First Class Citizen Functions}
 	\begin{enumerate}
 		\item Sende functioner mellem actors
