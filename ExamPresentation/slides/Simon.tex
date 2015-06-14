@@ -43,6 +43,7 @@
         \node [block, above =1cm of parser] (parserErrors) {Errors};
         \node [block, right =1cm of parser] (toAST) {To AST};
         \node [block, right =1cm of toAST] (analyser) {Analyser};
+        \node [block, right =1cm of analyser] (symbolTable) {Symbol Table};
         \node [block, above =1cm of analyser] (analyserErrors) {Errors};
         \node [block, below =1cm of input] (codegen) {Code generator};
         \node [block, right =1cm of codegen] (targetLang) {LLVM IR};
@@ -61,6 +62,7 @@
                     (targetLang) edge (clang)
                     (clang) edge (nativeCode)
                     ;
+       \path[draw, <->] (analyser) [dashed] -- (symbolTable);
     \end{tikzpicture}
     }
 
@@ -105,5 +107,43 @@ parse input grammarPath
     \item Dekorere AST igennem faser => undgå symbol tabel
     \item Mere uafhængig struktur => alting er transformationer
   \end{itemize}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=latex', node distance = 2cm, auto]
+        \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
+        input/.style={ % requires library shapes.geometric
+        draw,
+        trapezium,
+        trapezium left angle=60,
+        trapezium right angle=120,
+        minimum width=2cm,
+        align=center,
+        minimum height=1cm
+    },
+        }
+        \node [block]  (input) {Source file};
+        \node [block, right =1cm of input] (parser) {Parser};
+        \node [block, above =1cm of parser] (parserErrors) {Errors};
+        \node [block, right =1cm of parser] (toAST) {To AST};
+        \node [block, right =1cm of toAST] (analyser) {Analyser};
+        \node [block, above =1cm of analyser] (analyserErrors) {Errors};
+        \node [block, below =1cm of input] (codegen) {Code generator};
+        \node [block, right =1cm of codegen] (targetLang) {LLVM IR};
+        \node [block, right =1cm of targetLang] (clang) {Clang};
+        \node [block, right =1cm of clang] (nativeCode) {Native Code};
+        \node [coordinate, below =.5cm and 1cm of analyser] (belowAnalyser) {};
+        \node [coordinate, above =.5cm and 1cm of codegen] (aboveCodegen) {};
+%% paths
+        \path[draw,->] (input) edge (parser)
+                    (parser) edge (toAST)
+                    (parser) edge (parserErrors)
+                    (toAST) edge (analyser)
+                    (analyser) edge (analyserErrors)
+                    (analyser.south) -- (belowAnalyser) -- (aboveCodegen) -- (codegen)
+                    (codegen) edge (targetLang)
+                    (targetLang) edge (clang)
+                    (clang) edge (nativeCode)
+                    ;
+    \end{tikzpicture}
+    }
 
 \end{frame}
