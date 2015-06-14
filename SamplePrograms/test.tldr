@@ -1,0 +1,33 @@
+actor main := {
+    receive mainargs:args := {
+	let range:[int] := [10 .. 15];
+
+        for x in range {
+           let y:calculator := spawn calculator x;
+	}; 	
+	die;
+    };
+};
+
+actor calculator := {
+    receive number:int := {
+        let t:real := 2 # number;
+        let x:io := spawn io;
+        send x t;
+        die;
+    };
+
+};
+
+actor io := {
+    receive r:real := {
+        printreal(r);
+        die;
+    };
+
+    receive n:int := {
+        printint(n);
+        die;
+    };
+
+};
