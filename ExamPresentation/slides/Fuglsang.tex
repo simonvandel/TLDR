@@ -18,7 +18,12 @@
       \item Fortran
     \end{itemize}
   \end{itemize}
-	\emph{How can one design and implement a programming language which supports a
+\end{frame}
+
+\subsection{Problemformulering}
+\begin{frame}
+  \frametitle{Problemformulering}
+  \emph{How can one design and implement a programming language which supports a
 programmer in modeling arbitrary scientific simulations, in a way that inherently
 encourages concurrent processing.}
 \end{frame}
@@ -36,14 +41,14 @@ encourages concurrent processing.}
     \item Kommunikation
     \begin{itemize}
       \item Message passing
-      \item Asynkron
       \item Reaktiv
     \end{itemize}
+    \item Funktionalitet
   \end{itemize}
   \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Images/actors.pdf}
-\end{figure}
+  \end{figure}
 \end{frame}
 
 \subsection{Message Passing}
@@ -56,5 +61,13 @@ encourages concurrent processing.}
       \item Ikke-blokerende
     \end{itemize}
     \item Modtagelse
+    \begin{itemize}
+      \item Lagres i message box
+      \item Processering baseret på type af besked
+    \end{itemize}
   \end{itemize}
+  \begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{Images/actors.pdf}
+  \end{figure}
 \end{frame}
