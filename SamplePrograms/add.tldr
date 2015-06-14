@@ -1,22 +1,25 @@
 actor main := {
   receive arguments:args := {
-    let adder:addActor := spawn addActor;
+    let adder:AddActor := spawn AddActor;
     send adder (1,2);
     die;
   };
 };
 
-actor addActor := {
+actor AddActor := {
   receive msg:(int, int) := {
     let res:int := msg.[0] + msg.[1];
-    let printer:printActor := spawn printActor res;
+    let printer:PrintActor := spawn PrintActor res;
     die;
   };
 };
 
-actor printActor := {
-  receive intMsg:int := {
-    printint(intMsg);
+actor PrintActor := {
+  receive msg:int := {
+    printint(msg);
     die;
   };
 };
+
+
+
