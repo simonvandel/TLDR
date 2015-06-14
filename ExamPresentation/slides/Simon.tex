@@ -15,6 +15,7 @@
     \begin{column}{.5\textwidth}
       \structure{Dårligt}
       \begin{itemize}
+        \item Idiomatisk F\# undgår muteringer => mindre effektiv kode
         \item Nyt sprog at lære
         \item Ikke så meget compiler-læremateriale
       \end{itemize}
@@ -25,44 +26,47 @@
 \subsection{Struktur}
 \begin{frame}{Struktur}
 \centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[>=latex', node distance = 2cm, auto]
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}[>=latex', node distance = 2cm]
         \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
         input/.style={ % requires library shapes.geometric
         draw,
         trapezium,
         trapezium left angle=60,
         trapezium right angle=120,
-        minimum width=2cm,
+        minimum width=1cm,
         align=center,
-        minimum height=1cm
+        minimum height=0.5cm
     },
         }
-        \node [block]  (input) {Source file};
+        \node [coordinate]  (input) {};
         \node [block, right =1cm of input] (parser) {Parser};
         \node [block, above =1cm of parser] (parserErrors) {Errors};
-        \node [block, right =1cm of parser] (toAST) {To AST};
-        \node [block, right =1cm of toAST] (analyser) {Analyser};
-        \node [block, right =1cm of analyser] (symbolTable) {Symbol Table};
-        \node [block, above =1cm of analyser] (analyserErrors) {Errors};
-        \node [block, below =1cm of input] (codegen) {Code generator};
-        \node [block, right =1cm of codegen] (targetLang) {LLVM IR};
-        \node [block, right =1cm of targetLang] (clang) {Clang};
-        \node [block, right =1cm of clang] (nativeCode) {Native Code};
-        \node [coordinate, below =.5cm and 1cm of analyser] (belowAnalyser) {};
-        \node [coordinate, above =.5cm and 1cm of codegen] (aboveCodegen) {};
+        \node [block, right =2cm of parser] (toAST) {To AST};
+        \node [block, right =1cm of toAST] (reass) {Reassignment check};
+        \node [block, below =1cm of reass] (usebeforedecl) {Use before declared check};
+        \node [block, left =2.2cm of usebeforedecl] (hiding) {Hiding check};
+        \node [block, left =2.2cm of hiding] (typecheck) {Typecheck};
+        \node [block, above =1cm of reass] (analyserErrors) {Errors};
+        \node [block, below =1cm of typecheck] (codegen) {Code generator};
+        \node [block, right =1.5cm of codegen] (clang) {Clang};
+        \node [coordinate, right =2cm of clang] (nativeCode) {};
 %% paths
-        \path[draw,->] (input) edge (parser)
-                    (parser) edge (toAST)
+        \path[draw,->] (input) edge node[anchor=south] {Input} (parser)
+                    (parser) edge node[anchor=south] {Hime AST} (toAST)
                     (parser) edge (parserErrors)
-                    (toAST) edge (analyser)
-                    (analyser) edge (analyserErrors)
-                    (analyser.south) -- (belowAnalyser) -- (aboveCodegen) -- (codegen)
-                    (codegen) edge (targetLang)
-                    (targetLang) edge (clang)
-                    (clang) edge (nativeCode)
+                    (toAST) edge node[anchor=south] {AST} (reass)
+                    (reass) edge node[anchor=west] {Symbol table} (usebeforedecl)
+                    (usebeforedecl) edge node[anchor=north] {Symbol table} (hiding)
+                    (hiding) edge node[anchor=north] {Symbol table} (typecheck)
+                    (reass) edge (analyserErrors)
+                    (typecheck) edge node[anchor=west] {AST} (codegen)
+                    (codegen) edge node[anchor=south] {LLVM IR} (clang)
+                    (clang) edge node[anchor=south] {Native Code} (nativeCode)
                     ;
-       \path[draw, <->] (analyser) [dashed] -- (symbolTable);
+       \path[draw, ->] (toAST) [dashed] edge (usebeforedecl)
+                       (toAST) [dashed] edge (hiding)
+                       (toAST) [dashed] edge (typecheck);
     \end{tikzpicture}
     }
 
@@ -71,6 +75,21 @@
 \subsection{Overgang Mellem Faser}
 \begin{frame}[fragile]
   \frametitle{Overgang Mellem Faser}
+  \begin{lstlisting}[language=fsharp]
+parse input grammarPath 
+>>= fun tree -> Success (toAST tree)
+>>= analyse
+>>= (fun ast -> Success (codeGen ast))
+  \end{lstlisting}
+
+  \begin{lstlisting}[language=fsharp]
+let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> = ...
+  \end{lstlisting}
+
+  \begin{lstlisting}[language=fsharp]
+let rec toAST (root:ASTNode) : AST = ...
+  \end{lstlisting}
+
   \begin{lstlisting}[language=fsharp]
 type Result<'a> =
      | Success of 'a
@@ -84,20 +103,7 @@ let (>>=) (res:Result<'a>) (f:'a -> Result<'b>) : Result<'b> =
     | Failure errs -> Failure errs
   \end{lstlisting}
 
-  \begin{lstlisting}[language=fsharp]
-let parse (srcInput:string) (grammarPath:string) : Result<ASTNode> = ...
-  \end{lstlisting}
-
-  \begin{lstlisting}[language=fsharp]
-let rec toAST (root:ASTNode) : AST = ...
-  \end{lstlisting}
   
-  \begin{lstlisting}[language=fsharp]
-parse input grammarPath 
->>= fun tree -> Success (toAST tree)
->>= analyse
->>= (fun ast -> Success (codeGen ast))
-  \end{lstlisting}
 
 \end{frame}
 
@@ -107,41 +113,43 @@ parse input grammarPath
     \item Dekorere AST igennem faser => undgå symbol tabel
     \item Mere uafhængig struktur => alting er transformationer
   \end{itemize}
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[>=latex', node distance = 2cm, auto]
+\resizebox{1\textwidth}{!}{%
+\begin{tikzpicture}[>=latex', node distance = 2cm]
         \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
         input/.style={ % requires library shapes.geometric
         draw,
         trapezium,
         trapezium left angle=60,
         trapezium right angle=120,
-        minimum width=2cm,
+        minimum width=1cm,
         align=center,
-        minimum height=1cm
+        minimum height=0.5cm
     },
         }
-        \node [block]  (input) {Source file};
+        \node [coordinate]  (input) {};
         \node [block, right =1cm of input] (parser) {Parser};
         \node [block, above =1cm of parser] (parserErrors) {Errors};
-        \node [block, right =1cm of parser] (toAST) {To AST};
-        \node [block, right =1cm of toAST] (analyser) {Analyser};
-        \node [block, above =1cm of analyser] (analyserErrors) {Errors};
-        \node [block, below =1cm of input] (codegen) {Code generator};
-        \node [block, right =1cm of codegen] (targetLang) {LLVM IR};
-        \node [block, right =1cm of targetLang] (clang) {Clang};
-        \node [block, right =1cm of clang] (nativeCode) {Native Code};
-        \node [coordinate, below =.5cm and 1cm of analyser] (belowAnalyser) {};
-        \node [coordinate, above =.5cm and 1cm of codegen] (aboveCodegen) {};
+        \node [block, right =2cm of parser] (toAST) {To AST};
+        \node [block, right =1cm of toAST] (reass) {Reassignment check};
+        \node [block, below =1cm of reass] (usebeforedecl) {Use before declared check};
+        \node [block, left =2.4cm of usebeforedecl] (hiding) {Hiding check};
+        \node [block, left =2.4cm of hiding] (typecheck) {Typecheck};
+        \node [block, above =1cm of reass] (analyserErrors) {Errors};
+        \node [block, below =1cm of typecheck] (codegen) {Code generator};
+        \node [block, right =1.5cm of codegen] (clang) {Clang};
+        \node [coordinate, right =2cm of clang] (nativeCode) {};
 %% paths
-        \path[draw,->] (input) edge (parser)
-                    (parser) edge (toAST)
+        \path[draw,->] (input) edge node[anchor=south] {Input} (parser)
+                    (parser) edge node[anchor=south] {Hime AST} (toAST)
                     (parser) edge (parserErrors)
-                    (toAST) edge (analyser)
-                    (analyser) edge (analyserErrors)
-                    (analyser.south) -- (belowAnalyser) -- (aboveCodegen) -- (codegen)
-                    (codegen) edge (targetLang)
-                    (targetLang) edge (clang)
-                    (clang) edge (nativeCode)
+                    (toAST) edge node[anchor=south] {AST} (reass)
+                    (reass) edge node[anchor=west] {Decorated AST} (usebeforedecl)
+                    (usebeforedecl) edge node[anchor=south] {Decorated AST} (hiding)
+                    (hiding) edge node[anchor=south] {Decorated AST} (typecheck)
+                    (reass) edge (analyserErrors)
+                    (typecheck) edge node[anchor=west] {Decorated AST} (codegen)
+                    (codegen) edge node[anchor=south] {LLVM IR} (clang)
+                    (clang) edge node[anchor=south] {Native Code} (nativeCode)
                     ;
     \end{tikzpicture}
     }
