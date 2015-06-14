@@ -1,7 +1,8 @@
 \section{Konkret Sprog Design}
-\subsection{Grammatik}
+\setlength{\grammarindent}{100pt}
+\subsection{Expressions}
 \begin{frame}
-	\frametitle{Grammatik - Expressions}
+	\frametitle{Expressions - Grammatik}
 	\dots
 	\begin{grammar}
 	<OP2> ::= <OP2> <Poneoperator> <OP1>
@@ -25,7 +26,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Grammatik - Expressions}
+	\frametitle{Expressions - Grammatik}
 	\begin{grammar}
   <Operand> ::= <Block>
     \alt <Integer>
@@ -33,6 +34,37 @@
     \alt <Boolean>
     \alt <Literals>
     \alt <Invocation>
+  \end{grammar}
+\end{frame}
+
+\subsection{Typesystem}
+\begin{frame}
+	\frametitle{Typesystem - Block}
+	\begin{align*}
+  &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
+                    {\Tenv \{s_1; s_2\} : \Tt'}
+	\\\\
+  &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt' & \Tenv s_3: \Tt''}
+                    {\Tenv \{s_1; \;\Treturn\; s_2; s_3\} : \Tt'}
+  \end{align*}
+\end{frame}
+
+\subsection{Statements}
+\begin{frame}
+  \frametitle{Statements - Grammartik}
+	\begin{grammar}
+  <Statement> ::= <Declaration>
+    \alt <Reassignment>
+    \alt <Expression>
+    \alt <Receive>
+    \alt <Spawn>
+    \alt <Return>
+    \alt <Die>
+    \alt <Send>
+    \alt <If>
+    \alt <IfElse>
+    \alt <While>
+    \alt <ForIn>
   \end{grammar}
 \end{frame}
 
@@ -46,14 +78,6 @@
 	
 	$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
   \end{center}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Semantik - Block}
-	\begin{align*}
-  &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
-                    {\Tenv \{s_1; s_2\} : \Tt'}
-  \end{align*}
 \end{frame}
 
 \begin{frame}
@@ -74,12 +98,7 @@
 	&\inference[$\text{INVOKE}_{A1}$]{}
                   {\Braket{x,sEnv} \Rightarrow_A \Braket{\{S\},\epsilon}}
                   {,sEnv(x) = \Braket{\{S\},\epsilon}}
-	\end{align*}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Semantik - Eksempel}
-	\begin{align*}
+	\\\\
 	&\inference[$\text{INVOKE}_{A1}$]{}
                   {\Braket{x(y),sEnv} \Rightarrow_A \Braket{S_1,sEnv[z \mapsto \Braket{S_2,s}]}}
                   \\
