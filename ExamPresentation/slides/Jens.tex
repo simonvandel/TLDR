@@ -74,34 +74,46 @@
 	\begin{center}	
   $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 	
-	$aEnv = \text{Anames} \cup {next} \rightharpoonup sEnv$
+	$aEnv = \text{Anames} \cup {next} \rightharpoonup aEnv,sEnv$
 	
-	$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+	$aEnv,sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
   \end{center}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Semantik - Invoke}
 	\begin{align*}
-	&\inference[$\text{INVOKE}_{A1}$]{}
-                  {\Braket{x,sEnv} \Rightarrow_A v}
-                  {,sEnv(x) = \Braket{n,\epsilon}, \mathcal{N}(n) = v}
-	\\\\
-	&\inference[$\text{INVOKE}_{A1}$]{}
-                  {\Braket{x,sEnv} \Rightarrow_A \top}
-                  {,sEnv(x) = \Braket{true,\epsilon}}
-	\\\\
-	&\inference[$\text{INVOKE}_{A1}$]{}
-                  {\Braket{x,sEnv} \Rightarrow_A \bot}
-                  {,sEnv(x) = \Braket{false,\epsilon}}
-  \\\\
-	&\inference[$\text{INVOKE}_{A1}$]{}
-                  {\Braket{x,sEnv} \Rightarrow_A \Braket{\{S\},\epsilon}}
-                  {,sEnv(x) = \Braket{\{S\},\epsilon}}
-	\\\\
-	&\inference[$\text{INVOKE}_{A1}$]{}
-                  {\Braket{x(y),sEnv} \Rightarrow_A \Braket{S_1,sEnv[z \mapsto \Braket{S_2,s}]}}
+	&\inference[$\text{INVOKE}_{A}$]{}
+                  {\Braket{x,aEnv,sEnv} \Rightarrow_A v}
                   \\
-					        &{,sEnv(x) = \Braket{\{S_1\},z},sEnv(y) = \Braket{S_2,s}}
+									&{,aEnv,sEnv(x) = \Braket{n,\epsilon}, \mathcal{N}(n) = v}
+	\\\\
+	&\inference[$\text{INVOKE}_{B\top}$]{}
+                  {\Braket{x,aEnv,sEnv} \Rightarrow_A \top}
+                  {,aEnv,sEnv(x) = \Braket{true,\epsilon}}
+	\\\\
+	&\inference[$\text{INVOKE}_{B\bot}$]{}
+                  {\Braket{x,aEnv,sEnv} \Rightarrow_A \bot}
+                  {,aEnv,sEnv(x) = \Braket{false,\epsilon}}
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Semantik - Invoke}
+  \begin{align*}
+	&\inference[$\text{INVOKE}_{S1}$]{}
+                  {\Braket{x,aEnv,sEnv} \Rightarrow_A \Braket{\{S\},s}}
+									\\
+                  &{sEnv(x) = \Braket{\{S\},s}}
+	\\\\
+	&\inference[$\text{INVOKE}_{S2}$]{}
+                  {\Braket{x(),aEnv,sEnv} \Rightarrow_A \Braket{\{S\},aEnv,sEnv}}
+									\\
+                  &{sEnv(x) = \Braket{\{S\},\epsilon}}
+	\\\\
+	&\inference[$\text{INVOKE}_{S3}$]{}
+                  {\Braket{x(y),aEnv,sEnv} \Rightarrow_A \Braket{\{S_1\},aEnv,sEnv[z \mapsto \Braket{S_2,s}]}}
+                  \\
+					        &{sEnv(x) = \Braket{\{S_1\},z}, sEnv(y) = \Braket{S_2,s}}
 	\end{align*}
 \end{frame}
