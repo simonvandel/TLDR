@@ -28,12 +28,30 @@
 \begin{frame}
 	\frametitle{Expressions - Grammatik}
 	\begin{grammar}
-  <Operand> ::= <Block>
-    \alt <Integer>
+  <Operand> ::= <Integer>
     \alt <Real>
     \alt <Boolean>
-    \alt <Literals>
     \alt <Invocation>
+    \alt <Literals>
+		\alt <Block>
+  \end{grammar}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Expressions - Grammatik}
+	\begin{grammar}
+  <Operand> ::= <Integer>
+    \alt <Real>
+    \alt <Boolean>
+    \alt <Invocation>
+    \alt <Literals>
+		\alt <Block>
+		
+	<Literals> ::= <String>
+    \alt <Char>
+    \alt <List>
+    \alt <StructLiteral>
+    \alt <Tuple>
   \end{grammar}
 \end{frame}
 
@@ -74,9 +92,9 @@
 	\begin{center}	
   $at = \text{ActorTypes} \rightharpoonup \text{Stm}$
 	
-	$aEnv = \text{Anames} \cup {next} \rightharpoonup aEnv,sEnv$
+	$aEnv = \text{Anames} \cup {next} \rightharpoonup sEnv$
 	
-	$aEnv,sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
+	$sEnv = \text{Symbols} \rightharpoonup \text{Stm} \times \text{Symbols}$
   \end{center}
 \end{frame}
 
@@ -90,11 +108,11 @@
 	\\\\
 	&\inference[$\text{INVOKE}_{B\top}$]{}
                   {\Braket{x,aEnv,sEnv} \Rightarrow_A \top}
-                  {,aEnv,sEnv(x) = \Braket{true,\epsilon}}
+                  {,sEnv(x) = \Braket{true,\epsilon}}
 	\\\\
 	&\inference[$\text{INVOKE}_{B\bot}$]{}
                   {\Braket{x,aEnv,sEnv} \Rightarrow_A \bot}
-                  {,aEnv,sEnv(x) = \Braket{false,\epsilon}}
+                  {,sEnv(x) = \Braket{false,\epsilon}}
 	\end{align*}
 \end{frame}
 
