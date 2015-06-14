@@ -87,7 +87,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -167,7 +167,7 @@
          sodipodi:role="line"
          id="tspan6171"
          x="59.999992"
-         y="759.50507">IterationStep</tspan></text>
+         y="759.50507">Iteration step</tspan></text>
     <path
        sodipodi:type="arc"
        style="fill:#ffffff;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
