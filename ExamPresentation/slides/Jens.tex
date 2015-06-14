@@ -49,7 +49,15 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Semantik - Eksempel}
+	\frametitle{Semantik - Block}
+	\begin{align*}
+  &\inference[BLOCK]{\Tenv s_1: \Tt & \Tenv s_2: \Tt'}
+                    {\Tenv \{s_1; s_2\} : \Tt'}
+  \end{align*}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Semantik - Invoke}
 	\begin{align*}
 	&\inference[$\text{INVOKE}_{A1}$]{}
                   {\Braket{x,sEnv} \Rightarrow_A v}
