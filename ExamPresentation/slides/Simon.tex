@@ -9,13 +9,13 @@
         \item Ny vinkel til programmering
         \item Kort og præcis kode
         \item Exhaustive checks ved pattern matching
+        \item Idiomatisk F\# undgår muteringer => pure funktioner der er nemmere at læse
       \end{itemize}
     \end{column}
     
     \begin{column}{.5\textwidth}
       \structure{Dårligt}
       \begin{itemize}
-        \item Idiomatisk F\# undgår muteringer => mindre effektiv kode
         \item Nyt sprog at lære
         \item Ikke så meget compiler-læremateriale
       \end{itemize}
@@ -28,45 +28,42 @@
 \centering
 \resizebox{1\textwidth}{!}{%
 \begin{tikzpicture}[>=latex', node distance = 2cm]
-        \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
-        input/.style={ % requires library shapes.geometric
-        draw,
-        trapezium,
-        trapezium left angle=60,
-        trapezium right angle=120,
-        minimum width=1cm,
-        align=center,
-        minimum height=0.5cm
-    },
+        \tikzset{block/.style= {draw, rectangle, align=center, text width = 2.2cm,minimum width=1cm,minimum height=0.7cm},
         }
         \node [coordinate]  (input) {};
         \node [block, right =1cm of input] (parser) {Parser};
         \node [block, above =1cm of parser] (parserErrors) {Errors};
         \node [block, right =2cm of parser] (toAST) {To AST};
-        \node [block, right =1cm of toAST] (reass) {Reassignment check};
-        \node [block, below =1cm of reass] (usebeforedecl) {Use before declared check};
+        \node [block, right =1cm of toAST] (buildsymtable) {Build symbol table};
+        \node [block, right =2.2cm of buildsymtable] (reass) {Reassignment check};
+        \node [block, above =1cm of reass] (reassErrors) {Errors};
+        \node [block, below =1cm of reass] (usebeforedecl) {Use before declaration check};
+        \node [block, below =1cm of usebeforedecl] (usebeforeErrors) {Errors};
         \node [block, left =2.2cm of usebeforedecl] (hiding) {Hiding check};
-        \node [block, left =2.2cm of hiding] (typecheck) {Typecheck};
-        \node [block, above =1cm of reass] (analyserErrors) {Errors};
-        \node [block, below =1cm of typecheck] (codegen) {Code generator};
-        \node [block, right =1.5cm of codegen] (clang) {Clang};
-        \node [coordinate, right =2cm of clang] (nativeCode) {};
+        \node [block, below =1cm of hiding] (hidingErrors) {Errors};
+        \node [block, left =2.2cm of hiding] (typecheck) {Type check};
+        \node [block, below =1cm of typecheck] (typecheckErrors) {Errors};
+        \node [block, left =1cm of typecheck] (codegen) {Code generator};
+        \node [block, below =1cm of codegen] (clang) {Clang};
+        \node [coordinate, below =1cm of clang] (nativeCode) {};
 %% paths
         \path[draw,->] (input) edge node[anchor=south] {Input} (parser)
                     (parser) edge node[anchor=south] {Hime AST} (toAST)
                     (parser) edge (parserErrors)
-                    (toAST) edge node[anchor=south] {AST} (reass)
+                    (toAST) edge node[anchor=south] {AST} (buildsymtable)
+                    (buildsymtable) edge node[anchor=south] {Symbol Table} (reass)
                     (reass) edge node[anchor=west] {Symbol table} (usebeforedecl)
                     (usebeforedecl) edge node[anchor=north] {Symbol table} (hiding)
                     (hiding) edge node[anchor=north] {Symbol table} (typecheck)
-                    (reass) edge (analyserErrors)
-                    (typecheck) edge node[anchor=west] {AST} (codegen)
-                    (codegen) edge node[anchor=south] {LLVM IR} (clang)
-                    (clang) edge node[anchor=south] {Native Code} (nativeCode)
+                    (reass) edge (reassErrors)
+                    (usebeforedecl) edge (usebeforeErrors)
+                    (hiding) edge (hidingErrors)
+                    (typecheck) edge (typecheckErrors)
+                    (typecheck) edge node[anchor=north] {AST} (codegen)
+                    (codegen) edge node[anchor=west] {LLVM IR} (clang)
+                    (clang) edge node[anchor=west] {Native Code} (nativeCode)
                     ;
-       \path[draw, ->] (toAST) [dashed] edge (usebeforedecl)
-                       (toAST) [dashed] edge (hiding)
-                       (toAST) [dashed] edge (typecheck);
+       \path[draw, ->] (toAST) [dashed] edge node[anchor=west] {AST} (typecheck);
     \end{tikzpicture}
     }
 
@@ -115,41 +112,40 @@ let (>>=) (res:Result<'a>) (f:'a -> Result<'b>) : Result<'b> =
   \end{itemize}
 \resizebox{1\textwidth}{!}{%
 \begin{tikzpicture}[>=latex', node distance = 2cm]
-        \tikzset{block/.style= {draw, rectangle, align=center,minimum width=1cm,minimum height=1cm},
-        input/.style={ % requires library shapes.geometric
-        draw,
-        trapezium,
-        trapezium left angle=60,
-        trapezium right angle=120,
-        minimum width=1cm,
-        align=center,
-        minimum height=0.5cm
-    },
+        \tikzset{block/.style= {draw, rectangle, align=center, text width = 2.2cm,minimum width=1cm,minimum height=0.7cm},
         }
         \node [coordinate]  (input) {};
         \node [block, right =1cm of input] (parser) {Parser};
         \node [block, above =1cm of parser] (parserErrors) {Errors};
         \node [block, right =2cm of parser] (toAST) {To AST};
-        \node [block, right =1cm of toAST] (reass) {Reassignment check};
-        \node [block, below =1cm of reass] (usebeforedecl) {Use before declared check};
-        \node [block, left =2.4cm of usebeforedecl] (hiding) {Hiding check};
-        \node [block, left =2.4cm of hiding] (typecheck) {Typecheck};
-        \node [block, above =1cm of reass] (analyserErrors) {Errors};
-        \node [block, below =1cm of typecheck] (codegen) {Code generator};
-        \node [block, right =1.5cm of codegen] (clang) {Clang};
-        \node [coordinate, right =2cm of clang] (nativeCode) {};
+        \node [block, right =1cm of toAST] (decorateAST) {Decorate AST};
+        \node [block, right =2.5cm of decorateAST] (reass) {Reassignment check};
+        \node [block, above =1cm of reass] (reassErrors) {Errors};
+        \node [block, below =1cm of reass] (usebeforedecl) {Use before declaration check};
+        \node [block, below =1cm of usebeforedecl] (usebeforeErrors) {Errors};
+        \node [block, left =2.5cm of usebeforedecl] (hiding) {Hiding check};
+        \node [block, below =1cm of hiding] (hidingErrors) {Errors};
+        \node [block, left =2.5cm of hiding] (typecheck) {Type check};
+        \node [block, below =1cm of typecheck] (typecheckErrors) {Errors};
+        \node [block, left =2.5cm of typecheck] (codegen) {Code generator};
+        \node [block, below =1cm of codegen] (clang) {Clang};
+        \node [coordinate, below =1cm of clang] (nativeCode) {};
 %% paths
         \path[draw,->] (input) edge node[anchor=south] {Input} (parser)
                     (parser) edge node[anchor=south] {Hime AST} (toAST)
                     (parser) edge (parserErrors)
-                    (toAST) edge node[anchor=south] {AST} (reass)
+                    (toAST) edge node[anchor=south] {AST} (decorateAST)
+                    (decorateAST) edge node[anchor=south] {Decorated AST} (reass)
                     (reass) edge node[anchor=west] {Decorated AST} (usebeforedecl)
                     (usebeforedecl) edge node[anchor=south] {Decorated AST} (hiding)
                     (hiding) edge node[anchor=south] {Decorated AST} (typecheck)
-                    (reass) edge (analyserErrors)
-                    (typecheck) edge node[anchor=west] {Decorated AST} (codegen)
-                    (codegen) edge node[anchor=south] {LLVM IR} (clang)
-                    (clang) edge node[anchor=south] {Native Code} (nativeCode)
+                    (reass) edge (reassErrors)
+                    (usebeforedecl) edge (usebeforeErrors)
+                    (hiding) edge (hidingErrors)
+                    (typecheck) edge (typecheckErrors)
+                    (typecheck) edge node[anchor=south] {Decorated AST} (codegen)
+                    (codegen) edge node[anchor=west] {LLVM IR} (clang)
+                    (clang) edge node[anchor=west] {Native Code} (nativeCode)
                     ;
     \end{tikzpicture}
     }

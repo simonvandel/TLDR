@@ -24,11 +24,12 @@ module Main =
         proc.WaitForExit()
         if llcRes && proc.ExitCode = 0 then // only run clang when llc succeeded
             // --------------- clang -------------
-            let clangProc = new System.Diagnostics.Process()
-            clangProc.StartInfo.FileName <- "./a.out"
-            clangProc.Start() |> ignore
-            clangProc.WaitForExit()
-            clangProc.ExitCode = 0
+            //let clangProc = new System.Diagnostics.Process()
+            //clangProc.StartInfo.FileName <- "./a.out"
+            //clangProc.Start() |> ignore
+            //clangProc.WaitForExit()
+            //clangProc.ExitCode = 0
+            false
 
         else false
 
@@ -50,9 +51,9 @@ module Main =
 
         match res with
         | Success a -> 
-            printfn "success"
-            printfn "%A" a
-            printfn "-----------------------------------\n"
+            printfn "Success"
+            //printfn "%A" a
+            //printfn "-----------------------------------\n"
             llvmToExec a
             |> ignore
         | Failure errs -> 
